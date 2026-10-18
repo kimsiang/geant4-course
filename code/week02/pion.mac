@@ -1,0 +1,5 @@
+# Think-about-it, quantified: 1000 pi- at 100 MeV kinetic energy
+/tracking/verbose 1
+/gun/particle pi-
+/gun/energy 100 MeV
+/run/beamOn 1000

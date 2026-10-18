@@ -1,0 +1,5 @@
+# Pitfall demo: gun outside the world, pointing further out
+/tracking/verbose 1
+/gun/position 0 0 2 m
+/gun/direction 0 0 1
+/run/beamOn 1

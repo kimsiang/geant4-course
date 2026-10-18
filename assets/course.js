@@ -19,7 +19,7 @@
   ];
   G.weeks = [
     { n: 1,  stage: 1, ch: '1',     file: 'week01.html', live: true,  en: 'A Monte Carlo primer', zh: '蒙特卡罗入门' },
-    { n: 2,  stage: 1, ch: '2',     file: 'week02.html', live: false, en: 'Run, Event, Track, Step', zh: '运行、事件、径迹、步' },
+    { n: 2,  stage: 1, ch: '2',     file: 'week02.html', live: true,  en: 'Run, Event, Track, Step', zh: '运行、事件、径迹、步' },
     { n: 3,  stage: 1, ch: '3–4',   file: 'week03.html', live: false, en: 'Geometry, materials and steps', zh: '几何、材料与步' },
     { n: 4,  stage: 2, ch: '5',     file: 'week04.html', live: false, en: 'Energy loss and Bethe–Bloch', zh: '能量损失与 Bethe–Bloch 公式' },
     { n: 5,  stage: 2, ch: '6',     file: 'week05.html', live: false, en: 'From energy deposit to a hit', zh: '从能量沉积到击中' },
@@ -245,8 +245,9 @@
   /* ---------------- copy buttons: <button class="copy" data-copy="id-of-pre"> ---------------- */
   document.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('.copy'); if (!b) return;
+    if (b.closest('summary')) e.preventDefault();
     var pre = document.getElementById(b.getAttribute('data-copy')); if (!pre) return;
-    var text = pre.innerText;
+    var text = pre.textContent;
     function done(msg) { var old = b.getAttribute('data-label') || b.textContent; b.setAttribute('data-label', old); b.textContent = msg; setTimeout(function () { b.textContent = old; }, 1400); }
     function fallback() { var r = document.createRange(); r.selectNodeContents(pre); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); done(G.t('Selected · press Ctrl+C', '已选中 · 按 Ctrl+C')); }
     try { navigator.clipboard.writeText(text).then(function () { done(G.t('Copied', '已复制')); }, fallback); } catch (err) { fallback(); }

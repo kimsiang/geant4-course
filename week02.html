@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 02 · First Particle</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0, Week 02: fire your first particle in Geant4 11.4 and read the Run → Event → Track → Step hierarchy straight off the step table.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Week 02 of 12</span><span lang="zh-Hans">第 02 / 12 周</span></span>
+    <span class="bar-r">
+      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">Idle&gt; <span>/gun/particle mu-</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">Shoot your first particle: Run, Event, Track, Step.</span><span lang="zh-Hans">发射第一个粒子：运行、事件、径迹、步。</span></h1>
+      <p class="lede" lang="en">You take a Geant4 application that already works and change only the particle, its energy, its starting point and its direction. Only after you have watched it run do you learn the event model that made it work.</p>
+      <p class="lede" lang="zh-Hans">拿到一个已经能运行的 Geant4 程序，只改动粒子种类、能量、起点和方向。先看它跑起来，再学习背后让它运转的事件模型。</p>
+      <ul class="meta">
+        <li class="stage"><b>1 · See it</b><span lang="en">stage · 观测</span><span lang="zh-Hans">阶段 · 观测</span></li>
+        <li><b>Mission 1</b><span lang="en">textbook ch. 2</span><span lang="zh-Hans">教材第 2 章</span></li>
+        <li><b>≈ 2 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="Week summary">
+      <div role="row"><span role="cell">week02</span></div>
+      <div role="row"><span role="cell">Language</span><span role="cell">C++17 · Geant4 11.4</span></div>
+      <div role="row"><span role="cell">World</span><span role="cell"><span lang="en">3 m vacuum cube</span><span lang="zh-Hans">3 m 真空立方体</span></span></div>
+      <div role="row"><span role="cell">Primary</span><span role="cell">1 GeV μ⁻, z = −1 m, +z</span></div>
+      <div role="row"><span role="cell">Observable</span><span role="cell"><span lang="en">step table, tracks per event</span><span lang="zh-Hans">步表、每事件径迹数</span></span></div>
+    </div>
+  </section>
+
+  <!-- GOALS -->
+  <section class="run" aria-labelledby="h-goals">
+    <p class="cmd">/run/initialize<span lang="en">learning goals</span><span lang="zh-Hans">学习目标</span></p>
+    <div class="prose">
+      <h2 id="h-goals" class="bi"><span lang="en">By the end of this week you can read a Geant4 step table line by line.</span><span lang="zh-Hans">本周结束时，你能逐行读懂 Geant4 的步表。</span></h2>
+      <ol class="goals">
+        <li><span lang="en">Build and run a minimal Geant4 11.4 application, and change the four gun settings by recompiling and by macro.</span><span lang="zh-Hans">编译并运行一个最小的 Geant4 11.4 程序，分别通过重新编译和宏命令修改粒子枪的四项设置。</span></li>
+        <li><span lang="en">State the event model <dfn>Run → Event → Track → Step<span class="kt" lang="zh-Hans">运行 → 事件 → 径迹 → 步</span></dfn> and point to each level in <code>/tracking/verbose 1</code> output.</span><span lang="zh-Hans">说出事件模型<dfn>运行 → 事件 → 径迹 → 步<span class="kt" lang="en">Run → Event → Track → Step</span></dfn>，并在 <code>/tracking/verbose 1</code> 的输出中指出每一层。</span></li>
+        <li><span lang="en">Explain why <code>GeneratePrimaries()</code> runs once per event and what that means for the <dfn>primary generator<span class="kt" lang="zh-Hans">初级粒子产生器</span></dfn>.</span><span lang="zh-Hans">解释为什么 <code>GeneratePrimaries()</code> 每个事件运行一次，以及这对<dfn>初级粒子产生器<span class="kt" lang="en">primary generator</span></dfn>意味着什么。</span></li>
+        <li><span lang="en">Compute a decay length βγcτ and predict whether a particle decays inside the world.</span><span lang="zh-Hans">计算衰变长度 βγcτ，预测粒子是否会在世界内衰变。</span></li>
+        <li><span lang="en">Diagnose a run with no visible tracks, starting from the gun position, the direction and the world size.</span><span lang="zh-Hans">诊断“看不到径迹”的运行：先查粒子枪位置、方向和世界大小。</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- LESSON 1 -->
+  <section class="run" aria-labelledby="h-run">
+    <p class="cmd">/control/manual<span lang="en">2.1 · run it first</span><span lang="zh-Hans">2.1 · 先运行，再追问</span></p>
+    <div class="prose">
+      <h2 id="h-run" class="bi"><span lang="en">Change a number, watch the output change, then learn the class behind it.</span><span lang="zh-Hans">先改一个数、看输出变化，再学背后的类。</span></h2>
+      <p lang="en">The challenge is direct: fire a 1 GeV muon into an empty world and watch it move. You get a minimal application that already works. You change four parameters of the primary generator: particle species, energy, position and direction. Then you rebuild, run and compare the output. A class whose output you have never seen costs twice as much to learn.</p>
+      <p lang="zh-Hans">挑战很直接：向一个空世界发射一个 1 GeV 的缪子，看它运动。你拿到的是一个已经能运行的最小程序，只需改动初级粒子产生器的四个参数——粒子种类、能量、位置、方向——然后重新编译、运行、比较输出。一个从没见过输出的抽象类，学起来要多花一倍的力气。</p>
+
+      <div class="aside">
+        <p class="aside-label"><span lang="en">What Geant4 is doing</span><span lang="zh-Hans">Geant4 在做什么</span></p>
+        <p lang="en">For a primary muon, Geant4 creates a track, works out how far it can travel before the next boundary or physics interaction, moves it by one step, updates its state, and repeats until the track ends. The world is empty this week, so the physics is deliberately minimal: you learn the transport loop before adding matter.</p>
+        <p lang="zh-Hans">对一个初级缪子，Geant4 先创建一条径迹，算出在下一个边界或物理相互作用之前它能走多远，把它推进一步，更新状态，如此循环直到径迹结束。本周的世界是空的，物理被刻意减到最少：先学输运循环，再加入物质。</p>
+      </div>
+
+      <div class="box">
+        <p class="box-label">Definition 2.1 · <span lang="en">The Geant4 event model</span><span lang="zh-Hans">Geant4 事件模型</span></p>
+        <p lang="en">A <dfn>Run</dfn> consists of one or more <dfn>Events</dfn>, all sharing the same detector construction and physics settings. Each Event contains one or more <dfn>Tracks</dfn>, each the complete history of a single particle from creation to termination. Each Track is divided into a sequence of <dfn>Steps</dfn>, each ending at a geometric boundary crossing or at the occurrence of a physics process.</p>
+        <p lang="zh-Hans">一次<dfn>运行</dfn>（Run）包含一个或多个<dfn>事件</dfn>（Event），它们共享同一套探测器构建和物理设置；每个事件包含一条或多条<dfn>径迹</dfn>（Track），每条径迹是单个粒子从产生到消失的完整历史；每条径迹又被离散为一串<dfn>步</dfn>（Step），每一步结束于穿越几何边界或某个物理过程的发生。</p>
+      </div>
+      <div class="flow" role="img" aria-label="Run contains events, events contain tracks, tracks contain steps"><b>Run</b> <span class="a">→</span> Event 0, Event 1, … <span class="a">→</span> Track 1, Track 2, … <span class="a">→</span> <b>Step 1, Step 2, …</b><br><span class="a">/run/beamOn N&nbsp;&nbsp;&nbsp;GeneratePrimaries()&nbsp;&nbsp;&nbsp;&nbsp;one particle each&nbsp;&nbsp;&nbsp;&nbsp;boundary or process</span></div>
+      <p class="cap"><span lang="en">Figure 2.1. A run contains events, events contain tracks, and tracks advance through steps. GEANT3, FLUKA and MCNP use the same four-level language.</span><span lang="zh-Hans">图 2.1　运行包含事件，事件包含径迹，径迹由步推进。GEANT3、FLUKA 和 MCNP 使用同样的四层语言。</span></p>
+    </div>
+  </section>
+
+  <!-- LESSON 2: generator -->
+  <section class="run" aria-labelledby="h-gun">
+    <p class="cmd">/gun/energy 1 GeV<span lang="en">2.2 · the primary generator</span><span lang="zh-Hans">2.2 · 初级粒子产生器</span></p>
+    <div class="prose">
+      <h2 id="h-gun" class="bi"><span lang="en">Four setters define the experiment. There is no fifth hidden setting.</span><span lang="zh-Hans">四个设置函数定义了整个实验，没有隐藏的第五项。</span></h2>
+      <div class="box">
+        <p class="box-label">Example 2.1 · <span lang="en">A minimal primary generator</span><span lang="zh-Hans">最小的初级粒子产生器</span></p>
+        <p lang="en">Configure the primary generator to fire a 1 GeV negative muon (μ⁻) along +z, starting inside the world and aimed toward its centre. In the official Geant4 examples this lives in a class called <code>PrimaryGeneratorAction</code>, derived from <code>G4VUserPrimaryGeneratorAction</code>. This course keeps that name throughout.</p>
+        <p lang="zh-Hans">配置初级粒子产生器，沿 +z 方向发射一个 1 GeV 的负缪子（μ⁻），起点在世界内部、指向中心。在官方 Geant4 示例中，这段配置位于派生自 <code>G4VUserPrimaryGeneratorAction</code> 的 <code>PrimaryGeneratorAction</code> 类中，本课程沿用这个类名。</p>
+      </div>
+      <div class="code">
+        <div class="code-head"><span class="l"><b>Code microscope · PrimaryGeneratorAction.cc</b><span class="tag geant4">GEANT4</span></span></div>
+<pre>fParticleGun-&gt;SetParticleDefinition(particle);                          <span class="c">// 1. species   ("mu-")</span>
+fParticleGun-&gt;SetParticleMomentumDirection(G4ThreeVector(0., 0., 1.));  <span class="c">// 2. direction (+z)</span>
+fParticleGun-&gt;SetParticleEnergy(1. * GeV);                              <span class="c">// 3. KINETIC energy</span>
+fParticleGun-&gt;SetParticlePosition(G4ThreeVector(0., 0., -1. * m));      <span class="c">// 4. position</span>
+
+<span class="k">void</span> PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
+{
+  fParticleGun-&gt;GeneratePrimaryVertex(event);   <span class="c">// once per Event</span>
+}</pre>
+      </div>
+      <p lang="en">Two details matter when you compare this with the official examples. First, <code>GeneratePrimaries</code> is called once per <strong>event</strong>, not once per run. If you want every event to sample a different energy or position, change the gun inside this method, not in the constructor. Second, <code>SetParticleEnergy</code> sets the <strong>kinetic</strong> energy, the quantity that enters γ = 1 + <i>T</i>/<i>mc</i>².</p>
+      <p lang="zh-Hans">与官方示例对照时有两个细节。第一，<code>GeneratePrimaries</code> 每个<strong>事件</strong>调用一次，而不是每次运行调用一次；想让每个事件的能量或位置不同，就在这个函数里修改粒子枪，而不是在构造函数里。第二，<code>SetParticleEnergy</code> 设置的是<strong>动能</strong>，也就是 γ = 1 + <i>T</i>/<i>mc</i>² 中的 <i>T</i>。</p>
+
+      <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W02-a
+      issued by : textbook Example 2.1 vs Geant4 11.4
+The textbook starts the muon "outside the world volume's boundary".
+  Tested here: a vertex set in the constructor is NOT checked, so
+  Geant4 tracks it from outside and the TrackLeng includes the part
+  outside the world. Start the gun inside the world. This page uses
+  a 3 m world so the textbook's z = -1 m is inside.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W02-a
+      issued by : 教材例 2.1 与 Geant4 11.4 的对照
+教材让缪子“从世界体边界之外”出发。
+  实测：在构造函数中设置的顶点不会被检查，Geant4 会从世界外
+  开始输运，TrackLeng 中包含了世界外的那一段。请把粒子枪放在
+  世界内部。本页使用 3 m 的世界，教材的 z = -1 m 就在世界内。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+    </div>
+  </section>
+
+  <!-- LESSON 3: decay -->
+  <section class="run" aria-labelledby="h-decay">
+    <p class="cmd">/particle/property/dump<span lang="en">2.3 · why nothing decays</span><span lang="zh-Hans">2.3 · 为什么没有衰变</span></p>
+    <div class="prose">
+      <h2 id="h-decay" class="bi"><span lang="en">The muon does not decay because 6.9 km is longer than 2.5 m, not because the world is empty.</span><span lang="zh-Hans">缪子不衰变，是因为 6.9 km 远大于 2.5 m，而不是因为世界是空的。</span></h2>
+      <p lang="en">With no matter in the world, the muon loses no energy and scatters off nothing. It flies in a straight line at constant velocity until it leaves the world. Decay is a different matter: it is a property of the particle itself, simulated whether or not matter is present. A particle with mean lifetime τ, moving with βγ = <i>p</i>/<i>mc</i>, travels on average</p>
+      <p lang="zh-Hans">世界中没有物质时，缪子不损失能量、也不被散射，只以恒定速度沿直线飞出世界。衰变则是另一回事：它是粒子自身的性质，有没有物质都会被模拟。平均寿命为 τ、βγ = <i>p</i>/<i>mc</i> 的粒子，平均飞行距离为</p>
+      <div class="eq" role="math" aria-label="lambda equals beta gamma c tau, and the probability of decaying within a path l is 1 minus exp of minus l over lambda">
+        <span><i>λ</i> = <i>βγcτ</i>,</span>
+        <span><i>P</i><sub>decay</sub>(ℓ) = 1 − e<sup>−ℓ/<i>λ</i></sup></span>
+        <span class="eqno">(2.1)</span>
+      </div>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th><span lang="en">Primary</span><span lang="zh-Hans">初级粒子</span></th><th>γ</th><th>βγ</th><th>λ = βγcτ</th><th><span lang="en">P(decay in 2.5 m)</span><span lang="zh-Hans">2.5 m 内衰变概率</span></th></tr></thead>
+          <tbody>
+            <tr><td class="n">μ⁻ · 1 GeV</td><td class="m">10.46</td><td class="m">10.42</td><td>6.86 km</td><td>3.6 × 10⁻⁴</td></tr>
+            <tr><td class="n">μ⁻ · 100 MeV</td><td class="m">1.946</td><td class="m">1.670</td><td>1.10 km</td><td>2.3 × 10⁻³</td></tr>
+            <tr><td class="n">π⁻ · 1 GeV</td><td class="m">8.165</td><td class="m">8.103</td><td>63.2 m</td><td>0.039</td></tr>
+            <tr><td class="n">π⁻ · 100 MeV</td><td class="m">1.717</td><td class="m">1.395</td><td>10.9 m</td><td>0.205</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="cap"><span lang="en">Kinetic energies. Masses and lifetimes as Geant4 11.4 reports them (<code>/particle/property/dump</code>, PDG values): μ: 105.658 MeV, τ = 2196.98 ns, cτ = 658.6 m. π±: 139.570 MeV, τ = 26.033 ns, cτ = 7.80 m.</span><span lang="zh-Hans">表中为动能。质量和寿命取自 Geant4 11.4 的 <code>/particle/property/dump</code> 输出（PDG 值）：μ：105.658 MeV，τ = 2196.98 ns，cτ = 658.6 m；π±：139.570 MeV，τ = 26.033 ns，cτ = 7.80 m。</span></p>
+
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Think about it</span><span lang="zh-Hans">想一想</span></p>
+        <p lang="en">Switch the particle from <code>mu-</code> to <code>proton</code> at the same energy, in this vacuum world. How does the step table change? What about <code>gamma</code>? Guess first, then run step 5 of the hands-on task. Then try <code>pi-</code> at 100 MeV: how many of 1,000 events should contain more than one track?</p>
+        <p lang="zh-Hans">在这个真空世界里，把粒子从 <code>mu-</code> 换成同能量的 <code>proton</code>，步表会怎样变化？换成 <code>gamma</code> 呢？先猜，再完成动手任务第 5 步。然后试 100 MeV 的 <code>pi-</code>：1,000 个事件中应有多少个包含不止一条径迹？</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">History</span><span lang="zh-Hans">历史</span></p>
+        <p lang="en">Geant4 was developed by an international collaboration led by CERN to replace GEANT3, a Fortran code that had become hard to maintain, with an object-oriented framework for the LHC experiments. The first release came in 1998. The foundational paper, Agostinelli et al., Nucl. Instrum. Methods A 506 (2003) 250, made it a standard across high-energy, nuclear, medical and space physics, and muography.</p>
+        <p lang="zh-Hans">Geant4 由 CERN 牵头的国际合作组开发，用面向对象框架取代难以维护的 Fortran 程序 GEANT3，服务于 LHC 实验。首个正式版本发布于 1998 年。奠基论文 Agostinelli 等，Nucl. Instrum. Methods A 506 (2003) 250，使其成为高能物理、核物理、医学物理、空间科学以及缪子成像领域的事实标准。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLAINER -->
+  <section class="run" aria-labelledby="h-toy">
+    <p class="cmd">/run/beamOn 100<span lang="en">interactive toy model</span><span lang="zh-Hans">交互玩具模型</span></p>
+    <div>
+      <h2 id="h-toy" class="bi"><span lang="en">Fire events and watch a track end at a wall or a decay.</span><span lang="zh-Hans">发射事件，看径迹终止于边界还是衰变。</span></h2>
+      <p class="prose" style="color:var(--muted);max-width:64ch;margin-top:14px" lang="en">Each <code>/run/beamOn</code> starts a new run. The panes below show the step table and the Run → Event → Track → Step tree for the last event. Try the pion preset, then shrink the world, raise the energy, or move the gun outside the world.</p>
+      <p class="prose" style="color:var(--muted);max-width:64ch" lang="zh-Hans">每次 <code>/run/beamOn</code> 都开始一次新的运行。下方面板显示最后一个事件的步表和“运行 → 事件 → 径迹 → 步”树。先试试 π 预设，再缩小世界、提高能量，或把粒子枪移出世界。</p>
+
+      <div class="display" style="margin-top:20px">
+        <div class="display-head"><span class="toy">TOY MODEL · <span lang="en">not Geant4</span><span lang="zh-Hans">非 Geant4</span></span><span id="w2-runlabel">Run 0</span></div>
+        <canvas id="w2-display" class="tele" aria-label="Toy event display: the world box with the last tracks"></canvas>
+        <div class="legend">
+          <span><i style="background:#FF6369"></i><span lang="en">negative</span><span lang="zh-Hans">负电</span></span>
+          <span><i style="background:#7393FF"></i><span lang="en">positive</span><span lang="zh-Hans">正电</span></span>
+          <span><i class="dash" style="color:#4FC98A"></i><span lang="en">neutral (ν, γ)</span><span lang="zh-Hans">中性（ν、γ）</span></span>
+          <span><i class="dot" style="background:#F2D06B"></i><span lang="en">decay vertex</span><span lang="zh-Hans">衰变顶点</span></span>
+        </div>
+      </div>
+      <div class="controls">
+        <label class="ctl" for="w2-particle"><span class="ctl-row">/gun/particle</span>
+          <select id="w2-particle"><option>mu-</option><option>mu+</option><option>pi-</option><option>pi+</option><option>proton</option><option>e-</option><option>gamma</option></select></label>
+        <label class="ctl" for="w2-T"><span class="ctl-row"><span>/gun/energy</span><output id="w2-T-out" for="w2-T">1 GeV</output></span><input id="w2-T" type="range" min="0" max="5" step="any" value="3"></label>
+        <label class="ctl" for="w2-half"><span class="ctl-row"><span lang="en">world size</span><span lang="zh-Hans">世界大小</span><output id="w2-half-out" for="w2-half">1.5 m</output></span><input id="w2-half" type="range" min="-0.301" max="4.301" step="any" value="0.17609"></label>
+        <label class="ctl" for="w2-z"><span class="ctl-row"><span>/gun/position</span><output id="w2-z-out" for="w2-z">z = −1 m</output></span><input id="w2-z" type="range" min="-2" max="2" step="any" value="-0.666667"></label>
+        <label class="ctl" for="w2-dir"><span class="ctl-row">/gun/direction</span><select id="w2-dir"></select></label>
+        <label class="ctl" for="w2-how"><span class="ctl-row"><span lang="en">position set by</span><span lang="zh-Hans">位置设置方式</span></span><select id="w2-how"></select></label>
+      </div>
+      <div class="btns">
+        <button type="button" class="primary" id="w2-b1">/run/beamOn 1</button>
+        <button type="button" id="w2-b100">/run/beamOn 100</button>
+        <button type="button" id="w2-b10k">/run/beamOn 10000</button>
+        <button type="button" id="w2-preset-pi"><span lang="en">Preset: 1,000 π⁻ at 100 MeV</span><span lang="zh-Hans">预设：1,000 个 100 MeV π⁻</span></button>
+        <button type="button" id="w2-reset"><span lang="en">Reset</span><span lang="zh-Hans">重置</span></button>
+      </div>
+      <div class="panels">
+        <div>
+          <div class="statbox" role="table" aria-label="Decay summary">
+            <div role="row"><span role="cell">decay</span></div>
+            <div role="row"><span role="cell">βγ</span><span role="cell" id="w2-bg">—</span></div>
+            <div role="row"><span role="cell">λ = βγcτ</span><span role="cell" id="w2-lam">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">path to boundary ℓ</span><span lang="zh-Hans">到边界路径 ℓ</span></span><span role="cell" id="w2-D">—</span></div>
+            <div role="row"><span role="cell">1 − e<sup>−ℓ/λ</sup></span><span role="cell" id="w2-pred">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">decayed fraction</span><span lang="zh-Hans">衰变比例</span></span><span role="cell" id="w2-meas">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">difference</span><span lang="zh-Hans">偏差</span></span><span role="cell" id="w2-pull">—</span></div>
+            <div role="row"><span role="cell">GeneratePrimaries()</span><span role="cell" id="w2-calls">0</span></div>
+          </div>
+        </div>
+        <div>
+          <canvas id="w2-hist" style="aspect-ratio:16/10;margin-top:14px" aria-label="Histogram of distance to decay; escaped tracks in the overflow"></canvas>
+          <p class="cap"><span lang="en">Tracks that reach the wall without decaying go into the Overflow, as ROOT would count them.</span><span lang="zh-Hans">未衰变就到达边界的径迹计入 Overflow，与 ROOT 的计数方式相同。</span></p>
+        </div>
+      </div>
+      <div class="panels one">
+        <div>
+          <p class="panel-title">/tracking/verbose 1 · <span lang="en">last event, track 1</span><span lang="zh-Hans">最后一个事件，径迹 1</span></p>
+          <div class="verbose"><pre id="w2-verbose"></pre></div>
+          <p class="panel-title" style="margin-top:14px"><span lang="en">event model of the last event</span><span lang="zh-Hans">最后一个事件的事件模型</span></p>
+          <pre id="w2-tree"></pre>
+        </div>
+      </div>
+      <div class="toybox">
+        <p><b>TOY MODEL · <span lang="en">approximations</span><span lang="zh-Hans">近似</span></b></p>
+        <p lang="en">Vacuum world: no energy loss, scattering or interactions. Each primary goes straight along ±z until it reaches the boundary or decays after a distance drawn from exp(−x/λ). Masses, lifetimes and decay channels are those Geant4 11.4 prints. Decay products are listed but not transported; their drawn directions are random decoration, not decay kinematics. The step-table format copies Geant4 11.4 output; the numbers come from this toy. The vertex check follows Geant4 11.4: <code>/gun/position</code> is refused outside the world once the run is initialised, and a constructor position is not checked.</p>
+        <p lang="zh-Hans">真空世界：没有能量损失、散射或相互作用。每个初级粒子沿 ±z 直线飞行，直到到达边界，或在按 exp(−x/λ) 抽样的距离处衰变。质量、寿命和衰变道取自 Geant4 11.4 的输出。衰变产物只列出、不输运，画出的方向是随机装饰，不是衰变运动学。步表格式照搬 Geant4 11.4 输出，数值来自本玩具模型。顶点检查与 Geant4 11.4 一致：运行初始化后 <code>/gun/position</code> 拒绝世界外的位置，构造函数中设置的位置不受检查。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HANDS-ON -->
+  <section class="run" aria-labelledby="h-task">
+    <p class="cmd">/control/execute run1.mac<span lang="en">hands-on · Mission 1</span><span lang="zh-Hans">动手任务 · 任务 1</span></p>
+    <div class="prose">
+      <h2 id="h-task" class="bi"><span lang="en">Build it, fire it, change it four ways, then count decays.</span><span lang="zh-Hans">编译、发射、四种改法，然后数衰变。</span></h2>
+      <p lang="en">You need Geant4 11.4 and CMake ≥ 3.16 (Week 1, step 7). Every expected output below is real Geant4 11.4.p01 output from these exact files. Our sandbox has no Geant4 datasets, so we ran with a decay-only physics list in place of <code>FTFP_BERT</code>. In vacuum the step tables are the same, except that with <code>FTFP_BERT</code> the dE column may show a tiny number (about 10⁻²³ MeV) from ionisation in the residual gas of <code>G4_Galactic</code>. Your terminal will also print physics-list tables first.</p>
+      <p lang="zh-Hans">需要 Geant4 11.4 和 CMake ≥ 3.16（第 1 周第 7 步）。下面每个预期输出都来自这些文件在 Geant4 11.4.p01 上的真实运行。我们的沙盒没有 Geant4 数据集，因此用只含衰变的物理列表代替了 <code>FTFP_BERT</code>。在真空中步表相同，只是用 <code>FTFP_BERT</code> 时 dE 列可能出现极小的数（约 10⁻²³ MeV），来自 <code>G4_Galactic</code> 残余气体中的电离。你的终端还会先打印物理列表的信息表。</p>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Create the project</span><span lang="zh-Hans">建立工程</span></h3><label class="done" for="w02-s1"><input type="checkbox" id="w02-s1" data-progress="w02"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Make this layout and paste each file. Open a file to see it.</p>
+          <p lang="zh-Hans">按下面的目录结构建立文件，逐个粘贴。点击文件名展开。</p>
+<pre>week02/
+├── CMakeLists.txt
+├── week02.cc
+├── include/  DetectorConstruction.hh  PrimaryGeneratorAction.hh  ActionInitialization.hh
+├── src/      DetectorConstruction.cc  PrimaryGeneratorAction.cc  ActionInitialization.cc
+└── run1.mac  mission1.mac  outward.mac  pion.mac  vis.mac</pre>
+          <div class="files">
+            <details><summary><b>CMakeLists.txt</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f-cmake">copy</button></summary><pre id="f-cmake" data-src="code/week02/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
+project(Week02 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Geant4 REQUIRED ui_all vis_all)
+include(${Geant4_USE_FILE})
+
+file(GLOB sources CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/include/*.hh)
+
+add_executable(week02 week02.cc ${sources} ${headers})
+target_include_directories(week02 PRIVATE include)
+target_link_libraries(week02 PRIVATE ${Geant4_LIBRARIES})
+
+# copy the macros next to the executable
+foreach(_mac run1.mac mission1.mac outward.mac pion.mac vis.mac)
+  configure_file(${PROJECT_SOURCE_DIR}/${_mac} ${PROJECT_BINARY_DIR}/${_mac} COPYONLY)
+endforeach()</pre></details>
+            <details><summary><b>week02.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f-main">copy</button></summary><pre id="f-main" data-src="code/week02/week02.cc">#include "ActionInitialization.hh"
+#include "DetectorConstruction.hh"
+
+#include "FTFP_BERT.hh"
+#include "G4RunManagerFactory.hh"
+#include "G4UIExecutive.hh"
+#include "G4UImanager.hh"
+#include "G4VisExecutive.hh"
+
+int main(int argc, char** argv)
+{
+  // Week 2 runs single-threaded so /tracking/verbose output is not
+  // interleaved between worker threads. The textbook's main.cc uses
+  // G4RunManagerType::Default; we switch to it when we merge MT output.
+  auto* runManager =
+    G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
+
+  runManager-&gt;SetUserInitialization(new DetectorConstruction());
+  runManager-&gt;SetUserInitialization(new FTFP_BERT());
+  runManager-&gt;SetUserInitialization(new ActionInitialization());
+  runManager-&gt;Initialize();
+
+  auto* uiManager = G4UImanager::GetUIpointer();
+  if (argc &gt; 1) {
+    // batch mode: ./week02 run1.mac
+    uiManager-&gt;ApplyCommand("/control/execute " + G4String(argv[1]));
+  } else {
+    // interactive mode: open the viewer
+    auto* ui = new G4UIExecutive(argc, argv);
+    auto* visManager = new G4VisExecutive();
+    visManager-&gt;Initialize();
+    uiManager-&gt;ApplyCommand("/control/execute vis.mac");
+    ui-&gt;SessionStart();
+    delete visManager;
+    delete ui;
+  }
+
+  delete runManager;
+  return 0;
+}</pre></details>
+            <details><summary><b>include/DetectorConstruction.hh</b><button class="copy" type="button" data-copy="f-dch">copy</button></summary><pre id="f-dch" data-src="code/week02/include/DetectorConstruction.hh">#ifndef DetectorConstruction_h
+#define DetectorConstruction_h 1
+
+#include "G4VUserDetectorConstruction.hh"
+
+class DetectorConstruction : public G4VUserDetectorConstruction
+{
+  public:
+    G4VPhysicalVolume* Construct() override;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/DetectorConstruction.cc</b><button class="copy" type="button" data-copy="f-dcc">copy</button></summary><pre id="f-dcc" data-src="code/week02/src/DetectorConstruction.cc">#include "DetectorConstruction.hh"
+
+#include "G4Box.hh"
+#include "G4LogicalVolume.hh"
+#include "G4NistManager.hh"
+#include "G4PVPlacement.hh"
+#include "G4SystemOfUnits.hh"
+
+// Week 2: an empty world. Matter arrives in Week 3.
+G4VPhysicalVolume* DetectorConstruction::Construct()
+{
+  auto* vacuum = G4NistManager::Instance()-&gt;FindOrBuildMaterial("G4_Galactic");
+
+  const G4double halfWorld = 1.5 * m;  // a 3 m cube: the gun at z = -1 m is inside
+  auto* solidWorld = new G4Box("World", halfWorld, halfWorld, halfWorld);
+  auto* logicWorld = new G4LogicalVolume(solidWorld, vacuum, "World");
+
+  return new G4PVPlacement(nullptr, G4ThreeVector(), logicWorld, "World",
+                           nullptr, false, 0, true);
+}</pre></details>
+            <details><summary><b>include/PrimaryGeneratorAction.hh</b><button class="copy" type="button" data-copy="f-pgh">copy</button></summary><pre id="f-pgh" data-src="code/week02/include/PrimaryGeneratorAction.hh">#ifndef PrimaryGeneratorAction_h
+#define PrimaryGeneratorAction_h 1
+
+#include "G4VUserPrimaryGeneratorAction.hh"
+
+class G4ParticleGun;
+class G4Event;
+
+class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
+{
+  public:
+    PrimaryGeneratorAction();
+    ~PrimaryGeneratorAction() override;
+
+    void GeneratePrimaries(G4Event* event) override;
+
+  private:
+    G4ParticleGun* fParticleGun = nullptr;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/PrimaryGeneratorAction.cc</b><button class="copy" type="button" data-copy="f-pgc">copy</button></summary><pre id="f-pgc" data-src="code/week02/src/PrimaryGeneratorAction.cc">#include "PrimaryGeneratorAction.hh"
+
+#include "G4Event.hh"
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
+#include "G4SystemOfUnits.hh"
+
+PrimaryGeneratorAction::PrimaryGeneratorAction()
+{
+  G4int n_particle = 1;
+  fParticleGun = new G4ParticleGun(n_particle);
+
+  // The four choices that define the experiment (textbook Example 2.1):
+  G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+  G4ParticleDefinition* particle = particleTable-&gt;FindParticle("mu-");
+  fParticleGun-&gt;SetParticleDefinition(particle);                          // 1. species
+  fParticleGun-&gt;SetParticleMomentumDirection(G4ThreeVector(0., 0., 1.));  // 2. direction
+  fParticleGun-&gt;SetParticleEnergy(1. * GeV);                              // 3. kinetic energy
+  fParticleGun-&gt;SetParticlePosition(G4ThreeVector(0., 0., -1. * m));      // 4. position
+}
+
+PrimaryGeneratorAction::~PrimaryGeneratorAction()
+{
+  delete fParticleGun;
+}
+
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
+{
+  // Called once per Event; this is where the primary vertex
+  // and the primary particle's Track are actually created.
+  fParticleGun-&gt;GeneratePrimaryVertex(event);
+}</pre></details>
+            <details><summary><b>include/ActionInitialization.hh</b><button class="copy" type="button" data-copy="f-aih">copy</button></summary><pre id="f-aih" data-src="code/week02/include/ActionInitialization.hh">#ifndef ActionInitialization_h
+#define ActionInitialization_h 1
+
+#include "G4VUserActionInitialization.hh"
+
+class ActionInitialization : public G4VUserActionInitialization
+{
+  public:
+    void Build() const override;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/ActionInitialization.cc</b><button class="copy" type="button" data-copy="f-aic">copy</button></summary><pre id="f-aic" data-src="code/week02/src/ActionInitialization.cc">#include "ActionInitialization.hh"
+
+#include "PrimaryGeneratorAction.hh"
+
+void ActionInitialization::Build() const
+{
+  SetUserAction(new PrimaryGeneratorAction());
+}</pre></details>
+            <details><summary><b>run1.mac · mission1.mac · outward.mac · pion.mac · vis.mac</b><button class="copy" type="button" data-copy="f-mac">copy</button></summary><pre id="f-mac" data-src="code/week02/macros.txt"># ======== run1.mac ========
+# Mission 1, run 1: one 1 GeV mu- with the step table switched on
+/tracking/verbose 1
+/run/beamOn 1
+
+# ======== mission1.mac ========
+# Mission 1: change the gun from the macro, no recompilation
+/tracking/verbose 1
+/gun/particle proton
+/run/beamOn 1
+/gun/particle gamma
+/run/beamOn 1
+/gun/particle mu-
+/gun/direction 0 0 -1
+/run/beamOn 1
+
+# ======== outward.mac ========
+# Pitfall demo: gun outside the world, pointing further out
+/tracking/verbose 1
+/gun/position 0 0 2 m
+/gun/direction 0 0 1
+/run/beamOn 1
+
+# ======== pion.mac ========
+# Think-about-it, quantified: 1000 pi- at 100 MeV kinetic energy
+/tracking/verbose 1
+/gun/particle pi-
+/gun/energy 100 MeV
+/run/beamOn 1000
+
+# ======== vis.mac ========
+# Interactive viewer: side view of the world with trajectories
+/vis/open
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 90 90 deg
+/vis/scene/add/trajectories smooth
+/vis/scene/add/axes 0 0 0 0.5 m
+/vis/scene/endOfEventAction accumulate
+/run/beamOn 10</pre></details>
+          </div>
+          <p lang="en"><code>week02.cc</code> follows the textbook's skeleton (Week 12 uses the same one) with one change: it uses <code>G4RunManagerType::Serial</code> so the step tables of different worker threads do not interleave. The textbook's <code>Default</code> comes back when we merge multithreaded output in Week 8.</p>
+          <p lang="zh-Hans"><code>week02.cc</code> 沿用教材的程序骨架（第 12 周用的也是它），只改了一处：使用 <code>G4RunManagerType::Serial</code>，避免不同工作线程的步表交错输出。教材中的 <code>Default</code> 会在第 8 周合并多线程输出时回归。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Build</span><span lang="zh-Hans">编译</span></h3><label class="done" for="w02-s2"><input type="checkbox" id="w02-s2" data-progress="w02"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag geant4">GEANT4</span></span><button class="copy" type="button" data-copy="c-build">copy</button></div>
+<pre id="c-build">cd week02 &amp;&amp; mkdir build &amp;&amp; cd build
+cmake ..
+make -j4</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected, last line</span><span lang="zh-Hans">预期（最后一行）</span></b></span></div>
+<pre>[100%] Built target week02</pre></div>
+          <p lang="en">If <code>cmake</code> cannot find Geant4, source your Geant4 environment script first, or pass <code>-DGeant4_DIR=&lt;install&gt;/lib/cmake/Geant4</code>.</p>
+          <p lang="zh-Hans">如果 <code>cmake</code> 找不到 Geant4，先加载 Geant4 环境脚本，或传入 <code>-DGeant4_DIR=&lt;安装目录&gt;/lib/cmake/Geant4</code>。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Fire one muon and read the step table</span><span lang="zh-Hans">发射一个缪子，读懂步表</span></h3><label class="done" for="w02-s3"><input type="checkbox" id="w02-s3" data-progress="w02"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c-run1">copy</button></div>
+<pre id="c-run1">./week02 run1.mac</pre></div>
+          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01)</span><span lang="zh-Hans">预期（Geant4 11.4.p01）</span></b></span></div>
+<pre>*********************************************************************************************************
+* G4Track Information:   Particle = mu-,   Track ID = 1,   Parent ID = 0
+*********************************************************************************************************
+
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0   -1e+03     1e+03        0        0         0       World initStep
+    1        0        0  1.5e+03     1e+03        0  2.5e+03   2.5e+03  OutOfWorld Transportation</pre></div>
+          <p lang="en">Read it against Definition 2.1. One event, so one <strong>Track Information</strong> block: Track ID 1, Parent ID 0 means a primary. Row 0 is the starting point. Row 1 is the only step: 2.5 m long, ended by <code>Transportation</code> at the world boundary, after which the next volume is <code>OutOfWorld</code>. KinE stays at 1000 MeV because nothing is in the way.</p>
+          <p lang="zh-Hans">对照定义 2.1 来读：一个事件，所以只有一个 <strong>Track Information</strong> 块；Track ID 1、Parent ID 0 表示初级粒子。第 0 行是起点，第 1 行是唯一的一步：长 2.5 m，由 <code>Transportation</code> 在世界边界结束，之后的体积是 <code>OutOfWorld</code>。KinE 保持 1000 MeV，因为路上什么都没有。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Mission 1, the textbook way: edit, rebuild, rerun</span><span lang="zh-Hans">任务 1 教材做法：改代码、重编译、再运行</span></h3><label class="done" for="w02-s4"><input type="checkbox" id="w02-s4" data-progress="w02"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">In <code>PrimaryGeneratorAction.cc</code> change <code>1. * GeV</code> to <code>10. * GeV</code>, run <code>make</code>, and run <code>./week02 run1.mac</code> again. Only the KinE column changes:</p>
+          <p lang="zh-Hans">在 <code>PrimaryGeneratorAction.cc</code> 中把 <code>1. * GeV</code> 改成 <code>10. * GeV</code>，执行 <code>make</code>，再运行 <code>./week02 run1.mac</code>。只有 KinE 列改变：</p>
+          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
+<pre>Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0   -1e+03     1e+04        0        0         0       World initStep
+    1        0        0  1.5e+03     1e+04        0  2.5e+03   2.5e+03  OutOfWorld Transportation</pre></div>
+          <p lang="en">If the output did not change, you ran the old binary. Set the energy back to 1 GeV and rebuild before step 5.</p>
+          <p lang="zh-Hans">如果输出没变，说明你运行的是旧的可执行文件。在第 5 步之前把能量改回 1 GeV 并重新编译。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">The same four changes from a macro, without recompiling</span><span lang="zh-Hans">用宏完成同样的修改，无需重编译</span></h3><label class="done" for="w02-s5"><input type="checkbox" id="w02-s5" data-progress="w02"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en"><code>G4ParticleGun</code> comes with the <code>/gun/</code> commands. They work here because our <code>GeneratePrimaries</code> does not reset the gun. <code>mission1.mac</code> fires a proton, a photon and a reversed muon:</p>
+          <p lang="zh-Hans"><code>G4ParticleGun</code> 自带 <code>/gun/</code> 系列命令。它们在这里有效，是因为我们的 <code>GeneratePrimaries</code> 不会重置粒子枪。<code>mission1.mac</code> 依次发射质子、光子和反向的缪子：</p>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c-m1">copy</button></div>
+<pre id="c-m1">./week02 mission1.mac</pre></div>
+          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01, banners trimmed)</span><span lang="zh-Hans">预期（Geant4 11.4.p01，省略分隔行）</span></b></span></div>
+<pre>* G4Track Information:   Particle = proton,   Track ID = 1,   Parent ID = 0
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0   -1e+03     1e+03        0        0         0       World initStep
+    1        0        0  1.5e+03     1e+03        0  2.5e+03   2.5e+03  OutOfWorld Transportation
+
+* G4Track Information:   Particle = gamma,   Track ID = 1,   Parent ID = 0
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0   -1e+03     1e+03        0        0         0       World initStep
+    1        0        0  1.5e+03     1e+03        0  2.5e+03   2.5e+03  OutOfWorld Transportation
+
+* G4Track Information:   Particle = mu-,   Track ID = 1,   Parent ID = 0
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0   -1e+03     1e+03        0        0         0       World initStep
+    1        0        0 -1.5e+03     1e+03        0      500       500  OutOfWorld Transportation</pre></div>
+          <p lang="en">This answers the Think-about-it question. In vacuum the proton and the photon give the same table as the muon: no matter means no interaction, whatever the species. Only the reversed direction changes the path, to 0.5 m.</p>
+          <p lang="zh-Hans">这就回答了“想一想”的问题：在真空中，质子和光子的步表与缪子完全相同——没有物质就没有相互作用，与粒子种类无关。只有反向发射改变了路径，变为 0.5 m。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Pitfall drill: put the gun outside the world</span><span lang="zh-Hans">陷阱演练：把粒子枪放到世界外</span></h3><label class="done" for="w02-s6"><input type="checkbox" id="w02-s6" data-progress="w02"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c-out">copy</button></div>
+<pre id="c-out">./week02 outward.mac</pre></div>
+          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01)</span><span lang="zh-Hans">预期（Geant4 11.4.p01）</span></b></span></div>
+<pre><span class="bad">-------- WWWW ------- G4Exception-START -------- WWWW -------
+*** G4Exception : Event0401
+      issued by : G4VPrimaryGenerator::SetParticlePosition
+Invalid vertex position ((0,0,2000)). Position MUST be located -inside- the world volume.
+Gun position has NOT been changed!
+*** This is just a warning message. ***
+-------- WWWW -------- G4Exception-END --------- WWWW -------</span>
+Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
+    0        0        0   -1e+03     1e+03        0        0         0       World initStep
+    1        0        0  1.5e+03     1e+03        0  2.5e+03   2.5e+03  OutOfWorld Transportation</pre></div>
+          <p lang="en">The run still happens, from the <strong>old</strong> position. A warning that scrolls past can make you believe you moved the gun. The check only runs after initialisation; a position set in the constructor is never checked (the box in section 2.2).</p>
+          <p lang="zh-Hans">运行照常进行，但用的是<strong>旧</strong>位置。一条一闪而过的警告，可能让你误以为已经移动了粒子枪。这个检查只在初始化之后进行；在构造函数中设置的位置从不检查（见 2.2 节的提示框）。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Count decays: 1,000 pions</span><span lang="zh-Hans">数衰变：1,000 个 π 介子</span></h3><label class="done" for="w02-s7"><input type="checkbox" id="w02-s7" data-progress="w02"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Predict first with Eq. (2.1): λ = 10.9 m, ℓ = 2.5 m, so P = 0.205. Every π⁻ decay in Geant4 gives μ⁻ ν̄<sub>μ</sub>, so the number of μ⁻ tracks equals the number of decays.</p>
+          <p lang="zh-Hans">先用式 (2.1) 预测：λ = 10.9 m，ℓ = 2.5 m，P = 0.205。Geant4 中每次 π⁻ 衰变都产生 μ⁻ ν̄<sub>μ</sub>，所以 μ⁻ 径迹的数目就等于衰变次数。</p>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c-pi">copy</button></div>
+<pre id="c-pi">./week02 pion.mac &gt; pion.log
+grep -c "Particle = mu-" pion.log
+grep -m1 -A8 "Particle = mu-" pion.log</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
+<pre>205 ± 13      <span class="c"># 68% of runs fall in 192–218; our Geant4 11.4 run gave 198</span></pre></div>
+          <p lang="en">Your exact count depends on the random-number sequence, which <code>FTFP_BERT</code> consumes differently from our test list, so compare in units of σ, as in Week 1. The second command shows a muon born with Parent ID 1 at the decay point. Geant4 tracks it before the antineutrino (track 3 before track 2), because the newest secondary is processed first.</p>
+          <p lang="zh-Hans">具体计数取决于随机数序列，而 <code>FTFP_BERT</code> 消耗随机数的方式与我们的测试物理列表不同，所以要像第 1 周那样以 σ 为单位比较。第二条命令会显示一个 Parent ID 为 1、在衰变点产生的缪子。Geant4 先输运它、后输运反中微子（径迹 3 先于径迹 2），因为最新产生的次级粒子最先处理。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Optional: watch it in the viewer</span><span lang="zh-Hans">选做：在可视化窗口中观察</span></h3><label class="done" for="w02-s8"><input type="checkbox" id="w02-s8" data-progress="w02"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Run <code>./week02</code> with no argument. <code>vis.mac</code> opens the default viewer, draws the world, and fires 10 muons along the z-axis. At the <code>Session:</code> prompt try <code>/gun/particle pi-</code>, <code>/gun/energy 100 MeV</code>, <code>/run/beamOn 20</code> and look for kinks. The viewer is for diagnosis; the counting in step 7 is the measurement.</p>
+          <p lang="zh-Hans">不带参数运行 <code>./week02</code>，<code>vis.mac</code> 会打开默认可视化窗口，画出世界，并沿 z 轴发射 10 个缪子。在 <code>Session:</code> 提示符下输入 <code>/gun/particle pi-</code>、<code>/gun/energy 100 MeV</code>、<code>/run/beamOn 20</code>，寻找折线。可视化用于诊断，第 7 步的计数才是测量。</p>
+        </li>
+      </ol>
+      <p class="progress" data-progress-out="w02"></p>
+    </div>
+  </section>
+
+  <!-- SELF-CHECK -->
+  <section class="run" aria-labelledby="h-quiz">
+    <p class="cmd">/control/verbose 2<span lang="en">self-check</span><span lang="zh-Hans">自测</span></p>
+    <div>
+      <h2 id="h-quiz" class="bi"><span lang="en">Six questions. Each answer explains itself.</span><span lang="zh-Hans">六道题，每个答案都附有解释。</span></h2>
+      <div id="quiz"></div>
+    </div>
+  </section>
+
+  <!-- COMMON ERRORS -->
+  <section class="run" aria-labelledby="h-err">
+    <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
+    <div>
+      <h2 id="h-err" class="bi"><span lang="en">Six ways a first run goes quietly wrong.</span><span lang="zh-Hans">第一次运行悄悄出错的六种方式。</span></h2>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Event0401
+      issued by : G4VPrimaryGenerator::SetParticlePosition
+/gun/position outside the world after /run/initialize.
+  The gun is NOT moved and the run continues from the old position.
+  Fix the coordinates or enlarge the world. Default unit is cm.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Event0401
+      issued by : G4VPrimaryGenerator::SetParticlePosition
+/run/initialize 之后 /gun/position 设在世界外。
+  粒子枪不会移动，运行继续使用旧位置。
+  修正坐标或扩大世界。默认单位是 cm。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W02-b
+      issued by : PrimaryGeneratorAction constructor
+Vertex outside the world, set in C++. No check runs before init.
+  Pointing outward: one zero-length step, OutOfWorld. Nothing drawn.
+  Pointing inward: tracked from outside; TrackLeng counts the gap.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W02-b
+      issued by : PrimaryGeneratorAction 构造函数
+在 C++ 中把顶点设在世界外。初始化之前不做检查。
+  朝外：一步零长度，OutOfWorld，画面上什么都没有。
+  朝内：从世界外开始输运，TrackLeng 把这段空隙也算进去。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+
+<div class="g4ex" role="note" lang="en"><span class="e">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : UIMAN0123
+      issued by : G4UImanager::ApplyCommand
+/gun/particle muon  ->  "parameter value (muon) is not listed
+  in the candidate List."  Command aborted (500).
+  In a batch macro the REST OF THE MACRO IS SKIPPED: no run at all.
+  Geant4 names: mu-, mu+, e-, e+, pi-, proton, gamma.
+*** This is just a warning message. ***
+<span class="e">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="e">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : UIMAN0123
+      issued by : G4UImanager::ApplyCommand
+/gun/particle muon  ->  “parameter value (muon) is not listed
+  in the candidate List.”  Command aborted (500)。
+  批处理宏中其余命令全部被跳过：根本不会运行。
+  Geant4 粒子名：mu-、mu+、e-、e+、pi-、proton、gamma。
+*** This is just a warning message. ***
+<span class="e">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+
+<div class="g4ex" role="note" lang="en"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
+*** G4Exception : Event0101
+      issued by : G4ParticleGun::SetParticleDefinition()
+Null pointer is given.
+  FindParticle("muon") returned nullptr and was passed to the gun.
+  Fatal. Use the exact Geant4 name, e.g. FindParticle("mu-").
+*** Fatal Exception *** core dump ***
+<span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
+*** G4Exception : Event0101
+      issued by : G4ParticleGun::SetParticleDefinition()
+Null pointer is given.
+  FindParticle("muon") 返回 nullptr 并被传给了粒子枪。
+  致命错误。请使用准确的 Geant4 名称，如 FindParticle("mu-")。
+*** Fatal Exception *** core dump ***
+<span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
+
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W02-c
+      issued by : /gun/energy 100
+A number without a unit takes the command's default unit.
+  /gun/energy defaults to GeV: "100" means 100 GeV, not 100 MeV.
+  /gun/position defaults to cm. Always type the unit.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W02-c
+      issued by : /gun/energy 100
+不带单位的数取该命令的默认单位。
+  /gun/energy 默认 GeV：“100”表示 100 GeV，不是 100 MeV。
+  /gun/position 默认 cm。务必写明单位。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W02-d
+      issued by : PrimaryGeneratorAction constructor
+Gun randomised in the constructor, expecting new values each event.
+  The constructor runs once; every event gets the same value.
+  Sample per event inside GeneratePrimaries().
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W02-d
+      issued by : PrimaryGeneratorAction 构造函数
+在构造函数中随机化粒子枪，却期待每个事件取不同的值。
+  构造函数只运行一次，所有事件得到同一个值。
+  请在 GeneratePrimaries() 中逐事件抽样。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <p class="cap"><span lang="en">Event0401, UIMAN0123 and Event0101 are Geant4 11.4 messages (the first two observed in our runs, the third read from <code>G4ParticleGun.cc</code>). Codes starting with Course- are this course's notes in the same format.</span><span lang="zh-Hans">Event0401、UIMAN0123 和 Event0101 是 Geant4 11.4 的真实信息（前两条在我们的运行中实际出现，第三条取自 <code>G4ParticleGun.cc</code> 源码）。以 Course- 开头的编号是本课程以同样格式写的提示。</span></p>
+    </div>
+  </section>
+
+  <!-- REVIEW -->
+  <section class="run" aria-labelledby="h-review">
+    <p class="cmd">/control/saveHistory<span lang="en">review notes</span><span lang="zh-Hans">复习要点</span></p>
+    <div class="prose">
+      <h2 id="h-review" class="bi"><span lang="en">Before you close the run.</span><span lang="zh-Hans">结束运行之前。</span></h2>
+      <ul class="review">
+        <li><label for="w02-r1"><input type="checkbox" id="w02-r1"><span lang="en">After changing the four generator parameters, did I recompile and rerun, and confirm the output actually changed?</span><span lang="zh-Hans">修改四个产生器参数后，我是否重新编译并运行，确认输出确实改变了？</span></label></li>
+        <li><label for="w02-r2"><input type="checkbox" id="w02-r2"><span lang="en">Can I sketch the Run/Event/Track/Step hierarchy from memory, without looking at the notes?</span><span lang="zh-Hans">我能否不看笔记，凭记忆画出运行/事件/径迹/步的层级？</span></label></li>
+        <li><label for="w02-r3"><input type="checkbox" id="w02-r3"><span lang="en">If a run produces zero tracks, do I know the first two places to check?</span><span lang="zh-Hans">如果一次运行没有任何径迹，我知道最先该查哪两处吗？</span></label></li>
+      </ul>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Remark · debt repaid, debt taken on</span><span lang="zh-Hans">小结 · 还清的债与新欠的债</span></p>
+        <p lang="en">Repaid: Run/Event/Track/Step is no longer a vocabulary list. It is a structure you have watched a single event break into. Taken on: the particle still flies through vacuum. Next week the first real slab of matter goes into the world, and that needs a geometry vocabulary of its own.</p>
+        <p lang="zh-Hans">还清的债：运行/事件/径迹/步不再是文档里的词汇表，而是你亲眼看着一个事件被拆解出来的结构。新欠的债：粒子仍在真空中飞行。下周世界里将放进第一块真实的物质，而这需要一套全新的几何语言。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHARE -->
+  <section class="run" aria-labelledby="h-share">
+    <p class="cmd">/vis/ogl/export week02.gif<span lang="en">share this week</span><span lang="zh-Hans">分享本周成果</span></p>
+    <div class="share">
+      <figure class="fig">
+        <img src="media/week02-pions.gif" width="720" height="900" alt="1,000 pions fired through an empty Geant4 world; about one in five decays into a muon and an antineutrino, and the decayed fraction settles near 0.205" loading="lazy">
+        <figcaption><span lang="en">Real Geant4 11.4 tracks from <code>pion.mac</code> (decay-only physics, vacuum). Long-press or right-click to save.</span><span lang="zh-Hans">来自 <code>pion.mac</code> 的真实 Geant4 11.4 径迹（仅衰变物理，真空）。长按或右键即可保存。</span></figcaption>
+      </figure>
+      <div class="prose">
+        <h2 id="h-share" class="bi"><span lang="en">One event can hold three tracks.</span><span lang="zh-Hans">一个事件里可以有三条径迹。</span></h2>
+        <p lang="en">Post your μ⁻ count from step 7 with its σ and the GIF. In the course group, check that the class counts scatter around 205 with a spread of about 13.</p>
+        <p lang="zh-Hans">把第 7 步的 μ⁻ 计数连同 σ 和这张 GIF 发出来。在课程群里看看全班的计数是否围绕 205 分布、离散约为 13。</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" id="pager" aria-label="Week navigation"></nav>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 2 · Geant4 11.4.p01 · PDG RPP 2024</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 2 章 · Geant4 11.4.p01 · PDG RPP 2024</span>
+  </footer>
+</div>
+<script src="assets/course.js"></script>
+<script src="assets/week02.js"></script>
+</body>
+</html>

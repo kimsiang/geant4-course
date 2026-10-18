@@ -1,0 +1,39 @@
+# ======== run1.mac ========
+# Mission 1, run 1: one 1 GeV mu- with the step table switched on
+/tracking/verbose 1
+/run/beamOn 1
+
+# ======== mission1.mac ========
+# Mission 1: change the gun from the macro, no recompilation
+/tracking/verbose 1
+/gun/particle proton
+/run/beamOn 1
+/gun/particle gamma
+/run/beamOn 1
+/gun/particle mu-
+/gun/direction 0 0 -1
+/run/beamOn 1
+
+# ======== outward.mac ========
+# Pitfall demo: gun outside the world, pointing further out
+/tracking/verbose 1
+/gun/position 0 0 2 m
+/gun/direction 0 0 1
+/run/beamOn 1
+
+# ======== pion.mac ========
+# Think-about-it, quantified: 1000 pi- at 100 MeV kinetic energy
+/tracking/verbose 1
+/gun/particle pi-
+/gun/energy 100 MeV
+/run/beamOn 1000
+
+# ======== vis.mac ========
+# Interactive viewer: side view of the world with trajectories
+/vis/open
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 90 90 deg
+/vis/scene/add/trajectories smooth
+/vis/scene/add/axes 0 0 0 0.5 m
+/vis/scene/endOfEventAction accumulate
+/run/beamOn 10
