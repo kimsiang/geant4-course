@@ -1,0 +1,6 @@
+# Mission 8: one merged ROOT file, two ntuples, 20 000 cos^2 muons on 2 threads
+/control/verbose 1
+/run/verbose 1
+/week08/gun/model cos2
+/analysis/setFileName muons
+/run/beamOn 20000

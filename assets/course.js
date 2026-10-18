@@ -25,7 +25,7 @@
     { n: 5,  stage: 2, ch: '6',     file: 'week05.html', live: true,  en: 'From energy deposit to a hit', zh: '从能量沉积到击中' },
     { n: 6,  stage: 3, ch: '7',     file: 'week06.html', live: true,  en: 'Physics lists and production cuts', zh: '物理列表与产生阈' },
     { n: 7,  stage: 3, ch: '8',     file: 'week07.html', live: true,  en: 'Momentum from a magnetic field', zh: '用磁场测量动量' },
-    { n: 8,  stage: 4, ch: '9',     file: 'week08.html', live: false, en: 'The full analysis chain', zh: '完整分析链' },
+    { n: 8,  stage: 4, ch: '9',     file: 'week08.html', live: true,  en: 'The full analysis chain', zh: '完整分析链' },
     { n: 9,  stage: 4, ch: '10–11', file: 'week09.html', live: false, en: 'musrSim and the t1 tree', zh: 'musrSim 与 t1 树' },
     { n: 10, stage: 4, ch: '12',    file: 'week10.html', live: false, en: 'Transverse-field μSR capstone', zh: '横场 μSR 综合实验' },
     { n: 11, stage: 5, ch: '13–14', file: 'week11.html', live: false, en: 'Debug and validate', zh: '调试与验证' },
