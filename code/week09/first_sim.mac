@@ -1,0 +1,16 @@
+# ---- GEOMETRY (half-lengths in mm) ----
+/musr/command construct box World 500 500 500 G4_AIR 0 0 0 no_logical_volume norot dead -1
+/musr/command construct box Slab 50 50 5 G4_PLASTIC_SC_VINYLTOLUENE 0 0 0 log_World norot musr/ScintSD 1
+# ---- OUTPUT ----
+/musr/command SetOutputFileName DEFAULT
+/musr/command storeOnlyEventsWithHits true
+# ---- BEAM ----
+/gun/primaryparticle mu+
+/gun/vertex 0 0 -100 mm
+/gun/vertexsigma 5 5 0 mm
+/gun/momentum 29.8 MeV
+/gun/muonPolarizVector 0 0 -1
+/gun/muonPolarizFraction 1
+/gun/decaytimelimits -1 -1 2197.03 ns
+# ---- GO (no /run/initialize: musrSim initialises in C++) ----
+/run/beamOn 2000
