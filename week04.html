@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 04 · Energy Loss</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0, Week 04: predict, simulate and compare muon energy loss in plastic scintillator against the Bethe formula, in headless batch mode.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Week 04 of 12</span><span lang="zh-Hans">第 04 / 12 周</span></span>
+    <span class="bar-r">
+      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">Idle&gt; <span>/analysis/h1/set 0 200 0 80 MeV</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">Measure energy loss: the Bethe formula arrives.</span><span lang="zh-Hans">测量能量损失：Bethe 公式登场。</span></h1>
+      <p class="lede" lang="en">Predict first, then simulate, then compare. You scan a muon through 10 cm of plastic scintillator at five energies, 10,000 events each, with no viewer open, and put the result on the same plot as the formula every muon physicist uses.</p>
+      <p class="lede" lang="zh-Hans">先预测，再模拟，再比较。在不打开可视化的情况下，让缪子以五个能量各 10,000 个事例穿过 10 cm 塑料闪烁体，并把结果与每位缪子物理学家都要用的公式画在同一张图上。</p>
+      <ul class="meta">
+        <li class="stage"><b>2 · Measure it</b><span lang="en">stage · 度量</span><span lang="zh-Hans">阶段 · 度量</span></li>
+        <li><b>Mission 4</b><span lang="en">textbook ch. 5</span><span lang="zh-Hans">教材第 5 章</span></li>
+        <li><b>≈ 2.5 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="Week summary">
+      <div role="row"><span role="cell">week04</span></div>
+      <div role="row"><span role="cell">Slab</span><span role="cell">50×50×10 cm³ PVT</span></div>
+      <div role="row"><span role="cell">Scan</span><span role="cell">0.1, 0.2, 0.5, 1, 10 GeV</span></div>
+      <div role="row"><span role="cell">Events</span><span role="cell">10⁴ <span lang="en">per point</span><span lang="zh-Hans">每点</span></span></div>
+      <div role="row"><span role="cell">Observable</span><span role="cell">Edep, −dE/dx<sub>primary</sub></span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-goals">
+    <p class="cmd">/run/initialize<span lang="en">learning goals</span><span lang="zh-Hans">学习目标</span></p>
+    <div class="prose">
+      <h2 id="h-goals" class="bi"><span lang="en">By the end of this week you can predict a dE/dx before you run, and explain why the run disagrees.</span><span lang="zh-Hans">本周结束时，你能在运行前预测 dE/dx，并解释运行结果为何与预测不同。</span></h2>
+      <ol class="goals">
+        <li><span lang="en">Read the Bethe formula term by term and locate the <dfn>minimum ionizing particle<span class="kt" lang="zh-Hans">最小电离粒子</span></dfn> on the curve.</span><span lang="zh-Hans">逐项读懂 Bethe 公式，并在曲线上找到<dfn>最小电离粒子<span class="kt" lang="en">minimum ionizing particle</span></dfn>。</span></li>
+        <li><span lang="en">Convert kinetic energy to βγ and predict which muon loses more energy per cm.</span><span lang="zh-Hans">把动能换算成 βγ，并预测哪个缪子每厘米损失的能量更多。</span></li>
+        <li><span lang="en">Accumulate per-event observables with SteppingAction → EventAction → RunAction and write them with <code>G4AnalysisManager</code>.</span><span lang="zh-Hans">用 SteppingAction → EventAction → RunAction 累加逐事例可观测量，并用 <code>G4AnalysisManager</code> 写出。</span></li>
+        <li><span lang="en">Run a headless parameter scan from one macro and analyse it in Python.</span><span lang="zh-Hans">用一个宏完成无界面参数扫描，并用 Python 分析。</span></li>
+        <li><span lang="en">Tell <dfn>stopping power<span class="kt" lang="zh-Hans">阻止本领</span></dfn> (energy lost) from energy deposited, and mean from most probable value.</span><span lang="zh-Hans">区分<dfn>阻止本领<span class="kt" lang="en">stopping power</span></dfn>（损失的能量）与沉积的能量，区分平均值与最可几值。</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-bb">
+    <p class="cmd">/control/manual<span lang="en">5.1 · the Bethe formula</span><span lang="zh-Hans">5.1 · Bethe 公式</span></p>
+    <div class="prose">
+      <h2 id="h-bb" class="bi"><span lang="en">A formula no muon physicist can avoid.</span><span lang="zh-Hans">没有哪位缪子物理学家绕得开的公式。</span></h2>
+      <p lang="en">From Fermilab's Muon g−2 to PSI's muon EDM, from muography to the SHINE muon source, every muon experiment rests on predicting how a muon loses energy in matter. The standard reference is the Particle Data Group review of the passage of particles through matter.</p>
+      <p lang="zh-Hans">从费米实验室的缪子 g−2 到 PSI 的缪子 EDM，从缪子成像到 SHINE 缪子源，每个缪子实验都建立在预言缪子如何在物质中损失能量的基础上。标准参考是粒子数据组（PDG）关于粒子穿过物质的综述。</p>
+      <div class="box">
+        <p class="box-label">Definition 5.1 · <span lang="en">The Bethe–Bloch stopping-power model (leading form)</span><span lang="zh-Hans">Bethe–Bloch 阻止本领模型（主项形式）</span></p>
+        <p lang="en">For a heavy charged particle of charge number <i>z</i> and speed β = <i>v</i>/<i>c</i> in a medium with atomic number <i>Z</i> and mass <i>A</i>, the mean energy loss per unit path length is approximately</p>
+        <p lang="zh-Hans">电荷数为 <i>z</i>、速度 β = <i>v</i>/<i>c</i> 的重带电粒子，在原子序数 <i>Z</i>、原子量 <i>A</i> 的介质中，单位路径的平均能量损失近似为</p>
+        <div class="eq" role="math" aria-label="mean minus dE dx equals K z squared Z over A one over beta squared times one half log of 2 m e c squared beta squared gamma squared T max over I squared minus beta squared minus delta over two">
+          <span>−⟨<i>dE</i>/<i>dx</i>⟩ = <i>K z</i>² <span class="frac"><span><i>Z</i></span><span><i>A</i></span></span> <span class="frac"><span>1</span><span><i>β</i>²</span></span> [ ½ ln <span class="frac"><span>2<i>m</i><sub>e</sub><i>c</i>²<i>β</i>²<i>γ</i>²<i>T</i><sub>max</sub></span><span><i>I</i>²</span></span> − <i>β</i>² − <span class="frac"><span><i>δ</i>(<i>βγ</i>)</span><span>2</span></span> ]</span>
+          <span class="eqno">(5.1)</span>
+        </div>
+        <p lang="en"><i>K</i> = 4π<i>N</i><sub>A</sub><i>r</i><sub>e</sub>²<i>m</i><sub>e</sub><i>c</i>² = 0.307075 MeV cm²/mol; <i>I</i> is the mean excitation energy (64.7 eV for polyvinyltoluene); <i>T</i><sub>max</sub> is the largest energy one collision can give a free electron; δ is the density-effect correction. Without δ, Eq. (5.1) is the textbook's leading form. Full calculations add shell corrections at low energy. The qualitative shape: a 1/β² fall at low βγ, a minimum near βγ ≈ 3–4 (the <strong>minimum ionizing particle</strong>, MIP), then a slow relativistic rise that δ tames.</p>
+        <p lang="zh-Hans"><i>K</i> = 4π<i>N</i><sub>A</sub><i>r</i><sub>e</sub>²<i>m</i><sub>e</sub><i>c</i>² = 0.307075 MeV cm²/mol；<i>I</i> 为平均激发能（聚乙烯基甲苯为 64.7 eV）；<i>T</i><sub>max</sub> 为一次碰撞能交给自由电子的最大能量；δ 为密度效应修正。去掉 δ，式 (5.1) 就是教材中的主项形式；完整计算在低能端还要加壳层修正。定性形状：低 βγ 处按 1/β² 下降，在 βγ ≈ 3–4 处达到最小（<strong>最小电离粒子</strong>，MIP），之后缓慢地相对论上升，并被 δ 压平。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Think about it</span><span lang="zh-Hans">想一想</span></p>
+        <p lang="en">A 1 GeV muon has βγ ≈ 10.4, a 100 MeV muon βγ ≈ 1.67 (γ = 1 + <i>T</i>/<i>m</i><sub>μ</sub><i>c</i>², <i>m</i><sub>μ</sub><i>c</i>² = 105.66 MeV). Which sits closer to the minimum? Which loses more energy per cm? Write your guess, then run the scan.</p>
+        <p lang="zh-Hans">1 GeV 缪子的 βγ ≈ 10.4，100 MeV 缪子的 βγ ≈ 1.67（γ = 1 + <i>T</i>/<i>m</i><sub>μ</sub><i>c</i>²，<i>m</i><sub>μ</sub><i>c</i>² = 105.66 MeV）。哪个更接近最小值？哪个每厘米损失的能量更多？先写下猜测，再运行扫描。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Intuition</span><span lang="zh-Hans">直觉</span></p>
+        <p lang="en">The 1/β² factor: a slow particle spends longer near each electron it passes and gives it more energy, like a car crossing a speed bump slowly and shaking longer. The relativistic rise: the transverse field of a fast particle is Lorentz-compressed and reaches electrons further away; the polarised medium screens that reach, which is δ. The minimum, about 1–2 MeV cm²/g in most materials, is why cosmic muons are a near-universal calibration source.</p>
+        <p lang="zh-Hans">1/β² 因子：慢粒子在经过的每个电子附近停留更久，交给它更多能量，就像车慢慢开过减速带，颠得更久。相对论上升：快粒子的横向电场被洛伦兹压缩，能“够到”更远的电子；被极化的介质会屏蔽这种影响，这就是 δ。最小值在大多数材料中约为 1–2 MeV cm²/g，这正是宇宙线缪子几乎可以作为通用刻度源的原因。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-batch">
+    <p class="cmd">/control/execute run_bethe_bloch.mac<span lang="en">5.2 · batch mode for statistics</span><span lang="zh-Hans">5.2 · 用批处理获取统计</span></p>
+    <div class="prose">
+      <h2 id="h-batch" class="bi"><span lang="en">The viewer is for diagnosis; batch mode is for statistics.</span><span lang="zh-Hans">可视化用于诊断，批处理用于统计。</span></h2>
+      <div class="box">
+        <p class="box-label">Example 5.1 · <span lang="en">Mission 4: an energy-loss scan across five energies</span><span lang="zh-Hans">任务 4：五个能量点的能损扫描</span></p>
+        <p lang="en">Fix the medium as 10 cm of plastic scintillator. Fire muons at 100 MeV, 200 MeV, 500 MeV, 1 GeV and 10 GeV, at least 10⁴ events per point. Accumulate the total deposited energy per event, giving Edep/ℓ for the slab, and in parallel the primary muon's own kinetic-energy loss per path length, an approximate stopping-power observable. Plot both against βγ on log–log axes and compare the primary loss with Bethe. Edep/ℓ is a detector-response quantity and may differ when secondaries escape; do not force it to equal the stopping power.</p>
+        <p lang="zh-Hans">介质固定为 10 cm 塑料闪烁体。依次以 100 MeV、200 MeV、500 MeV、1 GeV 和 10 GeV 发射缪子，每点至少 10⁴ 个事例。逐事例累加总沉积能量，得到板的 Edep/ℓ；同时累加主缪子自身单位路径的动能损失，作为近似的阻止本领可观测量。在双对数坐标中把两者对 βγ 作图，并把主粒子损失与 Bethe 公式比较。Edep/ℓ 是探测器响应量，次级粒子逃逸时可能与阻止本领不同，不要强求两者相等。</p>
+      </div>
+      <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W04-a
+      issued by : textbook ch. 5 listings
+Three changes to the textbook code, all flagged in the files:
+  1. "liquid scintillator" -> G4_PLASTIC_SC_VINYLTOLUENE (a NIST
+     material; the bench counter of Example 0.2).
+  2. Edep histogram 0-20 MeV -> 0-80 MeV. 10 cm of plastic gives
+     ~20 MeV at the minimum and ~24 MeV at 100 MeV: a 20 MeV ceiling
+     puts most events in overflow and biases the mean.
+  3. Fill in explicit units and OpenFile() with /analysis/setFileName,
+     so each energy gets its own file with axes in MeV and MeV/cm.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W04-a
+      issued by : 教材第 5 章代码
+对教材代码的三处修改，均已在文件中注明：
+  1. “液体闪烁体” -> G4_PLASTIC_SC_VINYLTOLUENE（NIST 材料，
+     即例 0.2 中实验台上的计数器）。
+  2. Edep 直方图 0-20 MeV -> 0-80 MeV。10 cm 塑料在最小电离时
+     约 20 MeV，100 MeV 时约 24 MeV：20 MeV 上限会让大部分事例
+     进入溢出，使均值偏低。
+  3. 填充时写明单位，并用 /analysis/setFileName 配合 OpenFile()，
+     让每个能量有自己的文件，坐标轴单位为 MeV 和 MeV/cm。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <p lang="en">Three classes turn "steps happened" into "one dE/dx per event, saved to a histogram". <code>SteppingAction</code> adds each step's deposit to a running total kept by <code>EventAction</code>; <code>EventAction</code> hands the total to the histogram at the end of the event; <code>RunAction</code> owns the histograms through <code>G4AnalysisManager</code> for the lifetime of the run.</p>
+      <p lang="zh-Hans">三个类把“发生了若干步”变成“每个事例一个 dE/dx，存入直方图”：<code>SteppingAction</code> 把每一步的沉积加到 <code>EventAction</code> 维护的累计值上；<code>EventAction</code> 在事例结束时把累计值交给直方图；<code>RunAction</code> 通过 <code>G4AnalysisManager</code> 在整个运行期间持有这些直方图。</p>
+      <div class="flow" role="img" aria-label="SteppingAction to EventAction to RunAction"><b>SteppingAction</b> <span class="a">→</span> AddEdep(), AddPrimaryLoss() <span class="a">→</span> <b>EventAction</b> <span class="a">→</span> FillH1() <span class="a">→</span> <b>RunAction</b> <span class="a">→</span> Write(), CloseFile()<br><span class="a">every step&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;every event&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;once per run</span></div>
+      <div class="code">
+        <div class="code-head"><span class="l"><b>Code microscope · SteppingAction.cc</b><span class="tag geant4">GEANT4</span></span></div>
+<pre><span class="k">if</span> (!preVolume || preVolume-&gt;GetName() != "Scintillator") <span class="k">return</span>;   <span class="c">// score one volume</span>
+fEventAction-&gt;AddEdep(step-&gt;<mark>GetTotalEnergyDeposit()</mark>);                   <span class="c">// detector response</span>
+<span class="k">if</span> (track-&gt;GetParentID() == 0)                                           <span class="c">// the primary only</span>
+  dEprimary = pre-&gt;GetKineticEnergy() - <mark>post-&gt;GetKineticEnergy()</mark>;      <span class="c">// closer to stopping power</span></pre>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Research thread · laboratory habit</span><span lang="zh-Hans">研究线索 · 实验室习惯</span></p>
+        <p lang="en">Treat visualization as a camera, not the experiment. Use the viewer on a handful of events, then a headless macro for statistics and reproducibility. It is the same workflow you will use later on an HPC cluster over SSH. Headless is not "less physical": the display changes how the event is shown, not how Geant4 transports it.</p>
+        <p lang="zh-Hans">把可视化当成相机，而不是实验本身。用可视化看几个事例，然后用无界面宏获取统计和可重复性。这和你以后通过 SSH 在 HPC 集群上的工作流程完全一样。无界面并不意味着“不那么物理”：显示只改变事例的呈现方式，不改变 Geant4 如何输运它。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-toy">
+    <p class="cmd">/run/beamOn 3000<span lang="en">interactive toy model</span><span lang="zh-Hans">交互玩具模型</span></p>
+    <div>
+      <h2 id="h-toy" class="bi"><span lang="en">Move along the curve, then watch the peak and the mean part ways.</span><span lang="zh-Hans">沿着曲线移动，看峰值与均值如何分道扬镳。</span></h2>
+      <p class="prose" style="color:var(--muted);max-width:64ch;margin-top:14px" lang="en">The upper plot is Eq. (5.1) for the chosen material; for plastic it also shows our five Geant4 points. The histogram is a toy straggling simulation of the energy deposited in a slab: thin slabs give a skewed Landau-like peak, and δ-rays that leave through the back face pull the deposit below the loss.</p>
+      <p class="prose" style="color:var(--muted);max-width:64ch" lang="zh-Hans">上图是所选材料的式 (5.1)；选塑料时还会显示我们的五个 Geant4 点。直方图是板中沉积能量的玩具涨落模拟：薄板给出偏斜的类朗道峰，从后表面逃出的 δ 电子使沉积低于损失。</p>
+      <div class="controls" style="border-top:1px solid var(--rule);border-radius:4px 4px 0 0;margin-top:20px">
+        <label class="ctl" for="w4-mat"><span class="ctl-row"><span lang="en">material</span><span lang="zh-Hans">材料</span></span><select id="w4-mat"></select></label>
+        <label class="ctl" for="w4-T"><span class="ctl-row"><span>/gun/energy</span><output id="w4-T-out" for="w4-T">1 GeV</output></span><input id="w4-T" type="range" min="1" max="5" step="any" value="3"></label>
+        <label class="ctl" for="w4-t"><span class="ctl-row"><span lang="en">slab thickness</span><span lang="zh-Hans">板厚</span><output id="w4-t-out" for="w4-t">10 cm</output></span><input id="w4-t" type="range" min="-1" max="1.3" step="any" value="1"></label>
+      </div>
+      <div class="btns"><button type="button" class="primary" id="w4-run">/run/beamOn 3000</button><small>TOY MODEL · <span lang="en">not Geant4</span><span lang="zh-Hans">非 Geant4</span></small></div>
+      <div class="panels">
+        <div>
+          <p class="panel-title"><span lang="en">Bethe curve</span><span lang="zh-Hans">Bethe 曲线</span></p>
+          <canvas id="w4-curve" style="aspect-ratio:16/11" aria-label="Bethe stopping power versus beta gamma, log-log"></canvas>
+          <div class="statbox" role="table" aria-label="Bethe numbers" style="margin-top:12px">
+            <div role="row"><span role="cell">Bethe</span></div>
+            <div role="row"><span role="cell">βγ</span><span role="cell" id="w4-bg">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">at this energy</span><span lang="zh-Hans">此能量</span></span><span role="cell" id="w4-now">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">minimum (this code)</span><span lang="zh-Hans">最小值（本代码）</span></span><span role="cell" id="w4-min">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">minimum (PDG table)</span><span lang="zh-Hans">最小值（PDG 表）</span></span><span role="cell" id="w4-pdg">—</span></div>
+          </div>
+        </div>
+        <div>
+          <p class="panel-title"><span lang="en">energy deposit in the slab, 3,000 toy events</span><span lang="zh-Hans">板中沉积能量，3,000 个玩具事例</span></p>
+          <canvas id="w4-hist" style="aspect-ratio:16/11" aria-label="Histogram of energy deposited in the slab"></canvas>
+          <div class="statbox" role="table" aria-label="Deposit statistics" style="margin-top:12px">
+            <div role="row"><span role="cell">straggling</span></div>
+            <div role="row"><span role="cell"><span lang="en">Bethe × thickness</span><span lang="zh-Hans">Bethe × 厚度</span></span><span role="cell" id="w4-mbethe">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">mean loss (toy)</span><span lang="zh-Hans">平均损失（玩具）</span></span><span role="cell" id="w4-mloss">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">mean deposit (toy)</span><span lang="zh-Hans">平均沉积（玩具）</span></span><span role="cell" id="w4-mdep">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">most probable deposit</span><span lang="zh-Hans">最可几沉积</span></span><span role="cell" id="w4-mpv">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">δ-rays leaving</span><span lang="zh-Hans">逃逸的 δ 电子</span></span><span role="cell" id="w4-esc">—</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="toybox">
+        <p><b>TOY MODEL · <span lang="en">approximations</span><span lang="zh-Hans">近似</span></b></p>
+        <p lang="en">Curve: PDG Eq. (34.5) with the Sternheimer density correction (PDG material tables); spin and shell terms neglected. It reproduces the PDG minimum dE/dx of all six materials to 0.1%. Histogram: loss = restricted continuous loss below T<sub>c</sub> + Poisson δ-rays above T<sub>c</sub> from the 1/T² spectrum, with T<sub>c</sub> set so about 300 δ-rays are drawn per event. A δ-ray deposits the part of its energy that fits before the back face (Katz–Penfold range, straight forward path). Ignored: the muon slowing down inside the slab, sideways leakage, fluctuations below T<sub>c</sub>, radiative losses.</p>
+        <p lang="zh-Hans">曲线：PDG 式 (34.5) 加 Sternheimer 密度效应修正（PDG 材料表），忽略自旋项和壳层项；它对全部六种材料的 PDG 最小 dE/dx 复现到 0.1%。直方图：损失 = T<sub>c</sub> 以下的受限连续损失 + T<sub>c</sub> 以上按 1/T² 谱泊松抽样的 δ 电子，T<sub>c</sub> 取值使每个事例约抽 300 个 δ 电子。δ 电子只沉积它在到达后表面之前能交出的那部分能量（Katz–Penfold 射程，直线前向）。忽略：缪子在板内减速、侧向泄漏、T<sub>c</sub> 以下的涨落、辐射损失。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-task">
+    <p class="cmd">/control/shell ./week04 run_bethe_bloch.mac<span lang="en">hands-on · Mission 4</span><span lang="zh-Hans">动手任务 · 任务 4</span></p>
+    <div class="prose">
+      <h2 id="h-task" class="bi"><span lang="en">Five energies, fifty thousand events, one plot against the formula.</span><span lang="zh-Hans">五个能量、五万个事例、一张与公式对照的图。</span></h2>
+      <p lang="en">Outputs are real Geant4 11.4.p01 runs of these files with the course test physics list. Its muon ionisation, bremsstrahlung and pair production are the same models as <code>FTFP_BERT</code>, so the primary −dE/dx should agree with yours within errors; Edep can differ by about 1% because of the simpler electron models.</p>
+      <p lang="zh-Hans">下面的输出来自这些文件在 Geant4 11.4.p01 上的真实运行，使用课程测试物理列表。它的缪子电离、轫致辐射和电子对产生与 <code>FTFP_BERT</code> 是同一组模型，所以主粒子 −dE/dx 应在误差内与你的结果一致；由于电子模型较简化，Edep 可能相差约 1%。</p>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Create the project</span><span lang="zh-Hans">建立工程</span></h3><label class="done" for="w04-s1"><input type="checkbox" id="w04-s1" data-progress="w04"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Start from <code>week03/</code>: keep <code>ActionInitialization.hh</code> and the headers, replace or add the files below. <code>steps_summary.py</code> and the Week 3 <code>SteppingAction</code> printout are no longer needed.</p>
+          <p lang="zh-Hans">从 <code>week03/</code> 开始：保留 <code>ActionInitialization.hh</code> 和各头文件，替换或新增下列文件。第 3 周的 <code>steps_summary.py</code> 和 <code>SteppingAction</code> 打印不再需要。</p>
+          <div class="files">
+            <details><summary><b>CMakeLists.txt</b><button class="copy" type="button" data-copy="f4-cm">copy</button></summary><pre id="f4-cm" data-src="code/week04/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
+project(Week04 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Geant4 REQUIRED ui_all vis_all)
+include(${Geant4_USE_FILE})
+
+file(GLOB sources CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/include/*.hh)
+
+add_executable(week04 week04.cc ${sources} ${headers})
+target_include_directories(week04 PRIVATE include)
+target_link_libraries(week04 PRIVATE ${Geant4_LIBRARIES})
+
+foreach(_f run_bethe_bloch.mac vis.mac plot_bethe.py)
+  configure_file(${PROJECT_SOURCE_DIR}/${_f} ${PROJECT_BINARY_DIR}/${_f} COPYONLY)
+endforeach()</pre></details>
+            <details><summary><b>week04.cc</b><button class="copy" type="button" data-copy="f4-main">copy</button></summary><pre id="f4-main" data-src="code/week04/week04.cc">#include "ActionInitialization.hh"
+#include "DetectorConstruction.hh"
+
+#include "FTFP_BERT.hh"
+#include "G4RunManagerFactory.hh"
+#include "G4UIExecutive.hh"
+#include "G4UImanager.hh"
+#include "G4VisExecutive.hh"
+
+int main(int argc, char** argv)
+{
+  // Serial keeps the histogram code simple this week; Week 8 switches to
+  // the textbook's G4RunManagerType::Default and merges threads.
+  auto* runManager =
+    G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
+
+  runManager-&gt;SetUserInitialization(new DetectorConstruction());
+  runManager-&gt;SetUserInitialization(new FTFP_BERT());
+  runManager-&gt;SetUserInitialization(new ActionInitialization());
+  runManager-&gt;Initialize();
+
+  auto* uiManager = G4UImanager::GetUIpointer();
+  if (argc &gt; 1) {
+    // headless: ./week04 run_bethe_bloch.mac
+    uiManager-&gt;ApplyCommand("/control/execute " + G4String(argv[1]));
+  } else {
+    // diagnosis only: ./week04 opens the viewer
+    auto* ui = new G4UIExecutive(argc, argv);
+    auto* visManager = new G4VisExecutive();
+    visManager-&gt;Initialize();
+    uiManager-&gt;ApplyCommand("/control/execute vis.mac");
+    ui-&gt;SessionStart();
+    delete visManager;
+    delete ui;
+  }
+
+  delete runManager;
+  return 0;
+}</pre></details>
+            <details><summary><b>src/DetectorConstruction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f4-dc">copy</button></summary><pre id="f4-dc" data-src="code/week04/src/DetectorConstruction.cc">#include "DetectorConstruction.hh"
+
+#include "G4Box.hh"
+#include "G4LogicalVolume.hh"
+#include "G4NistManager.hh"
+#include "G4PVPlacement.hh"
+#include "G4SystemOfUnits.hh"
+
+// Mission 4: a 50 x 50 x 10 cm3 plastic scintillator slab in air,
+// the bench counter of the course front matter (Example 0.2).
+G4VPhysicalVolume* DetectorConstruction::Construct()
+{
+  G4NistManager* nist = G4NistManager::Instance();
+  G4Material* air = nist-&gt;FindOrBuildMaterial("G4_AIR");
+  G4Material* scint = nist-&gt;FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
+
+  auto* solidWorld = new G4Box("World", 1. * m, 1. * m, 1. * m);  // half-lengths: a 2 m cube
+  auto* logicWorld = new G4LogicalVolume(solidWorld, air, "World");
+  auto* physWorld = new G4PVPlacement(nullptr, G4ThreeVector(), logicWorld, "World",
+                                      nullptr, false, 0, true);
+
+  // 10 cm thick along the beam (z), 50 cm wide so few delta-rays leave sideways
+  auto* solidScint = new G4Box("Scintillator", 25. * cm, 25. * cm, 5. * cm);
+  auto* logicScint = new G4LogicalVolume(solidScint, scint, "Scintillator");
+  new G4PVPlacement(nullptr, G4ThreeVector(), logicScint, "Scintillator",
+                    logicWorld, false, 0, true);
+
+  return physWorld;
+}</pre></details>
+            <details><summary><b>src/PrimaryGeneratorAction.cc</b><button class="copy" type="button" data-copy="f4-pg">copy</button></summary><pre id="f4-pg" data-src="code/week04/src/PrimaryGeneratorAction.cc">#include "PrimaryGeneratorAction.hh"
+
+#include "G4Event.hh"
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
+#include "G4SystemOfUnits.hh"
+
+PrimaryGeneratorAction::PrimaryGeneratorAction()
+{
+  fParticleGun = new G4ParticleGun(1);
+  fParticleGun-&gt;SetParticleDefinition(G4ParticleTable::GetParticleTable()-&gt;FindParticle("mu-"));
+  fParticleGun-&gt;SetParticleMomentumDirection(G4ThreeVector(0., 0., 1.));
+  fParticleGun-&gt;SetParticleEnergy(1. * GeV);                          // changed per run by /gun/energy
+  fParticleGun-&gt;SetParticlePosition(G4ThreeVector(0., 0., -0.9 * m)); // inside the 2 m world
+}
+
+PrimaryGeneratorAction::~PrimaryGeneratorAction()
+{
+  delete fParticleGun;
+}
+
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
+{
+  fParticleGun-&gt;GeneratePrimaryVertex(event);
+}</pre></details>
+            <details><summary><b>include/EventAction.hh</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f4-eah">copy</button></summary><pre id="f4-eah" data-src="code/week04/include/EventAction.hh">#ifndef EventAction_h
+#define EventAction_h 1
+
+#include "G4UserEventAction.hh"
+#include "globals.hh"
+
+class EventAction : public G4UserEventAction
+{
+  public:
+    void BeginOfEventAction(const G4Event*) override
+    {
+      fEdep = 0.;
+      fPrimaryLoss = 0.;
+      fPrimaryPath = 0.;
+    }
+    void EndOfEventAction(const G4Event*) override;
+
+    void AddEdep(G4double edep) { fEdep += edep; }
+    void AddPrimaryLoss(G4double loss) { fPrimaryLoss += loss; }
+    void AddPrimaryPath(G4double length) { fPrimaryPath += length; }
+
+  private:
+    G4double fEdep = 0.;
+    G4double fPrimaryLoss = 0.;
+    G4double fPrimaryPath = 0.;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/EventAction.cc</b><button class="copy" type="button" data-copy="f4-ea">copy</button></summary><pre id="f4-ea" data-src="code/week04/src/EventAction.cc">#include "EventAction.hh"
+
+#include "G4AnalysisManager.hh"
+#include "G4SystemOfUnits.hh"
+
+void EventAction::EndOfEventAction(const G4Event*)
+{
+  auto* analysisManager = G4AnalysisManager::Instance();
+  // Fill in explicit units so the ROOT axes read MeV and MeV/cm.
+  analysisManager-&gt;FillH1(0, fEdep / MeV);
+  if (fPrimaryPath &gt; 0.)
+    analysisManager-&gt;FillH1(1, (fPrimaryLoss / fPrimaryPath) / (MeV / cm));
+}</pre></details>
+            <details><summary><b>include/SteppingAction.hh</b><button class="copy" type="button" data-copy="f4-sah">copy</button></summary><pre id="f4-sah" data-src="code/week04/include/SteppingAction.hh">#ifndef SteppingAction_h
+#define SteppingAction_h 1
+
+#include "G4UserSteppingAction.hh"
+
+class EventAction;
+
+class SteppingAction : public G4UserSteppingAction
+{
+  public:
+    explicit SteppingAction(EventAction* eventAction) : fEventAction(eventAction) {}
+    void UserSteppingAction(const G4Step* step) override;
+
+  private:
+    EventAction* fEventAction = nullptr;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/SteppingAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f4-sa">copy</button></summary><pre id="f4-sa" data-src="code/week04/src/SteppingAction.cc">#include "SteppingAction.hh"
+
+#include "EventAction.hh"
+
+#include "G4Step.hh"
+
+void SteppingAction::UserSteppingAction(const G4Step* step)
+{
+  const auto* preVolume =
+    step-&gt;GetPreStepPoint()-&gt;GetTouchableHandle()-&gt;GetVolume();
+  if (!preVolume || preVolume-&gt;GetName() != "Scintillator") return;
+
+  const G4double edep = step-&gt;GetTotalEnergyDeposit();
+  if (edep &gt; 0.) fEventAction-&gt;AddEdep(edep);
+
+  // For the primary muon, track the energy lost by the primary itself.
+  // This is closer to a stopping-power observable than Edep, because a
+  // delta ray may carry energy out of the scoring volume.
+  const auto* track = step-&gt;GetTrack();
+  if (track-&gt;GetParentID() == 0) {
+    const G4double dEprimary =
+      step-&gt;GetPreStepPoint()-&gt;GetKineticEnergy() -
+      step-&gt;GetPostStepPoint()-&gt;GetKineticEnergy();
+    if (dEprimary &gt; 0.) fEventAction-&gt;AddPrimaryLoss(dEprimary);
+    fEventAction-&gt;AddPrimaryPath(step-&gt;GetStepLength());
+  }
+}</pre></details>
+            <details><summary><b>include/RunAction.hh</b><button class="copy" type="button" data-copy="f4-rah">copy</button></summary><pre id="f4-rah" data-src="code/week04/include/RunAction.hh">#ifndef RunAction_h
+#define RunAction_h 1
+
+#include "G4UserRunAction.hh"
+
+class G4Run;
+
+class RunAction : public G4UserRunAction
+{
+  public:
+    RunAction();
+    void BeginOfRunAction(const G4Run*) override;
+    void EndOfRunAction(const G4Run* run) override;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/RunAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f4-ra">copy</button></summary><pre id="f4-ra" data-src="code/week04/src/RunAction.cc">#include "RunAction.hh"
+
+#include "G4AnalysisManager.hh"
+#include "G4Run.hh"
+#include "G4ios.hh"
+
+RunAction::RunAction()
+{
+  auto* analysisManager = G4AnalysisManager::Instance();
+  analysisManager-&gt;SetDefaultFileType("root");
+  analysisManager-&gt;SetFileName("edep_scan");  // override per run: /analysis/setFileName
+  // Ranges chosen so the whole Landau peak AND its tail fit (10 cm of plastic
+  // gives ~20 MeV at the minimum and ~28 MeV at 100 MeV kinetic energy).
+  analysisManager-&gt;CreateH1("Edep", "Energy deposit per event [MeV]", 200, 0., 80.);
+  analysisManager-&gt;CreateH1("PrimarydEdx",
+                            "Primary muon energy loss per path length [MeV/cm]",
+                            200, 0., 10.);
+}
+
+void RunAction::BeginOfRunAction(const G4Run*)
+{
+  G4AnalysisManager::Instance()-&gt;OpenFile();
+}
+
+void RunAction::EndOfRunAction(const G4Run* run)
+{
+  auto* analysisManager = G4AnalysisManager::Instance();
+  auto* hEdep = analysisManager-&gt;GetH1(0);
+  auto* hdEdx = analysisManager-&gt;GetH1(1);
+
+  G4cout &lt;&lt; "Run complete: " &lt;&lt; run-&gt;GetNumberOfEvent() &lt;&lt; " events." &lt;&lt; G4endl
+         &lt;&lt; "  Edep in Scintillator : mean " &lt;&lt; hEdep-&gt;mean() &lt;&lt; " MeV, rms "
+         &lt;&lt; hEdep-&gt;rms() &lt;&lt; " MeV" &lt;&lt; G4endl
+         &lt;&lt; "  primary -dE/dx       : mean " &lt;&lt; hdEdx-&gt;mean() &lt;&lt; " MeV/cm, rms "
+         &lt;&lt; hdEdx-&gt;rms() &lt;&lt; " MeV/cm" &lt;&lt; G4endl;
+
+  analysisManager-&gt;Write();
+  analysisManager-&gt;CloseFile();
+}</pre></details>
+            <details><summary><b>src/ActionInitialization.cc</b><button class="copy" type="button" data-copy="f4-ai">copy</button></summary><pre id="f4-ai" data-src="code/week04/src/ActionInitialization.cc">#include "ActionInitialization.hh"
+
+#include "EventAction.hh"
+#include "PrimaryGeneratorAction.hh"
+#include "RunAction.hh"
+#include "SteppingAction.hh"
+
+void ActionInitialization::Build() const
+{
+  SetUserAction(new PrimaryGeneratorAction());
+  SetUserAction(new RunAction());
+  auto* eventAction = new EventAction();
+  SetUserAction(eventAction);
+  SetUserAction(new SteppingAction(eventAction));
+}</pre></details>
+            <details><summary><b>run_bethe_bloch.mac</b><button class="copy" type="button" data-copy="f4-mac">copy</button></summary><pre id="f4-mac" data-src="code/week04/run_bethe_bloch.mac"># Mission 4: headless energy-loss scan, five kinetic energies, 10^4 events each
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+# Keep visualization off: this job is for statistics.
+
+/gun/energy 100 MeV
+/analysis/setFileName edep_0100MeV
+/run/beamOn 10000
+
+/gun/energy 200 MeV
+/analysis/setFileName edep_0200MeV
+/run/beamOn 10000
+
+/gun/energy 500 MeV
+/analysis/setFileName edep_0500MeV
+/run/beamOn 10000
+
+/gun/energy 1 GeV
+/analysis/setFileName edep_1000MeV
+/run/beamOn 10000
+
+/gun/energy 10 GeV
+/analysis/setFileName edep_10000MeV
+/run/beamOn 10000</pre></details>
+            <details><summary><b>vis.mac</b><button class="copy" type="button" data-copy="f4-vis">copy</button></summary><pre id="f4-vis" data-src="code/week04/vis.mac"># Diagnosis, not measurement: look at a few events, then run headless
+/vis/open
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 90 90 deg
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/scene/endOfEventAction accumulate
+/run/beamOn 3</pre></details>
+            <details><summary><b>plot_bethe.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f4-py">copy</button></summary><pre id="f4-py" data-src="code/week04/plot_bethe.py">"""Mission 4 analysis: compare the Geant4 energy-loss scan with the Bethe formula.
+
+Reads edep_&lt;E&gt;MeV.root written by ./week04 run_bethe_bloch.mac, takes the mean of
+the two histograms in each file, and plots them against beta*gamma together with
+the PDG Bethe formula (with density effect) for polyvinyltoluene.
+
+    pip install uproot matplotlib numpy
+    python3 plot_bethe.py
+"""
+import math
+
+import numpy as np
+import uproot
+
+M_MU = 105.6583755          # MeV, muon mass (PDG)
+M_E = 0.51099895            # MeV
+K = 0.307075                # MeV cm2/mol
+# Polyvinyltoluene (G4_PLASTIC_SC_VINYLTOLUENE): PDG atomic &amp; nuclear properties
+ZA, RHO, I_EV = 0.54141, 1.032, 64.7
+CBAR, X0, X1, A_D, K_D = 3.1997, 0.1464, 2.4855, 0.1610, 3.2393   # Sternheimer, delta0 = 0
+THICK_CM = 10.0
+ENERGIES = [100, 200, 500, 1000, 10000]   # kinetic energy, MeV
+
+
+def beta_gamma(T):
+    g = 1.0 + T / M_MU
+    return math.sqrt(g * g - 1.0)
+
+
+def delta(bg):
+    x = math.log10(bg)
+    if x &gt;= X1:
+        return 2 * math.log(10) * x - CBAR
+    if x &gt;= X0:
+        return 2 * math.log(10) * x - CBAR + A_D * (X1 - x) ** K_D
+    return 0.0
+
+
+def bethe(bg):
+    """Mean -dE/dx in MeV/cm for a muon (PDG Eq. 34.5, no spin or shell terms)."""
+    g = math.sqrt(1 + bg * bg)
+    b2 = bg * bg / (g * g)
+    r = M_E / M_MU
+    wmax = 2 * M_E * bg * bg / (1 + 2 * g * r + r * r)
+    arg = 2 * M_E * bg * bg * wmax / (I_EV * 1e-6) ** 2
+    return K * ZA / b2 * (0.5 * math.log(arg) - b2 - delta(bg) / 2) * RHO
+
+
+def hmean(h):
+    """Mean of a ROOT TH1 from its stored statistics (falls back to bin centres)."""
+    try:
+        sw, swx = h.member("fTsumw"), h.member("fTsumwx")
+        if sw &gt; 0:
+            return swx / sw
+    except Exception:
+        pass
+    vals, edges = h.to_numpy()
+    c = 0.5 * (edges[:-1] + edges[1:])
+    return float((vals * c).sum() / vals.sum())
+
+
+rows = []
+for T in ENERGIES:
+    with uproot.open(f"edep_{T:04d}MeV.root") as f:
+        edep = hmean(f["Edep"])
+        dedx = hmean(f["PrimarydEdx"])
+    bg = beta_gamma(T)
+    rows.append((T, bg, edep / THICK_CM, dedx, bethe(bg)))
+
+print(f"{'T [MeV]':&gt;8} {'bg':&gt;7} {'Edep/l':&gt;8} {'primary':&gt;8} {'Bethe':&gt;8} {'prim/Bethe':&gt;10}")
+for T, bg, el, d, b in rows:
+    print(f"{T:8d} {bg:7.2f} {el:8.3f} {d:8.3f} {b:8.3f} {d / b:10.3f}")
+
+try:
+    import matplotlib.pyplot as plt
+    bgs = np.logspace(-0.2, 3, 200)
+    plt.loglog(bgs, [bethe(b) for b in bgs], "-", label="Bethe (PDG), polyvinyltoluene")
+    plt.loglog([r[1] for r in rows], [r[3] for r in rows], "o", label="Geant4: primary -dE/dx")
+    plt.loglog([r[1] for r in rows], [r[2] for r in rows], "s", mfc="none", label="Geant4: Edep / 10 cm")
+    plt.xlabel(r"$\beta\gamma$")
+    plt.ylabel("MeV / cm")
+    plt.legend()
+    plt.savefig("bethe_scan.png", dpi=150)
+    print("wrote bethe_scan.png")
+except ImportError:
+    pass</pre></details>
+          </div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Diagnose first: three events in the viewer</span><span lang="zh-Hans">先诊断：在可视化中看三个事例</span></h3><label class="done" for="w04-s2"><input type="checkbox" id="w04-s2" data-progress="w04"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Build, then run <code>./week04</code> with no argument. Check that the muon crosses the slab and that δ-rays (red) start inside it. That is all the viewer is for. Close it.</p>
+          <p lang="zh-Hans">编译后不带参数运行 <code>./week04</code>。确认缪子穿过了板、δ 电子（红色）从板内产生。可视化的用处仅此而已，然后关闭它。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Run the scan headless</span><span lang="zh-Hans">无界面运行扫描</span></h3><label class="done" for="w04-s3"><input type="checkbox" id="w04-s3" data-progress="w04"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag geant4">GEANT4</span></span><button class="copy" type="button" data-copy="c4-run">copy</button></div>
+<pre id="c4-run">./week04 run_bethe_bloch.mac | grep -A2 "Run complete"
+ls edep_*.root</pre></div>
+          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01, our run; yours agree within ~2σ)</span><span lang="zh-Hans">预期（Geant4 11.4.p01，我们的运行；你的结果应在约 2σ 内一致）</span></b></span></div>
+<pre>Run complete: 10000 events.            <span class="c"># 100 MeV</span>
+  Edep in Scintillator : mean 23.9456 MeV, rms 1.49069 MeV
+  primary -dE/dx       : mean 2.3938 MeV/cm, rms 0.142915 MeV/cm
+Run complete: 10000 events.            <span class="c"># 200 MeV</span>
+  Edep in Scintillator : mean 20.605 MeV, rms 1.91377 MeV
+  primary -dE/dx       : mean 2.06499 MeV/cm, rms 0.194799 MeV/cm
+Run complete: 10000 events.            <span class="c"># 500 MeV</span>
+  Edep in Scintillator : mean 20.0552 MeV, rms 3.03256 MeV
+  primary -dE/dx       : mean 2.0317 MeV/cm, rms 0.358942 MeV/cm
+Run complete: 10000 events.            <span class="c"># 1 GeV</span>
+  Edep in Scintillator : mean 20.4637 MeV, rms 3.87161 MeV
+  primary -dE/dx       : mean 2.11935 MeV/cm, rms 0.633381 MeV/cm
+Run complete: 10000 events.            <span class="c"># 10 GeV</span>
+  Edep in Scintillator : mean 21.2108 MeV, rms 4.41375 MeV
+  primary -dE/dx       : mean 2.23402 MeV/cm, rms 0.841011 MeV/cm</pre></div>
+          <p lang="en">50,000 events took 6 s on one core. Statistical error on each mean: rms/√10⁴, so ±0.015–0.044 MeV for Edep and ±0.0014–0.0084 MeV/cm for −dE/dx.</p>
+          <p lang="zh-Hans">50,000 个事例在单核上用了 6 s。每个均值的统计误差为 rms/√10⁴：Edep 为 ±0.015–0.044 MeV，−dE/dx 为 ±0.0014–0.0084 MeV/cm。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Compare with Bethe</span><span lang="zh-Hans">与 Bethe 公式比较</span></h3><label class="done" for="w04-s4"><input type="checkbox" id="w04-s4" data-progress="w04"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c4-py">copy</button></div>
+<pre id="c4-py">pip install uproot matplotlib numpy
+python3 plot_bethe.py</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
+<pre> T [MeV]      bg   Edep/l  primary    Bethe prim/Bethe
+     100    1.67    2.395    2.394    2.308      1.037
+     200    2.71    2.061    2.065    2.055      1.005
+     500    5.64    2.006    2.032    2.039      0.996
+    1000   10.42    2.046    2.119    2.129      0.996
+   10000   95.64    2.121    2.234    2.487      0.898
+wrote bethe_scan.png</pre></div>
+          <p lang="en">The three middle points agree with the formula to 0.5%. The prediction holds: the 100 MeV muon loses 13% more per cm than the 1 GeV one. The two ends disagree, and each has a physical reason, which is the point of the exercise:</p>
+          <p lang="zh-Hans">中间三个点与公式的差别在 0.5% 以内。预测得到验证：100 MeV 缪子每厘米的损失比 1 GeV 缪子多 13%。两端不一致，各有物理原因，这正是本练习的要点：</p>
+          <ul>
+            <li><span lang="en"><strong>100 MeV, +3.7%:</strong> the muon loses 24 MeV in the slab, slows to about 76 MeV (βγ ≈ 1.40) and its dE/dx climbs on the way. The formula is evaluated at the entrance energy only.</span><span lang="zh-Hans"><strong>100 MeV，+3.7%：</strong>缪子在板内损失 24 MeV，减速到约 76 MeV（βγ ≈ 1.40），dE/dx 一路上升；而公式只在入射能量处计算。</span></li>
+            <li><span lang="en"><strong>10 GeV, −10%:</strong> the Bethe <em>mean</em> includes rare collisions up to <i>T</i><sub>max</sub> ≈ 4.8 GeV. In our run 99 of 10⁴ events lost more than 100 MeV and landed in the histogram's overflow, which the histogram mean ignores. A mean dominated by a 1/T² tail converges slowly; that is why detectors quote the most probable value.</span><span lang="zh-Hans"><strong>10 GeV，−10%：</strong>Bethe 的<em>平均值</em>包含了能量转移高达 <i>T</i><sub>max</sub> ≈ 4.8 GeV 的罕见碰撞。我们的运行中，10⁴ 个事例里有 99 个损失超过 100 MeV，落进了直方图的溢出区，而直方图均值不计溢出。被 1/T² 尾巴主导的平均值收敛很慢，这就是探测器通常报告最可几值的原因。</span></li>
+            <li><span lang="en"><strong>Edep/ℓ below primary at high energy:</strong> energetic δ-rays carry energy out of the back face. Edep is detector response, not stopping power.</span><span lang="zh-Hans"><strong>高能时 Edep/ℓ 低于主粒子损失：</strong>高能 δ 电子把能量从后表面带出。Edep 是探测器响应，不是阻止本领。</span></li>
+          </ul>
+          <figure class="fig"><img src="media/week04-bethe-scan.png" width="960" height="720" alt="Log-log plot of the Bethe curve for polyvinyltoluene with five Geant4 points for primary dE/dx and Edep per 10 cm" loading="lazy"><figcaption><span lang="en">bethe_scan.png from our run: the Bethe curve, Geant4 primary −dE/dx (dots) and Edep/10 cm (open squares).</span><span lang="zh-Hans">我们运行得到的 bethe_scan.png：Bethe 曲线、Geant4 主粒子 −dE/dx（实心点）与 Edep/10 cm（空心方块）。</span></figcaption></figure>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Break one assumption</span><span lang="zh-Hans">打破一个假设</span></h3><label class="done" for="w04-s5"><input type="checkbox" id="w04-s5" data-progress="w04"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Pick one and predict the result before running. (a) Raise the dE/dx histogram ceiling to 100 MeV/cm and rerun 10 GeV: how much of the −10% comes back? (b) Make the slab 50 × 50 × 1 cm³ (half-length <code>0.5*cm</code>) and compare the Edep histogram's peak with its mean. (c) Swap the slab to <code>G4_Pb</code> at 1 GeV and compare with the Week 3 table (141.6 MeV over 10 cm).</p>
+          <p lang="zh-Hans">任选一项，运行前先预测结果。(a) 把 dE/dx 直方图上限提高到 100 MeV/cm，重跑 10 GeV：−10% 的偏差能找回多少？(b) 把板改成 50 × 50 × 1 cm³（半长 <code>0.5*cm</code>），比较 Edep 直方图的峰位与均值。(c) 1 GeV 下把板换成 <code>G4_Pb</code>，与第 3 周的表（10 cm 中 141.6 MeV）比较。</p>
+        </li>
+      </ol>
+      <p class="progress" data-progress-out="w04"></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-quiz">
+    <p class="cmd">/control/verbose 2<span lang="en">self-check</span><span lang="zh-Hans">自测</span></p>
+    <div>
+      <h2 id="h-quiz" class="bi"><span lang="en">Six questions. Each answer explains itself.</span><span lang="zh-Hans">六道题，每个答案都附有解释。</span></h2>
+      <div id="quiz"></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-err">
+    <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
+    <div>
+      <h2 id="h-err" class="bi"><span lang="en">Five ways an energy-loss scan quietly lies.</span><span lang="zh-Hans">能损扫描悄悄说谎的五种方式。</span></h2>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W04-b
+      issued by : CreateH1(..., xmin, xmax)
+A histogram mean ignores underflow and overflow.
+  If the range clips the Landau tail, the "mean" is biased low.
+  Check entries in range against events, or accumulate sums in C++.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W04-b
+      issued by : CreateH1(..., xmin, xmax)
+直方图均值不计下溢和溢出。
+  范围截掉朗道尾巴时，“均值”会偏低。
+  核对范围内条目数与事例数，或在 C++ 中直接累加求和。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W04-c
+      issued by : SteppingAction
+"Energy lost" and "energy deposited" mixed up.
+  Escaping delta-rays bias Edep-based dE/dx low. Track the primary's
+  kinetic-energy change separately, as in this week's code.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W04-c
+      issued by : SteppingAction
+混淆了“损失的能量”和“沉积的能量”。
+  逃逸的 δ 电子使基于 Edep 的 dE/dx 偏低。应像本周代码那样
+  单独追踪主粒子的动能变化。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W04-d
+      issued by : your plot
+beta*gamma computed from the TOTAL energy, or from momentum = energy.
+  SetParticleEnergy sets KINETIC energy: gamma = 1 + T / (m c^2).
+  At 100 MeV the wrong formula moves the point by up to ~1.8x.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W04-d
+      issued by : 你的图
+用总能量或“动量 = 能量”计算 βγ。
+  SetParticleEnergy 设置的是动能：γ = 1 + T / (m c²)。
+  在 100 MeV 时，错误公式会让该点偏移最多约 1.8 倍。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W04-e
+      issued by : run_bethe_bloch.mac
+/analysis/setFileName placed AFTER /run/beamOn.
+  The file is opened at the start of the run, so every energy writes
+  into the previous name and overwrites it. Set the name first.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W04-e
+      issued by : run_bethe_bloch.mac
+/analysis/setFileName 写在了 /run/beamOn 之后。
+  文件在运行开始时打开，于是每个能量都写进上一个文件名并
+  覆盖它。必须先设置文件名。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W04-f
+      issued by : one beautiful event in the viewer
+A single pleasing event used as evidence for a distribution.
+  The rms of Edep at 1 GeV is 19% of the mean: one event tells you
+  nothing about the mean. Report mean +/- rms/sqrt(N).
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W04-f
+      issued by : 可视化里一个好看的事例
+把单个漂亮事例当成分布的证据。
+  1 GeV 时 Edep 的 rms 是均值的 19%：一个事例说明不了均值。
+  请报告 mean ± rms/√N。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-review">
+    <p class="cmd">/control/saveHistory<span lang="en">review notes</span><span lang="zh-Hans">复习要点</span></p>
+    <div class="prose">
+      <h2 id="h-review" class="bi"><span lang="en">Before you close the run.</span><span lang="zh-Hans">结束运行之前。</span></h2>
+      <ul class="review">
+        <li><label for="w04-r1"><input type="checkbox" id="w04-r1"><span lang="en">Does my dE/dx curve show the expected fall-then-rise, with the minimum near βγ ≈ 3–4?</span><span lang="zh-Hans">我的 dE/dx 曲线是否呈现先降后升，最小值在 βγ ≈ 3–4 附近？</span></label></li>
+        <li><label for="w04-r2"><input type="checkbox" id="w04-r2"><span lang="en">Did I use at least 10⁴ events per point and report the statistical uncertainty?</span><span lang="zh-Hans">我是否每点至少用了 10⁴ 个事例，并报告了统计不确定度？</span></label></li>
+        <li><label for="w04-r3"><input type="checkbox" id="w04-r3"><span lang="en">Did I distinguish energy loss from energy deposition, particularly where secondaries escape?</span><span lang="zh-Hans">我是否区分了能量损失与能量沉积，特别是在次级粒子逃逸的情况下？</span></label></li>
+      </ul>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Remark · debt repaid, debt taken on</span><span lang="zh-Hans">小结 · 还清的债与新欠的债</span></p>
+        <p lang="en">Repaid: Bethe–Bloch is a curve you scanned yourself, and the stepping-action and scoring machinery arrived because a measurement needed them. Taken on: energy loss is still passive; the energy is simply gone. Next week asks how the detector knows it happened.</p>
+        <p lang="zh-Hans">还清的债：Bethe–Bloch 是你亲手扫描出的曲线；步进动作和计分机制是因为测量需要才引入的。新欠的债：能量损失仍是被动的，能量只是消失了。下周要问：探测器如何“知道”这件事发生了？</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-share">
+    <p class="cmd">/vis/ogl/export week04.gif<span lang="en">share this week</span><span lang="zh-Hans">分享本周成果</span></p>
+    <div class="share">
+      <figure class="fig">
+        <img src="media/week04-bethe.gif" width="720" height="900" alt="Geant4 energy-deposit histograms at five muon energies appearing one by one, each adding a point to the Bethe curve" loading="lazy">
+        <figcaption><span lang="en">Real Geant4 11.4 histograms from run_bethe_bloch.mac, with the PDG Bethe curve. Long-press or right-click to save.</span><span lang="zh-Hans">来自 run_bethe_bloch.mac 的真实 Geant4 11.4 直方图，配以 PDG Bethe 曲线。长按或右键即可保存。</span></figcaption>
+      </figure>
+      <div class="prose">
+        <h2 id="h-share" class="bi"><span lang="en">Three points on the line, two off it, both for a reason.</span><span lang="zh-Hans">三点落在线上，两点偏离，都有原因。</span></h2>
+        <p lang="en">Post your <code>bethe_scan.png</code> with one sentence for each off-curve point. Explaining a disagreement is worth more than a perfect fit.</p>
+        <p lang="zh-Hans">把你的 <code>bethe_scan.png</code> 发出来，并为每个偏离曲线的点写一句解释。解释清楚一处不一致，比完美拟合更有价值。</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" id="pager" aria-label="Week navigation"></nav>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 5 · Geant4 11.4.p01 · PDG RPP 2024, sec. 34</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 5 章 · Geant4 11.4.p01 · PDG RPP 2024 第 34 节</span>
+  </footer>
+</div>
+<script>window.W4_G4PTS = [[1.670, 2.394], [2.709, 2.065], [5.644, 2.032], [10.42, 2.119], [95.64, 2.234]];</script>
+<script src="assets/course.js"></script>
+<script src="assets/week04.js"></script>
+</body>
+</html>

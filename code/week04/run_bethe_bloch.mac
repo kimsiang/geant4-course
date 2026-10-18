@@ -1,0 +1,26 @@
+# Mission 4: headless energy-loss scan, five kinetic energies, 10^4 events each
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+# Keep visualization off: this job is for statistics.
+
+/gun/energy 100 MeV
+/analysis/setFileName edep_0100MeV
+/run/beamOn 10000
+
+/gun/energy 200 MeV
+/analysis/setFileName edep_0200MeV
+/run/beamOn 10000
+
+/gun/energy 500 MeV
+/analysis/setFileName edep_0500MeV
+/run/beamOn 10000
+
+/gun/energy 1 GeV
+/analysis/setFileName edep_1000MeV
+/run/beamOn 10000
+
+/gun/energy 10 GeV
+/analysis/setFileName edep_10000MeV
+/run/beamOn 10000
