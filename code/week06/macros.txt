@@ -1,0 +1,32 @@
+# ======== cuts.mac ========
+# Production-cut scan: 1 GeV mu- through 10 cm of lead
+/run/verbose 0
+/gun/particle mu-
+/gun/energy 1 GeV
+
+/run/setCut 10 mm
+/run/beamOn 1000
+/run/dumpCouples
+
+/run/setCut 0.7 mm
+/run/beamOn 1000
+/run/dumpCouples
+
+/run/setCut 0.1 mm
+/run/beamOn 1000
+/run/dumpCouples
+
+/run/setCut 0.01 mm
+/run/beamOn 1000
+/run/dumpCouples
+
+# ======== census.mac ========
+# Mission 6B: same geometry, same gun, only the physics list changes (command line)
+/run/verbose 0
+/gun/particle mu-
+/gun/energy 1 GeV
+/run/beamOn 2000
+
+/gun/particle pi-
+/gun/energy 1 GeV
+/run/beamOn 2000

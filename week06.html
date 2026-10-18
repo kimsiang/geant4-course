@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 06 · Physics Lists and Cuts</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0, Week 06: what a physics list includes, what it silently leaves out, and what a production cut really controls.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Week 06 of 12</span><span lang="zh-Hans">第 06 / 12 周</span></span>
+    <span class="bar-r">
+      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">Idle&gt; <span>/run/setCut 0.01 mm</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">Make it realistic: physics lists and the trade-offs behind them.</span><span lang="zh-Hans">让模拟更真实：物理列表及其背后的取舍。</span></h1>
+      <p class="lede" lang="en">One particle has many possible fates. A physics list decides which of them can happen at all, and a production cut decides which of them become tracks. Both are physics decisions. A wrong one does not crash. It finishes quietly with the wrong answer.</p>
+      <p class="lede" lang="zh-Hans">一个粒子有许多可能的命运。物理列表决定哪些命运可能发生，产生阈决定其中哪些会变成径迹。两者都是物理上的决定。选错了不会崩溃，而是安静地给出错误答案。</p>
+      <ul class="meta">
+        <li class="stage"><b>3 · Understand it</b><span lang="en">stage · 理解</span><span lang="zh-Hans">阶段 · 理解</span></li>
+        <li><b>Mission 6B</b><span lang="en">textbook ch. 7</span><span lang="zh-Hans">教材第 7 章</span></li>
+        <li><b>≈ 2 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="Week summary">
+      <div role="row"><span role="cell">week06</span></div>
+      <div role="row"><span role="cell">Target</span><span role="cell">10 cm G4_Pb in vacuum</span></div>
+      <div role="row"><span role="cell">Primaries</span><span role="cell">1 GeV μ⁻, 1 GeV π⁻</span></div>
+      <div role="row"><span role="cell">Lists</span><span role="cell">FTFP_BERT vs EM-only</span></div>
+      <div role="row"><span role="cell">Observable</span><span role="cell"><span lang="en">secondary census, Edep, CPU</span><span lang="zh-Hans">次级粒子统计、Edep、CPU</span></span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-goals">
+    <p class="cmd">/run/initialize<span lang="en">learning goals</span><span lang="zh-Hans">学习目标</span></p>
+    <div class="prose">
+      <h2 id="h-goals" class="bi"><span lang="en">By the end of this week you can justify your physics list and your cut in one sentence each.</span><span lang="zh-Hans">本周结束时，你能各用一句话为你的物理列表和产生阈辩护。</span></h2>
+      <ol class="goals">
+        <li><span lang="en">Say what a <dfn>physics list<span class="kt" lang="zh-Hans">物理列表</span></dfn> contains and assemble a stripped one from physics constructors.</span><span lang="zh-Hans">说出<dfn>物理列表<span class="kt" lang="en">physics list</span></dfn>包含什么，并用物理构造器组装一个精简版。</span></li>
+        <li><span lang="en">Compare two lists by the species and count of secondaries, not only by the total deposit.</span><span lang="zh-Hans">按次级粒子的种类和数量比较两个列表，而不只比较总沉积。</span></li>
+        <li><span lang="en">Explain a <dfn>production cut<span class="kt" lang="zh-Hans">产生阈</span></dfn>: a range, converted per material into an energy threshold for creating secondaries.</span><span lang="zh-Hans">解释<dfn>产生阈<span class="kt" lang="en">production cut</span></dfn>：一个射程，按材料换算成产生次级粒子的能量阈值。</span></li>
+        <li><span lang="en">Show that the deposited energy is stable against the cut while the number of tracks and the CPU time are not.</span><span lang="zh-Hans">证明沉积能量对阈值稳定，而径迹数和 CPU 时间并不稳定。</span></li>
+        <li><span lang="en">Recognise the dangerous failure: a run that finishes without warning on a list missing the process your observable needs.</span><span lang="zh-Hans">识别危险的失败：运行毫无警告地完成，但物理列表缺少你的可观测量所需的过程。</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-list">
+    <p class="cmd">/process/list<span lang="en">7.1 · many possible fates</span><span lang="zh-Hans">7.1 · 许多可能的命运</span></p>
+    <div class="prose">
+      <h2 id="h-list" class="bi"><span lang="en">A process is included because an observable depends on it.</span><span lang="zh-Hans">纳入一个过程，是因为某个可观测量依赖它。</span></h2>
+      <p lang="en">Ionisation is only one thing a muon does in matter. It also scatters off Coulomb fields, now and then radiates a photon, makes an e⁺e⁻ pair, and at high energy can interact with a nucleus. A realistic simulation manages the whole family at once. Physics lists package these models; the choice of models is part of the scientific specification of a simulation.</p>
+      <p lang="zh-Hans">电离只是缪子在物质中做的事情之一。它还会在库仑场中散射，偶尔辐射光子、产生 e⁺e⁻ 对，在高能时还可能与原子核相互作用。真实的模拟要同时处理这一整族过程。物理列表把这些模型打包在一起；选择哪些模型，本身就是模拟科学规格的一部分。</p>
+      <div class="box">
+        <p class="box-label">Definition 7.1 · <span lang="en">Physics list</span><span lang="zh-Hans">物理列表</span></p>
+        <p lang="en">A physics list (<code>G4VModularPhysicsList</code>) is a bundle of processes and models declaring, for one simulation, which particles undergo which interactions, described by which model. Geant4 ships validated reference lists such as <code>FTFP_BERT</code> and <code>QGSP_BERT</code>, each tuned for a regime or application; you can also assemble your own.</p>
+        <p lang="zh-Hans">物理列表（<code>G4VModularPhysicsList</code>）是一组过程与模型的集合，为一次模拟声明哪些粒子经历哪些相互作用、由哪个模型描述。Geant4 提供经过验证的参考列表，如 <code>FTFP_BERT</code> 和 <code>QGSP_BERT</code>，各自针对不同能区或应用调校；你也可以自行组装。</p>
+      </div>
+      <div class="flow" role="img" aria-label="A physics list contains electromagnetic, decay and hadronic physics; production cuts and user limits are separate controls"><b>physics list</b> <span class="a">=</span> electromagnetic <span class="a">+</span> decay <span class="a">+</span> hadronic <span class="a">+</span> extra (γ/μ-nuclear)<br><span class="a">separate controls:</span> production cuts <span class="a">(which secondaries become tracks)</span> · user limits <span class="a">(step, track length, time)</span></div>
+      <div class="box">
+        <p class="box-label">Example 7.1 · <span lang="en">Mission 6B: swap the physics list, see what changes</span><span lang="zh-Hans">任务 6B：更换物理列表，看看什么改变了</span></p>
+        <p lang="en">Keep geometry and gun fixed (a 1 GeV muon through 10 cm of lead). Run <code>FTFP_BERT</code>, then a list stripped to electromagnetic and decay physics. Compare the species and count of secondaries. Without hadronic physics, any secondary that should come from a hadronic interaction simply disappears, with no error at all.</p>
+        <p lang="zh-Hans">保持几何和粒子枪不变（1 GeV 缪子穿过 10 cm 铅）。先用 <code>FTFP_BERT</code> 运行，再用只保留电磁和衰变物理的精简列表运行，比较次级粒子的种类与数量。没有强子物理时，本应来自强子相互作用的次级粒子就直接消失，没有任何报错。</p>
+      </div>
+      <div class="code">
+        <div class="code-head"><span class="l"><b>Code microscope · EMPhysicsList.hh</b><span class="tag geant4">GEANT4</span></span></div>
+<pre>RegisterPhysics(<span class="k">new</span> G4EmStandardPhysics());
+RegisterPhysics(<span class="k">new</span> G4DecayPhysics());
+<span class="c">// deliberately no G4HadronPhysicsFTFP_BERT, no G4EmExtraPhysics:</span>
+<span class="c">// any hadronic secondary is now simply absent, not an error</span></pre>
+      </div>
+      <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W06-a
+      issued by : textbook ch. 6 and ch. 7
+"Mission 6" names both the ADC digitizer (ch. 6) and this
+  physics-list swap (ch. 7). This course calls the swap Mission 6B.
+The EM-only list sets SetDefaultCutValue(0.7*mm) explicitly so its
+  cut matches FTFP_BERT; G4VModularPhysicsList defaults to 1 mm.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W06-a
+      issued by : 教材第 6 章与第 7 章
+“任务 6”同时指 ADC 数字化器（第 6 章）和这里的物理列表
+  更换（第 7 章）。本课程把后者称为任务 6B。
+纯电磁列表显式设置 SetDefaultCutValue(0.7*mm)，使阈值与
+  FTFP_BERT 一致；G4VModularPhysicsList 的默认值是 1 mm。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <h3 class="bi"><span lang="en">Production cuts: a range, not an energy</span><span lang="zh-Hans">产生阈：一个射程，而不是能量</span></h3>
+      <p lang="en">Geant4 does not produce a δ-ray, a bremsstrahlung photon or a positron as a track if it would travel less than the <strong>range cut</strong> (0.7 mm in <code>FTFP_BERT</code>). The range is converted per material into an energy threshold: 1.01 MeV for e⁻ in lead, 282 keV in plastic, 990 eV in air. Energy below the threshold is deposited continuously along the step instead. Nothing is thrown away, and particles that are produced are tracked down to zero energy. The cut sets the spatial resolution with which secondaries are followed. It is not a tracking cut.</p>
+      <p lang="zh-Hans">如果一个 δ 电子、轫致辐射光子或正电子的射程短于<strong>射程阈</strong>（<code>FTFP_BERT</code> 中为 0.7 mm），Geant4 就不会把它作为径迹产生。这个射程按材料换算成能量阈值：铅中 e⁻ 为 1.01 MeV，塑料中为 282 keV，空气中为 990 eV。阈值以下的能量改为沿步连续沉积。没有任何能量被丢弃，已产生的粒子会被追踪到能量为零。阈值决定的是追踪次级粒子的空间分辨率，而不是径迹截断。</p>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Think about it</span><span lang="zh-Hans">想一想</span></p>
+        <p lang="en">If the only goal is a muon's ionisation energy loss, as in Week 4, is a heavyweight list with full hadronic physics necessary? What does it cost, and is there any benefit to show for it? Step 4 below gives the numbers.</p>
+        <p lang="zh-Hans">如果目标只是缪子的电离能损（像第 4 周那样），真的需要带完整强子物理的重量级列表吗？它的代价是什么，有没有可见的好处？下面第 4 步给出数字。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-toy">
+    <p class="cmd">/run/setCut<span lang="en">interactive explainer</span><span lang="zh-Hans">交互演示</span></p>
+    <div>
+      <h2 id="h-toy" class="bi"><span lang="en">Slide the range cut and watch where the energy goes.</span><span lang="zh-Hans">拖动射程阈，看能量去了哪里。</span></h2>
+      <p class="prose" style="color:var(--muted);max-width:64ch;margin-top:14px" lang="en">For a 1 GeV muon crossing 10 cm, the mean loss splits into a continuous part below the threshold and a part carried by δ-ray tracks. The total does not move. For lead, the green dots are our Geant4 measurements of Edep and of δ-rays per crossing at four cuts.</p>
+      <p class="prose" style="color:var(--muted);max-width:64ch" lang="zh-Hans">对 1 GeV 缪子穿过 10 cm，平均损失分为阈值以下的连续部分和由 δ 电子径迹带走的部分，总量不变。选铅时，绿点是我们在四个阈值下用 Geant4 测得的 Edep 和每次穿越的 δ 电子数。</p>
+      <div class="controls" style="border-top:1px solid var(--rule);border-radius:4px 4px 0 0;margin-top:20px">
+        <label class="ctl" for="w6-mat"><span class="ctl-row"><span lang="en">material</span><span lang="zh-Hans">材料</span></span><select id="w6-mat"></select></label>
+        <label class="ctl" for="w6-cut"><span class="ctl-row"><span>/run/setCut</span><output id="w6-cut-out" for="w6-cut">0.7 mm</output></span><input id="w6-cut" type="range" min="-3" max="1" step="any" value="-0.1549"></label>
+      </div>
+      <div class="panels">
+        <div>
+          <p class="panel-title"><span lang="en">mean loss of a 1 GeV μ⁻ in 10 cm, split by the cut</span><span lang="zh-Hans">1 GeV μ⁻ 在 10 cm 中的平均损失，按阈值划分</span></p>
+          <canvas id="w6-split" style="aspect-ratio:16/11" aria-label="Continuous and delta-ray parts of the mean energy loss versus range cut"></canvas>
+          <div class="statbox" role="table" aria-label="Threshold numbers" style="margin-top:12px">
+            <div role="row"><span role="cell">couple</span></div>
+            <div role="row"><span role="cell">e⁻ threshold</span><span role="cell" id="w6-te">—</span></div>
+            <div role="row"><span role="cell">γ threshold</span><span role="cell" id="w6-tg">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">continuous</span><span lang="zh-Hans">连续部分</span></span><span role="cell" id="w6-cont">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">in δ-ray tracks</span><span lang="zh-Hans">δ 电子径迹</span></span><span role="cell" id="w6-expl">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">total (Bethe)</span><span lang="zh-Hans">总量（Bethe）</span></span><span role="cell" id="w6-tot">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">δ-rays per crossing</span><span lang="zh-Hans">每次穿越 δ 电子数</span></span><span role="cell" id="w6-nd">—</span></div>
+          </div>
+        </div>
+        <div>
+          <p class="panel-title"><span lang="en">δ-rays per crossing (tracks to simulate)</span><span lang="zh-Hans">每次穿越的 δ 电子数（需要模拟的径迹）</span></p>
+          <canvas id="w6-count" style="aspect-ratio:16/11" aria-label="Number of delta rays per crossing versus range cut, log-log"></canvas>
+          <div class="scroll">
+            <table class="tbl">
+              <thead><tr><th>cut</th><th>e⁻ thr.</th><th>muIoni δ</th><th>Edep [MeV]</th><th>CPU/evt</th></tr></thead>
+              <tbody>
+                <tr><td class="n">10 mm</td><td class="m">15.2 MeV</td><td>0.24</td><td>141.2 ± 0.5</td><td>0.03 ms</td></tr>
+                <tr><td class="n">0.7 mm</td><td class="m">1.01 MeV</td><td>6.66</td><td>141.5 ± 0.5</td><td>0.06 ms</td></tr>
+                <tr><td class="n">0.1 mm</td><td class="m">241 keV</td><td>28.8</td><td>141.8 ± 0.5</td><td>0.13 ms</td></tr>
+                <tr><td class="n">0.01 mm</td><td class="m">57.9 keV</td><td>120.3</td><td>140.8 ± 0.5</td><td>0.36 ms</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="cap"><span lang="en">Geant4 11.4, 1 GeV μ⁻, 10 cm Pb in vacuum, 1,000 events per cut (course test physics list).</span><span lang="zh-Hans">Geant4 11.4，1 GeV μ⁻，真空中 10 cm 铅，每个阈值 1,000 个事例（课程测试物理列表）。</span></p>
+        </div>
+      </div>
+      <div class="toybox">
+        <p><b><span lang="en">What is real and what is a toy here</span><span lang="zh-Hans">哪些是真实的，哪些是玩具</span></b></p>
+        <p lang="en">Real: the range-to-threshold table (Geant4 11.4 /run/dumpCouples at ten cuts, interpolated log-log, 990 eV floor) and the lead measurements. Toy: the split of the mean loss uses PDG restricted and full Bethe formulas (density effect on, radiative losses off), and the δ-ray rate uses the PDG 1/T² spectrum. That rate reproduces Geant4's muIoni counts in lead to within 7% at all four cuts.</p>
+        <p lang="zh-Hans">真实的部分：射程到阈值的换算表（Geant4 11.4 在十个阈值下的 /run/dumpCouples 输出，双对数插值，990 eV 下限）以及铅的测量值。玩具部分：平均损失的划分用 PDG 受限 Bethe 公式与完整 Bethe 公式（含密度效应、不含辐射损失）计算，δ 电子产生率用 PDG 的 1/T² 谱。该产生率在全部四个阈值下与 Geant4 铅中的 muIoni 计数相差不到 7%。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-task">
+    <p class="cmd">/control/execute cuts.mac<span lang="en">hands-on · Mission 6B</span><span lang="zh-Hans">动手任务 · 任务 6B</span></p>
+    <div class="prose">
+      <h2 id="h-task" class="bi"><span lang="en">Count every secondary, change the cut, then change the list.</span><span lang="zh-Hans">统计每个次级粒子，先改阈值，再换列表。</span></h2>
+      <p lang="en">Steps 2 and 3 were run on Geant4 11.4.p01 with the course test physics list, which has the same muon and hadron ionisation models as <code>G4EmStandardPhysics</code> and simpler photon and electron models. Expect the same Edep and δ-ray counts within errors, and somewhat different photon counts. Step 4 needs <code>FTFP_BERT</code>'s hadronic datasets, which our sandbox cannot download, so it gives a prediction instead of an output.</p>
+      <p lang="zh-Hans">第 2、3 步在 Geant4 11.4.p01 上用课程测试物理列表运行：它的缪子与强子电离模型与 <code>G4EmStandardPhysics</code> 相同，光子与电子模型较简化。预期 Edep 和 δ 电子数在误差内一致，光子数略有不同。第 4 步需要 <code>FTFP_BERT</code> 的强子数据集，我们的沙盒无法下载，因此给出的是预测而不是输出。</p>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Create the project</span><span lang="zh-Hans">建立工程</span></h3><label class="done" for="w06-s1"><input type="checkbox" id="w06-s1" data-progress="w06"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Geometry and gun come from Week 3 (10 cm lead block, gun at z = −0.4 m), with the world now vacuum so every secondary counted comes from the lead. A <code>StackingAction</code> counts each new track by species and creator process.</p>
+          <p lang="zh-Hans">几何和粒子枪来自第 3 周（10 cm 铅块，粒子枪位于 z = −0.4 m），只是世界改为真空，使统计到的每个次级粒子都来自铅。<code>StackingAction</code> 按种类和产生过程统计每条新径迹。</p>
+          <div class="files">
+            <details><summary><b>CMakeLists.txt</b><button class="copy" type="button" data-copy="f6-cm">copy</button></summary><pre id="f6-cm" data-src="code/week06/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
+project(Week06 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Geant4 REQUIRED)
+include(${Geant4_USE_FILE})
+
+file(GLOB sources CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/include/*.hh)
+
+add_executable(week06 week06.cc ${sources} ${headers})
+target_include_directories(week06 PRIVATE include)
+target_link_libraries(week06 PRIVATE ${Geant4_LIBRARIES})
+
+foreach(_mac census.mac cuts.mac)
+  configure_file(${PROJECT_SOURCE_DIR}/${_mac} ${PROJECT_BINARY_DIR}/${_mac} COPYONLY)
+endforeach()</pre></details>
+            <details><summary><b>week06.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f6-main">copy</button></summary><pre id="f6-main" data-src="code/week06/week06.cc">#include "ActionInitialization.hh"
+#include "DetectorConstruction.hh"
+#include "EMPhysicsList.hh"
+
+#include "FTFP_BERT.hh"
+#include "G4RunManagerFactory.hh"
+#include "G4UImanager.hh"
+
+#include &lt;string&gt;
+
+// Usage: ./week06 FTFP_BERT census.mac      (run A: full reference list)
+//        ./week06 EM        census.mac      (run B: electromagnetic + decay only)
+int main(int argc, char** argv)
+{
+  if (argc &lt; 3) {
+    G4cout &lt;&lt; "usage: week06 FTFP_BERT|EM macro.mac" &lt;&lt; G4endl;
+    return 1;
+  }
+  auto* runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
+  runManager-&gt;SetUserInitialization(new DetectorConstruction());
+
+  const std::string list = argv[1];
+  if (list == "EM")
+    runManager-&gt;SetUserInitialization(new EMPhysicsList());   // run B
+  else
+    runManager-&gt;SetUserInitialization(new FTFP_BERT());       // run A
+
+  runManager-&gt;SetUserInitialization(new ActionInitialization());
+  runManager-&gt;Initialize();
+  G4UImanager::GetUIpointer()-&gt;ApplyCommand("/control/execute " + G4String(argv[2]));
+  delete runManager;
+  return 0;
+}</pre></details>
+            <details><summary><b>include/EMPhysicsList.hh</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f6-em">copy</button></summary><pre id="f6-em" data-src="code/week06/include/EMPhysicsList.hh">#ifndef EMPhysicsList_h
+#define EMPhysicsList_h 1
+
+#include "G4DecayPhysics.hh"
+#include "G4EmStandardPhysics.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4VModularPhysicsList.hh"
+
+// Mission 6B: a deliberately stripped physics list.
+class EMPhysicsList : public G4VModularPhysicsList
+{
+  public:
+    EMPhysicsList()
+    {
+      SetDefaultCutValue(0.7 * mm);  // same default as FTFP_BERT, so only the physics differs
+      RegisterPhysics(new G4EmStandardPhysics());
+      RegisterPhysics(new G4DecayPhysics());
+      // deliberately no G4HadronPhysicsFTFP_BERT, no G4EmExtraPhysics:
+      // any hadronic secondary is now simply absent, not an error
+    }
+};
+
+#endif</pre></details>
+            <details><summary><b>src/DetectorConstruction.cc</b><button class="copy" type="button" data-copy="f6-dc">copy</button></summary><pre id="f6-dc" data-src="code/week06/src/DetectorConstruction.cc">#include "DetectorConstruction.hh"
+
+#include "G4Box.hh"
+#include "G4LogicalVolume.hh"
+#include "G4NistManager.hh"
+#include "G4PVPlacement.hh"
+#include "G4SystemOfUnits.hh"
+
+G4VPhysicalVolume* DetectorConstruction::Construct()
+{
+  G4NistManager* nist = G4NistManager::Instance();
+  G4Material* worldMat = nist-&gt;FindOrBuildMaterial("G4_Galactic");  // vacuum: every secondary counted comes from the lead
+  G4Material* blockMat = nist-&gt;FindOrBuildMaterial("G4_Pb");  // Week 6: 10 cm of lead
+
+  // --- World ---
+  G4double worldSize = 1.0 * m;
+  G4VSolid* solidWorld =
+    new G4Box("World", 0.5 * worldSize, 0.5 * worldSize, 0.5 * worldSize);
+  auto* logicWorld = new G4LogicalVolume(solidWorld, worldMat, "World");
+  auto* physWorld = new G4PVPlacement(
+    nullptr, G4ThreeVector(), logicWorld, "World",
+    nullptr, false, 0, true);
+
+  // --- Block: 10x10x10 cm, centred on the world ---
+  G4double blockSide = 10.0 * cm;
+  G4VSolid* solidBlock = new G4Box("Block", 0.5 * blockSide,
+                                   0.5 * blockSide, 0.5 * blockSide);
+  auto* logicBlock = new G4LogicalVolume(solidBlock, blockMat, "Block");
+  new G4PVPlacement(
+    nullptr, G4ThreeVector(), logicBlock, "Block",
+    logicWorld, false, 0, true);  // last argument: check overlaps at placement
+
+  return physWorld;
+}</pre></details>
+            <details><summary><b>include/StackingAction.hh</b><button class="copy" type="button" data-copy="f6-sth">copy</button></summary><pre id="f6-sth" data-src="code/week06/include/StackingAction.hh">#ifndef StackingAction_h
+#define StackingAction_h 1
+
+#include "G4UserStackingAction.hh"
+
+class RunAction;
+
+// Called for every new track: the natural place for a census of secondaries.
+class StackingAction : public G4UserStackingAction
+{
+  public:
+    explicit StackingAction(RunAction* runAction) : fRunAction(runAction) {}
+    G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* track) override;
+
+  private:
+    RunAction* fRunAction = nullptr;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/StackingAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f6-st">copy</button></summary><pre id="f6-st" data-src="code/week06/src/StackingAction.cc">#include "StackingAction.hh"
+
+#include "RunAction.hh"
+
+#include "G4Track.hh"
+#include "G4VProcess.hh"
+
+G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack(const G4Track* track)
+{
+  if (track-&gt;GetParentID() &gt; 0) {
+    const auto* creator = track-&gt;GetCreatorProcess();
+    fRunAction-&gt;CountSecondary(track-&gt;GetDefinition()-&gt;GetParticleName(),
+                               creator ? creator-&gt;GetProcessName() : "unknown");
+  }
+  return fUrgent;  // track everything: we only count
+}</pre></details>
+            <details><summary><b>include/RunAction.hh</b><button class="copy" type="button" data-copy="f6-rah">copy</button></summary><pre id="f6-rah" data-src="code/week06/include/RunAction.hh">#ifndef RunAction_h
+#define RunAction_h 1
+
+#include "G4Timer.hh"
+#include "G4UserRunAction.hh"
+#include "globals.hh"
+
+#include &lt;map&gt;
+#include &lt;string&gt;
+
+class G4Run;
+
+// Keeps the census of secondaries and the energy deposited in the block.
+class RunAction : public G4UserRunAction
+{
+  public:
+    void BeginOfRunAction(const G4Run*) override;
+    void EndOfRunAction(const G4Run* run) override;
+
+    void CountSecondary(const std::string&amp; particle, const std::string&amp; creator)
+    {
+      ++fBySpecies[particle];
+      ++fByCreator[creator];
+    }
+    void AddEventEdep(G4double e) { fSumE += e; fSumE2 += e * e; }
+
+  private:
+    std::map&lt;std::string, G4int&gt; fBySpecies, fByCreator;
+    G4double fSumE = 0., fSumE2 = 0.;
+    G4Timer fTimer;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/RunAction.cc</b><button class="copy" type="button" data-copy="f6-ra">copy</button></summary><pre id="f6-ra" data-src="code/week06/src/RunAction.cc">#include "RunAction.hh"
+
+#include "G4Run.hh"
+#include "G4RunManager.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4VUserPhysicsList.hh"
+#include "G4ios.hh"
+
+#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iomanip&gt;
+#include &lt;vector&gt;
+
+void RunAction::BeginOfRunAction(const G4Run*)
+{
+  fBySpecies.clear();
+  fByCreator.clear();
+  fSumE = fSumE2 = 0.;
+  fTimer.Start();
+}
+
+void RunAction::EndOfRunAction(const G4Run* run)
+{
+  fTimer.Stop();
+  const G4int n = run-&gt;GetNumberOfEvent();
+  if (n == 0) return;
+  const G4double mean = fSumE / n;
+  const G4double rms = std::sqrt(std::max(0., fSumE2 / n - mean * mean));
+
+  auto sorted = [](const std::map&lt;std::string, G4int&gt;&amp; m) {
+    std::vector&lt;std::pair&lt;std::string, G4int&gt;&gt; v(m.begin(), m.end());
+    std::sort(v.begin(), v.end(), [](auto&amp; a, auto&amp; b) { return a.second &gt; b.second; });
+    return v;
+  };
+
+  G4cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3)
+         &lt;&lt; "=== Census: " &lt;&lt; n &lt;&lt; " events, cut " &lt;&lt; G4RunManager::GetRunManager()
+              -&gt;GetUserPhysicsList()-&gt;GetDefaultCutValue() / mm &lt;&lt; " mm ===" &lt;&lt; G4endl
+         &lt;&lt; "  Edep in Block      : " &lt;&lt; mean / MeV &lt;&lt; " +/- " &lt;&lt; rms / std::sqrt(n) / MeV
+         &lt;&lt; " MeV (rms " &lt;&lt; rms / MeV &lt;&lt; ")" &lt;&lt; G4endl
+         &lt;&lt; "  CPU time per event : " &lt;&lt; 1000. * fTimer.GetUserElapsed() / n &lt;&lt; " ms" &lt;&lt; G4endl
+         &lt;&lt; "  secondaries per event, by particle:" &lt;&lt; G4endl;
+  for (const auto&amp; [name, k] : sorted(fBySpecies))
+    G4cout &lt;&lt; "    " &lt;&lt; std::left &lt;&lt; std::setw(14) &lt;&lt; name &lt;&lt; std::right &lt;&lt; std::setw(10)
+           &lt;&lt; static_cast&lt;G4double&gt;(k) / n &lt;&lt; G4endl;
+  G4cout &lt;&lt; "  secondaries per event, by creator process:" &lt;&lt; G4endl;
+  for (const auto&amp; [name, k] : sorted(fByCreator))
+    G4cout &lt;&lt; "    " &lt;&lt; std::left &lt;&lt; std::setw(14) &lt;&lt; name &lt;&lt; std::right &lt;&lt; std::setw(10)
+           &lt;&lt; static_cast&lt;G4double&gt;(k) / n &lt;&lt; G4endl;
+  G4cout &lt;&lt; std::defaultfloat;
+}</pre></details>
+            <details><summary><b>include/EventAction.hh · src/EventAction.cc</b><button class="copy" type="button" data-copy="f6-ea">copy</button></summary><pre id="f6-ea" data-src="code/week06/include/EventAction.hh">#ifndef EventAction_h
+#define EventAction_h 1
+
+#include "G4UserEventAction.hh"
+#include "globals.hh"
+
+class RunAction;
+
+class EventAction : public G4UserEventAction
+{
+  public:
+    explicit EventAction(RunAction* runAction) : fRunAction(runAction) {}
+    void BeginOfEventAction(const G4Event*) override { fEdep = 0.; }
+    void EndOfEventAction(const G4Event*) override;
+    void AddEdep(G4double e) { fEdep += e; }
+
+  private:
+    RunAction* fRunAction = nullptr;
+    G4double fEdep = 0.;
+};
+
+#endif</pre></details>
+            <details><summary><b>include/SteppingAction.hh</b><button class="copy" type="button" data-copy="f6-sah">copy</button></summary><pre id="f6-sah" data-src="code/week06/include/SteppingAction.hh">#ifndef SteppingAction_h
+#define SteppingAction_h 1
+
+#include "G4UserSteppingAction.hh"
+
+class EventAction;
+
+class SteppingAction : public G4UserSteppingAction
+{
+  public:
+    explicit SteppingAction(EventAction* eventAction) : fEventAction(eventAction) {}
+    void UserSteppingAction(const G4Step* step) override;
+
+  private:
+    EventAction* fEventAction = nullptr;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/SteppingAction.cc</b><button class="copy" type="button" data-copy="f6-sa">copy</button></summary><pre id="f6-sa" data-src="code/week06/src/SteppingAction.cc">#include "SteppingAction.hh"
+
+#include "EventAction.hh"
+
+#include "G4Step.hh"
+
+void SteppingAction::UserSteppingAction(const G4Step* step)
+{
+  const auto* volume = step-&gt;GetPreStepPoint()-&gt;GetPhysicalVolume();
+  if (volume &amp;&amp; volume-&gt;GetName() == "Block")
+    fEventAction-&gt;AddEdep(step-&gt;GetTotalEnergyDeposit());
+}</pre></details>
+            <details><summary><b>src/ActionInitialization.cc</b><button class="copy" type="button" data-copy="f6-ai">copy</button></summary><pre id="f6-ai" data-src="code/week06/src/ActionInitialization.cc">#include "ActionInitialization.hh"
+
+#include "EventAction.hh"
+#include "PrimaryGeneratorAction.hh"
+#include "RunAction.hh"
+#include "StackingAction.hh"
+#include "SteppingAction.hh"
+
+void ActionInitialization::Build() const
+{
+  SetUserAction(new PrimaryGeneratorAction());
+  auto* runAction = new RunAction();
+  SetUserAction(runAction);
+  auto* eventAction = new EventAction(runAction);
+  SetUserAction(eventAction);
+  SetUserAction(new SteppingAction(eventAction));
+  SetUserAction(new StackingAction(runAction));
+}</pre></details>
+            <details><summary><b>census.mac · cuts.mac</b><button class="copy" type="button" data-copy="f6-mac">copy</button></summary><pre id="f6-mac" data-src="code/week06/macros.txt"># ======== cuts.mac ========
+# Production-cut scan: 1 GeV mu- through 10 cm of lead
+/run/verbose 0
+/gun/particle mu-
+/gun/energy 1 GeV
+
+/run/setCut 10 mm
+/run/beamOn 1000
+/run/dumpCouples
+
+/run/setCut 0.7 mm
+/run/beamOn 1000
+/run/dumpCouples
+
+/run/setCut 0.1 mm
+/run/beamOn 1000
+/run/dumpCouples
+
+/run/setCut 0.01 mm
+/run/beamOn 1000
+/run/dumpCouples
+
+# ======== census.mac ========
+# Mission 6B: same geometry, same gun, only the physics list changes (command line)
+/run/verbose 0
+/gun/particle mu-
+/gun/energy 1 GeV
+/run/beamOn 2000
+
+/gun/particle pi-
+/gun/energy 1 GeV
+/run/beamOn 2000</pre></details>
+          </div>
+          <p lang="en"><code>src/EventAction.cc</code> is one line: <code>fRunAction-&gt;AddEventEdep(fEdep);</code> in <code>EndOfEventAction</code>. Copy <code>PrimaryGeneratorAction</code>, <code>ActionInitialization.hh</code> and <code>DetectorConstruction.hh</code> from Week 3.</p>
+          <p lang="zh-Hans"><code>src/EventAction.cc</code> 只有一行：在 <code>EndOfEventAction</code> 中调用 <code>fRunAction-&gt;AddEventEdep(fEdep);</code>。<code>PrimaryGeneratorAction</code>、<code>ActionInitialization.hh</code> 和 <code>DetectorConstruction.hh</code> 从第 3 周复制。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Scan the production cut</span><span lang="zh-Hans">扫描产生阈</span></h3><label class="done" for="w06-s2"><input type="checkbox" id="w06-s2" data-progress="w06"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag geant4">GEANT4</span></span><button class="copy" type="button" data-copy="c6-cut">copy</button></div>
+<pre id="c6-cut">./week06 FTFP_BERT cuts.mac &gt; cuts.log
+grep -A4 "=== Census" cuts.log
+grep -A2 "Material : G4_Pb" cuts.log | grep "Energy thresholds"</pre></div>
+          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01, test list)</span><span lang="zh-Hans">预期（Geant4 11.4.p01，测试列表）</span></b></span></div>
+<pre>=== Census: 1000 events, cut 10.000 mm ===
+  Edep in Block      : 141.235 +/- 0.528 MeV (rms 16.701)
+  secondaries per event, by particle:   e- 2.387   gamma 1.358
+=== Census: 1000 events, cut 0.700 mm ===
+  Edep in Block      : 141.530 +/- 0.511 MeV (rms 16.148)
+  secondaries per event, by particle:   e- 9.354   gamma 1.546
+=== Census: 1000 events, cut 0.100 mm ===
+  Edep in Block      : 141.806 +/- 0.537 MeV (rms 16.978)
+  secondaries per event, by particle:   e- 35.859  gamma 2.256
+=== Census: 1000 events, cut 0.010 mm ===
+  Edep in Block      : 140.792 +/- 0.500 MeV (rms 15.813)
+  secondaries per event, by particle:   e- 150.667 gamma 2.351
+ Energy thresholds :  gamma  285 keV    e-  15.2 MeV    e+  14 MeV proton 1 MeV
+ Energy thresholds :  gamma  94.7 keV    e-  1.01 MeV    e+  947 keV proton 70 keV
+ Energy thresholds :  gamma  29.4 keV    e-  241 keV    e+  233 keV proton 10 keV
+ Energy thresholds :  gamma  5.98 keV    e-  57.9 keV    e+  56.8 keV proton 1 keV</pre></div>
+          <p lang="en">A 1000-fold change in range cut changes the electron count 63-fold and the CPU time about 12-fold, and leaves Edep where it was (141 ± 0.5 MeV). Choose the cut from the spatial resolution your observable needs: 0.7 mm is fine for a 10 cm block's total deposit, but too coarse if you want the δ-ray halo around a 100 µm track.</p>
+          <p lang="zh-Hans">射程阈改变 1000 倍，电子数改变 63 倍、CPU 时间改变约 12 倍，而 Edep 原地不动（141 ± 0.5 MeV）。应根据可观测量所需的空间分辨率来选阈值：对 10 cm 方块的总沉积，0.7 mm 足够；但若要看 100 µm 径迹周围的 δ 电子晕，它就太粗了。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Run B: the EM-only list</span><span lang="zh-Hans">运行 B：纯电磁列表</span></h3><label class="done" for="w06-s3"><input type="checkbox" id="w06-s3" data-progress="w06"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c6-em">copy</button></div>
+<pre id="c6-em">./week06 EM census.mac | grep -A18 "=== Census"</pre></div>
+          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected, 1 GeV μ⁻ then 1 GeV π⁻ (EM + decay)</span><span lang="zh-Hans">预期：先 1 GeV μ⁻，后 1 GeV π⁻（电磁 + 衰变）</span></b></span></div>
+<pre>=== Census: 2000 events, cut 0.700 mm ===       <span class="c"># mu-</span>
+  Edep in Block      : 141.460 +/- 0.354 MeV (rms 15.837)
+  by particle:  e- 9.299   gamma 1.530   e+ 0.204
+  by creator :  muIoni 6.649   phot 1.179   eBrem 1.121   compt 0.903
+                conv 0.405   annihil 0.404   eIoni 0.363   muBrems 0.004   muPairProd 0.004
+=== Census: 2000 events, cut 0.700 mm ===       <span class="c"># pi-</span>
+  Edep in Block      : 136.635 +/- 0.292 MeV (rms 13.080)
+  by particle:  e- 8.001   gamma 0.938   e+ 0.117   anti_nu_mu 0.015   mu- 0.015
+  by creator :  hIoni 6.266   phot 0.721   eBrem 0.704   compt 0.574
+                eIoni 0.297   conv 0.235   annihil 0.234   Decay 0.031   muIoni 0.025</pre></div>
+          <p lang="en">The pion run finishes with no warning, and nothing in it is hadronic: only ionisation (<code>hIoni</code>), electromagnetic secondaries and a few decays in flight.</p>
+          <p lang="zh-Hans">π 介子的运行毫无警告地结束，而其中没有任何强子过程：只有电离（<code>hIoni</code>）、电磁次级粒子和少量飞行中的衰变。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Run A: FTFP_BERT, and what to expect</span><span lang="zh-Hans">运行 A：FTFP_BERT 及其预期</span></h3><label class="done" for="w06-s4"><input type="checkbox" id="w06-s4" data-progress="w06"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c6-ft">copy</button></div>
+<pre id="c6-ft">./week06 FTFP_BERT census.mac | grep -A25 "=== Census"</pre></div>
+          <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W06-b
+      issued by : this page
+PREDICTION, not run in our sandbox (no hadronic datasets).
+  mu-: same as run B within errors. Muon-nuclear interactions in
+       10 cm of Pb are rarer than 1 in 1000 events.
+  pi-: P(inelastic in 10 cm) ~ 1 - exp(-10/19.9) ~ 0.4, using the
+       PDG pion interaction length in Pb, 226 g/cm2 (a high-energy
+       value; at 1 GeV it differs by some 10%). Expect new species:
+       neutron, proton, pi+, pi0 -> gamma, deuteron..., created by
+       pi-Inelastic, neutronInelastic, nCapture; a different Edep.
+*** Check your census against these, in units of sigma. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+          <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W06-b
+      issued by : 本页
+这是预测，未在我们的沙盒中运行（没有强子数据集）。
+  mu-：在误差内与运行 B 相同。10 cm 铅中缪子–原子核相互
+       作用少于千分之一个事例。
+  pi-：10 cm 内非弹性作用概率约 1 - exp(-10/19.9) ≈ 0.4，取 PDG
+       铅中 π 介子相互作用长度 226 g/cm²（高能值；1 GeV 时约差
+       10%）。预期出现新的粒子：neutron、proton、pi+、pi0 -> gamma、
+       deuteron……，由 pi-Inelastic、neutronInelastic、nCapture 产生；
+       Edep 也会不同。
+*** 请以 σ 为单位，把你的统计结果与这些预测比较。 ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+          <p lang="en">This answers the Think-about-it. For the muon, the heavy list buys nothing you can see in ionisation, and costs initialisation time and memory (watch the start-up time of the two runs). For the pion, the stripped list is not "faster physics". It is a different, wrong physics, and it says nothing.</p>
+          <p lang="zh-Hans">这就回答了“想一想”：对缪子，重量级列表在电离上换不来任何可见的东西，却要付出初始化时间和内存（比较两次运行的启动时间）。对 π 介子，精简列表不是“更快的物理”，而是另一种错误的物理，而且它一声不吭。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Ask the executable what it actually has</span><span lang="zh-Hans">问问可执行文件到底有什么</span></h3><label class="done" for="w06-s5"><input type="checkbox" id="w06-s5" data-progress="w06"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Write a two-line macro, <code>/run/initialize</code> is already done by <code>main()</code>, then <code>/particle/select pi-</code> and <code>/particle/process/dump</code>, and run it with each list. The process table of the π⁻ is the honest description of your physics. In run B it ends after <code>hIoni</code>, <code>hBrems</code>, <code>hPairProd</code> and <code>Decay</code>; in run A you will also find <code>hadElastic</code> and <code>pi-Inelastic</code>.</p>
+          <p lang="zh-Hans">写一个两行的宏（<code>main()</code> 已经完成了 <code>/run/initialize</code>）：<code>/particle/select pi-</code> 和 <code>/particle/process/dump</code>，分别用两个列表运行。π⁻ 的过程表就是你物理设置的如实描述。运行 B 中它在 <code>hIoni</code>、<code>hBrems</code>、<code>hPairProd</code> 和 <code>Decay</code> 后结束；运行 A 中还会出现 <code>hadElastic</code> 和 <code>pi-Inelastic</code>。</p>
+        </li>
+      </ol>
+      <p class="progress" data-progress-out="w06"></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-quiz">
+    <p class="cmd">/control/verbose 2<span lang="en">self-check</span><span lang="zh-Hans">自测</span></p>
+    <div>
+      <h2 id="h-quiz" class="bi"><span lang="en">Six questions. Each answer explains itself.</span><span lang="zh-Hans">六道题，每个答案都附有解释。</span></h2>
+      <div id="quiz"></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-err">
+    <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
+    <div>
+      <h2 id="h-err" class="bi"><span lang="en">Four ways a physics choice fails without a sound.</span><span lang="zh-Hans">物理选择无声失败的四种方式。</span></h2>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W06-c
+      issued by : SetUserInitialization(new EMPhysicsList())
+Hadronic showers studied with an EM-only list.
+  No error, a plausible histogram, the wrong shape. Before any
+  production run, dump the processes of your key particles.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W06-c
+      issued by : SetUserInitialization(new EMPhysicsList())
+用纯电磁列表研究强子簇射。
+  没有报错，直方图看似合理，形状却是错的。任何正式运行
+  之前，先打印关键粒子的过程表。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W06-d
+      issued by : a custom G4VModularPhysicsList
+Default cut is 1 mm in G4VModularPhysicsList, 0.7 mm in FTFP_BERT.
+  Comparing two lists then compares two cuts as well. Set the cut
+  explicitly (SetDefaultCutValue) or with /run/setCut.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W06-d
+      issued by : 自定义的 G4VModularPhysicsList
+G4VModularPhysicsList 默认阈值为 1 mm，FTFP_BERT 为 0.7 mm。
+  这时比较两个列表，同时也在比较两个阈值。请显式设置阈值
+  （SetDefaultCutValue）或使用 /run/setCut。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W06-e
+      issued by : /run/setCut 1 um   "for accuracy"
+A tiny cut "for accuracy" in a total-deposit study.
+  Edep does not change, CPU time and output grow by an order of
+  magnitude. Match the cut to the spatial scale of the observable.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W06-e
+      issued by : /run/setCut 1 um   “为了精度”
+在总沉积研究中“为了精度”设置极小的阈值。
+  Edep 不变，CPU 时间和输出却增长一个数量级。让阈值与
+  可观测量的空间尺度相匹配。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W06-f
+      issued by : "we used FTFP_BERT"
+Physics list named without version, cut or options.
+  Results change between Geant4 releases. Record the Geant4
+  version, the list, the cuts and any EM option with every result.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W06-f
+      issued by : “我们用的是 FTFP_BERT”
+只报物理列表名，不报版本、阈值和选项。
+  不同 Geant4 版本的结果会变化。每个结果都要记录 Geant4
+  版本、物理列表、阈值以及任何 EM 选项。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-review">
+    <p class="cmd">/control/saveHistory<span lang="en">review notes</span><span lang="zh-Hans">复习要点</span></p>
+    <div class="prose">
+      <h2 id="h-review" class="bi"><span lang="en">Before you close the run.</span><span lang="zh-Hans">结束运行之前。</span></h2>
+      <ul class="review">
+        <li><label for="w06-r1"><input type="checkbox" id="w06-r1"><span lang="en">Can I state which major categories of process my chosen physics list includes?</span><span lang="zh-Hans">我能否说出所选物理列表包含哪些主要类别的过程？</span></label></li>
+        <li><label for="w06-r2"><input type="checkbox" id="w06-r2"><span lang="en">After swapping lists, did I compare the species and count of secondaries, not only the total deposit?</span><span lang="zh-Hans">更换列表后，我是否比较了次级粒子的种类和数量，而不只是总沉积？</span></label></li>
+        <li><label for="w06-r3"><input type="checkbox" id="w06-r3"><span lang="en">For the question I care about, is my list just enough, or over-configured?</span><span lang="zh-Hans">对我关心的问题，我的列表是恰好够用，还是过度配置？</span></label></li>
+      </ul>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Remark · debt repaid, debt taken on</span><span lang="zh-Hans">小结 · 还清的债与新欠的债</span></p>
+        <p lang="en">Repaid: processes are no longer names introduced one at a time; they sit inside the trade-off framework of the physics list and the cut. Taken on: every particle so far flew in a straight line between interactions. Next week a magnetic field makes the trajectory itself a measurement.</p>
+        <p lang="zh-Hans">还清的债：物理过程不再是逐个引入的名称，而是被放进物理列表与产生阈的取舍框架中。新欠的债：到目前为止，每个粒子在相互作用之间都走直线。下周磁场会让轨迹本身成为一次测量。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-share">
+    <p class="cmd">/vis/ogl/export week06.gif<span lang="en">share this week</span><span lang="zh-Hans">分享本周成果</span></p>
+    <div class="share">
+      <figure class="fig">
+        <img src="media/week06-cuts.gif" width="720" height="900" alt="Animation: as the production cut falls from 10 mm to 10 µm, the number of electron tracks in lead grows 63-fold while the deposited energy stays flat" loading="lazy">
+        <figcaption><span lang="en">Built from our Geant4 11.4 cut scan (1 GeV μ⁻, 10 cm Pb). Long-press or right-click to save.</span><span lang="zh-Hans">由我们的 Geant4 11.4 阈值扫描生成（1 GeV μ⁻，10 cm 铅）。长按或右键即可保存。</span></figcaption>
+      </figure>
+      <div class="prose">
+        <h2 id="h-share" class="bi"><span lang="en">Sixty-three times the tracks, the same energy.</span><span lang="zh-Hans">径迹多了 63 倍，能量还是那么多。</span></h2>
+        <p lang="en">Post your cut table and the π⁻ census from run A next to run B. The line that matters is the one with nothing in it.</p>
+        <p lang="zh-Hans">把你的阈值表，以及运行 A 与运行 B 的 π⁻ 统计并排发出来。真正重要的，是那一行空着的。</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" id="pager" aria-label="Week navigation"></nav>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 7 · Geant4 11.4.p01 · PDG RPP 2024</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 7 章 · Geant4 11.4.p01 · PDG RPP 2024</span>
+  </footer>
+</div>
+<script src="assets/course.js"></script>
+<script src="assets/week06.js"></script>
+</body>
+</html>
