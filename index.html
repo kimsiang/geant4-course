@@ -1,0 +1,82 @@
+<title>Geant4 2.0 Training</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0 course pages: twelve weekly labs from a Python Monte Carlo to a defended virtual experiment.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+
+<div class="wrap">
+  <div class="bar">
+    <span><b>Geant4 2.0</b> · <span lang="en">course pages</span><span lang="zh-Hans">课程页面</span></span>
+    <span class="bar-r">
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">Idle&gt; <span>/run/beamOn 12</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">Twelve weeks, one virtual laboratory.</span><span lang="zh-Hans">十二周，一座虚拟实验室。</span></h1>
+      <p class="lede" lang="en">Each week is one run: a question, a short lesson, a toy model you can play with, a task you run in your own terminal, and a self-check. You start with a Python Monte Carlo and finish with a virtual experiment you can defend in front of a referee.</p>
+      <p class="lede" lang="zh-Hans">每一周就是一次运行：一个问题、一段简短讲解、一个可以动手玩的玩具模型、一个在你自己终端里完成的任务，以及一组自测题。从一个 Python 蒙特卡罗开始，到一个能在审稿人面前答辩的虚拟实验结束。</p>
+      <ul class="meta">
+        <li><b>12</b><span lang="en">weekly labs</span><span lang="zh-Hans">每周实验</span></li>
+        <li><b>5</b><span lang="en">stages</span><span lang="zh-Hans">阶段</span></li>
+        <li><b>11.4</b><span lang="en">Geant4 core · musrSim on 10.7</span><span lang="zh-Hans">Geant4 核心 · musrSim 用 10.7</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="Every week contains">
+      <div role="row"><span role="cell"><span lang="en">every week</span><span lang="zh-Hans">每周内容</span></span></div>
+      <div role="row"><span role="cell">/run/initialize</span><span role="cell"><span lang="en">goals</span><span lang="zh-Hans">学习目标</span></span></div>
+      <div role="row"><span role="cell">/control/manual</span><span role="cell"><span lang="en">lesson</span><span lang="zh-Hans">讲解</span></span></div>
+      <div role="row"><span role="cell">/run/beamOn</span><span role="cell"><span lang="en">toy model</span><span lang="zh-Hans">玩具模型</span></span></div>
+      <div role="row"><span role="cell">/control/shell</span><span role="cell"><span lang="en">hands-on</span><span lang="zh-Hans">动手任务</span></span></div>
+      <div role="row"><span role="cell">/control/verbose</span><span role="cell"><span lang="en">self-check</span><span lang="zh-Hans">自测</span></span></div>
+      <div role="row"><span role="cell">G4Exception</span><span role="cell"><span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-weeks">
+    <p class="cmd">/control/execute<span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></p>
+    <div>
+      <h2 id="h-weeks" class="bi"><span lang="en">Five stages, from seeing a track to trusting a number.</span><span lang="zh-Hans">五个阶段：从看见径迹，到相信一个数。</span></h2>
+      <div class="weeks" id="weeks"></div>
+      <p class="cap"><span lang="en">Progress counts are kept in this browser only.</span><span lang="zh-Hans">进度只保存在本浏览器中。</span></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-how">
+    <p class="cmd">/control/getEnv STUDY<span lang="en">how to study a week</span><span lang="zh-Hans">如何学习一周内容</span></p>
+    <div class="prose">
+      <h2 id="h-how" class="bi"><span lang="en">Follow the detector, not the class list.</span><span lang="zh-Hans">跟着探测器走，而不是跟着类列表走。</span></h2>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th><span lang="en">Minutes</span><span lang="zh-Hans">分钟</span></th><th><span lang="en">Do this</span><span lang="zh-Hans">做什么</span></th></tr></thead>
+          <tbody>
+            <tr><td class="n">15</td><td><span lang="en">Read the physics question and write a prediction</span><span lang="zh-Hans">读物理问题，写下预测</span></td></tr>
+            <tr><td class="n">20</td><td><span lang="en">Run the supplied example without changing code</span><span lang="zh-Hans">不改代码，先运行给定示例</span></td></tr>
+            <tr><td class="n">30</td><td><span lang="en">Study the two or three lines the code microscope points to</span><span lang="zh-Hans">细读“代码显微镜”指出的两三行</span></td></tr>
+            <tr><td class="n">30</td><td><span lang="en">Change one physical parameter and make a plot</span><span lang="zh-Hans">改变一个物理参数并作图</span></td></tr>
+            <tr><td class="n">15</td><td><span lang="en">Compare the result with your prediction</span><span lang="zh-Hans">把结果与预测比较</span></td></tr>
+            <tr><td class="n">10</td><td><span lang="en">Write one limitation and one next question</span><span lang="zh-Hans">写下一个局限和下一个问题</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p lang="en">If you cannot explain the plot without opening the source code, repeat the experiment before moving on.</p>
+      <p lang="zh-Hans">如果不打开源代码就讲不清这张图，那就再做一遍实验，然后再往下走。</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span>Learn more at 从槟城出发的粒子 · Particles from Penang</span>
+  </footer>
+</div>
+<script src="assets/course.js"></script>
+<script>G4C.weekList(document.getElementById('weeks'));</script>

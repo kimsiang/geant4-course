@@ -1,0 +1,520 @@
+<title>Geant4 2.0 Course</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="A 12-week, project-based course: simulate a particle detector from scratch with Geant4. Join the founding waitlist.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+/* Layout: the page reads as one Geant4 run. Left rail = macro command, right = what it produces. Hero = live event display + ROOT-style histogram. */
+:root {
+  --bg: #F6F7F5;          /* ROOT canvas paper */
+  --panel: #FFFFFF;
+  --fg: #12161A;
+  --muted: #59636D;
+  --rule: rgba(18,22,26,0.16);
+  --frame: #12161A;
+  --neg: #D1323B;         /* Geant4 vis: negative = red */
+  --neu: #23935A;         /* neutral = green */
+  --pos: #2C55E0;         /* positive = blue */
+  --hist: #2C55E0;
+  --warn: #9A6A00;
+  --display-bg: #10161B;  /* event display stays dark in both themes */
+  --display-fg: #DCE3E8;
+  --display-rule: rgba(220,227,232,0.16);
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --head: "IBM Plex Sans Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12181D; --panel: #182027; --fg: #E4E9EC; --muted: #93A0AA;
+    --rule: rgba(228,233,236,0.14); --frame: #C9D2D8;
+    --neg: #FF6369; --neu: #4FC98A; --pos: #7393FF; --hist: #7393FF; --warn: #E2B04A;
+    --display-bg: #0B1014; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12181D; --panel: #182027; --fg: #E4E9EC; --muted: #93A0AA;
+  --rule: rgba(228,233,236,0.14); --frame: #C9D2D8;
+  --neg: #FF6369; --neu: #4FC98A; --pos: #7393FF; --hist: #7393FF; --warn: #E2B04A;
+  --display-bg: #0B1014; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 400 16px/1.6 var(--sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 72px;
+}
+.wrap { max-width: 1100px; margin: 0 auto; }
+code, .mono { font-family: var(--mono); font-size: 0.9em; }
+
+/* top bar */
+.bar { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; align-items: baseline;
+  padding-block: 18px; border-bottom: 1px solid var(--rule); font: 500 0.82rem/1.4 var(--mono); color: var(--muted); }
+.bar b { color: var(--fg); font-weight: 500; }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 40px; padding-block: 48px 56px; align-items: start; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; gap: 28px; padding-block: 32px 40px; } }
+.prompt { font: 400 0.85rem/1.5 var(--mono); color: var(--muted); margin: 0 0 18px; }
+.prompt span { color: var(--neg); }
+h1, h2 { font-family: var(--head); font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.4rem, 5.6vw, 4.2rem); line-height: 1.0; }
+h2 { font-size: clamp(1.6rem, 3.4vw, 2.3rem); line-height: 1.1; }
+.lede { font-size: 1.12rem; color: var(--muted); max-width: 36ch; margin: 20px 0 28px; }
+.cta { display: inline-flex; gap: 10px; align-items: center; text-decoration: none;
+  background: var(--fg); color: var(--bg); font: 500 0.95rem/1 var(--mono);
+  padding: 14px 18px; border-radius: 3px; }
+.cta::before { content: "$"; color: var(--neg); }
+.meta { list-style: none; padding: 0; margin: 28px 0 0; display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 4px 28px; font: 400 0.82rem/1.5 var(--mono); color: var(--muted); }
+.meta b { display: block; color: var(--fg); font: 600 1.4rem/1.2 var(--head); }
+@media (max-width: 420px) { .meta { grid-template-columns: repeat(2, auto); } }
+
+/* event display */
+.display { background: var(--display-bg); color: var(--display-fg); border-radius: 4px; overflow: hidden; }
+.display-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--display-rule); font: 400 0.75rem/1.4 var(--mono); color: #8FA0AC; }
+#ev { display: block; width: 100%; aspect-ratio: 16 / 10; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 10px 14px; border-top: 1px solid var(--display-rule); font: 400 0.75rem/1.4 var(--mono); color: #8FA0AC; }
+.legend i { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 6px; }
+.hist-wrap { background: var(--panel); border: 1px solid var(--rule); border-top: 0; padding: 12px 14px 8px; }
+#hist { display: block; width: 100%; aspect-ratio: 16 / 7; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 12px 14px; background: var(--panel); border: 1px solid var(--rule); border-top: 0; border-radius: 0 0 4px 4px; }
+.controls button { font: 500 0.85rem/1 var(--mono); background: transparent; color: var(--fg); border: 1px solid var(--frame); border-radius: 3px; padding: 10px 12px; cursor: pointer; }
+.controls button.primary { background: var(--fg); color: var(--bg); }
+.controls small { font: 400 0.75rem/1.4 var(--mono); color: var(--muted); }
+
+/* run sections */
+.run { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 28px 40px; padding-block: 48px; border-top: 1px solid var(--rule); }
+@media (max-width: 760px) { .run { grid-template-columns: 1fr; gap: 14px; padding-block: 36px; } }
+.cmd { font: 500 0.85rem/1.5 var(--mono); color: var(--neg); margin: 0; padding-top: 6px; word-break: break-word; }
+.cmd span { display: block; color: var(--muted); font-weight: 400; }
+.run p { max-width: 62ch; color: var(--muted); }
+.run h2 + p { margin-top: 14px; }
+
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+@media (max-width: 640px) { .compare { grid-template-columns: 1fr; } }
+pre { margin: 0; font: 400 0.82rem/1.6 var(--mono); background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 14px 16px; overflow-x: auto; color: var(--fg); }
+pre .c { color: var(--muted); }
+pre .ok { color: var(--neu); }
+pre .bad { color: var(--neg); }
+.cap { font: 400 0.75rem/1.4 var(--mono); color: var(--muted); margin: 8px 0 0; }
+
+/* tables */
+.tbl { width: 100%; border-collapse: collapse; margin-top: 22px; font-size: 0.98rem; }
+.tbl th { text-align: left; font: 500 0.72rem/1.4 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 0 12px 8px 0; border-bottom: 1px solid var(--frame); }
+.tbl td { padding: 12px 12px 12px 0; border-bottom: 1px solid var(--rule); vertical-align: baseline; }
+.tbl td.n { font: 500 0.85rem var(--mono); color: var(--neg); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tbl td.zh { color: var(--muted); white-space: nowrap; }
+.tbl td.wk { font: 400 0.85rem var(--mono); color: var(--muted); white-space: nowrap; }
+.scroll { overflow-x: auto; }
+
+/* instructor stat box */
+.statbox { margin-top: 22px; border: 1px solid var(--frame); background: var(--panel); max-width: 520px; font: 400 0.88rem/1.5 var(--mono); }
+.statbox div { display: flex; justify-content: space-between; gap: 16px; padding: 7px 14px; border-bottom: 1px solid var(--rule); }
+.statbox div:first-child { justify-content: center; border-bottom: 1px solid var(--frame); font-weight: 500; }
+.statbox div:last-child { border-bottom: 0; }
+.statbox span:last-child { text-align: right; color: var(--muted); }
+
+/* prices */
+.prices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: 24px; border-top: 1px solid var(--frame); }
+@media (max-width: 640px) { .prices { grid-template-columns: 1fr; } }
+.price { padding: 18px 18px 18px 0; border-bottom: 1px solid var(--rule); }
+.price .tag { font: 400 0.78rem/1.4 var(--mono); color: var(--muted); }
+.price .amt { font: 700 2.4rem/1.1 var(--head); margin: 4px 0 6px; font-variant-numeric: tabular-nums; }
+.price p { margin: 0; font-size: 0.92rem; }
+.note { font: 400 0.78rem/1.5 var(--mono); color: var(--muted); margin-top: 12px; }
+
+/* G4Exception */
+.g4ex { margin-top: 22px; font: 400 0.84rem/1.65 var(--mono); background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--warn); border-radius: 0 4px 4px 0; padding: 14px 16px; overflow-x: auto; white-space: pre; color: var(--fg); }
+.g4ex .w { color: var(--warn); }
+
+/* form */
+form { margin-top: 24px; display: grid; gap: 18px; max-width: 720px; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+label, legend { display: grid; gap: 6px; font: 500 0.78rem/1.4 var(--mono); color: var(--muted); }
+input[type=text], input[type=email], select {
+  font: 400 1rem var(--sans); color: var(--fg); background: var(--panel);
+  border: 1px solid var(--rule); border-radius: 3px; padding: 11px 12px; width: 100%; }
+fieldset { border: 0; padding: 0; margin: 0; }
+legend { margin-bottom: 8px; padding: 0; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opts label { display: inline-flex; cursor: pointer; font: 400 0.9rem var(--sans); color: var(--fg); }
+.opts input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.opts span { padding: 9px 13px; border: 1px solid var(--rule); border-radius: 3px; background: var(--panel); }
+.opts input:checked + span { border-color: var(--neg); box-shadow: inset 0 0 0 1px var(--neg); }
+.submit { justify-self: start; font: 500 0.95rem/1 var(--mono); background: var(--fg); color: var(--bg); border: 0; border-radius: 3px; padding: 14px 18px; cursor: pointer; }
+.status { font: 400 0.88rem/1.5 var(--mono); color: var(--neu); min-height: 1.5em; margin: 0; }
+.status.err { color: var(--neg); }
+:focus-visible { outline: 2px solid var(--pos); outline-offset: 2px; }
+
+footer { border-top: 1px solid var(--rule); padding-top: 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; font: 400 0.8rem/1.5 var(--mono); color: var(--muted); }
+</style>
+
+<div class="wrap">
+
+  <div class="bar">
+    <span><b>Geant4 2.0</b> · a course in detector simulation</span>
+    <span>Founding cohort · waitlist open</span>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">Idle&gt; <span>/gun/particle mu-</span></p>
+      <h1 id="h-hero">Learn Geant4 by running it, one event at a time.</h1>
+      <p class="lede">A 12-week, project-based course. You start from an empty folder and finish with a detector simulation you can defend in front of a referee.</p>
+      <a class="cta" href="#join">/run/beamOn waitlist</a>
+      <ul class="meta">
+        <li><b>12</b>weekly projects</li>
+        <li><b>5</b>stages</li>
+        <li><b>EN · 中文</b>bilingual</li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="display">
+        <div class="display-head"><span>Event display · side view</span><span id="evlabel">Run 0 · Event 0</span></div>
+        <canvas id="ev" aria-label="Simulated cosmic-ray muons crossing six scintillator planes"></canvas>
+        <div class="legend">
+          <span><i style="background:#FF6369"></i>negative (μ⁻, e⁻)</span>
+          <span><i style="background:#4FC98A"></i>neutral (γ)</span>
+          <span><i style="background:#7393FF"></i>positive (μ⁺)</span>
+        </div>
+      </div>
+      <div class="hist-wrap">
+        <canvas id="hist" aria-label="Histogram of energy deposited in one scintillator plane"></canvas>
+      </div>
+      <div class="controls">
+        <button class="primary" id="b100" type="button">/run/beamOn 100</button>
+        <button id="b1000" type="button">/run/beamOn 1000</button>
+        <button id="breset" type="button">Reset</button>
+        <small>Toy Monte Carlo running in your browser.</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="run" aria-labelledby="h-problem">
+    <p class="cmd">/run/initialize<span>the problem</span></p>
+    <div>
+      <h2 id="h-problem">Copying an example gets a simulation running. It does not tell you if it is right.</h2>
+      <p>Most physicists learn Geant4 alone, by editing <code>exampleB1</code> until something compiles. The output looks plausible, and nobody checks it against physics. This course is built around the check.</p>
+      <div class="compare">
+        <div>
+<pre><span class="c">// what most people do</span>
+cp -r examples/basic/B1 mySim
+cmake .. &amp;&amp; make
+./exampleB1 run1.mac
+<span class="bad">// histogram looks fine?</span>
+<span class="bad">// ship it</span></pre>
+          <p class="cap">Runs. Unknown whether it is right.</p>
+        </div>
+        <div>
+<pre><span class="c">// what you will do</span>
+build geometry, verify volumes
+choose physics list, justify cuts
+score Edep, compare to Bethe–Bloch
+<span class="ok">// MPV within 2% of reference</span>
+<span class="ok">// result you can defend</span></pre>
+          <p class="cap">Runs, and you know why the numbers are right.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- METHOD -->
+  <section class="run" aria-labelledby="h-method">
+    <p class="cmd">/control/execute<span>the method</span></p>
+    <div>
+      <h2 id="h-method">Five stages, from seeing a track to trusting a number.</h2>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th>Stage</th><th>You learn to</th><th>阶段</th></tr></thead>
+          <tbody>
+            <tr><td class="n">1 · See it</td><td>Build geometry and materials, and draw your first tracks</td><td class="zh">观测</td></tr>
+            <tr><td class="n">2 · Measure it</td><td>Score energy, record hits and write ROOT output</td><td class="zh">度量</td></tr>
+            <tr><td class="n">3 · Understand it</td><td>Choose physics lists and production cuts, and know what they change</td><td class="zh">理解</td></tr>
+            <tr><td class="n">4 · Build it</td><td>Write a complete detector application with sensitive detectors</td><td class="zh">建造</td></tr>
+            <tr><td class="n">5 · Trust it</td><td>Validate against data and quote a systematic uncertainty</td><td class="zh">取信</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="run" aria-labelledby="h-projects">
+    <p class="cmd">/run/beamOn 12<span>what you build</span></p>
+    <div>
+      <h2 id="h-projects">Twelve events. Each one ends with working code.</h2>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th>Weeks</th><th>Project</th></tr></thead>
+          <tbody>
+            <tr><td class="wk">01–02</td><td>A plastic scintillator slab and your first cosmic-ray muon tracks</td></tr>
+            <tr><td class="wk">03–05</td><td>Energy deposits, hit collections and ROOT ntuples</td></tr>
+            <tr><td class="wk">06–08</td><td>Physics-list choices tested against known stopping power</td></tr>
+            <tr><td class="wk">09–10</td><td>A multi-layer muon telescope, as used in muography</td></tr>
+            <tr><td class="wk">11–12</td><td>A validated capstone you can put in a thesis or show in an interview</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTRUCTOR -->
+  <section class="run" aria-labelledby="h-who">
+    <p class="cmd">/vis/viewer/zoom<span>your instructor</span></p>
+    <div>
+      <h2 id="h-who">Taught by a muon physicist who simulates detectors for a living.</h2>
+      <p>Kim Siang Khaw (许金祥) leads the Muon Physics Group at the Tsung-Dao Lee Institute, Shanghai Jiao Tong University.</p>
+      <div class="statbox" role="table" aria-label="Instructor summary">
+        <div role="row"><span role="cell">instructor</span></div>
+        <div role="row"><span role="cell">Muon g-2</span><span role="cell">Fermilab</span></div>
+        <div role="row"><span role="cell">Muon EDM</span><span role="cell">Paul Scherrer Institute</span></div>
+        <div role="row"><span role="cell">Muography</span><span role="cell">imaging with cosmic muons</span></div>
+        <div role="row"><span role="cell">Trained at</span><span role="cell">Kyoto, Tokyo, ETH Zürich, Washington</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICE -->
+  <section class="run" aria-labelledby="h-price">
+    <p class="cmd">/run/printProgress<span>founding pricing</span></p>
+    <div>
+      <h2 id="h-price">Waitlist members get the founding price.</h2>
+      <div class="prices">
+        <div class="price"><div class="tag">self-paced</div><div class="amt">$290</div><p>All 12 projects, solutions and the container image.</p></div>
+        <div class="price"><div class="tag">live cohort</div><div class="amt">$590</div><p>Weekly code review and a capstone defence.</p></div>
+        <div class="price"><div class="tag">lab licence · 5 seats</div><div class="amt">$1,900</div><p>For a research group onboarding new students.</p></div>
+      </div>
+      <p class="note">Proposed prices, US$, October 2026. Tell us what you would pay when you join; your answer sets the final price.</p>
+    </div>
+  </section>
+
+  <!-- CAVEAT -->
+  <section class="run" aria-labelledby="h-caveat">
+    <p class="cmd">G4Exception<span>before you join</span></p>
+    <div>
+      <h2 id="h-caveat">Check the prerequisites before you start the run.</h2>
+<div class="g4ex" role="note"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course001
+      issued by : Geant4 2.0 waitlist
+Prerequisites for this course:
+  - basic C++: classes and pointers, not templates
+  - a Linux or macOS machine (container provided for Windows)
+  - about five hours a week, mostly building
+Best fit: senior undergraduates, new graduate students,
+and engineers moving into detector work.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+    </div>
+  </section>
+
+  <!-- JOIN -->
+  <section class="run" id="join" aria-labelledby="h-join">
+    <p class="cmd">/run/beamOn<span>join the waitlist</span></p>
+    <div>
+      <h2 id="h-join">Reserve a seat in the founding cohort.</h2>
+      <p>We open the course when enough people join. You will get one email when it opens, and nothing else.</p>
+      <form id="waitlist" novalidate>
+        <div class="row">
+          <label for="f-name">Name<input id="f-name" name="name" type="text" autocomplete="name" placeholder="Marie Curie" required></label>
+          <label for="f-email">Email<input id="f-email" name="email" type="email" autocomplete="email" placeholder="you@university.edu" required></label>
+        </div>
+        <div class="row">
+          <label for="f-role">You are a
+            <select id="f-role" name="role">
+              <option>Undergraduate</option>
+              <option>Graduate student</option>
+              <option>Postdoc or researcher</option>
+              <option>Engineer in industry</option>
+              <option>Medical physicist</option>
+              <option>Teacher</option>
+            </select>
+          </label>
+          <label for="f-project">What do you want to simulate?<input id="f-project" name="project" type="text" placeholder="a muon telescope, a PET ring…"></label>
+        </div>
+        <fieldset>
+          <legend>I would pay</legend>
+          <div class="opts">
+            <label><input type="radio" name="price" value="0" id="p0"><span>Only if free</span></label>
+            <label><input type="radio" name="price" value="99" id="p99"><span>Up to $99</span></label>
+            <label><input type="radio" name="price" value="290" id="p290" checked><span>$290 self-paced</span></label>
+            <label><input type="radio" name="price" value="590" id="p590"><span>$590 live cohort</span></label>
+          </div>
+        </fieldset>
+        <button class="submit" type="submit">Reserve my seat</button>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span>Learn more at 从槟城出发的粒子 · Particles from Penang</span>
+  </footer>
+</div>
+
+<script>
+/* Toy Monte Carlo: cosmic-ray muons through six 1 cm plastic scintillator planes.
+   Energy loss per plane sampled from a Moyal distribution (Landau approximation),
+   MPV 1.75 MeV, width 0.11 MeV. Illustrative only, not a Geant4 result. */
+(function () {
+  var ev = document.getElementById('ev'), hc = document.getElementById('hist');
+  var label = document.getElementById('evlabel');
+  var seed = 20261018;
+  function rnd() { seed = (seed * 48271) % 2147483647; return seed / 2147483647; }
+  function gauss() { var u = 1 - rnd(), v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  function moyal() { var z = gauss(); return -Math.log(z * z + 1e-12); }
+
+  var NB = 60, LO = 1.0, HI = 4.0, bins, entries, sum, sum2, run = 0, nev = 0, last = [];
+  function reset() { bins = new Array(NB).fill(0); entries = 0; sum = 0; sum2 = 0; nev = 0; last = []; }
+
+  var PLANES = 6;
+  function makeEvent() {
+    var q = rnd() < 0.56 ? 1 : -1;               // cosmic mu+/mu- ratio ~1.27
+    var x0 = 0.1 + rnd() * 0.8, th = gauss() * 0.28;
+    var e = { q: q, x0: x0, th: th, kinks: [], deltas: [], gamma: null, edep: [] };
+    for (var p = 0; p < PLANES; p++) {
+      var d = 1.75 + 0.11 * moyal();
+      e.edep.push(d);
+      e.kinks.push(gauss() * 0.01);
+      if (rnd() < 0.12) e.deltas.push({ p: p, dir: rnd() < 0.5 ? -1 : 1, r: 0.01 + rnd() * 0.025 });
+    }
+    if (rnd() < 0.18) e.gamma = { p: Math.floor(rnd() * PLANES), a: (rnd() - 0.5) * 2.2 };
+    return e;
+  }
+  function fire(n) {
+    for (var i = 0; i < n; i++) {
+      var e = makeEvent();
+      var d = e.edep[2];                         // score plane 3
+      var b = Math.floor((d - LO) / (HI - LO) * NB);
+      if (b >= 0 && b < NB) bins[b]++;
+      entries++; sum += d; sum2 += d * d; nev++;
+      last.push(e); if (last.length > 14) last.shift();
+    }
+    run++;
+    drawEvent(); drawHist();
+  }
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function size(c) {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2), w = c.clientWidth, h = c.clientHeight;
+    c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+    var x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); return [x, w, h];
+  }
+  function drawEvent() {
+    var r = size(ev), x = r[0], w = r[1], h = r[2];
+    if (!w) return;
+    x.fillStyle = css('--display-bg'); x.fillRect(0, 0, w, h);
+    var top = h * 0.14, gap = h * 0.13, th = Math.max(3, h * 0.035);
+    for (var p = 0; p < PLANES; p++) {
+      var y = top + p * gap;
+      x.fillStyle = 'rgba(115,147,255,0.10)'; x.fillRect(w * 0.04, y - th / 2, w * 0.92, th);
+      x.strokeStyle = 'rgba(220,227,232,0.28)'; x.lineWidth = 1; x.strokeRect(w * 0.04 + .5, y - th / 2 + .5, w * 0.92 - 1, th - 1);
+      x.fillStyle = 'rgba(220,227,232,0.45)'; x.font = '10px "IBM Plex Mono", monospace';
+      x.fillText('S' + (p + 1), w * 0.005, y + 3);
+    }
+    var red = '#FF6369', green = '#4FC98A', blue = '#7393FF';
+    last.forEach(function (e, k) {
+      var alpha = 0.25 + 0.75 * (k + 1) / last.length;
+      x.globalAlpha = alpha;
+      var px = e.x0 * w, py = 0, ang = e.th;
+      x.strokeStyle = e.q < 0 ? red : blue; x.lineWidth = k === last.length - 1 ? 2 : 1.1;
+      x.beginPath(); x.moveTo(px, py);
+      for (var p = 0; p < PLANES; p++) {
+        var y = top + p * gap; px += Math.tan(ang) * (y - py); py = y; x.lineTo(px, py);
+        ang += e.kinks[p];
+        e.deltas.forEach(function (d) {
+          if (d.p !== p) return;
+          x.save(); x.strokeStyle = red; x.lineWidth = 0.8; x.beginPath();
+          x.arc(px + d.dir * d.r * w, py, d.r * w, 0, Math.PI * 1.6 * d.dir); x.stroke(); x.restore();
+        });
+        if (e.gamma && e.gamma.p === p) {
+          x.save(); x.strokeStyle = green; x.setLineDash([4, 4]); x.lineWidth = 1;
+          x.beginPath(); x.moveTo(px, py); x.lineTo(px + Math.sin(e.gamma.a) * h * 0.5, py + Math.cos(e.gamma.a) * h * 0.5); x.stroke(); x.restore();
+        }
+        x.fillStyle = '#F2D06B'; x.beginPath(); x.arc(px, py, 2.2, 0, 2 * Math.PI); x.fill();
+      }
+      px += Math.tan(ang) * (h - py); x.lineTo(px, h); x.stroke();
+    });
+    x.globalAlpha = 1;
+    label.textContent = 'Run ' + run + ' · ' + nev.toLocaleString('en') + ' events';
+  }
+  function drawHist() {
+    var r = size(hc), x = r[0], w = r[1], h = r[2];
+    if (!w) return;
+    var fg = css('--fg'), muted = css('--muted'), frame = css('--frame'), col = css('--hist'), panel = css('--panel');
+    x.fillStyle = panel; x.fillRect(0, 0, w, h);
+    var L = 44, R = w - 10, T = 10, B = h - 30, max = Math.max(1, Math.max.apply(null, bins)) * 1.12;
+    var bw = (R - L) / NB;
+    // histogram, ROOT step style
+    x.strokeStyle = col; x.lineWidth = 1.4; x.fillStyle = col + '22';
+    x.beginPath(); x.moveTo(L, B);
+    for (var i = 0; i < NB; i++) { var y = B - bins[i] / max * (B - T); x.lineTo(L + i * bw, y); x.lineTo(L + (i + 1) * bw, y); }
+    x.lineTo(R, B); x.closePath(); x.fill(); x.stroke();
+    // frame + inward ticks
+    x.strokeStyle = frame; x.lineWidth = 1; x.strokeRect(L + .5, T + .5, R - L - 1, B - T);
+    x.fillStyle = muted; x.font = '11px "IBM Plex Mono", monospace'; x.textAlign = 'center';
+    for (var v = 1; v <= 4.001; v += 0.5) {
+      var tx = L + (v - LO) / (HI - LO) * (R - L);
+      x.beginPath(); x.moveTo(tx, B); x.lineTo(tx, B - (v % 1 === 0 ? 8 : 4)); x.stroke();
+      if (v % 1 === 0) x.fillText(v.toFixed(0), tx, B + 14);
+    }
+    x.textAlign = 'right'; x.fillText('Edep in S3 [MeV]', R, h - 2);
+    var step = max > 400 ? 200 : max > 120 ? 50 : max > 40 ? 20 : 5;
+    for (var c = step; c < max; c += step) {
+      var ty = B - c / max * (B - T);
+      x.beginPath(); x.moveTo(L, ty); x.lineTo(L + 6, ty); x.stroke();
+      x.fillText(String(c), L - 6, ty + 4);
+    }
+    // stat box
+    var mean = entries ? sum / entries : 0, sd = entries ? Math.sqrt(Math.max(0, sum2 / entries - mean * mean)) : 0;
+    var lines = [['edep', ''], ['Entries', String(entries)], ['Mean', mean.toFixed(3)], ['Std Dev', sd.toFixed(3)]];
+    var bwid = 150, bx = R - bwid - 6, by = T + 6, lh = 15;
+    x.fillStyle = panel; x.fillRect(bx, by, bwid, lh * 4 + 6);
+    x.strokeStyle = frame; x.strokeRect(bx + .5, by + .5, bwid, lh * 4 + 6);
+    x.beginPath(); x.moveTo(bx, by + lh + 3); x.lineTo(bx + bwid, by + lh + 3); x.stroke();
+    x.fillStyle = fg; x.textAlign = 'center'; x.fillText('edep', bx + bwid / 2, by + 14);
+    for (var j = 1; j < 4; j++) {
+      x.textAlign = 'left'; x.fillText(lines[j][0], bx + 8, by + 14 + j * lh + 3);
+      x.textAlign = 'right'; x.fillText(lines[j][1], bx + bwid - 8, by + 14 + j * lh + 3);
+    }
+    x.textAlign = 'left';
+  }
+  reset(); fire(400);
+  document.getElementById('b100').addEventListener('click', function () { fire(100); });
+  document.getElementById('b1000').addEventListener('click', function () { fire(1000); });
+  document.getElementById('breset').addEventListener('click', function () { reset(); run = 0; drawEvent(); drawHist(); });
+  var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { drawEvent(); drawHist(); }, 80); });
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', function () { drawEvent(); drawHist(); });
+  }
+  new MutationObserver(function () { drawEvent(); drawHist(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+
+/* Waitlist form. Set FORM_ENDPOINT to a Tally or Formspree POST URL on the deployed site. */
+(function () {
+  var FORM_ENDPOINT = '';
+  var form = document.getElementById('waitlist'), status = document.getElementById('status');
+  function say(msg, err) { status.textContent = msg; status.className = 'status' + (err ? ' err' : ''); }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = form.name.value.trim(), email = form.email.value.trim();
+    if (!name) { say('Add your name so we know who to write to.', true); form.name.focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { say('Check the email address. It needs an @ and a domain.', true); form.email.focus(); return; }
+    var data = { name: name, email: email, role: form.role.value, project: form.project.value.trim(),
+      price: (form.querySelector('input[name=price]:checked') || {}).value || '' };
+    if (!FORM_ENDPOINT) { say('Preview mode: this copy of the page does not store sign-ups yet.'); return; }
+    say('Saving your seat…');
+    fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(data) })
+      .then(function (r) { if (!r.ok) throw new Error(); form.reset(); document.getElementById('p290').checked = true;
+        say('You are on the list. We will email you when the founding cohort opens.'); })
+      .catch(function () { say('That did not go through. Check your connection and try again.', true); });
+  });
+})();
+</script>
