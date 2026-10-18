@@ -22,7 +22,7 @@
     { n: 2,  stage: 1, ch: '2',     file: 'week02.html', live: true,  en: 'Run, Event, Track, Step', zh: '运行、事件、径迹、步' },
     { n: 3,  stage: 1, ch: '3–4',   file: 'week03.html', live: true,  en: 'Geometry, materials and steps', zh: '几何、材料与步' },
     { n: 4,  stage: 2, ch: '5',     file: 'week04.html', live: true,  en: 'Energy loss and Bethe–Bloch', zh: '能量损失与 Bethe–Bloch 公式' },
-    { n: 5,  stage: 2, ch: '6',     file: 'week05.html', live: false, en: 'From energy deposit to a hit', zh: '从能量沉积到击中' },
+    { n: 5,  stage: 2, ch: '6',     file: 'week05.html', live: true,  en: 'From energy deposit to a hit', zh: '从能量沉积到击中' },
     { n: 6,  stage: 3, ch: '7',     file: 'week06.html', live: false, en: 'Physics lists and production cuts', zh: '物理列表与产生阈' },
     { n: 7,  stage: 3, ch: '8',     file: 'week07.html', live: false, en: 'Momentum from a magnetic field', zh: '用磁场测量动量' },
     { n: 8,  stage: 4, ch: '9',     file: 'week08.html', live: false, en: 'The full analysis chain', zh: '完整分析链' },

@@ -1,0 +1,18 @@
+# Mission 5 / 5C / 6: efficiencies, trigger and digitization
+/control/verbose 1
+/run/verbose 0
+
+# A. vertical muons over a 30 x 30 cm plane
+/week05/gun/model vertical
+/analysis/setFileName vertical
+/run/beamOn 20000
+
+# B. cos^2 sea-level shape over the same plane
+/week05/gun/model cos2
+/analysis/setFileName cos2
+/run/beamOn 20000
+
+# C. same, with background pulses in 30% of events per counter
+/week05/noise 0.3
+/analysis/setFileName cos2_noise
+/run/beamOn 20000
