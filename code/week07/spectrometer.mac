@@ -1,0 +1,20 @@
+# Mission 7: 1000 mu- at each of five momenta, one CSV file per run
+/control/verbose 0
+/run/verbose 0
+/tracking/verbose 0
+/gun/particle mu-
+/gun/energy 1 GeV
+/analysis/setFileName tracks_01GeV
+/run/beamOn 1000
+/gun/energy 2 GeV
+/analysis/setFileName tracks_02GeV
+/run/beamOn 1000
+/gun/energy 5 GeV
+/analysis/setFileName tracks_05GeV
+/run/beamOn 1000
+/gun/energy 10 GeV
+/analysis/setFileName tracks_10GeV
+/run/beamOn 1000
+/gun/energy 20 GeV
+/analysis/setFileName tracks_20GeV
+/run/beamOn 1000
