@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 03 · Geometry and Steps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0, Week 03: put a block of matter in the world, swap its material in one line, and take a muon crossing apart step by step.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Week 03 of 12</span><span lang="zh-Hans">第 03 / 12 周</span></span>
+    <span class="bar-r">
+      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">Idle&gt; <span>/run/dumpCouples</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">Build a world, then watch the invisible, one step at a time.</span><span lang="zh-Hans">搭建世界，再一步一步看见不可见之物。</span></h1>
+      <p class="lede" lang="en">Geometry, material and placement are three separate decisions. You build a 10 cm block, swap its material in one line, and print every step a muon takes through it. A crossing that looks like one straight line turns out to be a short list of steps, each ended by a boundary or a physics process.</p>
+      <p class="lede" lang="zh-Hans">几何、材料和放置是三个相互独立的决定。你将搭建一个 10 cm 的方块，只改一行就换掉它的材料，并打印缪子穿过它的每一步。看起来是一条直线的穿越，其实是一串短短的步，每一步结束于边界或某个物理过程。</p>
+      <ul class="meta">
+        <li class="stage"><b>1 · See it</b><span lang="en">stage · 观测</span><span lang="zh-Hans">阶段 · 观测</span></li>
+        <li><b>Missions 2–3</b><span lang="en">textbook ch. 3–4</span><span lang="zh-Hans">教材第 3–4 章</span></li>
+        <li><b>≈ 2.5 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="Week summary">
+      <div role="row"><span role="cell">week03</span></div>
+      <div role="row"><span role="cell">World</span><span role="cell">1 m · G4_AIR</span></div>
+      <div role="row"><span role="cell">Block</span><span role="cell">10 cm · <span lang="en">6 materials</span><span lang="zh-Hans">6 种材料</span></span></div>
+      <div role="row"><span role="cell">Primary</span><span role="cell">1 GeV μ⁻, z = −0.4 m</span></div>
+      <div role="row"><span role="cell">Observable</span><span role="cell"><span lang="en">steps by process, Edep</span><span lang="zh-Hans">各过程步数、Edep</span></span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-goals">
+    <p class="cmd">/run/initialize<span lang="en">learning goals</span><span lang="zh-Hans">学习目标</span></p>
+    <div class="prose">
+      <h2 id="h-goals" class="bi"><span lang="en">By the end of this week you can say which process ended each step, and why.</span><span lang="zh-Hans">本周结束时，你能说出每一步是被哪个过程结束的，以及原因。</span></h2>
+      <ol class="goals">
+        <li><span lang="en">Separate the responsibilities of <dfn>solid<span class="kt" lang="zh-Hans">实体</span></dfn>, <dfn>logical volume<span class="kt" lang="zh-Hans">逻辑体</span></dfn> and <dfn>physical volume<span class="kt" lang="zh-Hans">物理体</span></dfn>, and change a <dfn>material<span class="kt" lang="zh-Hans">材料</span></dfn> without touching shape or position.</span><span lang="zh-Hans">区分<dfn>实体<span class="kt" lang="en">solid</span></dfn>、<dfn>逻辑体<span class="kt" lang="en">logical volume</span></dfn>与<dfn>物理体<span class="kt" lang="en">physical volume</span></dfn>的职责，在不改形状和位置的情况下更换<dfn>材料<span class="kt" lang="en">material</span></dfn>。</span></li>
+        <li><span lang="en">Run the overlap check and read a <code>GeomVol1002</code> report.</span><span lang="zh-Hans">运行重叠检查，并读懂 <code>GeomVol1002</code> 报告。</span></li>
+        <li><span lang="en">Print every step from a <dfn>stepping action<span class="kt" lang="zh-Hans">步进动作</span></dfn> and name the <dfn>physics process<span class="kt" lang="zh-Hans">物理过程</span></dfn> that ended it.</span><span lang="zh-Hans">在<dfn>步进动作<span class="kt" lang="en">stepping action</span></dfn>中打印每一步，并说出结束它的<dfn>物理过程<span class="kt" lang="en">physics process</span></dfn>。</span></li>
+        <li><span lang="en">Explain why the number of steps depends on the material and on the production threshold.</span><span lang="zh-Hans">解释步数为什么取决于材料和产生阈。</span></li>
+        <li><span lang="en">Tell simulation truth (a step) from a detector observable, and use the viewer as a diagnostic, not a measurement.</span><span lang="zh-Hans">区分模拟真相（一步）与探测器可观测量，并把可视化当作诊断工具而非测量。</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-geo">
+    <p class="cmd">/control/manual<span lang="en">3.1 · three decisions</span><span lang="zh-Hans">3.1 · 三个决定</span></p>
+    <div class="prose">
+      <h2 id="h-geo" class="bi"><span lang="en">What shape, what material, and where: three questions, three classes.</span><span lang="zh-Hans">什么形状、什么材料、放在哪里：三个问题，三个类。</span></h2>
+      <div class="box">
+        <p class="box-label">Definition 3.1 · <span lang="en">The three-layer geometry abstraction</span><span lang="zh-Hans">三层几何抽象</span></p>
+        <p lang="en"><code>G4VSolid</code> describes pure geometric shape and carries no material or position. <code>G4LogicalVolume</code> binds a solid to a material (and later to a sensitive detector, a field and other properties). <code>G4PVPlacement</code> places a logical volume at a position and orientation inside a mother volume. The same logical volume can be placed many times without redefining its shape or material.</p>
+        <p lang="zh-Hans"><code>G4VSolid</code> 只描述几何形状，不带材料和位置信息；<code>G4LogicalVolume</code> 把实体与材料绑定（之后还会绑定灵敏探测器、磁场等）；<code>G4PVPlacement</code> 把逻辑体以一定位置和取向放进母体。同一个逻辑体可以多次放置，无需重新定义形状或材料。</p>
+      </div>
+      <div class="flow" role="img" aria-label="Solid to logical volume to physical placement"><b>G4VSolid</b> <span class="a">→</span> G4LogicalVolume <span class="a">→</span> <b>G4PVPlacement</b><br><span class="a">pattern (shape)&nbsp;&nbsp;&nbsp;&nbsp;fabric (material)&nbsp;&nbsp;&nbsp;&nbsp;where it hangs (placement)</span></div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Intuition</span><span lang="zh-Hans">直觉</span></p>
+        <p lang="en">Think of pattern, fabric and placement. The pattern (solid) decides shirt or coat; the fabric (material on the logical volume) decides cotton or silk; the same garment can hang in different places in a closet (placement). Moving it does not re-cut the pattern, and changing the fabric does not redesign it.</p>
+        <p lang="zh-Hans">把这三层想成纸样、布料和挂放位置：纸样（实体）决定是衬衫还是外套；布料（逻辑体上的材料）决定是棉还是丝；同一件衣服可以挂在衣柜的不同位置（放置）。移动它不必重新裁剪，换布料也不必重新设计纸样。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Example 3.1 · <span lang="en">A 10 × 10 × 10 cm³ block of concrete</span><span lang="zh-Hans">10 × 10 × 10 cm³ 混凝土块</span></p>
+        <p lang="en">Define a cube of half-side 5 cm with <code>G4Box</code>; get concrete from <code>G4NistManager::FindOrBuildMaterial("G4_CONCRETE")</code>; place it at the centre of the world with <code>G4PVPlacement</code>. Then swap the material for <code>G4_Al</code>, <code>G4_Cu</code> and <code>G4_Pb</code>. The shape and placement code never changes; only one material string does.</p>
+        <p lang="zh-Hans">用 <code>G4Box</code> 定义半边长 5 cm 的立方体；用 <code>G4NistManager::FindOrBuildMaterial("G4_CONCRETE")</code> 获取混凝土；用 <code>G4PVPlacement</code> 放在世界中心。然后依次换成 <code>G4_Al</code>、<code>G4_Cu</code>、<code>G4_Pb</code>。形状和放置代码始终不变，只改一个材料字符串。</p>
+      </div>
+      <div class="code">
+        <div class="code-head"><span class="l"><b>Code microscope · DetectorConstruction.cc</b><span class="tag geant4">GEANT4</span></span></div>
+<pre>G4Material* blockMat = nist-&gt;FindOrBuildMaterial(<mark>"G4_CONCRETE"</mark>);   <span class="c">// the only line Mission 2 changes</span>
+G4VSolid* solidBlock = <span class="k">new</span> G4Box("Block", 0.5*blockSide, 0.5*blockSide, 0.5*blockSide);  <span class="c">// HALF-lengths</span>
+<span class="k">auto</span>* logicBlock = <span class="k">new</span> G4LogicalVolume(solidBlock, blockMat, "Block");
+<span class="k">new</span> G4PVPlacement(nullptr, G4ThreeVector(), logicBlock, "Block", logicWorld, false, 0, <mark>true</mark>);  <span class="c">// true = check overlaps</span></pre>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Think about it</span><span lang="zh-Hans">想一想</span></p>
+        <p lang="en">If the concrete block becomes a lead block of the same size, will a 1 GeV muon crossing it lose more energy or less? Give a direction, not a number. Step 4 of the hands-on task gives the number, and Week 4 explains it.</p>
+        <p lang="zh-Hans">把混凝土块换成同样大小的铅块，1 GeV 缪子穿过时损失的能量会更多还是更少？先给方向，不要数字。动手任务第 4 步给出数字，第 4 周给出解释。</p>
+      </div>
+
+      <h3 class="bi"><span lang="en">When the detector comes from CAD: GDML</span><span lang="zh-Hans">当探测器来自 CAD：GDML</span></h3>
+      <p lang="en">A real detector often starts as a CAD model from the mechanical team. Geant4 reads geometry written in GDML (Geometry Description Markup Language) with <code>G4GDMLParser</code>: CAD → GDML export → <code>parser.Read("detector.gdml")</code> → <code>parser.GetWorldVolume()</code> → overlap check. A GDML file is not automatically a more accurate simulation. CAD assemblies carry screws, cosmetic surfaces and duplicate solids that cost tracking time and change nothing. Export a simplified model, check its dimensions and materials against the drawing, and add only geometry that can change an observable. GDML support needs a Geant4 build with Xerces-C; <code>geant4-config --has-feature gdml</code> tells you.</p>
+      <p lang="zh-Hans">真实的探测器常常始于机械组的 CAD 模型。Geant4 通过 <code>G4GDMLParser</code> 读取 GDML（几何描述标记语言）：CAD → 导出 GDML → <code>parser.Read("detector.gdml")</code> → <code>parser.GetWorldVolume()</code> → 重叠检查。GDML 文件并不自动意味着更准确的模拟：CAD 装配体里有螺丝、装饰面和重复实体，只会拖慢径迹计算而不改变任何结果。先导出简化模型，对照图纸核对尺寸和材料，只加入可能改变可观测量的几何。GDML 需要带 Xerces-C 编译的 Geant4，可用 <code>geant4-config --has-feature gdml</code> 查看。</p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-steps">
+    <p class="cmd">/tracking/storeTrajectory 1<span lang="en">4.1 · one crossing, many steps</span><span lang="zh-Hans">4.1 · 一次穿越，许多步</span></p>
+    <div class="prose">
+      <h2 id="h-steps" class="bi"><span lang="en">A step is the free flight between two interruptions.</span><span lang="zh-Hans">一步，就是两次“打断”之间的自由飞行。</span></h2>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Truth versus measurement</span><span lang="zh-Hans">真相与测量</span></p>
+        <p lang="en">A <code>G4Step</code> is simulation truth: what happened during one transport step. A real detector never sees a step. It sees deposited energy, scintillation light, charge, or a threshold crossing. Week 5 builds that distinction into a detector.</p>
+        <p lang="zh-Hans"><code>G4Step</code> 是模拟真相：一个输运步中发生了什么。真实探测器从来看不到“步”，它看到的是沉积能量、闪烁光、电荷或越过阈值。第 5 周会把这一区分落实到探测器中。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Definition 4.1 · <span lang="en">Physics processes and steps</span><span lang="zh-Hans">物理过程与步</span></p>
+        <p lang="en">A <dfn>physics process</dfn> describes one mechanism by which a particle interacts with matter: ionisation, multiple Coulomb scattering, bremsstrahlung. Whenever a process occurs, or the particle reaches a geometric boundary, Geant4 ends the current step, records its start and end position, momentum, kinetic energy, deposited energy and the name of the process that ended it, and begins the next step. A track is the concatenation of its steps.</p>
+        <p lang="zh-Hans"><dfn>物理过程</dfn>描述粒子与物质相互作用的一种机制：电离、多次库仑散射、轫致辐射。每当某个过程发生，或粒子到达几何边界，Geant4 就结束当前步，记录其起止位置、动量、动能、沉积能量以及结束它的过程名，然后开始下一步。径迹就是这些步的串联。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Example 4.1 · <span lang="en">Colouring tracks by process</span><span lang="zh-Hans">按过程给径迹着色</span></p>
+        <p lang="en">In <code>SteppingAction</code>, read the name of the process that ended each step and colour that segment. For the 1 GeV muon the names are <code>muIoni</code> (ionisation with a δ-ray above threshold), <code>Transportation</code> (a boundary), and rarely <code>muBrems</code> or <code>muPairProd</code>. The δ-ray electrons it knocks out show <code>eIoni</code>, <code>eBrem</code> and <code>msc</code>: short, sharply bent tracks.</p>
+        <p lang="zh-Hans">在 <code>SteppingAction</code> 中读取结束每一步的过程名，并据此给该段着色。对 1 GeV 缪子，名称是 <code>muIoni</code>（产生超过阈值 δ 电子的电离）、<code>Transportation</code>（边界），偶尔有 <code>muBrems</code> 或 <code>muPairProd</code>。被打出的 δ 电子显示 <code>eIoni</code>、<code>eBrem</code> 和 <code>msc</code>：短而急剧弯曲的径迹。</p>
+      </div>
+      <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W03-a
+      issued by : textbook Example 4.1
+The textbook lists "eIoni", "msc", "eBrem" for the muon in lead.
+  Those are the ELECTRON processes. Geant4 11.4 names the muon's own
+  steps muIoni, muBrems, muPairProd (and muMsc). Verified in our runs.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W03-a
+      issued by : 教材例 4.1
+教材为铅中的缪子列出了 "eIoni"、"msc"、"eBrem"。
+  这些是电子的过程。Geant4 11.4 中缪子自身的步名为 muIoni、
+  muBrems、muPairProd（以及 muMsc）。已在我们的运行中验证。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="code">
+        <div class="code-head"><span class="l"><b>Code microscope · SteppingAction.cc</b><span class="tag geant4">GEANT4</span></span></div>
+<pre>G4StepPoint* postStepPoint = step-&gt;GetPostStepPoint();
+<span class="k">const</span> G4VProcess* process = postStepPoint-&gt;<mark>GetProcessDefinedStep()</mark>;   <span class="c">// who ended THIS step</span>
+G4double edep = step-&gt;<mark>GetTotalEnergyDeposit()</mark>;                          <span class="c">// not the kinetic energy</span></pre>
+      </div>
+      <p lang="en">Two idioms recur in every later week. A step has a pre-step point and a post-step point; <code>GetProcessDefinedStep()</code> is read from the post-step point because that is where Geant4 records which process ended the step. And <code>GetTotalEnergyDeposit()</code>, not the track's kinetic energy, is what Week 4 accumulates. Keep "energy lost" and "energy deposited here" apart from the first day.</p>
+      <p lang="zh-Hans">有两个惯用法会在之后每周反复出现。一步有前步点和后步点；<code>GetProcessDefinedStep()</code> 要从后步点读取，因为 Geant4 在那里记录是哪个过程结束了这一步。第 4 周要累加的是 <code>GetTotalEnergyDeposit()</code>，而不是径迹的动能。从第一天起就把“损失的能量”和“沉积在此处的能量”分开。</p>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">History</span><span lang="zh-Hans">历史</span></p>
+        <p lang="en">C. T. R. Wilson's cloud chamber (1911) made charged tracks visible as droplet trails. In 1936 Anderson and Neddermeyer used one to find, in cosmic rays, a particle whose curvature fell between the electron and the proton: the muon. A stepping action does the cloud chamber's job in software.</p>
+        <p lang="zh-Hans">威尔逊（C. T. R. Wilson）的云室（1911 年）让带电粒子的径迹以雾滴轨迹的形式显现。1936 年，安德森和尼德迈耶用云室在宇宙线中发现了一种曲率介于电子和质子之间的粒子——缪子。步进动作就是用软件来做云室的工作。</p>
+      </div>
+      <h3 class="bi"><span lang="en">A second viewer: VRML and ParaView</span><span lang="zh-Hans">第二种可视化：VRML 与 ParaView</span></h3>
+      <p lang="en">Qt/OpenGL is good for watching one event while you develop. The <code>VRML2FILE</code> driver writes the scene to a <code>.wrl</code> file (named like <code>g4_00.wrl</code>) that you can open later, on another machine, in ParaView's VRML 2.0 reader. ParaView reads the geometry as polygons; it is not an event display and drops Geant4's event metadata. Record one difference that is purely a viewer effect and one feature that reveals a real geometry problem.</p>
+      <p lang="zh-Hans">Qt/OpenGL 适合在开发时观察单个事件。<code>VRML2FILE</code> 驱动把场景写入 <code>.wrl</code> 文件（如 <code>g4_00.wrl</code>），之后可以在另一台机器上用 ParaView 的 VRML 2.0 读取器打开。ParaView 把几何读成多边形，它不是事件显示器，也不保留 Geant4 的事件元数据。请记下一处纯属显示效果的差异，和一处暴露真实几何问题的特征。</p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-toy">
+    <p class="cmd">/run/beamOn 1000<span lang="en">interactive toy model</span><span lang="zh-Hans">交互玩具模型</span></p>
+    <div>
+      <h2 id="h-toy" class="bi"><span lang="en">Change the material and count how often the muon is interrupted.</span><span lang="zh-Hans">换材料，数一数缪子被“打断”了几次。</span></h2>
+      <p class="prose" style="color:var(--muted);max-width:64ch;margin-top:14px" lang="en">Each segment is coloured by the process that ended it. The histogram counts the primary's steps inside the block over many crossings, and the stat box compares the toy with our Geant4 11.4 runs at 1 GeV.</p>
+      <p class="prose" style="color:var(--muted);max-width:64ch" lang="zh-Hans">每一段按结束它的过程着色。直方图统计多次穿越中主粒子在块内的步数，统计框把玩具模型与我们 1 GeV 下的 Geant4 11.4 运行结果对比。</p>
+      <div class="display" style="margin-top:20px">
+        <div class="display-head"><span class="toy">TOY MODEL · <span lang="en">not Geant4</span><span lang="zh-Hans">非 Geant4</span></span><span id="w3-runlabel">Run 0</span></div>
+        <canvas id="w3-display" class="tele" aria-label="Toy display: a muon crossing a block, segments coloured by process"></canvas>
+        <div class="legend">
+          <span><i style="background:#E2B04A"></i>muIoni</span>
+          <span><i style="background:#DCE3E8"></i>Transportation</span>
+          <span><i style="background:#FF6369"></i><span lang="en">δ-ray e⁻ (drawn for show)</span><span lang="zh-Hans">δ 电子（仅示意）</span></span>
+        </div>
+      </div>
+      <div class="controls">
+        <label class="ctl" for="w3-mat"><span class="ctl-row">FindOrBuildMaterial(…)</span><select id="w3-mat"></select></label>
+        <label class="ctl" for="w3-T"><span class="ctl-row"><span>/gun/energy</span><output id="w3-T-out" for="w3-T">1 GeV</output></span><input id="w3-T" type="range" min="2" max="5" step="any" value="3"></label>
+      </div>
+      <div class="btns">
+        <button type="button" class="primary" id="w3-b1">/run/beamOn 1</button>
+        <button type="button" id="w3-b1k">/run/beamOn 1000</button>
+        <button type="button" id="w3-reset"><span lang="en">Reset</span><span lang="zh-Hans">重置</span></button>
+      </div>
+      <div class="panels">
+        <div>
+          <div class="statbox" role="table" aria-label="Step statistics">
+            <div role="row"><span role="cell">steps</span></div>
+            <div role="row"><span role="cell">T<sub>cut</sub> (e⁻, 0.7 mm)</span><span role="cell" id="w3-tcut">—</span></div>
+            <div role="row"><span role="cell">T<sub>max</sub></span><span role="cell" id="w3-tmax">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">δ-rays per crossing ν</span><span lang="zh-Hans">每次穿越 δ 电子数 ν</span></span><span role="cell" id="w3-nu">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">toy prediction 1 + ν</span><span lang="zh-Hans">玩具预言 1 + ν</span></span><span role="cell" id="w3-pred">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">toy sample mean</span><span lang="zh-Hans">玩具样本均值</span></span><span role="cell" id="w3-meas">—</span></div>
+            <div role="row"><span role="cell">Geant4 11.4</span><span role="cell" id="w3-g4">—</span></div>
+          </div>
+          <p class="cap"><span lang="en">Geant4 column: mean primary steps in the block over 1,000 events, from our runs of the week03 app (±0.03–0.07).</span><span lang="zh-Hans">Geant4 一栏：用 week03 程序运行 1,000 个事件得到的主粒子块内平均步数（±0.03–0.07）。</span></p>
+        </div>
+        <div>
+          <canvas id="w3-hist" style="aspect-ratio:16/10" aria-label="Histogram of primary steps per crossing"></canvas>
+        </div>
+      </div>
+      <div class="panels one">
+        <div>
+          <p class="panel-title"><span lang="en">SteppingAction printout, last crossing, inside the block</span><span lang="zh-Hans">SteppingAction 输出：最后一次穿越，块内部分</span></p>
+          <div class="verbose"><pre id="w3-steps"></pre></div>
+        </div>
+      </div>
+      <div class="toybox">
+        <p><b>TOY MODEL · <span lang="en">approximations</span><span lang="zh-Hans">近似</span></b></p>
+        <p lang="en">Straight line through 10 cm. Steps end only at the boundary or at a δ-ray above T<sub>cut</sub>, drawn as a Poisson process with the PDG δ-ray rate (spin-1/2 term neglected). T<sub>cut</sub> is what Geant4 11.4 derives from the default 0.7 mm range cut. Ignored: energy loss along the block, muBrems and muPairProd (about 0.01 per crossing in Cu and Pb), multiple scattering, δ-ray transport. At 1 GeV the toy agrees with our Geant4 runs to within 2%.</p>
+        <p lang="zh-Hans">沿直线穿过 10 cm。步只在边界或产生超过 T<sub>cut</sub> 的 δ 电子时结束，δ 电子按 PDG 给出的产生率作泊松抽样（忽略自旋 1/2 项）。T<sub>cut</sub> 是 Geant4 11.4 由默认 0.7 mm 射程阈换算得到的能量。忽略：块内能量损失、muBrems 与 muPairProd（铜、铅中每次穿越约 0.01 次）、多次散射、δ 电子输运。在 1 GeV 下，玩具模型与我们的 Geant4 结果相差不到 2%。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-task">
+    <p class="cmd">/control/execute run1000.mac<span lang="en">hands-on · Missions 2 and 3</span><span lang="zh-Hans">动手任务 · 任务 2 与 3</span></p>
+    <div class="prose">
+      <h2 id="h-task" class="bi"><span lang="en">Place a block, check it, print its steps, then scan six materials.</span><span lang="zh-Hans">放置方块、检查它、打印它的步，再扫描六种材料。</span></h2>
+      <p lang="en">Outputs below are real Geant4 11.4.p01 runs of these files with the course test physics list (no datasets in our sandbox). Its muon processes are the same models as <code>FTFP_BERT</code>; its electron and photon models are simpler. With <code>FTFP_BERT</code> you may also see a few steps ended by <code>muMsc</code> or <code>CoulombScat</code>, and Edep can differ by about 1–2%.</p>
+      <p lang="zh-Hans">下面的输出来自这些文件在 Geant4 11.4.p01 上的真实运行，使用课程测试物理列表（沙盒中没有数据集）。其缪子过程与 <code>FTFP_BERT</code> 用的是同一组模型，电子和光子模型较简化。用 <code>FTFP_BERT</code> 时你还可能看到少量由 <code>muMsc</code> 或 <code>CoulombScat</code> 结束的步，Edep 可能相差约 1–2%。</p>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Create the project from Week 2</span><span lang="zh-Hans">在第 2 周基础上建立工程</span></h3><label class="done" for="w03-s1"><input type="checkbox" id="w03-s1" data-progress="w03"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Copy <code>week02/</code> to <code>week03/</code>, rename <code>week02.cc</code> to <code>week03.cc</code>, and replace or add these files. The gun now starts at z = −0.4 m, inside the 1 m world (the textbook's −1 m would be outside, see Week 2).</p>
+          <p lang="zh-Hans">把 <code>week02/</code> 复制为 <code>week03/</code>，将 <code>week02.cc</code> 改名为 <code>week03.cc</code>，然后替换或新增下列文件。粒子枪现在从 z = −0.4 m 出发，位于 1 m 的世界内（教材中的 −1 m 会在世界之外，见第 2 周）。</p>
+          <div class="files">
+            <details><summary><b>CMakeLists.txt</b><button class="copy" type="button" data-copy="f3-cmake">copy</button></summary><pre id="f3-cmake" data-src="code/week03/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
+project(Week03 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Geant4 REQUIRED ui_all vis_all)
+include(${Geant4_USE_FILE})
+
+file(GLOB sources CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/include/*.hh)
+
+add_executable(week03 week03.cc ${sources} ${headers})
+target_include_directories(week03 PRIVATE include)
+target_link_libraries(week03 PRIVATE ${Geant4_LIBRARIES})
+
+# copy the macros next to the executable
+foreach(_mac run1.mac run1000.mac vis.mac vrml.mac)
+  configure_file(${PROJECT_SOURCE_DIR}/${_mac} ${PROJECT_BINARY_DIR}/${_mac} COPYONLY)
+endforeach()</pre></details>
+            <details><summary><b>src/DetectorConstruction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f3-dc">copy</button></summary><pre id="f3-dc" data-src="code/week03/src/DetectorConstruction.cc">#include "DetectorConstruction.hh"
+
+#include "G4Box.hh"
+#include "G4LogicalVolume.hh"
+#include "G4NistManager.hh"
+#include "G4PVPlacement.hh"
+#include "G4SystemOfUnits.hh"
+
+G4VPhysicalVolume* DetectorConstruction::Construct()
+{
+  G4NistManager* nist = G4NistManager::Instance();
+  G4Material* worldMat = nist-&gt;FindOrBuildMaterial("G4_AIR");
+  G4Material* blockMat = nist-&gt;FindOrBuildMaterial("G4_CONCRETE");  // Mission 2: the only line that changes
+
+  // --- World ---
+  G4double worldSize = 1.0 * m;
+  G4VSolid* solidWorld =
+    new G4Box("World", 0.5 * worldSize, 0.5 * worldSize, 0.5 * worldSize);
+  auto* logicWorld = new G4LogicalVolume(solidWorld, worldMat, "World");
+  auto* physWorld = new G4PVPlacement(
+    nullptr, G4ThreeVector(), logicWorld, "World",
+    nullptr, false, 0, true);
+
+  // --- Block: 10x10x10 cm, centred on the world ---
+  G4double blockSide = 10.0 * cm;
+  G4VSolid* solidBlock = new G4Box("Block", 0.5 * blockSide,
+                                   0.5 * blockSide, 0.5 * blockSide);
+  auto* logicBlock = new G4LogicalVolume(solidBlock, blockMat, "Block");
+  new G4PVPlacement(
+    nullptr, G4ThreeVector(), logicBlock, "Block",
+    logicWorld, false, 0, true);  // last argument: check overlaps at placement
+
+  return physWorld;
+}</pre></details>
+            <details><summary><b>include/SteppingAction.hh</b><button class="copy" type="button" data-copy="f3-sah">copy</button></summary><pre id="f3-sah" data-src="code/week03/include/SteppingAction.hh">#ifndef SteppingAction_h
+#define SteppingAction_h 1
+
+#include "G4UserSteppingAction.hh"
+
+class SteppingAction : public G4UserSteppingAction
+{
+  public:
+    void UserSteppingAction(const G4Step* step) override;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/SteppingAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f3-sa">copy</button></summary><pre id="f3-sa" data-src="code/week03/src/SteppingAction.cc">#include "SteppingAction.hh"
+
+#include "G4Step.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4VProcess.hh"
+#include "G4ios.hh"
+
+void SteppingAction::UserSteppingAction(const G4Step* step)
+{
+  G4StepPoint* postStepPoint = step-&gt;GetPostStepPoint();
+
+  // the process that ended THIS step (transportation counts too)
+  const G4VProcess* process = postStepPoint-&gt;GetProcessDefinedStep();
+  G4String processName = process ? process-&gt;GetProcessName() : "none";
+
+  G4double edep = step-&gt;GetTotalEnergyDeposit();
+  G4double stepLen = step-&gt;GetStepLength();
+  G4ThreeVector pos = postStepPoint-&gt;GetPosition();
+
+  // Two additions to the textbook listing, so the output can be filtered:
+  // the volume the step happened in, and the track ID (1 = the primary).
+  const G4String&amp; volume = step-&gt;GetPreStepPoint()-&gt;GetPhysicalVolume()-&gt;GetName();
+  G4int trackID = step-&gt;GetTrack()-&gt;GetTrackID();
+
+  G4cout &lt;&lt; " step ends via " &lt;&lt; processName
+         &lt;&lt; " in " &lt;&lt; volume &lt;&lt; " trk " &lt;&lt; trackID
+         &lt;&lt; " edep=" &lt;&lt; edep / keV &lt;&lt; " keV"
+         &lt;&lt; " stepLen=" &lt;&lt; stepLen / mm &lt;&lt; " mm"
+         &lt;&lt; " at " &lt;&lt; pos / cm &lt;&lt; " cm" &lt;&lt; G4endl;
+}</pre></details>
+            <details><summary><b>src/ActionInitialization.cc</b><button class="copy" type="button" data-copy="f3-ai">copy</button></summary><pre id="f3-ai" data-src="code/week03/src/ActionInitialization.cc">#include "ActionInitialization.hh"
+
+#include "PrimaryGeneratorAction.hh"
+#include "SteppingAction.hh"
+
+void ActionInitialization::Build() const
+{
+  SetUserAction(new PrimaryGeneratorAction());
+  SetUserAction(new SteppingAction());
+}</pre></details>
+            <details><summary><b>src/PrimaryGeneratorAction.cc</b><button class="copy" type="button" data-copy="f3-pg">copy</button></summary><pre id="f3-pg" data-src="code/week03/src/PrimaryGeneratorAction.cc">#include "PrimaryGeneratorAction.hh"
+
+#include "G4Event.hh"
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
+#include "G4SystemOfUnits.hh"
+
+PrimaryGeneratorAction::PrimaryGeneratorAction()
+{
+  G4int n_particle = 1;
+  fParticleGun = new G4ParticleGun(n_particle);
+
+  // The four choices that define the experiment (textbook Example 2.1):
+  G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+  G4ParticleDefinition* particle = particleTable-&gt;FindParticle("mu-");
+  fParticleGun-&gt;SetParticleDefinition(particle);                          // 1. species
+  fParticleGun-&gt;SetParticleMomentumDirection(G4ThreeVector(0., 0., 1.));  // 2. direction
+  fParticleGun-&gt;SetParticleEnergy(1. * GeV);                              // 3. kinetic energy
+  fParticleGun-&gt;SetParticlePosition(G4ThreeVector(0., 0., -0.4 * m));     // 4. position: inside the 1 m world
+}
+
+PrimaryGeneratorAction::~PrimaryGeneratorAction()
+{
+  delete fParticleGun;
+}
+
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
+{
+  // Called once per Event; this is where the primary vertex
+  // and the primary particle's Track are actually created.
+  fParticleGun-&gt;GeneratePrimaryVertex(event);
+}</pre></details>
+            <details><summary><b>run1.mac · run1000.mac · vis.mac · vrml.mac</b><button class="copy" type="button" data-copy="f3-mac">copy</button></summary><pre id="f3-mac" data-src="code/week03/macros.txt"># ======== run1.mac ========
+# One 1 GeV mu- through the block, every step printed
+/run/dumpCouples
+/run/beamOn 1
+
+# ======== run1000.mac ========
+# 1000 muons: enough to count steps by process (output ~10 MB; redirect to a file)
+/run/beamOn 1000
+
+# ======== vis.mac ========
+# Interactive viewer: side view, trajectories
+/vis/open
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 90 90 deg
+/vis/viewer/set/style surface
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/scene/endOfEventAction accumulate
+/run/beamOn 5
+
+# ======== vrml.mac ========
+# Create a VRML 2.0 scene without opening a Qt window (textbook vis-vrml.mac)
+/vis/open VRML2FILE
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 70 20
+/vis/viewer/flush</pre></details>
+            <details><summary><b>steps_summary.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f3-py">copy</button></summary><pre id="f3-py" data-src="code/week03/steps_summary.py">"""Summarise the SteppingAction printout of week03: per event, count the primary
+muon's steps inside the Block (by process) and sum the energy deposited in the Block.
+
+Usage: ./week03 run100.mac &gt; concrete.log &amp;&amp; python3 steps_summary.py concrete.log
+"""
+import collections
+import math
+import re
+import sys
+
+PAT = re.compile(r" step ends via (\S+) in (\S+) trk (\d+) edep=(\S+) keV "
+                 r"stepLen=(\S+) mm at \((\S+),(\S+),(\S+)\) cm")
+
+
+def events(lines):
+    """A new event starts when the primary (trk 1) reappears after other tracks,
+    or when its z coordinate jumps back (an event with no secondaries)."""
+    cur, prev_trk, last_z = None, None, None
+    for line in lines:
+        m = PAT.match(line)
+        if not m:
+            continue
+        proc, vol, trk, edep, _, _, _, z = m.groups()
+        trk, edep, z = int(trk), float(edep), float(z)
+        if trk == 1 and (cur is None or prev_trk != 1 or z &lt; last_z - 1e-6):
+            if cur is not None:
+                yield cur
+            cur = {"steps": collections.Counter(), "edep_MeV": 0.0}
+        if trk == 1:
+            last_z = z
+        prev_trk = trk
+        if vol == "Block":
+            cur["edep_MeV"] += edep / 1000.0
+            if trk == 1:
+                cur["steps"][proc] += 1
+    if cur is not None:
+        yield cur
+
+
+def main(path):
+    evs = list(events(open(path)))
+    n = len(evs)
+    steps = [sum(e["steps"].values()) for e in evs]
+    edep = [e["edep_MeV"] for e in evs]
+    procs = collections.Counter()
+    for e in evs:
+        procs.update(e["steps"])
+
+    def mean_err(a):
+        m = sum(a) / len(a)
+        sd = math.sqrt(sum((v - m) ** 2 for v in a) / len(a))
+        return m, sd / math.sqrt(len(a))
+
+    m_s, e_s = mean_err(steps)
+    m_e, e_e = mean_err(edep)
+    print(f"events                  {n}")
+    print(f"primary steps in Block  {m_s:.2f} +/- {e_s:.2f}")
+    for proc, c in procs.most_common():
+        print(f"   {proc:&lt;20s} {c / n:.2f} per event")
+    print(f"Edep in Block [MeV]     {m_e:.2f} +/- {e_e:.2f}")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1])</pre></details>
+          </div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Build and read the overlap check</span><span lang="zh-Hans">编译，并读懂重叠检查</span></h3><label class="done" for="w03-s2"><input type="checkbox" id="w03-s2" data-progress="w03"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c3-b">copy</button></div>
+<pre id="c3-b">cd week03 &amp;&amp; mkdir -p build &amp;&amp; cd build &amp;&amp; cmake .. &amp;&amp; make -j4
+./week03 run1.mac | grep -i overlap</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01)</span><span lang="zh-Hans">预期（Geant4 11.4.p01）</span></b></span></div>
+<pre>Checking overlaps for volume Block:0 (G4Box) ... OK!</pre></div>
+          <p lang="en">The world has no mother, so only the block is checked. Now break it on purpose: place the block at <code>G4ThreeVector(0., 0., 48.*cm)</code>, rebuild, rerun:</p>
+          <p lang="zh-Hans">世界没有母体，所以只检查方块。现在故意把它弄坏：把方块放在 <code>G4ThreeVector(0., 0., 48.*cm)</code>，重新编译并运行：</p>
+          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected (sample point and case count vary)</span><span lang="zh-Hans">预期（采样点与次数会变化）</span></b></span></div>
+<pre><span class="bad">-------- WWWW ------- G4Exception-START -------- WWWW -------
+*** G4Exception : GeomVol1002
+      issued by : G4PVPlacement::CheckOverlaps()
+Overlap with mother volume !
+          Overlap is detected for volume Block:0 (G4Box) with its mother volume World (G4Box)
+          protrusion at mother local point (-33.9079,-32.6108,530) by 3 cm  (max of 341 cases)
+NOTE: Reached maximum fixed number -1- of overlaps reports for this volume !
+*** This is just a warning message. ***</span></pre></div>
+          <p lang="en">"By 3 cm" is exact: the block's far face sits at 48 + 5 = 53 cm, the world ends at 50 cm. The run continues anyway. Put the block back at the centre before step 3.</p>
+          <p lang="zh-Hans">“by 3 cm” 是精确的：方块远端面在 48 + 5 = 53 cm，而世界在 50 cm 处结束。运行仍会继续。第 3 步之前把方块放回中心。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Print one crossing</span><span lang="zh-Hans">打印一次穿越</span></h3><label class="done" for="w03-s3"><input type="checkbox" id="w03-s3" data-progress="w03"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c3-r1">copy</button></div>
+<pre id="c3-r1">./week03 run1.mac | grep "step ends"</pre></div>
+          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">example from our run (concrete; your numbers differ, the pattern does not)</span><span lang="zh-Hans">我们的运行示例（混凝土；数值会不同，规律不变）</span></b></span></div>
+<pre> step ends via muIoni in World trk 1 edep=12.1745 keV stepLen=74.1836 mm at (0,0,-32.5816) cm
+ step ends via muIoni in World trk 1 edep=19.7717 keV stepLen=130.55 mm at (0.00111408,-0.0019674,-18.1483) cm
+ step ends via Transportation in World trk 1 edep=4.79964 keV stepLen=47.0004 mm at (0.00248522,-0.00481908,-5) cm
+ step ends via muIoni in Block trk 1 edep=13252.6 keV stepLen=40.9091 mm at (0.00281541,-0.00538021,-0.909205) cm
+ step ends via muIoni in Block trk 1 edep=6192.49 keV stepLen=17.8597 mm at (-0.00282421,-0.00014964,0.876726) cm
+ step ends via muIoni in Block trk 1 edep=7181.88 keV stepLen=21.1769 mm at (-0.00519208,0.018204,2.99431) cm
+ step ends via Transportation in Block trk 1 edep=7595.26 keV stepLen=20.0574 mm at (-0.00826307,0.0266098,5) cm
+ step ends via Transportation in World trk 1 edep=11.971 keV stepLen=78.8081 mm at (0.0580495,0.363893,50) cm
+ step ends via eIoni in Block trk 10 edep=504.168 keV stepLen=1.15842 mm at (-0.0244115,-0.0161355,3.0249) cm
+ <span class="c">… 29 lines in this event</span></pre></div>
+          <p lang="en">Read it like a cloud-chamber photograph. The muon (trk 1) takes four steps in the block: three ended by <code>muIoni</code> (a δ-ray above threshold) and one by <code>Transportation</code> at z = 5 cm, the far face. Step lengths are not fixed: 41, 18, 21 and 20 mm here. Its δ-rays (trk 2, 3, …) are tracked after it and show <code>eIoni</code> steps under a millimetre. In air the thresholds are much lower (990 eV for both γ and e⁻), so the muon is interrupted often even outside the block.</p>
+          <p lang="zh-Hans">像看云室照片一样读它：缪子（trk 1）在块内走了四步，三步由 <code>muIoni</code>（产生超过阈值的 δ 电子）结束，一步由 <code>Transportation</code> 在 z = 5 cm 的远端面结束。步长并不固定：这里是 41、18、21 和 20 mm。它的 δ 电子（trk 2、3……）在它之后被输运，显示不到 1 mm 的 <code>eIoni</code> 步。空气中的阈值低得多（γ 和 e⁻ 均为 990 eV），所以即使在块外，缪子也频繁被“打断”。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Mission 2: scan the material, one string at a time</span><span lang="zh-Hans">任务 2：逐个字符串扫描材料</span></h3><label class="done" for="w03-s4"><input type="checkbox" id="w03-s4" data-progress="w03"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">This loop changes only the material string, rebuilds and runs 1,000 muons for each. It edits the line marked <code>// Mission 2</code>.</p>
+          <p lang="zh-Hans">这个循环只改材料字符串，每种材料重新编译并运行 1,000 个缪子。它修改标有 <code>// Mission 2</code> 的那一行。</p>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal (in build/)</b></span><button class="copy" type="button" data-copy="c3-scan">copy</button></div>
+<pre id="c3-scan">for m in G4_lH2 G4_PLASTIC_SC_VINYLTOLUENE G4_Al G4_CONCRETE G4_Cu G4_Pb; do
+  sed -i "s/FindOrBuildMaterial(\"G4_[A-Za-z0-9_]*\");  \/\/ Mission 2/FindOrBuildMaterial(\"$m\");  \/\/ Mission 2/" ../src/DetectorConstruction.cc
+  make -j4 &gt; /dev/null &amp;&amp; ./week03 run1000.mac &gt; $m.log
+  echo "== $m"; python3 ../steps_summary.py $m.log
+done</pre></div>
+          <div class="scroll">
+            <table class="tbl">
+              <thead><tr><th><span lang="en">Block</span><span lang="zh-Hans">方块</span></th><th><span lang="en">e⁻ threshold (0.7 mm)</span><span lang="zh-Hans">e⁻ 阈值（0.7 mm）</span></th><th><span lang="en">primary steps in Block</span><span lang="zh-Hans">主粒子块内步数</span></th><th><span lang="en">Edep in Block [MeV]</span><span lang="zh-Hans">块内 Edep [MeV]</span></th></tr></thead>
+              <tbody>
+                <tr><td class="n">G4_lH2</td><td class="m">88.5 keV</td><td>2.21 ± 0.03</td><td>2.69 ± 0.02</td></tr>
+                <tr><td class="n">G4_PLASTIC_SC_VINYLTOLUENE</td><td class="m">281.9 keV</td><td>4.02 ± 0.06</td><td>20.37 ± 0.11</td></tr>
+                <tr><td class="n">G4_Al</td><td class="m">461.2 keV</td><td>5.22 ± 0.06</td><td>45.45 ± 0.21</td></tr>
+                <tr><td class="n">G4_CONCRETE</td><td class="m">433.3 keV</td><td>5.01 ± 0.06</td><td>41.06 ± 0.21</td></tr>
+                <tr><td class="n">G4_Cu</td><td class="m">1.034 MeV</td><td>6.72 ± 0.07</td><td>133.34 ± 0.42</td></tr>
+                <tr><td class="n">G4_Pb</td><td class="m">1.007 MeV</td><td>7.67 ± 0.08</td><td>141.55 ± 0.49</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="cap"><span lang="en">Our Geant4 11.4.p01 runs, 1,000 events each, mean ± error of the mean. The threshold column is the e⁻ energy Geant4 prints with <code>/run/dumpCouples</code> after a run.</span><span lang="zh-Hans">我们的 Geant4 11.4.p01 运行，每种 1,000 个事件，均值 ± 均值误差。阈值一栏是运行后 <code>/run/dumpCouples</code> 打印的 e⁻ 能量。</span></p>
+          <p lang="en">This answers the first Think-about-it. Lead takes 3.5× the energy of concrete: lead is 5× denser, though slightly less effective per g/cm². Copper and lead are almost equal per 10 cm, which Week 4 explains with Z/A and density.</p>
+          <p lang="zh-Hans">这就回答了第一个“想一想”：铅中沉积的能量是混凝土的 3.5 倍——铅的密度是混凝土的 5 倍，只是按 g/cm² 计略低。每 10 cm 中铜和铅几乎相同，第 4 周会用 Z/A 和密度来解释。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Think about it, answered: lead against liquid hydrogen</span><span lang="zh-Hans">“想一想”的答案：铅与液氢</span></h3><label class="done" for="w03-s5"><input type="checkbox" id="w03-s5" data-progress="w03"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">The textbook asks whether switching lead for liquid hydrogen (160× less dense) gives more steps or fewer. The scan answers it: 2.21 against 7.67 per crossing. muIoni steps are δ-rays above threshold, and hydrogen has far fewer electrons per cm. The lower threshold in lH2 (88 keV against 1.01 MeV) claws back part of the difference, which is why the ratio is about 3.5, not 160. Check this with the toy model above.</p>
+          <p lang="zh-Hans">教材问：把铅换成液氢（密度低约 160 倍），步数会更多还是更少？扫描给出答案：每次穿越 2.21 步对 7.67 步。muIoni 步就是超过阈值的 δ 电子，而氢每厘米的电子少得多。液氢的阈值更低（88 keV，铅为 1.01 MeV），挽回了一部分差距，所以比值约为 3.5 而不是 160。可以在上面的玩具模型中验证。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Mission 3B: one geometry, two viewers</span><span lang="zh-Hans">任务 3B：同一几何，两种可视化</span></h3><label class="done" for="w03-s6"><input type="checkbox" id="w03-s6" data-progress="w03"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Run <code>./week03</code> (opens <code>vis.mac</code>: 5 muons coloured by charge, δ-rays in red). Then run <code>./week03 vrml.mac</code>, which writes <code>g4_00.wrl</code> without a window; open it in ParaView (File → Open, VRML reader) and rotate the block. The physics is identical in both runs. Note one difference that is purely a viewer effect, such as lighting, transparency or default colours, and one thing that would reveal a real geometry problem, such as a volume where none should be.</p>
+          <p lang="zh-Hans">运行 <code>./week03</code>（执行 <code>vis.mac</code>：5 个按电荷着色的缪子，δ 电子为红色）。然后运行 <code>./week03 vrml.mac</code>，它不开窗口、直接写出 <code>g4_00.wrl</code>；在 ParaView 中打开（File → Open，VRML 读取器）并旋转方块。两次运行的物理完全相同。记下一处纯属显示效果的差异（如光照、透明度、默认颜色），以及一处可能暴露真实几何问题的地方（如本不该有体积的位置出现了体积）。</p>
+        </li>
+      </ol>
+      <p class="progress" data-progress-out="w03"></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-quiz">
+    <p class="cmd">/control/verbose 2<span lang="en">self-check</span><span lang="zh-Hans">自测</span></p>
+    <div>
+      <h2 id="h-quiz" class="bi"><span lang="en">Six questions. Each answer explains itself.</span><span lang="zh-Hans">六道题，每个答案都附有解释。</span></h2>
+      <div id="quiz"></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-err">
+    <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
+    <div>
+      <h2 id="h-err" class="bi"><span lang="en">Five geometry and stepping mistakes.</span><span lang="zh-Hans">五个几何与步进方面的错误。</span></h2>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : GeomVol1002
+      issued by : G4PVPlacement::CheckOverlaps()
+Daughter sticks out of its mother, or two daughters share space.
+  Only a warning, but navigation is undefined there: energy can land
+  in the wrong volume, silently. Fix every overlap before physics.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : GeomVol1002
+      issued by : G4PVPlacement::CheckOverlaps()
+子体伸出母体，或两个子体占据同一空间。
+  只是警告，但那里的导航是未定义的：能量可能被悄悄记到
+  错误的体积里。做物理之前修好每一处重叠。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W03-b
+      issued by : new G4Box("Block", 10*cm, 10*cm, 10*cm)
+G4Box takes HALF-lengths. This box is 20 cm on a side, not 10.
+  Write 0.5*blockSide as in Example 3.1, and say "half" in comments.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W03-b
+      issued by : new G4Box("Block", 10*cm, 10*cm, 10*cm)
+G4Box 接受的是半长。这个盒子边长 20 cm，而不是 10 cm。
+  像例 3.1 那样写 0.5*blockSide，并在注释中写明“半长”。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W03-c
+      issued by : G4ThreeVector(0., 0., 5.)
+Missing unit: 5 means 5 mm (Geant4's internal length unit).
+  A volume three orders of magnitude off still "runs". Multiply
+  every length by cm, mm or m.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W03-c
+      issued by : G4ThreeVector(0., 0., 5.)
+缺少单位：5 表示 5 mm（Geant4 内部长度单位）。
+  尺寸差三个数量级的体积照样能“跑”。每个长度都乘上
+  cm、mm 或 m。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W03-d
+      issued by : SteppingAction
+Summing GetKineticEnergy() differences as "energy deposited".
+  Kinetic energy lost is not energy left HERE: delta-rays carry part
+  of it away. Use GetTotalEnergyDeposit() for deposits.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W03-d
+      issued by : SteppingAction
+把 GetKineticEnergy() 的差值当成“沉积能量”累加。
+  损失的动能不等于留在此处的能量：δ 电子会带走一部分。
+  沉积能量请用 GetTotalEnergyDeposit()。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
+*** G4Exception : Course-W03-e
+      issued by : G4NistManager::FindOrBuildMaterial("G4_LEAD")
+Unknown NIST name: the call returns nullptr, and building the
+  logical volume with it crashes. Names are G4_Pb, G4_Cu, G4_AIR...
+  Check with /material/nist/listMaterials all.
+*** Fatal: check the pointer before use ***
+<span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
+*** G4Exception : Course-W03-e
+      issued by : G4NistManager::FindOrBuildMaterial("G4_LEAD")
+未知的 NIST 名称：返回 nullptr，用它构建逻辑体会崩溃。
+  正确名称如 G4_Pb、G4_Cu、G4_AIR……
+  可用 /material/nist/listMaterials all 查询。
+*** Fatal: check the pointer before use ***
+<span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
+      <p class="cap"><span lang="en">GeomVol1002 is the real Geant4 message from our run. Course- codes are this course's notes in the same format.</span><span lang="zh-Hans">GeomVol1002 是我们运行中真实出现的 Geant4 信息。Course- 编号是本课程以同样格式写的提示。</span></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-review">
+    <p class="cmd">/control/saveHistory<span lang="en">review notes</span><span lang="zh-Hans">复习要点</span></p>
+    <div class="prose">
+      <h2 id="h-review" class="bi"><span lang="en">Before you close the run.</span><span lang="zh-Hans">结束运行之前。</span></h2>
+      <ul class="review">
+        <li><label for="w03-r1"><input type="checkbox" id="w03-r1"><span lang="en">When I swapped materials, did I change only that one line, leaving shape and position untouched?</span><span lang="zh-Hans">更换材料时，我是否只改了那一行，形状和位置保持不变？</span></label></li>
+        <li><label for="w03-r2"><input type="checkbox" id="w03-r2"><span lang="en">Did I run the overlap check, and did it come back clean?</span><span lang="zh-Hans">我是否运行了重叠检查，结果是否干净？</span></label></li>
+        <li><label for="w03-r3"><input type="checkbox" id="w03-r3"><span lang="en">Can I print the process name for every step, not just the total deposit at the end?</span><span lang="zh-Hans">我能否打印每一步的过程名，而不只是最后的总沉积？</span></label></li>
+        <li><label for="w03-r4"><input type="checkbox" id="w03-r4"><span lang="en">Do I understand that a step is bounded by a boundary or a process, not by a fixed distance?</span><span lang="zh-Hans">我是否理解：一步由边界或过程界定，而不是固定距离？</span></label></li>
+      </ul>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Remark · debt repaid, debt taken on</span><span lang="zh-Hans">小结 · 还清的债与新欠的债</span></p>
+        <p lang="en">Repaid: geometry, material and placement are separate, and the step is data you have printed and coloured yourself. Taken on: you have seen that a process occurred, but not how much energy one crossing carries away on average, or why. That is Week 4.</p>
+        <p lang="zh-Hans">还清的债：几何、材料与放置是分开的；“步”是你亲手打印并着色的数据。新欠的债：你看到了过程的发生，却还不知道一次穿越平均带走多少能量、为什么。这是第 4 周的内容。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-share">
+    <p class="cmd">/vis/ogl/export week03.gif<span lang="en">share this week</span><span lang="zh-Hans">分享本周成果</span></p>
+    <div class="share">
+      <figure class="fig">
+        <img src="media/week03-steps.gif" width="720" height="900" alt="Forty real Geant4 muon crossings of a lead block, each drawn step by step and coloured by the process that ended the step, with a histogram of steps per crossing" loading="lazy">
+        <figcaption><span lang="en">Real Geant4 11.4 steps from the week03 app, G4_Pb block, course test physics list. Long-press or right-click to save.</span><span lang="zh-Hans">来自 week03 程序的真实 Geant4 11.4 步，G4_Pb 方块，课程测试物理列表。长按或右键即可保存。</span></figcaption>
+      </figure>
+      <div class="prose">
+        <h2 id="h-share" class="bi"><span lang="en">A straight line is five decisions.</span><span lang="zh-Hans">一条直线，是五次决定。</span></h2>
+        <p lang="en">Post your six-material table and the GIF. Compare your steps column with the table in step 4 in units of σ; differences from <code>FTFP_BERT</code>'s extra scattering steps should be small but visible.</p>
+        <p lang="zh-Hans">把你的六种材料结果表和这张 GIF 发出来。以 σ 为单位，把你的步数一栏与第 4 步中的表比较；<code>FTFP_BERT</code> 额外的散射步造成的差异应当很小，但可以看出来。</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" id="pager" aria-label="Week navigation"></nav>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 3–4 · Geant4 11.4.p01 · PDG RPP 2024</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 3–4 章 · Geant4 11.4.p01 · PDG RPP 2024</span>
+  </footer>
+</div>
+<script src="assets/course.js"></script>
+<script src="assets/week03.js"></script>
+</body>
+</html>

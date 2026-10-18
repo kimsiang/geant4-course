@@ -335,3 +335,6 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; margin-top: 8px; 
 
 .panels.one { grid-template-columns: minmax(0, 1fr); border-top: 0; }
 .panels.one > * + * { border-left: 0; }
+
+/* long identifiers in running text must wrap on phones */
+p code, li code, td code, .cap code { overflow-wrap: anywhere; }

@@ -1,0 +1,2 @@
+# 1000 muons: enough to count steps by process (output ~10 MB; redirect to a file)
+/run/beamOn 1000

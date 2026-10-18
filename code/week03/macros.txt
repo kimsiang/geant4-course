@@ -1,0 +1,26 @@
+# ======== run1.mac ========
+# One 1 GeV mu- through the block, every step printed
+/run/dumpCouples
+/run/beamOn 1
+
+# ======== run1000.mac ========
+# 1000 muons: enough to count steps by process (output ~10 MB; redirect to a file)
+/run/beamOn 1000
+
+# ======== vis.mac ========
+# Interactive viewer: side view, trajectories
+/vis/open
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 90 90 deg
+/vis/viewer/set/style surface
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/scene/endOfEventAction accumulate
+/run/beamOn 5
+
+# ======== vrml.mac ========
+# Create a VRML 2.0 scene without opening a Qt window (textbook vis-vrml.mac)
+/vis/open VRML2FILE
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 70 20
+/vis/viewer/flush
