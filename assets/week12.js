@@ -1,10 +1,10 @@
-/* Week 12 — toy feasibility planner and defence-weight calculator (textbook Ch. 15–16).
+/* Week 12 — toy feasibility planner and defence-weight calculator.
    TOY MODEL. Statistical precision: for an efficiency, sigma/eps = sqrt((1-eps)/(eps N));
    for a mean, sigma/mean = r / sqrt(N eps), with r the relative RMS of the per-event quantity.
    Total relative uncertainty = sqrt(stat^2 + sys^2): beyond the systematic floor, more events do
    not help. Cost: constant CPU time per generated event (default 0.34 ms, measured in our Week 10
    Geant4 run: 200 000 muons in 67 CPU-seconds), perfect scaling over cores, no queueing, no
-   failed jobs, no analysis time. Grades: the textbook's Definition 16.1 weights. */
+   failed jobs, no analysis time. Grades: the Definition 12.2 weights. */
 (function () {
   'use strict';
   var G = window.G4C;
@@ -91,7 +91,7 @@
     x.fillStyle = G.css('--neu'); x.fillText('- - ' + G.t('target', '目标'), L + 160, B - 10);
   }
 
-  /* defence weights, Definition 16.1 */
+  /* defence weights, Definition 12.2 */
   var W = [['w12-g1', 20], ['w12-g2', 20], ['w12-g3', 25], ['w12-g4', 15], ['w12-g5', 10], ['w12-g6', 10]];
   function grade() {
     var tot = 0;
@@ -114,7 +114,7 @@
     { prompt: { en: 'Your systematic uncertainty is 1.5% and your target is 1%. What do more events buy you?', zh: '系统不确定度为 1.5%，目标是 1%。更多事例能带来什么？' },
       opts: [{ en: 'The target, eventually', zh: '最终能达到目标' }, { en: 'Nothing that reaches the target: the total cannot fall below the systematic floor', zh: '达不到目标：总不确定度不可能低于系统误差下限' }, { en: 'A smaller systematic', zh: '更小的系统误差' }, { en: 'A faster run', zh: '更快的运行' }],
       a: 1, why: { en: 'Total = √(stat² + sys²) ≥ sys. Reduce the systematic (a better model, a calibration, a narrower question) or change the target. The planner above shows the floor.', zh: '总不确定度 = √(stat² + sys²) ≥ sys。要么降低系统误差（更好的模型、刻度、更窄的问题），要么改变目标。上面的规划器显示了这一下限。' } },
-    { prompt: { en: 'Two defences: A has elegant code but no comparison with any reference; B has rough code and an honest validation. Under Definition 16.1, which scores higher?', zh: '两场答辩：A 代码优雅但没有与任何参照比较；B 代码粗糙但验证诚实。按定义 16.1，哪个得分更高？' },
+    { prompt: { en: 'Two defences: A has elegant code but no comparison with any reference; B has rough code and an honest validation. Under Definition 12.2, which scores higher?', zh: '两场答辩：A 代码优雅但没有与任何参照比较；B 代码粗糙但验证诚实。按定义 12.2，哪个得分更高？' },
       opts: [{ en: 'A, code quality matters most', zh: 'A，代码质量最重要' }, { en: 'B: validation is 25%, code quality and reproducibility 10%', zh: 'B：验证占 25%，代码质量与可复现性占 10%' }, { en: 'They tie', zh: '平分' }, { en: 'Neither passes', zh: '都不及格' }],
       a: 1, why: { en: 'Try the two presets in the weight calculator. A simulation never compared with anything has less scientific value, however clean the code.', zh: '在权重计算器里试试两个预设。一个从未与任何东西比较过的模拟，代码再干净，科学价值也更低。' } },
     { prompt: { en: 'What must every defence\'s boundary statement contain?', zh: '每场答辩的边界声明必须包含什么？' },

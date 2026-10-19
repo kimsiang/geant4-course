@@ -1,4 +1,4 @@
-"""field_scan.py -- Mission 12: fitted precession frequency versus configured field.
+"""field_scan.py -- Lab 10: fitted precession frequency versus configured field.
 Usage: python3 field_scan.py data/tf_5mT.root data/tf_10mT.root data/tf_20mT.root data/tf_30mT.root
 The configured field is read from the file name (tf_<B>mT.root).
 """

@@ -6,7 +6,7 @@
 #include "G4SystemOfUnits.hh"
 #include "G4VModularPhysicsList.hh"
 
-// Mission 6B: a deliberately stripped physics list.
+// Lab 6: a deliberately stripped physics list.
 class EMPhysicsList : public G4VModularPhysicsList
 {
   public:

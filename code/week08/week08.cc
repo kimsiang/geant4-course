@@ -9,7 +9,7 @@
 
 int main(int argc, char** argv)
 {
-  // Back to the textbook's Default run manager: multithreaded (or task-based).
+  // Back to the Default run manager: multithreaded (or task-based).
   auto* runManager =
     G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
   runManager->SetNumberOfThreads(2);   // must be set before Initialize()

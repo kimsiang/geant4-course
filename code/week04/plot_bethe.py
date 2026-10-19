@@ -1,4 +1,4 @@
-"""Mission 4 analysis: compare the Geant4 energy-loss scan with the Bethe formula.
+"""Lab 4 analysis: compare the Geant4 energy-loss scan with the Bethe formula.
 
 Reads edep_<E>MeV.root written by ./week04 run_bethe_bloch.mac, takes the mean of
 the two histograms in each file, and plots them against beta*gamma together with

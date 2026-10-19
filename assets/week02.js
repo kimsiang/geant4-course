@@ -1,4 +1,4 @@
-/* Week 02 — toy event-model explorer (textbook Ch. 2).
+/* Week 02 — toy event-model explorer (Week 2).
    TOY MODEL, not Geant4: an empty (vacuum) world, so the primary meets no matter. Each primary
    flies straight along z until it either reaches the world boundary (Transportation) or decays
    (Decay) after a distance sampled from an exponential with mean λ = βγcτ. Masses and lifetimes are

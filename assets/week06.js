@@ -1,4 +1,4 @@
-/* Week 06 — production-cut explorer (textbook Ch. 7).
+/* Week 06 — production-cut explorer (Week 6).
    Range cut -> energy threshold: interpolated (log-log) in the table Geant4 11.4 prints with
    /run/dumpCouples for 10 cut values (code/week06/cut_thresholds_g4_11.4.json); the 990 eV floor
    is Geant4's lower limit for production thresholds.

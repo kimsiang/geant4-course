@@ -1,10 +1,10 @@
 # ======== run1.mac ========
-# Mission 1, run 1: one 1 GeV mu- with the step table switched on
+# Lab 2, run 1: one 1 GeV mu- with the step table switched on
 /tracking/verbose 1
 /run/beamOn 1
 
-# ======== mission1.mac ========
-# Mission 1: change the gun from the macro, no recompilation
+# ======== gun.mac ========
+# Lab 2: change the gun from the macro, no recompilation
 /tracking/verbose 1
 /gun/particle proton
 /run/beamOn 1

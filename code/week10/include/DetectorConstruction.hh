@@ -7,7 +7,7 @@
 class G4GenericMessenger;
 class G4LogicalVolume;
 
-// Geometry of the textbook's tf_musr.mac, built in C++.
+// Geometry of tf_musr.mac, built in C++.
 // Copy numbers play the role of musrSim volume IDs: World -1, Target 5, CounterU 11, CounterD 1.
 class DetectorConstruction : public G4VUserDetectorConstruction
 {

@@ -36,7 +36,7 @@
       <p class="lede" lang="zh-Hans">拿到一个已经能运行的 Geant4 程序，只改动粒子种类、能量、起点和方向。先看它跑起来，再学习背后让它运转的事件模型。</p>
       <ul class="meta">
         <li class="stage"><b>1 · See it</b><span lang="en">stage · 观测</span><span lang="zh-Hans">阶段 · 观测</span></li>
-        <li><b>Mission 1</b><span lang="en">textbook ch. 2</span><span lang="zh-Hans">教材第 2 章</span></li>
+        <li><b>Lab 2</b><span lang="en">hands-on lab</span><span lang="zh-Hans">动手实验</span></li>
         <li><b>≈ 2 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
       </ul>
     </div>
@@ -156,21 +156,21 @@ fParticleGun-&gt;SetParticlePosition(G4ThreeVector(0., 0., -1. * m));      <span
 
       <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W02-a
-      issued by : textbook Example 2.1 vs Geant4 11.4
-The textbook starts the muon "outside the world volume's boundary".
+      issued by : Example 2.1 vs Geant4 11.4
+A common recipe starts the muon "outside the world volume's boundary".
   Tested here: a vertex set in the constructor is NOT checked, so
   Geant4 tracks it from outside and the TrackLeng includes the part
   outside the world. Start the gun inside the world. This page uses
-  a 3 m world so the textbook's z = -1 m is inside.
+  a 3 m world so z = -1 m is inside.
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
       <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W02-a
-      issued by : 教材例 2.1 与 Geant4 11.4 的对照
-教材让缪子“从世界体边界之外”出发。
+      issued by : 例 2.1 与 Geant4 11.4 的对照
+一种常见写法让缪子“从世界体边界之外”出发。
   实测：在构造函数中设置的顶点不会被检查，Geant4 会从世界外
   开始输运，TrackLeng 中包含了世界外的那一段。请把粒子枪放在
-  世界内部。本页使用 3 m 的世界，教材的 z = -1 m 就在世界内。
+  世界内部。本页使用 3 m 的世界，z = -1 m 就在世界内。
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
     </div>
@@ -284,7 +284,7 @@ The textbook starts the muon "outside the world volume's boundary".
 
   <!-- HANDS-ON -->
   <section class="run" aria-labelledby="h-task">
-    <p class="cmd">/control/execute run1.mac<span lang="en">hands-on · Mission 1</span><span lang="zh-Hans">动手任务 · 任务 1</span></p>
+    <p class="cmd">/control/execute run1.mac<span lang="en">hands-on · Lab 2</span><span lang="zh-Hans">动手任务 · 实验 2</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Build it, fire it, change it four ways, then count decays.</span><span lang="zh-Hans">编译、发射、四种改法，然后数衰变。</span></h2>
       <p lang="en">You need Geant4 11.4 and CMake ≥ 3.16 (Week 1, step 7). Every expected output below is real Geant4 11.4.p01 output from these exact files. Our sandbox has no Geant4 datasets, so we ran with a decay-only physics list in place of <code>FTFP_BERT</code>. In vacuum the step tables are the same, except that with <code>FTFP_BERT</code> the dE column may show a tiny number (about 10⁻²³ MeV) from ionisation in the residual gas of <code>G4_Galactic</code>. Your terminal will also print physics-list tables first.</p>
@@ -299,7 +299,7 @@ The textbook starts the muon "outside the world volume's boundary".
 ├── week02.cc
 ├── include/  DetectorConstruction.hh  PrimaryGeneratorAction.hh  ActionInitialization.hh
 ├── src/      DetectorConstruction.cc  PrimaryGeneratorAction.cc  ActionInitialization.cc
-└── run1.mac  mission1.mac  outward.mac  pion.mac  vis.mac</pre>
+└── run1.mac  gun.mac  outward.mac  pion.mac  vis.mac</pre>
           <div class="files">
             <details><summary><b>CMakeLists.txt</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f-cmake">copy</button></summary><pre id="f-cmake" data-src="code/week02/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
 project(Week02 LANGUAGES CXX)
@@ -318,7 +318,7 @@ target_include_directories(week02 PRIVATE include)
 target_link_libraries(week02 PRIVATE ${Geant4_LIBRARIES})
 
 # copy the macros next to the executable
-foreach(_mac run1.mac mission1.mac outward.mac pion.mac vis.mac)
+foreach(_mac run1.mac gun.mac outward.mac pion.mac vis.mac)
   configure_file(${PROJECT_SOURCE_DIR}/${_mac} ${PROJECT_BINARY_DIR}/${_mac} COPYONLY)
 endforeach()</pre></details>
             <details><summary><b>week02.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f-main">copy</button></summary><pre id="f-main" data-src="code/week02/week02.cc">#include "ActionInitialization.hh"
@@ -333,7 +333,7 @@ endforeach()</pre></details>
 int main(int argc, char** argv)
 {
   // Week 2 runs single-threaded so /tracking/verbose output is not
-  // interleaved between worker threads. The textbook's main.cc uses
+  // interleaved between worker threads. The usual main() uses
   // G4RunManagerType::Default; we switch to it when we merge MT output.
   auto* runManager =
     G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
@@ -426,7 +426,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   G4int n_particle = 1;
   fParticleGun = new G4ParticleGun(n_particle);
 
-  // The four choices that define the experiment (textbook Example 2.1):
+  // The four choices that define the experiment (Week 2, Example 2.1):
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   G4ParticleDefinition* particle = particleTable-&gt;FindParticle("mu-");
   fParticleGun-&gt;SetParticleDefinition(particle);                          // 1. species
@@ -466,13 +466,13 @@ void ActionInitialization::Build() const
 {
   SetUserAction(new PrimaryGeneratorAction());
 }</pre></details>
-            <details><summary><b>run1.mac · mission1.mac · outward.mac · pion.mac · vis.mac</b><button class="copy" type="button" data-copy="f-mac">copy</button></summary><pre id="f-mac" data-src="code/week02/macros.txt"># ======== run1.mac ========
-# Mission 1, run 1: one 1 GeV mu- with the step table switched on
+            <details><summary><b>run1.mac · gun.mac · outward.mac · pion.mac · vis.mac</b><button class="copy" type="button" data-copy="f-mac">copy</button></summary><pre id="f-mac" data-src="code/week02/macros.txt"># ======== run1.mac ========
+# Lab 2, run 1: one 1 GeV mu- with the step table switched on
 /tracking/verbose 1
 /run/beamOn 1
 
-# ======== mission1.mac ========
-# Mission 1: change the gun from the macro, no recompilation
+# ======== gun.mac ========
+# Lab 2: change the gun from the macro, no recompilation
 /tracking/verbose 1
 /gun/particle proton
 /run/beamOn 1
@@ -506,8 +506,8 @@ void ActionInitialization::Build() const
 /vis/scene/endOfEventAction accumulate
 /run/beamOn 10</pre></details>
           </div>
-          <p lang="en"><code>week02.cc</code> follows the textbook's skeleton (Week 12 uses the same one) with one change: it uses <code>G4RunManagerType::Serial</code> so the step tables of different worker threads do not interleave. The textbook's <code>Default</code> comes back when we merge multithreaded output in Week 8.</p>
-          <p lang="zh-Hans"><code>week02.cc</code> 沿用教材的程序骨架（第 12 周用的也是它），只改了一处：使用 <code>G4RunManagerType::Serial</code>，避免不同工作线程的步表交错输出。教材中的 <code>Default</code> 会在第 8 周合并多线程输出时回归。</p>
+          <p lang="en"><code>week02.cc</code> follows the standard <code>main()</code> skeleton of the official Geant4 examples (Week 12 uses the same one) with one change: it uses <code>G4RunManagerType::Serial</code> so the step tables of different worker threads do not interleave. The usual <code>Default</code> (multithreaded where available) comes back when we merge multithreaded output in Week 8.</p>
+          <p lang="zh-Hans"><code>week02.cc</code> 沿用 Geant4 官方示例中标准的 <code>main()</code> 骨架（第 12 周用的也是它），只改了一处：使用 <code>G4RunManagerType::Serial</code>，避免不同工作线程的步表交错输出。常用的 <code>Default</code>（条件允许时为多线程）会在第 8 周合并多线程输出时回归。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Build</span><span lang="zh-Hans">编译</span></h3><label class="done" for="w02-s2"><input type="checkbox" id="w02-s2" data-progress="w02"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -536,7 +536,7 @@ Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolu
           <p lang="zh-Hans">对照定义 2.1 来读：一个事件，所以只有一个 <strong>Track Information</strong> 块；Track ID 1、Parent ID 0 表示初级粒子。第 0 行是起点，第 1 行是唯一的一步：长 2.5 m，由 <code>Transportation</code> 在世界边界结束，之后的体积是 <code>OutOfWorld</code>。KinE 保持 1000 MeV，因为路上什么都没有。</p>
         </li>
         <li>
-          <div class="step-head"><h3 class="bi"><span lang="en">Mission 1, the textbook way: edit, rebuild, rerun</span><span lang="zh-Hans">任务 1 教材做法：改代码、重编译、再运行</span></h3><label class="done" for="w02-s4"><input type="checkbox" id="w02-s4" data-progress="w02"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="step-head"><h3 class="bi"><span lang="en">Lab 2, the C++ way: edit, rebuild, rerun</span><span lang="zh-Hans">实验 2 的 C++ 做法：改代码、重编译、再运行</span></h3><label class="done" for="w02-s4"><input type="checkbox" id="w02-s4" data-progress="w02"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <p lang="en">In <code>PrimaryGeneratorAction.cc</code> change <code>1. * GeV</code> to <code>10. * GeV</code>, run <code>make</code>, and run <code>./week02 run1.mac</code> again. Only the KinE column changes:</p>
           <p lang="zh-Hans">在 <code>PrimaryGeneratorAction.cc</code> 中把 <code>1. * GeV</code> 改成 <code>10. * GeV</code>，执行 <code>make</code>，再运行 <code>./week02 run1.mac</code>。只有 KinE 列改变：</p>
           <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
@@ -548,10 +548,10 @@ Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolu
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">The same four changes from a macro, without recompiling</span><span lang="zh-Hans">用宏完成同样的修改，无需重编译</span></h3><label class="done" for="w02-s5"><input type="checkbox" id="w02-s5" data-progress="w02"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
-          <p lang="en"><code>G4ParticleGun</code> comes with the <code>/gun/</code> commands. They work here because our <code>GeneratePrimaries</code> does not reset the gun. <code>mission1.mac</code> fires a proton, a photon and a reversed muon:</p>
-          <p lang="zh-Hans"><code>G4ParticleGun</code> 自带 <code>/gun/</code> 系列命令。它们在这里有效，是因为我们的 <code>GeneratePrimaries</code> 不会重置粒子枪。<code>mission1.mac</code> 依次发射质子、光子和反向的缪子：</p>
+          <p lang="en"><code>G4ParticleGun</code> comes with the <code>/gun/</code> commands. They work here because our <code>GeneratePrimaries</code> does not reset the gun. <code>gun.mac</code> fires a proton, a photon and a reversed muon:</p>
+          <p lang="zh-Hans"><code>G4ParticleGun</code> 自带 <code>/gun/</code> 系列命令。它们在这里有效，是因为我们的 <code>GeneratePrimaries</code> 不会重置粒子枪。<code>gun.mac</code> 依次发射质子、光子和反向的缪子：</p>
           <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c-m1">copy</button></div>
-<pre id="c-m1">./week02 mission1.mac</pre></div>
+<pre id="c-m1">./week02 gun.mac</pre></div>
           <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01, banners trimmed)</span><span lang="zh-Hans">预期（Geant4 11.4.p01，省略分隔行）</span></b></span></div>
 <pre>* G4Track Information:   Particle = proton,   Track ID = 1,   Parent ID = 0
 Step#    X(mm)    Y(mm)    Z(mm) KinE(MeV)  dE(MeV) StepLeng TrackLeng  NextVolume ProcName
@@ -770,7 +770,7 @@ Gun randomised in the constructor, expecting new values each event.
 
   <footer>
     <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
-    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 2 · Geant4 11.4.p01 · PDG RPP 2024</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 2 章 · Geant4 11.4.p01 · PDG RPP 2024</span>
+    <span lang="en">Source: Geant4 11.4.p01 Application Developer Guide · PDG RPP 2024 (particle properties) · our own Geant4 runs</span><span lang="zh-Hans">来源：Geant4 11.4.p01 应用开发者指南 · PDG RPP 2024（粒子性质）· 本课程自己的 Geant4 运行结果</span>
   </footer>
 </div>
 <script src="assets/course.js"></script>

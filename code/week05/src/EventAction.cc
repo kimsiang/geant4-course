@@ -38,7 +38,7 @@ void EventAction::EndOfEventAction(const G4Event* event)
   auto* hits = static_cast<MuonHitsCollection*>(hce->GetHC(fHitsCollectionID));
   if (!hits || hits->entries() < 2) return;
 
-  // 1. Truth-level detector response and the Example 6.1 threshold (event level!)
+  // 1. Truth-level detector response and the Example 5.1 threshold (event level!)
   const G4double edep[2] = {(*hits)[0]->GetEdep(), (*hits)[1]->GetEdep()};
   const G4bool fired[2] = {edep[0] >= fEdepThreshold, edep[1] >= fEdepThreshold};
 

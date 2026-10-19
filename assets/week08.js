@@ -1,4 +1,4 @@
-/* Week 08 — toy event stream through the simulation-to-data chain (textbook Ch. 9).
+/* Week 08 — toy event stream through the simulation-to-data chain (Week 8 lesson).
    TOY MODEL, not Geant4. Events follow the week08 app: cos^2-crossing muons from a 30 x 30 cm
    plane 10 cm above the top counter; two 10 x 10 x 1 cm counters 20 cm apart. Energy deposit:
    Moyal approximation to the Landau distribution (MPV 1.75 MeV per cm, width 0.11 MeV, scaled by

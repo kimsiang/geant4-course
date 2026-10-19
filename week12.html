@@ -39,12 +39,12 @@
       <p class="lede" lang="zh-Hans">到目前为止，每个问题都来自教师。本周由你提出一个问题，检查它能否在现有时间内得到回答，在你已熟悉的骨架上搭建它，再面对像审稿人一样提问的同学。评分把验证放在代码之上。</p>
       <ul class="meta">
         <li class="stage"><b>5 · Trust it</b><span lang="en">stage · 信任</span><span lang="zh-Hans">阶段 · 信任</span></li>
-        <li><b>Mission 11 → defence</b><span lang="en">textbook ch. 15–16</span><span lang="zh-Hans">教材第 15–16 章</span></li>
+        <li><b>Lab 12 → defence</b><span lang="en">hands-on lab</span><span lang="zh-Hans">动手实验</span></li>
         <li><b>10 min</b><span lang="en">talk + questions</span><span lang="zh-Hans">报告 + 提问</span></li>
       </ul>
     </div>
     <div class="statbox" role="table" aria-label="Defence weights">
-      <div role="row"><span role="cell">Definition 16.1</span></div>
+      <div role="row"><span role="cell">Definition 12.2</span></div>
       <div role="row"><span role="cell"><span lang="en">validation</span><span lang="zh-Hans">验证</span></span><span role="cell"><b>25%</b></span></div>
       <div role="row"><span role="cell"><span lang="en">problem · implementation</span><span lang="zh-Hans">问题 · 实现</span></span><span role="cell">20% · 20%</span></div>
       <div role="row"><span role="cell"><span lang="en">analysis</span><span lang="zh-Hans">分析</span></span><span role="cell">15%</span></div>
@@ -90,19 +90,19 @@
   </section>
 
   <section class="run" aria-labelledby="h-prop">
-    <p class="cmd">/control/manual<span lang="en">15 · from exercise to research</span><span lang="zh-Hans">15 · 从练习到研究</span></p>
+    <p class="cmd">/control/manual<span lang="en">12.1 · from exercise to research</span><span lang="zh-Hans">12.1 · 从练习到研究</span></p>
     <div class="prose">
       <h2 id="h-prop" class="bi"><span lang="en">A good question can be answered by simulation, uses three skills, and has one observable.</span><span lang="zh-Hans">好问题能用模拟回答，用到三项技能，并只有一个可观测量。</span></h2>
 <!-- fig:svg-w12 -->
-<figure class="fig-svg"><svg viewBox="0 0 820 190" role="img" aria-label="Research workflow from question to defence, with validation highlighted"><defs><marker id="ah-workflow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="14" y="50" width="100" height="60" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="64" y="76" text-anchor="middle" font-size="12" lang="en">question</text><text x="64" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">问题</text><text x="64" y="96" text-anchor="middle" class="m" font-size="9.5">1 sentence</text><line x1="115" y1="80" x2="127" y2="80" class="s-m" stroke-width="1.2" marker-end="url(#ah-workflow)" fill="none"/><rect x="129" y="50" width="100" height="60" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="179" y="76" text-anchor="middle" font-size="12" lang="en">proposal</text><text x="179" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">提案</text><text x="179" y="96" text-anchor="middle" class="m" font-size="9.5">criterion</text><line x1="230" y1="80" x2="242" y2="80" class="s-m" stroke-width="1.2" marker-end="url(#ah-workflow)" fill="none"/><rect x="244" y="50" width="100" height="60" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="294" y="76" text-anchor="middle" font-size="12" lang="en">pilot run</text><text x="294" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">试跑</text><text x="294" y="96" text-anchor="middle" class="m" font-size="9.5">ms/event</text><line x1="345" y1="80" x2="357" y2="80" class="s-m" stroke-width="1.2" marker-end="url(#ah-workflow)" fill="none"/><rect x="359" y="50" width="100" height="60" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="409" y="76" text-anchor="middle" font-size="12" lang="en">production</text><text x="409" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">生产</text><text x="409" y="96" text-anchor="middle" class="m" font-size="9.5">seeds, tag</text><line x1="460" y1="80" x2="472" y2="80" class="s-m" stroke-width="1.2" marker-end="url(#ah-workflow)" fill="none"/><rect x="474" y="50" width="100" height="60" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="524" y="76" text-anchor="middle" font-size="12" lang="en">analysis</text><text x="524" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">分析</text><text x="524" y="96" text-anchor="middle" class="m" font-size="9.5">uncertainty</text><line x1="575" y1="80" x2="587" y2="80" class="s-m" stroke-width="1.2" marker-end="url(#ah-workflow)" fill="none"/><rect x="589" y="50" width="100" height="60" rx="3" class="s-neu" fill="none" stroke-width="1.9"/><text x="639" y="76" text-anchor="middle" font-size="12" lang="en">validation</text><text x="639" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">验证</text><text x="639" y="96" text-anchor="middle" class="m" font-size="9.5">rung, σ</text><line x1="690" y1="80" x2="702" y2="80" class="s-m" stroke-width="1.2" marker-end="url(#ah-workflow)" fill="none"/><rect x="704" y="50" width="100" height="60" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="754" y="76" text-anchor="middle" font-size="12" lang="en">defence</text><text x="754" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">答辩</text><text x="754" y="96" text-anchor="middle" class="m" font-size="9.5">10 min</text><path d="M704 112 Q520 170 300 116" class="s-m" fill="none" stroke-width="1.2" marker-end="url(#ah-workflow)" stroke-dasharray="4 3"/><text x="500" y="166" text-anchor="middle" class="m" font-size="10.5" lang="en">disagreement → back to the model or the question</text><text x="500" y="166" text-anchor="middle" class="m" font-size="10.5" lang="zh-Hans">不一致 → 回到模型或问题</text><text x="14" y="34" class="m" font-size="10.5" lang="en">weights: problem 20 · implementation 20 · validation 25 · analysis 15 · communication 10 · code 10</text><text x="14" y="34" class="m" font-size="10.5" lang="zh-Hans">权重：问题 20 · 实现 20 · 验证 25 · 分析 15 · 表达 10 · 代码 10</text></svg><figcaption><span lang="en">From exercise to research (Chapters 15–16). Validation carries the largest weight in the defence.</span><span lang="zh-Hans">从练习到研究（第 15–16 章）。验证在答辩中权重最大。</span></figcaption></figure>
+<figure class="fig-svg"><svg viewBox="0 0 820 190" role="img" aria-label="Research workflow from question to defence, with validation highlighted"><defs><marker id="ah-workflow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="14" y="50" width="100" height="60" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="64" y="76" text-anchor="middle" font-size="12" lang="en">question</text><text x="64" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">问题</text><text x="64" y="96" text-anchor="middle" class="m" font-size="9.5">1 sentence</text><line x1="115" y1="80" x2="127" y2="80" class="s-m" stroke-width="1.2" marker-end="url(#ah-workflow)" fill="none"/><rect x="129" y="50" width="100" height="60" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="179" y="76" text-anchor="middle" font-size="12" lang="en">proposal</text><text x="179" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">提案</text><text x="179" y="96" text-anchor="middle" class="m" font-size="9.5">criterion</text><line x1="230" y1="80" x2="242" y2="80" class="s-m" stroke-width="1.2" marker-end="url(#ah-workflow)" fill="none"/><rect x="244" y="50" width="100" height="60" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="294" y="76" text-anchor="middle" font-size="12" lang="en">pilot run</text><text x="294" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">试跑</text><text x="294" y="96" text-anchor="middle" class="m" font-size="9.5">ms/event</text><line x1="345" y1="80" x2="357" y2="80" class="s-m" stroke-width="1.2" marker-end="url(#ah-workflow)" fill="none"/><rect x="359" y="50" width="100" height="60" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="409" y="76" text-anchor="middle" font-size="12" lang="en">production</text><text x="409" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">生产</text><text x="409" y="96" text-anchor="middle" class="m" font-size="9.5">seeds, tag</text><line x1="460" y1="80" x2="472" y2="80" class="s-m" stroke-width="1.2" marker-end="url(#ah-workflow)" fill="none"/><rect x="474" y="50" width="100" height="60" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="524" y="76" text-anchor="middle" font-size="12" lang="en">analysis</text><text x="524" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">分析</text><text x="524" y="96" text-anchor="middle" class="m" font-size="9.5">uncertainty</text><line x1="575" y1="80" x2="587" y2="80" class="s-m" stroke-width="1.2" marker-end="url(#ah-workflow)" fill="none"/><rect x="589" y="50" width="100" height="60" rx="3" class="s-neu" fill="none" stroke-width="1.9"/><text x="639" y="76" text-anchor="middle" font-size="12" lang="en">validation</text><text x="639" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">验证</text><text x="639" y="96" text-anchor="middle" class="m" font-size="9.5">rung, σ</text><line x1="690" y1="80" x2="702" y2="80" class="s-m" stroke-width="1.2" marker-end="url(#ah-workflow)" fill="none"/><rect x="704" y="50" width="100" height="60" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="754" y="76" text-anchor="middle" font-size="12" lang="en">defence</text><text x="754" y="76" text-anchor="middle" font-size="12" lang="zh-Hans">答辩</text><text x="754" y="96" text-anchor="middle" class="m" font-size="9.5">10 min</text><path d="M704 112 Q520 170 300 116" class="s-m" fill="none" stroke-width="1.2" marker-end="url(#ah-workflow)" stroke-dasharray="4 3"/><text x="500" y="166" text-anchor="middle" class="m" font-size="10.5" lang="en">disagreement → back to the model or the question</text><text x="500" y="166" text-anchor="middle" class="m" font-size="10.5" lang="zh-Hans">不一致 → 回到模型或问题</text><text x="14" y="34" class="m" font-size="10.5" lang="en">weights: problem 20 · implementation 20 · validation 25 · analysis 15 · communication 10 · code 10</text><text x="14" y="34" class="m" font-size="10.5" lang="zh-Hans">权重：问题 20 · 实现 20 · 验证 25 · 分析 15 · 表达 10 · 代码 10</text></svg><figcaption><span lang="en">From exercise to research. Validation carries the largest weight in the defence.</span><span lang="zh-Hans">从练习到研究。验证在答辩中权重最大。</span></figcaption></figure>
 <!-- /fig:svg-w12 -->
       <div class="box">
-        <p class="box-label">Definition 15.1 · <span lang="en">The minimal research proposal</span><span lang="zh-Hans">最小研究提案</span></p>
+        <p class="box-label">Definition 12.1 · <span lang="en">The minimal research proposal</span><span lang="zh-Hans">最小研究提案</span></p>
         <p lang="en">A one-sentence physics question; the detector geometry and physics processes involved; at least one observable whose direction you can guess in advance; and one explicit validation criterion, the level of result that counts as having answered the question. Each item concrete enough that an advisor can tell at a glance whether it fits in a week.</p>
         <p lang="zh-Hans">一句话的物理问题；涉及的探测器几何和物理过程；至少一个能事先猜出变化方向的可观测量；以及一个明确的验证标准，即什么样的结果算回答了问题。每一项都要具体到导师一眼就能判断能否在一周内完成。</p>
       </div>
-      <p lang="en">Candidate topics from the textbook, roughly in increasing difficulty. Several are open questions in our group:</p>
-      <p lang="zh-Hans">教材给出的候选课题，大致按难度递增排列。其中几个是我们课题组正在研究的开放问题：</p>
+      <p lang="en">Candidate topics, roughly in increasing difficulty. Several are open questions in our group:</p>
+      <p lang="zh-Hans">候选课题，大致按难度递增排列。其中几个是我们课题组正在研究的开放问题：</p>
       <ul>
         <li lang="en">tracker spacing and field strength for the best momentum resolution under a budget (W7)</li><li lang="zh-Hans">在预算约束下，为获得最佳动量分辨率优化径迹探测器间距和磁场强度（第 7 周）</li>
         <li lang="en">how much a muography density map depends on the assumed muon spectrum and angular distribution</li><li lang="zh-Hans">缪子成像密度图在多大程度上依赖于假定的缪子能谱和角分布</li>
@@ -156,7 +156,7 @@ A boundless topic ("study every aspect of muon detectors") can never
           <div class="verbose"><pre id="w12-out"></pre></div>
         </div>
       </div>
-      <h3 class="bi" style="margin-top:36px"><span lang="en">Defence weights (Definition 16.1)</span><span lang="zh-Hans">答辩权重（定义 16.1）</span></h3>
+      <h3 class="bi" style="margin-top:36px"><span lang="en">Defence weights (Definition 12.2)</span><span lang="zh-Hans">答辩权重（定义 12.2）</span></h3>
       <div class="btns" style="border:1px solid var(--rule);border-radius:4px 4px 0 0">
         <button type="button" id="w12-ex-a"><span lang="en">A: elegant code, never compared</span><span lang="zh-Hans">A：代码优雅，从未比较</span></button>
         <button type="button" id="w12-ex-b"><span lang="en">B: rough code, honest validation</span><span lang="zh-Hans">B：代码粗糙，验证诚实</span></button>
@@ -179,11 +179,16 @@ A boundless topic ("study every aspect of muon detectors") can never
   </section>
 
   <section class="run" aria-labelledby="h-def">
-    <p class="cmd">/control/saveHistory<span lang="en">16 · the last gate is a defence</span><span lang="zh-Hans">16 · 最后一关是答辩</span></p>
+    <p class="cmd">/control/saveHistory<span lang="en">12.2 · the last gate is a defence</span><span lang="zh-Hans">12.2 · 最后一关是答辩</span></p>
     <div class="prose">
       <h2 id="h-def" class="bi"><span lang="en">Treat your simulation as an instrument someone else could rebuild and challenge.</span><span lang="zh-Hans">把你的模拟当作一台别人能重建、能质疑的仪器。</span></h2>
       <div class="box">
-        <p class="box-label">Example 16.1 · <span lang="en">A ten-minute defence</span><span lang="zh-Hans">十分钟答辩</span></p>
+        <p class="box-label">Definition 12.2 · <span lang="en">Defence weights</span><span lang="zh-Hans">答辩权重</span></p>
+        <p lang="en">A defence is graded on six parts: the problem 20%, the implementation 20%, validation 25%, analysis 15%, communication 10%, and code and reproducibility 10%. Validation carries the most weight on its own.</p>
+        <p lang="zh-Hans">答辩按六个部分评分：问题 20%，实现 20%，验证 25%，分析 15%，表达 10%，代码与可复现性 10%。单项中验证的权重最大。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Example 12.1 · <span lang="en">A ten-minute defence</span><span lang="zh-Hans">十分钟答辩</span></p>
         <p lang="en">1 min: the physics question, clear without slides. 3 min: simulation design and the key implementation choices. 3 min: validation, with uncertainties and the reference. 1 min: known limitations. The rest: questions, at least one of them a referee's question.</p>
         <p lang="zh-Hans">1 分钟：物理问题，不看幻灯片也能听懂。3 分钟：模拟设计和关键实现选择。3 分钟：验证，含不确定度和参照。1 分钟：已知局限。其余时间：提问，其中至少一个是审稿人式的问题。</p>
       </div>
@@ -226,7 +231,7 @@ With /run/numberOfThreads 1 the output is identical run to run, and
   </section>
 
   <section class="run" aria-labelledby="h-task">
-    <p class="cmd">git tag v1.0<span lang="en">hands-on · proposal to defence</span><span lang="zh-Hans">动手任务 · 从提案到答辩</span></p>
+    <p class="cmd">git tag v1.0<span lang="en">hands-on · Lab 12 · proposal to defence</span><span lang="zh-Hans">动手实验 · 实验 12 · 从提案到答辩</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Five steps from a blank page to a reproduced number.</span><span lang="zh-Hans">从一张白纸到一个被复现的数字，五步。</span></h2>
       <ol class="steps">
@@ -253,10 +258,10 @@ Author · date · repository URL · tag
 - Detector response: &lt;truth Edep / digitised / optical&gt;  and why that fidelity is enough
 
 ## 5. Skills used (at least three weeks)
-&lt;e.g. W6 trigger, W8 analysis chain, W10 spin physics&gt;
+&lt;e.g. W5 trigger, W8 analysis chain, W10 spin physics&gt;
 
 ## 6. Validation criterion
-&lt;Reference (analytic, table, published measurement), the rung you aim for (Definition 14.1),
+&lt;Reference (analytic, table, published measurement), the rung you aim for (Week 11 validation ladder),
 and the discrepancy in sigma that would count as agreement.&gt;
 
 ## 7. Feasibility
@@ -386,13 +391,13 @@ A precision target below the systematic floor. Total uncertainty is
 *** G4Exception : Course-W12-d
       issued by : validation slide
 Attractive plots without uncertainties, or "fully validated". Name the
-  rung (Definition 14.1), the reference and the discrepancy in sigma.
+  rung (Week 11 ladder), the reference and the discrepancy in sigma.
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
 <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W12-d
       issued by : 验证页幻灯片
-没有不确定度的漂亮图，或“已完全验证”。说出所在阶梯（定义 14.1）、
+没有不确定度的漂亮图，或“已完全验证”。说出所在阶梯（第 11 周的验证阶梯）、
   参照，以及以 sigma 表示的偏差。
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
@@ -434,7 +439,7 @@ Attractive plots without uncertainties, or "fully validated". Name the
     <div class="share">
       <figure class="fig">
         <img src="media/week12-journey.gif" width="720" height="900" alt="The chain from a physics question to research builds up line by line, each step tagged with the week that taught it, ending with three reproduced runs" loading="lazy">
-        <figcaption><span lang="en">The chain is textbook section 16.2; the three runs are our Week 10 reruns. Long-press or right-click to save.</span><span lang="zh-Hans">这条链来自教材第 16.2 节；三次运行是我们重跑第 10 周的结果。长按或右键即可保存。</span></figcaption>
+        <figcaption><span lang="en">The chain runs from a physics question to a defended, reproduced result; each link carries the week that taught it, and the three runs are our Week 10 reruns. Long-press or right-click to save.</span><span lang="zh-Hans">这条链从一个物理问题一直走到经过答辩、可复现的结果；每一环都标着教会它的那一周，三次运行是我们重跑第 10 周的结果。长按或右键即可保存。</span></figcaption>
       </figure>
       <div class="prose">
         <h2 id="h-share" class="bi"><span lang="en">From a Python toy to a defended experiment.</span><span lang="zh-Hans">从 Python 玩具到经过答辩的实验。</span></h2>
@@ -448,7 +453,7 @@ Attractive plots without uncertainties, or "fully validated". Name the
 
   <footer>
     <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
-    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 15–16 · Geant4 11.4 source</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 15–16 章 · Geant4 11.4 源码</span>
+    <span lang="en">Source: Geant4 11.4 source · our own Geant4 runs (Week 10 reruns)</span><span lang="zh-Hans">来源：Geant4 11.4 源码 · 我们自己的 Geant4 运行（重跑第 10 周）</span>
   </footer>
 </div>
 <script src="assets/course.js"></script>

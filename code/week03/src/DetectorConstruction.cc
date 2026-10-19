@@ -10,7 +10,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 {
   G4NistManager* nist = G4NistManager::Instance();
   G4Material* worldMat = nist->FindOrBuildMaterial("G4_AIR");
-  G4Material* blockMat = nist->FindOrBuildMaterial("G4_CONCRETE");  // Mission 2: the only line that changes
+  G4Material* blockMat = nist->FindOrBuildMaterial("G4_CONCRETE");  // Lab 3.1: the only line that changes
 
   // --- World ---
   G4double worldSize = 1.0 * m;

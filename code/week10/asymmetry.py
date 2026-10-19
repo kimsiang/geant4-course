@@ -1,4 +1,4 @@
-"""asymmetry.py -- recover the field from the precession of the muon spin (textbook 12.5, annotated).
+"""asymmetry.py -- recover the field from the precession of the muon spin (annotated).
 
 Reads a t1 tree with musrSim branch names: the course app writes data/tf_10mT.root;
 musrSim writes data/musrSim_0_tf.root for tf_musr.mac (run number 0, output name "tf").
@@ -31,7 +31,7 @@ if measured:
     tU = np.asarray(ak.fill_none(ak.firsts(D.det_time_start[D.det_ID == 11]), -1.0))[hitU]
     tD = np.asarray(ak.fill_none(ak.firsts(D.det_time_start[D.det_ID == 1]), -1.0))[hitD]
 else:
-    t = np.asarray(D.muDecayTime)                       # Monte Carlo truth (textbook choice)
+    t = np.asarray(D.muDecayTime)                       # Monte Carlo truth (our choice: no detector timing)
     tU, tD = t[hitU], t[hitD]
 print(f"positrons in U (ID 11): {len(tU)}   in D (ID 1): {len(tD)}")
 

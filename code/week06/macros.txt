@@ -21,7 +21,7 @@
 /run/dumpCouples
 
 # ======== census.mac ========
-# Mission 6B: same geometry, same gun, only the physics list changes (command line)
+# Lab 6: same geometry, same gun, only the physics list changes (command line)
 /run/verbose 0
 /gun/particle mu-
 /gun/energy 1 GeV

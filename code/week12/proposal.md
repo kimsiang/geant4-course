@@ -18,10 +18,10 @@ Author · date · repository URL · tag
 - Detector response: <truth Edep / digitised / optical>  and why that fidelity is enough
 
 ## 5. Skills used (at least three weeks)
-<e.g. W6 trigger, W8 analysis chain, W10 spin physics>
+<e.g. W5 trigger, W8 analysis chain, W10 spin physics>
 
 ## 6. Validation criterion
-<Reference (analytic, table, published measurement), the rung you aim for (Definition 14.1),
+<Reference (analytic, table, published measurement), the rung you aim for (Week 11 validation ladder),
 and the discrepancy in sigma that would count as agreement.>
 
 ## 7. Feasibility

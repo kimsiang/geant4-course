@@ -9,7 +9,7 @@
 #include "G4SDManager.hh"
 #include "G4SystemOfUnits.hh"
 
-// Mission 5 / 5C: two 10 x 10 x 1 cm3 plastic counters, 20 cm apart along z.
+// Labs 5.1 / 5.2: two 10 x 10 x 1 cm3 plastic counters, 20 cm apart along z.
 // One logical volume "Counter", placed twice with copy numbers 0 (top) and 1 (bottom).
 // The world is 3 m wide so the toy cosmic source plane (up to +-1.5 m) stays inside it.
 G4VPhysicalVolume* DetectorConstruction::Construct()

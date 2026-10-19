@@ -1,4 +1,4 @@
-/* Week 05 — toy digitization chain and coincidence trigger (textbook Ch. 6).
+/* Week 05 — toy digitization chain and coincidence trigger (Week 5).
    TOY MODEL, not Geant4.
    Chain: Edep (1 cm PVT, 4 GeV muon) drawn from a Moyal approximation to the Landau distribution
    with MPV 1.78 MeV and width xi = 0.086 MeV (xi = K/2 Z/A rho x / beta^2; MPV from our Geant4 run),
@@ -132,7 +132,7 @@
     { prompt: { en: 'In the noise run, "both ADC above threshold" was 2032 events but the trigger with |Δt| < 20 ns was 403. What made the difference?', zh: '噪声运行中，“两路 ADC 均超阈”有 2032 个事例，而加上 |Δt| < 20 ns 的触发只有 403 个。差别来自哪里？' },
       opts: [{ en: 'A bug in the time calculation', zh: '时间计算有 bug' }, { en: 'Background pulses are random in time, so most pairs fall outside 20 ns', zh: '本底脉冲在时间上随机，大部分配对落在 20 ns 之外' }, { en: 'The muons were too slow', zh: '缪子太慢' }, { en: 'The threshold changed', zh: '阈值变了' }],
       a: 1, why: { en: 'A background pulse lands anywhere in the 1 µs window; a 40 ns wide coincidence accepts only 4% of such pairs. Two hits in one event is not a coincidence: timing is part of the trigger definition.', zh: '本底脉冲可能落在 1 µs 读出窗口的任何位置，40 ns 宽的符合窗只接受其中 4% 的配对。同一事例中有两个击中不等于符合：时间条件是触发定义的一部分。' } },
-    { prompt: { en: 'The textbook EventAction looks up the hits-collection ID in its constructor. Why does this course do it lazily in EndOfEventAction?', zh: '教材的 EventAction 在构造函数中查找 hits collection ID。本课程为何改为在 EndOfEventAction 中延迟查找？' },
+    { prompt: { en: 'A common EventAction looks up the hits-collection ID in its constructor. Why does this course do it lazily in EndOfEventAction?', zh: '常见的 EventAction 写法在构造函数中查找 hits collection ID。本课程为何改为在 EndOfEventAction 中延迟查找？' },
       opts: [{ en: 'Style only', zh: '只是风格问题' }, { en: 'User actions are built before the sensitive detector exists, so the ID would be −1', zh: '用户动作在灵敏探测器创建之前构建，ID 会是 −1' }, { en: 'It is faster', zh: '这样更快' }, { en: 'The constructor cannot call Geant4', zh: '构造函数不能调用 Geant4' }],
       a: 1, why: { en: 'In a sequential run, ActionInitialization::Build() runs when it is registered, before Initialize() calls ConstructSDandField(). The collection is not registered yet. Looking it up on first use, as the official examples do, always works.', zh: '在串行运行中，ActionInitialization::Build() 在注册时就执行，早于 Initialize() 调用 ConstructSDandField()，此时集合尚未注册。像官方示例那样在第一次使用时查找，总是可靠的。' } }
   ]);

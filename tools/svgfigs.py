@@ -215,8 +215,8 @@ for x0, x1, en, zh in [(14, 266, "Geant4 truth", "Geant4 真值"), (282, 534, "d
     b.append(L(x0, 136, x1, 136, "s-m", 1)); b.append(L(x0, 130, x0, 136, "s-m", 1)); b.append(L(x1, 130, x1, 136, "s-m", 1))
     b.append(T((x0 + x1) / 2, 154, en, zh, "m", "middle", 11))
 SVG["chain"] = (svg(170, b, "Readout chain from a muon to an ADC number, grouped into truth, detector response and measurement"),
-                ("The chain Chapter 6 builds. Plastic scintillators emit of order 10⁴ photons per MeV deposited; only a fraction becomes photoelectrons, which is why Poisson fluctuations matter.",
-                 "第 6 章搭建的链条。塑料闪烁体每沉积 1 MeV 发出约 10⁴ 个光子；其中只有一部分变成光电子，所以泊松涨落很重要。"))
+                ("The chain this week builds. Plastic scintillators emit of order 10⁴ photons per MeV deposited; only a fraction becomes photoelectrons, which is why Poisson fluctuations matter.",
+                 "本周搭建的链条。塑料闪烁体每沉积 1 MeV 发出约 10⁴ 个光子；其中只有一部分变成光电子，所以泊松涨落很重要。"))
 
 # ------------------------------------------------------------------ W6: what FTFP_BERT contains + cuts
 b = []
@@ -257,8 +257,8 @@ for z, x in [(60, 140), (110, 140), (160, 140), (520, 90), (570, 76), (620, 62)]
 b.append(T(110, 260, "tracker 1: line in", "径迹室 1：入射直线", "m", "middle", 11)); b.append(T(570, 260, "tracker 2: line out", "径迹室 2：出射直线", "m", "middle", 11))
 b.append(T(340, 284, "sin θout − sin θin = 0.3 B[T] L[m] / p[GeV/c]", None, "", "middle", 12))
 SVG["spectro"] = (svg(296, b, "Top view of the tracker magnet tracker spectrometer with a bending track and six hits"),
-                  ("Fit one straight line in each tracker; the change in angle across a known field gives p (Eq. 8.1). For 10 GeV/c in 1.5 T × 1 m the deflection is 45 mrad.",
-                   "在每组径迹室中各拟合一条直线；穿过已知磁场的角度变化给出 p（式 8.1）。10 GeV/c 在 1.5 T × 1 m 中偏转 45 mrad。"))
+                  ("Fit one straight line in each tracker; the change in angle across a known field gives p (Eq. 7.1). For 10 GeV/c in 1.5 T × 1 m the deflection is 45 mrad.",
+                   "在每组径迹室中各拟合一条直线；穿过已知磁场的角度变化给出 p（式 7.1）。10 GeV/c 在 1.5 T × 1 m 中偏转 45 mrad。"))
 
 # ------------------------------------------------------------------ W8: data pipeline
 b = []
@@ -273,8 +273,8 @@ b.append(R(280, 180, 250, 40, "s-fg", "none", 1.2)); b.append(T(405, 205, "lab D
 b.append(P("M530 200 Q525 113 538 113", "s-neu", 1.3, arrow=True))
 b.append(T(20, 250, "same branch names, units and trigger word: the same analysis runs on both", "相同的分支名、单位和触发字：同一分析程序在两者上都能运行", "m", size=11))
 SVG["pipeline"] = (svg(265, b, "Pipeline from Geant4 steps through hits and ntuples to a ROOT file read in Python, with a lab DAQ feeding the same tree"),
-                   ("The chain Chapter 9 builds. Detector-facing quantities go in the daq tree, simulation truth in a separate tree; a decoder writes real DAQ data into the same daq format.",
-                    "第 9 章搭建的链条。面向探测器的量写入 daq 树，模拟真值写入单独的树；解码器把真实 DAQ 数据写成同样的 daq 格式。"))
+                   ("The chain this week builds. Detector-facing quantities go in the daq tree, simulation truth in a separate tree; a decoder writes real DAQ data into the same daq format.",
+                    "本周搭建的链条。面向探测器的量写入 daq 树，模拟真值写入单独的树；解码器把真实 DAQ 数据写成同样的 daq 格式。"))
 
 # ------------------------------------------------------------------ W9: three layers of musrSim
 b = []
@@ -290,7 +290,7 @@ for k, (en, zh, sub) in enumerate(lay):
         b.append(L(x + 242, 100, x + 268, 100, "s-m", 1.2, arrow=True))
 b.append(T(20, 196, "you edit text; the C++ is compiled once (Geant4 10.7.x for musrsim-sms)", "你只改文本；C++ 只需编译一次（musrsim-sms 用 Geant4 10.7.x）", "m", size=11))
 SVG["layers"] = (svg(210, b, "Three boxes: macro, musrSim executable, Geant4 and ROOT"),
-                 ("Definition 10.1: the three layers of a musrSim run.", "定义 10.1：一次 musrSim 运行的三层。"))
+                 ("Definition 9.1: the three layers of a musrSim run.", "定义 9.1：一次 musrSim 运行的三层。"))
 
 # ------------------------------------------------------------------ W10: spin geometry
 b = []
@@ -326,8 +326,8 @@ for k, (lab, en, zh) in enumerate(layers):
 b.append(P("M720 82 Q730 110 170 110 Q110 112 110 128", "s-m", 1.2, arrow=True))
 b.append(T(20, 214, "walk in this order every time; stop at the first layer whose evidence fails", "每次都按这个顺序走；在第一个证据不成立的层停下", "m", size=11))
 SVG["tree"] = (svg(228, b, "The debugging tree as nine boxes from L0 statistics to L8 analysis"),
-               ("Definition 13.1, with the statistics check (L0) added in front from the textbook's last pitfall.",
-                "定义 13.1，并按教材最后一个陷阱在最前面加上了统计检查（L0）。"))
+               ("Definition 11.1, with a statistics check (L0) added in front.",
+                "定义 11.1，并在最前面加上了统计检查（L0）。"))
 
 # ------------------------------------------------------------------ W12: research workflow
 b = []
@@ -342,8 +342,8 @@ b.append(P("M704 112 Q520 170 300 116", "s-m", 1.2, arrow=True, dash="4 3"))
 b.append(T(500, 166, "disagreement → back to the model or the question", "不一致 → 回到模型或问题", "m", "middle", 10.5))
 b.append(T(14, 34, "weights: problem 20 · implementation 20 · validation 25 · analysis 15 · communication 10 · code 10", "权重：问题 20 · 实现 20 · 验证 25 · 分析 15 · 表达 10 · 代码 10", "m", size=10.5))
 SVG["workflow"] = (svg(190, b, "Research workflow from question to defence, with validation highlighted"),
-                   ("From exercise to research (Chapters 15–16). Validation carries the largest weight in the defence.",
-                    "从练习到研究（第 15–16 章）。验证在答辩中权重最大。"))
+                   ("From exercise to research. Validation carries the largest weight in the defence.",
+                    "从练习到研究。验证在答辩中权重最大。"))
 
 
 # give every figure its own arrow-marker id (several figures can share a page)

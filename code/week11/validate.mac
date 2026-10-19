@@ -1,4 +1,4 @@
-# validate.mac -- Mission 10: rerun the Week 4 scan with a histogram wide enough for the mean.
+# validate.mac -- Lab 11.2: rerun the Week 4 scan with a histogram wide enough for the mean.
 # Run with the week04 executable:  ./week04 validate.mac
 # 0-1000 MeV/cm: nothing overflows, so the histogram mean is the true mean (ROOT-style histogram
 # statistics ignore under/overflow entries).

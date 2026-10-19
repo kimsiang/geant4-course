@@ -10,7 +10,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   G4int n_particle = 1;
   fParticleGun = new G4ParticleGun(n_particle);
 
-  // The four choices that define the experiment (textbook Example 2.1):
+  // The four choices that define the experiment (Week 2, Example 2.1):
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   G4ParticleDefinition* particle = particleTable->FindParticle("mu-");
   fParticleGun->SetParticleDefinition(particle);                          // 1. species

@@ -1,4 +1,4 @@
-# tf_musr.mac -- the textbook's integrated TF-muSR experiment (section 12.4), for musrSim.
+# tf_musr.mac -- the integrated TF-muSR experiment of this week, for musrSim.
 # Run in build/run with data/ present:  ../musrSim tf_musr.mac   -> data/musrSim_0_tf.root
 # CHECK FIRST (Course-W10-a): your musrSim build must use spin-aware muon decay, or A(t) is flat.
 # ---- GEOMETRY ----

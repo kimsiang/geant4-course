@@ -1,16 +1,16 @@
-/* Week 09 — toy musrSim macro parser and geometry builder (textbook Ch. 10–11).
+/* Week 09 — toy musrSim macro parser and geometry builder (Week 9 lesson).
    TOY, not musrSim. It reads "/musr/command construct" lines with the grammar documented in the
    musrsim-sms tutorial and source (box: half-x half-y half-z; tubs: rmin rmax half-z phi0 dphi;
    positions local to the mother; mother named log_<name>; sensitivity musr/ScintSD or dead;
-   integer volume ID), draws an x–z side view and checks the rules the textbook teaches. It does not
+   integer volume ID), draws an x–z side view and checks the rules the lesson teaches. It does not
    run Geant4, place rotations, or know fork-specific solids (e.g. GPDcollimator), which it skips. */
 (function () {
   'use strict';
   var G = window.G4C;
   var el = function (id) { return document.getElementById(id); };
   var PRESETS = {
-    first: '# first_sim.mac (textbook 10.4)\n/musr/command construct box World 500 500 500 G4_AIR 0 0 0 no_logical_volume norot dead -1\n/musr/command construct box Slab 50 50 5 G4_PLASTIC_SC_VINYLTOLUENE 0 0 0 log_World norot musr/ScintSD 1\n/gun/primaryparticle mu+\n/gun/vertex 0 0 -100 mm\n/gun/momentum 29.8 MeV\n/run/beamOn 2000',
-    tf: '# tf_musr.mac geometry (textbook 12.4)\n/musr/command construct box World 400 400 400 G4_AIR 0 0 0 no_logical_volume norot dead -1\n/musr/command construct box Target 15 15 3 G4_Cu 0 0 0 log_World norot dead 5\n/musr/command construct box CounterU 40 3 40 G4_PLASTIC_SC_VINYLTOLUENE 0 45 0 log_World norot musr/ScintSD 11\n/musr/command construct box CounterD 40 3 40 G4_PLASTIC_SC_VINYLTOLUENE 0 -45 0 log_World norot musr/ScintSD 1\n/musr/command globalfield TF 400 400 400 uniform 0 0 0 log_World 0.01 0 0 0 0 0\n/run/beamOn 200000',
+    first: '# first_sim.mac: a first musrSim macro\n/musr/command construct box World 500 500 500 G4_AIR 0 0 0 no_logical_volume norot dead -1\n/musr/command construct box Slab 50 50 5 G4_PLASTIC_SC_VINYLTOLUENE 0 0 0 log_World norot musr/ScintSD 1\n/gun/primaryparticle mu+\n/gun/vertex 0 0 -100 mm\n/gun/momentum 29.8 MeV\n/run/beamOn 2000',
+    tf: '# tf_musr.mac geometry (Week 10)\n/musr/command construct box World 400 400 400 G4_AIR 0 0 0 no_logical_volume norot dead -1\n/musr/command construct box Target 15 15 3 G4_Cu 0 0 0 log_World norot dead 5\n/musr/command construct box CounterU 40 3 40 G4_PLASTIC_SC_VINYLTOLUENE 0 45 0 log_World norot musr/ScintSD 11\n/musr/command construct box CounterD 40 3 40 G4_PLASTIC_SC_VINYLTOLUENE 0 -45 0 log_World norot musr/ScintSD 1\n/musr/command globalfield TF 400 400 400 uniform 0 0 0 log_World 0.01 0 0 0 0 0\n/run/beamOn 200000',
     order: '# broken: a daughter before its mother, and a stray /run/initialize\n/musr/command construct box World 500 500 500 G4_AIR 0 0 0 no_logical_volume norot dead -1\n/musr/command construct box Wrapping 1 52 52 G4_MYLAR 0 0 0 log_Slab norot dead 2\n/musr/command construct box Slab 50 50 5 G4_PLASTIC_SC_VINYLTOLUENE 0 0 0 log_World norot musr/ScintSD 1\n/run/initialize\n/run/beamOn 2000',
     full: '# broken: full lengths typed as half-lengths (a 100 x 100 x 10 mm slab wanted)\n/musr/command construct box World 100 100 100 G4_AIR 0 0 0 no_logical_volume norot dead -1\n/musr/command construct box Slab 100 100 10 G4_PLASTIC_SC_VINYLTOLUENE 0 0 0 log_World norot musr/ScintSD 1\n/musr/command construct box Slab2 100 100 10 G4_PLASTIC_SC_VINYLTOLUENE 0 0 40 log_World norot musr/ScintSD 1'
   };
@@ -21,7 +21,7 @@
       var line = raw.trim();
       if (!line || line[0] === '#') return;
       var t = line.split(/\s+/);
-      if (t[0] === '/run/initialize') { msgs.push(['warn', 'line ' + (ln + 1) + ': /run/initialize in a musrSim macro. musrSim initialises in its C++ layer; remove this line (textbook 10.4 pitfall).']); return; }
+      if (t[0] === '/run/initialize') { msgs.push(['warn', 'line ' + (ln + 1) + ': /run/initialize in a musrSim macro. musrSim initialises in its C++ layer; remove this line.']); return; }
       if (t[0] !== '/musr/command' || t[1] !== 'construct') return;
       var solid = t[2], name = t[3], nd = solid === 'box' ? 3 : solid === 'tubs' ? 5 : -1;
       if (nd < 0) { msgs.push(['info', 'line ' + (ln + 1) + ': solid "' + solid + '" is not drawn by this toy (fork-specific or not supported here).']); return; }
@@ -107,7 +107,7 @@
   G.quiz(el('quiz'), 'w09', [
     { prompt: { en: '<code>/musr/command construct box Slab 50 50 5 …</code> builds a slab of what size?', zh: '<code>/musr/command construct box Slab 50 50 5 …</code> 构建的板有多大？' },
       opts: [{ en: '50 × 50 × 5 mm', zh: '50 × 50 × 5 mm' }, { en: '100 × 100 × 10 mm', zh: '100 × 100 × 10 mm' }, { en: '50 × 50 × 5 cm', zh: '50 × 50 × 5 cm' }, { en: 'It depends on the material', zh: '取决于材料' }],
-      a: 1, why: { en: 'Box dimensions are half-lengths in mm, exactly as for G4Box. The textbook\'s World 500 500 500 is a 1 m cube.', zh: '盒子的尺寸是以 mm 为单位的半长，与 G4Box 完全一样。教材中的 World 500 500 500 是一个 1 m 的立方体。' } },
+      a: 1, why: { en: 'Box dimensions are half-lengths in mm, exactly as for G4Box. So World 500 500 500 is a 1 m cube.', zh: '盒子的尺寸是以 mm 为单位的半长，与 G4Box 完全一样。所以 World 500 500 500 是一个 1 m 的立方体。' } },
     { prompt: { en: 'You run 50 jobs with <code>../musrSim 201.mac job$i $i</code> and the original 201.mac. What do you get?', zh: '用原始 201.mac 运行 50 个作业：<code>../musrSim 201.mac job$i $i</code>。会得到什么？' },
       opts: [{ en: '50 independent samples', zh: '50 个独立样本' }, { en: '50 identical samples: the seed offset is ignored unless the macro says /musr/run/randomOption 1', zh: '50 个完全相同的样本：除非宏中写了 /musr/run/randomOption 1，否则种子偏移被忽略' }, { en: 'A crash', zh: '程序崩溃' }, { en: 'Only job 1 runs', zh: '只运行作业 1' }],
       a: 1, why: { en: 'In musrsim-sms the offset enters only the randomOption 1 branch (seeds from system time + 100 × offset). 201.mac uses randomOption 2, which seeds every event with its event number, the same in every job. Merging them multiplies the file size, not the statistics.', zh: '在 musrsim-sms 中，偏移只在 randomOption 1 分支起作用（种子 = 系统时间 + 100 × 偏移）。201.mac 使用 randomOption 2，用事例号为每个事例设种子，每个作业都一样。合并它们只会增加文件大小，不会增加统计量。' } },

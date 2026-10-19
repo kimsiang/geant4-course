@@ -1,4 +1,4 @@
-/* Week 01 — toy Monte Carlo of a two-layer telescope (textbook Ch. 1, Example 1.2).
+/* Week 01 — toy Monte Carlo of a two-layer telescope (Week 1, Example 1.2).
    TOY MODEL, not Geant4: straight lines in vacuum, zero-thickness 100%-efficient square layers,
    impact points uniform on the upper layer, directions from the chosen beam model.
    The reference value is a numerical integral of the same model, so it checks the sampling and
@@ -10,7 +10,7 @@
 
   /* ---------- beam models: how cos(theta) is sampled ---------- */
   var MODELS = {
-    iso:   { en: 'Isotropic in solid angle (textbook first pass)', zh: '立体角内各向同性（教材第一版）', cos: function (u) { return u; }, w: function (th) { return Math.sin(th); } },
+    iso:   { en: 'Isotropic in solid angle (first pass)', zh: '立体角内各向同性（第一版）', cos: function (u) { return u; }, w: function (th) { return Math.sin(th); } },
     cos2:  { en: 'cos²θ intensity (sea-level shape, PDG)', zh: 'cos²θ 强度（海平面形状，PDG）', cos: function (u) { return Math.cbrt(u); }, w: function (th) { var c = Math.cos(th); return 3 * c * c * Math.sin(th); } },
     cos3:  { en: 'cos²θ crossing a horizontal plane (× cosθ)', zh: 'cos²θ 穿过水平面（再乘 cosθ）', cos: function (u) { return Math.sqrt(Math.sqrt(u)); }, w: function (th) { var c = Math.cos(th); return 4 * c * c * c * Math.sin(th); } },
     vert:  { en: 'Vertical only (limiting case: ε = 1)', zh: '仅竖直入射（极限情形：ε = 1）', cos: function () { return 1; }, w: null },
@@ -220,7 +220,7 @@
       a: 1, why: { en: 'σ<sub>ε</sub> = √(ε(1−ε)/N) scales as 1/√N, so 100× the events gives 10× the precision. √10 is the gain for each tenfold step, as the three lines of the script output show.', zh: 'σ<sub>ε</sub> = √(ε(1−ε)/N) 按 1/√N 变化，事例数增加 100 倍，精度只提高 10 倍。√10 是每增加 10 倍时的改进，正如脚本输出的三行所示。' } },
     { prompt: { en: 'At N = 100,000 the script prints ε = 0.0482 ± 0.0007. The numerical integral of the same model gives 0.0490. What do you conclude?', zh: 'N = 100,000 时脚本输出 ε = 0.0482 ± 0.0007，同一模型的数值积分给出 0.0490。结论是什么？' },
       opts: [{ en: 'The code has a bug: the values differ', zh: '代码有错：两个数不相等' }, { en: 'They agree: the difference is about 1.1σ', zh: '两者一致：差约 1.1σ' }, { en: 'You need more decimal places to decide', zh: '需要更多小数位才能判断' }, { en: 'The integral must be wrong', zh: '数值积分一定错了' }],
-      a: 1, why: { en: '(0.0490 − 0.0482)/0.0007 ≈ 1.1. Fluctuations of 1–2σ are expected; about one run in three lands more than 1σ away. Suspect a bug only when the deviation exceeds 2–3σ (Ch. 13 makes the same rule).', zh: '(0.0490 − 0.0482)/0.0007 ≈ 1.1。1–2σ 的涨落是正常的，大约三次中就有一次偏离超过 1σ。只有偏差超过 2–3σ 时才怀疑程序有错（第 13 章也是同样的规则）。' } },
+      a: 1, why: { en: '(0.0490 − 0.0482)/0.0007 ≈ 1.1. Fluctuations of 1–2σ are expected; about one run in three lands more than 1σ away. Suspect a bug only when the deviation exceeds 2–3σ (Week 11 debugs with the same rule).', zh: '(0.0490 − 0.0482)/0.0007 ≈ 1.1。1–2σ 的涨落是正常的，大约三次中就有一次偏离超过 1σ。只有偏差超过 2–3σ 时才怀疑程序有错（第 11 周调试时也用同样的规则）。' } },
     { prompt: { en: 'What does ε = k/N measure in this toy experiment?', zh: '在这个玩具实验中，ε = k/N 测量的是什么？' },
       opts: [{ en: 'The geometric acceptance AΩ of the telescope', zh: '望远镜的几何接受度 AΩ' }, { en: 'The fraction of tracks through the upper layer that also cross the lower layer', zh: '穿过上层的径迹中，同时穿过下层的比例' }, { en: 'The detector efficiency of the scintillators', zh: '闪烁体的探测效率' }, { en: 'The cosmic-ray muon flux', zh: '宇宙线缪子通量' }],
       a: 1, why: { en: 'It is a conditional transmission probability: every sampled track already hits the upper layer. Acceptance AΩ (m²·sr) needs a defined flux and a phase-space integral; efficiency needs a detector response and a threshold (Week 5).', zh: '这是条件透射概率：每条抽样径迹都已经击中上层。几何接受度 AΩ（m²·sr）需要给定通量和相空间积分；探测效率需要探测器响应和阈值（第 5 周）。' } },
@@ -232,7 +232,7 @@
       a: 1, why: { en: 'A longer lever arm turns the same angle into a larger lateral shift d·tanθ, so fewer tracks still land on the lower square. Try it in the explainer: ε drops from 0.049 to about 0.014.', zh: '更长的间距把同样的角度变成更大的横向位移 d·tanθ，落在下层方块内的径迹更少。可以在上面的演示中试一试：ε 从 0.049 降到约 0.014。' } },
     { prompt: { en: 'A run gives k = 0 transmitted tracks out of N = 200. What should you report?', zh: '一次运行中 N = 200 条径迹里透射数 k = 0。应该怎样报告？' },
       opts: [{ en: 'ε = 0 ± 0', zh: 'ε = 0 ± 0' }, { en: 'ε < 3/N ≈ 0.015 at about 95% confidence', zh: '在约 95% 置信度下 ε < 3/N ≈ 0.015' }, { en: 'Nothing can be said', zh: '无法得出任何结论' }, { en: 'ε = 1/N = 0.005', zh: 'ε = 1/N = 0.005' }],
-      a: 1, why: { en: 'At k = 0 the binomial formula returns σ = 0, which is meaningless. The probability of seeing zero is (1−ε)<sup>N</sup>; setting it to 5% gives the "rule of three" upper limit ε < 3/N. This is a standard result, not from the textbook.', zh: 'k = 0 时二项公式给出 σ = 0，这没有意义。观测到零的概率为 (1−ε)<sup>N</sup>，令其等于 5% 即得到“三法则”上限 ε < 3/N。这是统计学标准结论，不是教材内容。' } }
+      a: 1, why: { en: 'At k = 0 the binomial formula returns σ = 0, which is meaningless. The probability of seeing zero is (1−ε)<sup>N</sup>; setting it to 5% gives the "rule of three" upper limit ε < 3/N. This is a standard statistical result.', zh: 'k = 0 时二项公式给出 σ = 0，这没有意义。观测到零的概率为 (1−ε)<sup>N</sup>，令其等于 5% 即得到“三法则”上限 ε < 3/N。这是统计学标准结论。' } }
   ]);
   G.progress('w01');
   G.pager(el('pager'), 1);

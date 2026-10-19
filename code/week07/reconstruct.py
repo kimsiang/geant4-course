@@ -1,4 +1,4 @@
-"""Mission 7 analysis: reconstruct momentum from the six tracker planes.
+"""Lab 7.1 analysis: reconstruct momentum from the six tracker planes.
 
 Truth -> measurement -> reconstruction, kept apart:
   truth          x_i, z_i where the primary entered plane i (Geant4)        [CSV]
@@ -6,7 +6,7 @@ Truth -> measurement -> reconstruction, kept apart:
   reconstruction a straight line through each tracker; the change of slope across
                  the dipole gives p:   sin(theta_out) - sin(theta_in) = 0.2998 B L / p
 
-Also runs the textbook's global quadratic fit on the same hits, to show its bias
+Also runs a global quadratic fit through all six hits on the same events, to show its bias
 for a tracker-magnet-tracker layout (that model assumes all hits sit inside the field).
 
     python3 reconstruct.py            # needs numpy only
@@ -40,7 +40,7 @@ def p_two_lines(z, x):
 
 
 def p_quadratic(z, x):
-    """Textbook reconstruct_pt(): x(z) = a z^2 + b z + c through all six points."""
+    """Global quadratic x(z) = a z^2 + b z + c through all six points (biased here)."""
     out = np.empty(len(z))
     for i in range(len(z)):
         a = np.polyfit(z[i], x[i], 2)[0]

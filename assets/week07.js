@@ -1,11 +1,11 @@
-/* Week 07 — toy tracker–magnet–tracker spectrometer (textbook Ch. 8).
+/* Week 07 — toy tracker–magnet–tracker spectrometer (Week 7 lesson).
    TOY MODEL, not Geant4. Same layout as the week07 app: planes at z = -1.0, -0.8, -0.6 and
    +0.6, +0.8, +1.0 m, a dipole from z = -0.5 to +0.5 m (length L) with field B along y.
    In the field the track is an exact circle (sin(theta) grows linearly with z, slope 1/R,
    R = p / (0.2998 B)). Multiple scattering: a Gaussian angle kick at each silicon plane
-   (Highland formula, PDG Eq. 34.16 with beta = 1) plus one kick per air gap; energy loss ignored.
+   (Highland formula, PDG RPP 2024 Eq. 34.16 with beta = 1) plus one kick per air gap; energy loss ignored.
    Hits are smeared by the plane resolution. Reconstruction: two straight-line fits (default) or
-   the textbook's single quadratic through all six hits. */
+   a single quadratic through all six hits (biased for this layout). */
 (function () {
   'use strict';
   var G = window.G4C, SEED = 20261024, KC = 0.299792458;
@@ -166,7 +166,7 @@
   el('w7-method').addEventListener('change', run);
   function fillMethod() {
     var v = el('w7-method').value || 'two';
-    el('w7-method').innerHTML = '<option value="two">' + G.t('two lines + deflection angle', '两条直线 + 偏转角') + '</option><option value="quad">' + G.t('textbook: one quadratic through all 6 hits', '教材：6 个点拟合一条抛物线') + '</option>';
+    el('w7-method').innerHTML = '<option value="two">' + G.t('two lines + deflection angle', '两条直线 + 偏转角') + '</option><option value="quad">' + G.t('one quadratic through all 6 hits (biased here)', '6 个点拟合一条抛物线（此处有偏）') + '</option>';
     el('w7-method').value = v;
   }
   fillMethod(); window.addEventListener('g4c:lang', fillMethod);
@@ -181,8 +181,8 @@
       a: 1, why: { en: 'The deflection falls as 1/p while the angle error from 50 µm hits stays fixed, so that term grows ∝ p. Scattering angles also fall as 1/p, so the scattering term is flat. Our Geant4 runs show 0.31% at 2 GeV rising to 1.13% at 20 GeV.', zh: '偏转角按 1/p 减小，而 50 µm 测点带来的角度误差不变，所以这一项 ∝ p 增长。散射角也按 1/p 减小，所以散射项与 p 无关。我们的 Geant4 结果：2 GeV 时 0.31%，20 GeV 时升至 1.13%。' } },
     { prompt: { en: 'Doubling the magnet length L (everything else fixed) changes the measurement term of σ<sub>p</sub>/p by…', zh: '磁铁长度 L 加倍（其他不变），σ<sub>p</sub>/p 的测量项变为……' },
       opts: [{ en: '×2 worse', zh: '差 2 倍' }, { en: '×1/2: twice the deflection, same angle errors', zh: '×1/2：偏转加倍，角度误差不变' }, { en: '×1/4', zh: '×1/4' }, { en: 'No change', zh: '不变' }],
-      a: 1, why: { en: 'The deflection is ∝ B·L, so doubling L or doubling B halves the measurement term. (A longer magnet also adds a little scattering in air.) The textbook asks whether L and B act differently: for this layout, to first order they act the same through B·L.', zh: '偏转 ∝ B·L，所以 L 加倍或 B 加倍都使测量项减半（更长的磁铁也会在空气中多一点散射）。教材问 L 与 B 的作用是否不同：对这种布局，一阶近似下两者都通过 B·L 起作用。' } },
-    { prompt: { en: 'Why does the textbook\'s single quadratic fit overestimate p by ~50–60% here?', zh: '为什么教材的单抛物线拟合在这里会把 p 高估约 50–60%？' },
+      a: 1, why: { en: 'The deflection is ∝ B·L, so doubling L or doubling B halves the measurement term. (A longer magnet also adds a little scattering in air.) Do L and B act differently? For this layout, to first order they act the same through B·L.', zh: '偏转 ∝ B·L，所以 L 加倍或 B 加倍都使测量项减半（更长的磁铁也会在空气中多一点散射）。L 与 B 的作用是否不同？对这种布局，一阶近似下两者都通过 B·L 起作用。' } },
+    { prompt: { en: 'Why does a single quadratic fit through all six hits overestimate p by ~50–60% here?', zh: '为什么用一条抛物线拟合全部六个点会在这里把 p 高估约 50–60%？' },
       opts: [{ en: 'Too few points', zh: '点太少' }, { en: 'The track is straight–arc–straight, but the model puts the whole path inside the field', zh: '径迹是“直线–圆弧–直线”，而模型假设整条路径都在磁场中' }, { en: 'The field is not uniform', zh: '磁场不均匀' }, { en: 'Rounding in polyfit', zh: 'polyfit 的舍入误差' }],
       a: 1, why: { en: 'A parabola spread over 2 m of planes has a smaller curvature than the 1 m arc that really bends the track, so p = 0.3B/|2a| comes out too high. That model is right only for hits inside the field (a tracker in a solenoid). Here, fit a line on each side and use the change of slope.', zh: '在 2 m 范围的平面上拟合的抛物线，其曲率小于真正使径迹弯曲的 1 m 圆弧，所以 p = 0.3B/|2a| 偏大。这种模型只适用于测点都在磁场内的情形（如螺线管中的径迹室）。这里应在两侧各拟合一条直线，用斜率变化求 p。' } },
     { prompt: { en: 'You reconstruct p from Geant4 hits without smearing them. What have you measured?', zh: '用未经弥散的 Geant4 击中点重建 p，你测到的是什么？' },

@@ -35,7 +35,7 @@
       <p class="lede" lang="zh-Hans">一块吸收能量的材料还不是探测器。你将给它挂上灵敏探测器，把阈值放在该放的地方，要求两层在时间上同时触发，并把沉积能量变成 ADC 数值。然后像实验物理学家那样测量效率：针对给定的入射总体，并附上误差棒。</p>
       <ul class="meta">
         <li class="stage"><b>2 · Measure it</b><span lang="en">stage · 度量</span><span lang="zh-Hans">阶段 · 度量</span></li>
-        <li><b>Missions 5–6</b><span lang="en">textbook ch. 6</span><span lang="zh-Hans">教材第 6 章</span></li>
+        <li><b>Labs 5.1–5.3</b><span lang="en">hands-on lab</span><span lang="zh-Hans">动手实验</span></li>
         <li><b>≈ 3 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
       </ul>
     </div>
@@ -101,20 +101,20 @@
 <!-- /fig:evd-w05 -->
 
   <section class="run" aria-labelledby="h-sd">
-    <p class="cmd">/control/manual<span lang="en">6.1 · deposited is not detected</span><span lang="zh-Hans">6.1 · 沉积不等于探测到</span></p>
+    <p class="cmd">/control/manual<span lang="en">5.1 · deposited is not detected</span><span lang="zh-Hans">5.1 · 沉积不等于探测到</span></p>
     <div class="prose">
       <h2 id="h-sd" class="bi"><span lang="en">"Energy was deposited" and "the detector saw it" are not the same thing.</span><span lang="zh-Hans">“能量沉积了”与“探测器看到了”不是一回事。</span></h2>
       <div class="flow" role="img" aria-label="The detector response chain"><b>muon</b> <span class="a">→</span> energy deposit <span class="a">→</span> scintillation light <span class="a">→</span> photoelectrons <span class="a">→</span> PMT pulse <span class="a">→</span> <b>ADC / scope</b><br><span class="a">Geant4 truth&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;light yield&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gain + noise&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;measurement</span></div>
 <!-- fig:svg-w05 -->
-<figure class="fig-svg"><svg viewBox="0 0 820 170" role="img" aria-label="Readout chain from a muon to an ADC number, grouped into truth, detector response and measurement"><defs><marker id="ah-chain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="14" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="73" y="78" text-anchor="middle" class="pos" font-size="12" lang="en">muon</text><text x="73" y="78" text-anchor="middle" class="pos" font-size="12" lang="zh-Hans">缪子</text><text x="73" y="98" text-anchor="middle" class="m" font-size="10"></text><line x1="134" y1="82" x2="146" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="148" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="207" y="78" text-anchor="middle" font-size="12" lang="en">energy deposit</text><text x="207" y="78" text-anchor="middle" font-size="12" lang="zh-Hans">能量沉积</text><text x="207" y="98" text-anchor="middle" class="m" font-size="10">Edep (MeV)</text><line x1="268" y1="82" x2="280" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="282" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="341" y="78" text-anchor="middle" class="neu" font-size="12" lang="en">light</text><text x="341" y="78" text-anchor="middle" class="neu" font-size="12" lang="zh-Hans">光</text><text x="341" y="98" text-anchor="middle" class="m" font-size="10">~10⁴ γ / MeV</text><line x1="402" y1="82" x2="414" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="416" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="475" y="78" text-anchor="middle" font-size="12" lang="en">photoelectrons</text><text x="475" y="78" text-anchor="middle" font-size="12" lang="zh-Hans">光电子</text><text x="475" y="98" text-anchor="middle" class="m" font-size="10">Poisson</text><line x1="536" y1="82" x2="548" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="550" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="609" y="78" text-anchor="middle" font-size="12" lang="en">pulse</text><text x="609" y="78" text-anchor="middle" font-size="12" lang="zh-Hans">脉冲</text><text x="609" y="98" text-anchor="middle" class="m" font-size="10">gain + noise</text><line x1="670" y1="82" x2="682" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="684" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="743" y="78" text-anchor="middle" font-size="12" lang="en">ADC number</text><text x="743" y="78" text-anchor="middle" font-size="12" lang="zh-Hans">ADC 数值</text><text x="743" y="98" text-anchor="middle" class="m" font-size="10">threshold</text><line x1="14" y1="136" x2="266" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="14" y1="130" x2="14" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="266" y1="130" x2="266" y2="136" class="s-m" stroke-width="1" fill="none"/><text x="140.0" y="154" text-anchor="middle" class="m" font-size="11" lang="en">Geant4 truth</text><text x="140.0" y="154" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">Geant4 真值</text><line x1="282" y1="136" x2="534" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="282" y1="130" x2="282" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="534" y1="130" x2="534" y2="136" class="s-m" stroke-width="1" fill="none"/><text x="408.0" y="154" text-anchor="middle" class="m" font-size="11" lang="en">detector response</text><text x="408.0" y="154" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">探测器响应</text><line x1="550" y1="136" x2="804" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="550" y1="130" x2="550" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="804" y1="130" x2="804" y2="136" class="s-m" stroke-width="1" fill="none"/><text x="677.0" y="154" text-anchor="middle" class="m" font-size="11" lang="en">measurement</text><text x="677.0" y="154" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">测量</text></svg><figcaption><span lang="en">The chain Chapter 6 builds. Plastic scintillators emit of order 10⁴ photons per MeV deposited; only a fraction becomes photoelectrons, which is why Poisson fluctuations matter.</span><span lang="zh-Hans">第 6 章搭建的链条。塑料闪烁体每沉积 1 MeV 发出约 10⁴ 个光子；其中只有一部分变成光电子，所以泊松涨落很重要。</span></figcaption></figure>
+<figure class="fig-svg"><svg viewBox="0 0 820 170" role="img" aria-label="Readout chain from a muon to an ADC number, grouped into truth, detector response and measurement"><defs><marker id="ah-chain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="14" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="73" y="78" text-anchor="middle" class="pos" font-size="12" lang="en">muon</text><text x="73" y="78" text-anchor="middle" class="pos" font-size="12" lang="zh-Hans">缪子</text><text x="73" y="98" text-anchor="middle" class="m" font-size="10"></text><line x1="134" y1="82" x2="146" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="148" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="207" y="78" text-anchor="middle" font-size="12" lang="en">energy deposit</text><text x="207" y="78" text-anchor="middle" font-size="12" lang="zh-Hans">能量沉积</text><text x="207" y="98" text-anchor="middle" class="m" font-size="10">Edep (MeV)</text><line x1="268" y1="82" x2="280" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="282" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="341" y="78" text-anchor="middle" class="neu" font-size="12" lang="en">light</text><text x="341" y="78" text-anchor="middle" class="neu" font-size="12" lang="zh-Hans">光</text><text x="341" y="98" text-anchor="middle" class="m" font-size="10">~10⁴ γ / MeV</text><line x1="402" y1="82" x2="414" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="416" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="475" y="78" text-anchor="middle" font-size="12" lang="en">photoelectrons</text><text x="475" y="78" text-anchor="middle" font-size="12" lang="zh-Hans">光电子</text><text x="475" y="98" text-anchor="middle" class="m" font-size="10">Poisson</text><line x1="536" y1="82" x2="548" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="550" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="609" y="78" text-anchor="middle" font-size="12" lang="en">pulse</text><text x="609" y="78" text-anchor="middle" font-size="12" lang="zh-Hans">脉冲</text><text x="609" y="98" text-anchor="middle" class="m" font-size="10">gain + noise</text><line x1="670" y1="82" x2="682" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="684" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="743" y="78" text-anchor="middle" font-size="12" lang="en">ADC number</text><text x="743" y="78" text-anchor="middle" font-size="12" lang="zh-Hans">ADC 数值</text><text x="743" y="98" text-anchor="middle" class="m" font-size="10">threshold</text><line x1="14" y1="136" x2="266" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="14" y1="130" x2="14" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="266" y1="130" x2="266" y2="136" class="s-m" stroke-width="1" fill="none"/><text x="140.0" y="154" text-anchor="middle" class="m" font-size="11" lang="en">Geant4 truth</text><text x="140.0" y="154" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">Geant4 真值</text><line x1="282" y1="136" x2="534" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="282" y1="130" x2="282" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="534" y1="130" x2="534" y2="136" class="s-m" stroke-width="1" fill="none"/><text x="408.0" y="154" text-anchor="middle" class="m" font-size="11" lang="en">detector response</text><text x="408.0" y="154" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">探测器响应</text><line x1="550" y1="136" x2="804" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="550" y1="130" x2="550" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="804" y1="130" x2="804" y2="136" class="s-m" stroke-width="1" fill="none"/><text x="677.0" y="154" text-anchor="middle" class="m" font-size="11" lang="en">measurement</text><text x="677.0" y="154" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">测量</text></svg><figcaption><span lang="en">The chain this week builds. Plastic scintillators emit of order 10⁴ photons per MeV deposited; only a fraction becomes photoelectrons, which is why Poisson fluctuations matter.</span><span lang="zh-Hans">本周搭建的链条。塑料闪烁体每沉积 1 MeV 发出约 10⁴ 个光子；其中只有一部分变成光电子，所以泊松涨落很重要。</span></figcaption></figure>
 <!-- /fig:svg-w05 -->
       <div class="box">
-        <p class="box-label">Definition 6.1 · <span lang="en">Sensitive detector and hit</span><span lang="zh-Hans">灵敏探测器与击中</span></p>
+        <p class="box-label">Definition 5.1 · <span lang="en">Sensitive detector and hit</span><span lang="zh-Hans">灵敏探测器与击中</span></p>
         <p lang="en">A <dfn>sensitive detector</dfn> (<code>G4VSensitiveDetector</code>) is callback code bound to a logical volume. Each step in that volume gives it a chance to accumulate the detector response. A <dfn>hit</dfn> (<code>G4VHit</code>) is a record of an interaction or an accumulated response; it is not a hardware trigger. A realistic chain is step → hit accumulation → digit → trigger/readout.</p>
         <p lang="zh-Hans"><dfn>灵敏探测器</dfn>（<code>G4VSensitiveDetector</code>）是绑定在逻辑体上的回调代码，该体积中的每一步都让它有机会累加探测器响应。<dfn>击中</dfn>（<code>G4VHit</code>）是一次相互作用或累积响应的记录，不等于硬件触发。真实的链条是：步 → 击中累加 → 数字化信号 → 触发/读出。</p>
       </div>
       <div class="box">
-        <p class="box-label">Example 6.1 · <span lang="en">Mission 5: a 10 × 10 cm² muon counter</span><span lang="zh-Hans">任务 5：10 × 10 cm² 缪子计数器</span></p>
+        <p class="box-label">Example 5.1 · <span lang="en">Lab 5.1: a 10 × 10 cm² muon counter</span><span lang="zh-Hans">实验 5.1：10 × 10 cm² 缪子计数器</span></p>
         <p lang="en">Make the scintillator a sensitive detector and accumulate all deposits in it per event. After the event, apply ΔE<sub>th</sub> = 0.1 MeV and declare a signal if the response exceeds it. Illuminate it with a documented downward muon model (a vertical beam and a cos²θ distribution are not the same thing) and count the fraction of generated muons that give a signal: the efficiency <em>for that population and threshold</em>.</p>
         <p lang="zh-Hans">把闪烁体设为灵敏探测器，逐事例累加其中的全部沉积。事例结束后施加 ΔE<sub>th</sub> = 0.1 MeV，响应超过它即判为有信号。用一个有明确说明的向下缪子模型照射它（竖直束流与 cos²θ 分布不是一回事），统计产生信号的缪子比例：这就是<em>针对该总体和该阈值</em>的效率。</p>
       </div>
@@ -127,28 +127,24 @@ hit-&gt;AddEvis(edep / (1. + kBirks * edep / length));   <span class="c">// Birk
       </div>
       <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W05-a
-      issued by : textbook ch. 6 listings
-1. The MuonSD::ProcessHits and EventAction listings are garbled in
-   the PDF; this page has compiled, working versions.
-2. EventAction looked up the hits-collection ID in its constructor.
-   User actions are built BEFORE the SD exists, so the ID is -1.
-   Look it up on first use (as example B4c does).
-3. The digitizer applied Birks to the event total divided by a fixed
-   step length. Quenching depends on the LOCAL dE/dx: apply it per
-   step, in the SD, and digitize the summed visible energy.
+      issued by : week05 code
+1. Do not look up the hits-collection ID in the EventAction
+   constructor. User actions are built BEFORE the SD exists, so the
+   ID is -1. Look it up on first use (as example B4c does).
+2. Do not apply Birks to the event total divided by a fixed step
+   length. Quenching depends on the LOCAL dE/dx: apply it per step,
+   in the SD, and digitize the summed visible energy.
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
       <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W05-a
-      issued by : 教材第 6 章代码
-1. PDF 中 MuonSD::ProcessHits 与 EventAction 的代码排版错乱；
-   本页给出可编译、可运行的版本。
-2. EventAction 在构造函数中查找 hits collection ID。用户动作
-   在灵敏探测器创建之前就已构建，ID 会是 -1。应在第一次使用
-   时查找（示例 B4c 的做法）。
-3. 数字化器把 Birks 公式用在事例总能量除以固定步长上。猝灭取
-   决于局部 dE/dx：应在灵敏探测器中逐步施加，再对可见能量求和
-   并数字化。
+      issued by : week05 代码
+1. 不要在 EventAction 的构造函数中查找 hits collection ID。用户
+   动作在灵敏探测器创建之前就已构建，ID 会是 -1。应在第一次
+   使用时查找（示例 B4c 的做法）。
+2. 不要把 Birks 公式用在事例总能量除以固定步长上。猝灭取决于
+   局部 dE/dx：应在灵敏探测器中逐步施加，再对可见能量求和并
+   数字化。
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
       <div class="aside">
@@ -170,23 +166,23 @@ hit-&gt;AddEvis(edep / (1. + kBirks * edep / length));   <span class="c">// Birk
   </section>
 
   <section class="run" aria-labelledby="h-trig">
-    <p class="cmd">/week05/noise 0.3<span lang="en">6.2–6.4 · trigger and digitizer</span><span lang="zh-Hans">6.2–6.4 · 触发与数字化</span></p>
+    <p class="cmd">/week05/noise 0.3<span lang="en">5.2 · trigger and digitizer</span><span lang="zh-Hans">5.2 · 触发与数字化</span></p>
     <div class="prose">
       <h2 id="h-trig" class="bi"><span lang="en">Build the trigger before you build the dataset.</span><span lang="zh-Hans">先建触发，再建数据集。</span></h2>
       <p lang="en">Dark noise, environmental radiation and electronics noise make pulses that are not the event of interest. The classic cure is coincidence: two separated layers must cross threshold within a time window. For one digitized amplitude and time per layer,</p>
       <p lang="zh-Hans">暗噪声、环境辐射和电子学噪声会产生并非目标事例的脉冲。经典的解决办法是符合：两层分开的探测器必须在一个时间窗口内同时超阈。每层给出一个数字化幅度和时间，</p>
       <div class="eq" role="math" aria-label="trigger equals A above threshold and B above threshold and absolute time difference below the coincidence window">
         <span><i>T</i> = (<i>A</i><sub>ADC</sub> &gt; <i>A</i><sub>th</sub>) ∧ (<i>B</i><sub>ADC</sub> &gt; <i>A</i><sub>th</sub>) ∧ |<i>t</i><sub>A</sub> − <i>t</i><sub>B</sub>| &lt; Δ<i>t</i><sub>coin</sub></span>
-        <span class="eqno">(6.1)</span>
+        <span class="eqno">(5.1)</span>
       </div>
-      <p lang="en">For two uncorrelated channels firing at rates <i>R</i>₁ and <i>R</i>₂, the accidental coincidence rate is <i>R</i><sub>acc</sub> = 2τ<i>R</i>₁<i>R</i>₂ for a window |Δt| &lt; τ (standard result, not in the textbook). Only events with <i>T</i> true go into the ntuple.</p>
-      <p lang="zh-Hans">两个互不相关、计数率分别为 <i>R</i>₁、<i>R</i>₂ 的通道，在窗口 |Δt| &lt; τ 下的偶然符合率为 <i>R</i><sub>acc</sub> = 2τ<i>R</i>₁<i>R</i>₂（标准结论，教材未给出）。只有 <i>T</i> 为真的事例才写入 ntuple。</p>
+      <p lang="en">For two uncorrelated channels firing at rates <i>R</i>₁ and <i>R</i>₂, the accidental coincidence rate is <i>R</i><sub>acc</sub> = 2τ<i>R</i>₁<i>R</i>₂ for a window |Δt| &lt; τ (a standard result). Only events with <i>T</i> true go into the ntuple.</p>
+      <p lang="zh-Hans">两个互不相关、计数率分别为 <i>R</i>₁、<i>R</i>₂ 的通道，在窗口 |Δt| &lt; τ 下的偶然符合率为 <i>R</i><sub>acc</sub> = 2τ<i>R</i>₁<i>R</i>₂（标准结论）。只有 <i>T</i> 为真的事例才写入 ntuple。</p>
       <div class="box">
-        <p class="box-label">Example 6.2 · <span lang="en">Mission 5C: a two-layer muon trigger</span><span lang="zh-Hans">任务 5C：双层缪子触发</span></p>
+        <p class="box-label">Example 5.2 · <span lang="en">Lab 5.2: a two-layer muon trigger</span><span lang="zh-Hans">实验 5.2：双层缪子触发</span></p>
         <p lang="en">Place two 10 × 10 cm² scintillators 20 cm apart and digitize each independently. Measure single-layer rates, the coincidence rate, and the fraction satisfying a 20 ns window. Add random noise pulses to each layer and show that coincidence suppresses accidental triggers. Compare with the two-layer telescope of Week 1.</p>
         <p lang="zh-Hans">把两块 10 × 10 cm² 的闪烁体相隔 20 cm 放置，分别数字化。测量单层计数率、符合计数率，以及满足 20 ns 窗口的比例。再给每层加入随机噪声脉冲，证明符合能压制偶然触发。并与第 1 周的双层望远镜比较。</p>
       </div>
-      <h3 class="bi"><span lang="en">Mission 6: turn energy into an ADC number</span><span lang="zh-Hans">任务 6：把能量变成 ADC 数值</span></h3>
+      <h3 class="bi"><span lang="en">Lab 5.3: turn energy into an ADC number</span><span lang="zh-Hans">实验 5.3：把能量变成 ADC 数值</span></h3>
       <p lang="en">The toy digitizer maps the quenched visible energy to photoelectrons (Poisson), multiplies by a gain, adds a pedestal and Gaussian electronics noise. It does not reproduce a particular product. It makes the truth → response → measurement boundary visible. Its numbers (25 p.e./MeV, 4 counts/p.e., pedestal 50, noise 3 counts, kB = 0.126 mm/MeV) are stated assumptions.</p>
       <p lang="zh-Hans">玩具数字化器把猝灭后的可见能量映射为光电子数（泊松），乘以增益，再加上基线和高斯电子学噪声。它不复现任何具体产品，而是让“真相 → 响应 → 测量”的边界变得可见。其中的数值（25 p.e./MeV、4 道/p.e.、基线 50、噪声 3 道、kB = 0.126 mm/MeV）都是明确声明的假设。</p>
       <div class="scroll">
@@ -265,7 +261,7 @@ hit-&gt;AddEvis(edep / (1. + kBirks * edep / length));   <span class="c">// Birk
   </section>
 
   <section class="run" aria-labelledby="h-task">
-    <p class="cmd">/control/execute trigger.mac<span lang="en">hands-on · Missions 5, 5C, 6</span><span lang="zh-Hans">动手任务 · 任务 5、5C、6</span></p>
+    <p class="cmd">/control/execute trigger.mac<span lang="en">hands-on · Labs 5.1–5.3</span><span lang="zh-Hans">动手实验 · 实验 5.1–5.3</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Count, trigger, add noise, digitize.</span><span lang="zh-Hans">计数、触发、加噪声、数字化。</span></h2>
       <p lang="en">Outputs are real Geant4 11.4.p01 runs of these files with the course test physics list. Efficiencies here are set by geometry and threshold, so <code>FTFP_BERT</code> should give the same values within the quoted binomial errors.</p>
@@ -305,7 +301,7 @@ endforeach()</pre></details>
 int main(int argc, char** argv)
 {
   // Serial keeps the histogram code simple this week; Week 8 switches to
-  // the textbook's G4RunManagerType::Default and merges threads.
+  // G4RunManagerType::Default and merges threads.
   auto* runManager =
     G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
 
@@ -356,7 +352,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 #include "G4SDManager.hh"
 #include "G4SystemOfUnits.hh"
 
-// Mission 5 / 5C: two 10 x 10 x 1 cm3 plastic counters, 20 cm apart along z.
+// Labs 5.1 / 5.2: two 10 x 10 x 1 cm3 plastic counters, 20 cm apart along z.
 // One logical volume "Counter", placed twice with copy numbers 0 (top) and 1 (bottom).
 // The world is 3 m wide so the toy cosmic source plane (up to +-1.5 m) stays inside it.
 G4VPhysicalVolume* DetectorConstruction::Construct()
@@ -489,7 +485,7 @@ G4bool MuonSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
 #include "globals.hh"
 
-// Mission 6: deposited energy -&gt; photoelectrons -&gt; ADC number and a pulse time.
+// Lab 5.3: deposited energy -&gt; photoelectrons -&gt; ADC number and a pulse time.
 // Every number below is a TOY assumption, not a property of a real product.
 struct Signal
 {
@@ -566,7 +562,7 @@ class EventAction : public G4UserEventAction
     G4int fHitsCollectionID = -1;  // looked up lazily: the SD does not exist yet in the constructor
     G4GenericMessenger* fMessenger = nullptr;
     ToyScintillatorDigitizer fDigitizer;
-    G4double fEdepThreshold;       // Example 6.1: 0.1 MeV on the event-level deposit
+    G4double fEdepThreshold;       // Example 5.1: 0.1 MeV on the event-level deposit
     G4double fAdcThreshold;        // trigger threshold, ADC counts above zero
     G4double fCoincidenceWindow;   // ns
     G4double fNoiseProbability;    // per counter per event, set by /week05/noise
@@ -613,7 +609,7 @@ void EventAction::EndOfEventAction(const G4Event* event)
   auto* hits = static_cast&lt;MuonHitsCollection*&gt;(hce-&gt;GetHC(fHitsCollectionID));
   if (!hits || hits-&gt;entries() &lt; 2) return;
 
-  // 1. Truth-level detector response and the Example 6.1 threshold (event level!)
+  // 1. Truth-level detector response and the Example 5.1 threshold (event level!)
   const G4double edep[2] = {(*hits)[0]-&gt;GetEdep(), (*hits)[1]-&gt;GetEdep()};
   const G4bool fired[2] = {edep[0] &gt;= fEdepThreshold, edep[1] &gt;= fEdepThreshold};
 
@@ -808,7 +804,7 @@ void ActionInitialization::Build() const
   SetUserAction(new EventAction(runAction));
 }</pre></details>
             <details><summary><b>trigger.mac · vis.mac</b><button class="copy" type="button" data-copy="f5-mac">copy</button></summary><pre id="f5-mac" data-src="code/week05/macros.txt"># ======== trigger.mac ========
-# Mission 5 / 5C / 6: efficiencies, trigger and digitization
+# Labs 5.1-5.3: efficiencies, trigger and digitization
 /control/verbose 1
 /run/verbose 0
 
@@ -835,7 +831,7 @@ void ActionInitialization::Build() const
 /vis/modeling/trajectories/create/drawByCharge
 /vis/scene/endOfEventAction accumulate
 /run/beamOn 20</pre></details>
-            <details><summary><b>plot_digitization.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f5-py">copy</button></summary><pre id="f5-py" data-src="code/week05/plot_digitization.py">"""Mission 6: compare the Geant4 truth (Edep) with the digitized observable (ADC).
+            <details><summary><b>plot_digitization.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f5-py">copy</button></summary><pre id="f5-py" data-src="code/week05/plot_digitization.py">"""Lab 5.3: compare the Geant4 truth (Edep) with the digitized observable (ADC).
 
     pip install uproot matplotlib numpy
     python3 plot_digitization.py cos2.root
@@ -936,7 +932,7 @@ Run complete: 20000 events.
           <p lang="zh-Hans">1 MeV 时没有变化，因为穿过 1 cm 约沉积 1.8 MeV。1.6 MeV 时阈值切进了朗道峰的低能侧，丢失了 15% 的穿越。如果错误地对每一<em>步</em>施加 1 MeV，结果将取决于 Geant4 在 1 cm 内走了几步，而这并不是探测器的性质。</p>
         </li>
         <li>
-          <div class="step-head"><h3 class="bi"><span lang="en">Mission 6: Edep against ADC</span><span lang="zh-Hans">任务 6：Edep 对 ADC</span></h3><label class="done" for="w05-s5"><input type="checkbox" id="w05-s5" data-progress="w05"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="step-head"><h3 class="bi"><span lang="en">Lab 5.3: Edep against ADC</span><span lang="zh-Hans">实验 5.3：Edep 对 ADC</span></h3><label class="done" for="w05-s5"><input type="checkbox" id="w05-s5" data-progress="w05"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c5-py">copy</button></div>
 <pre id="c5-py">python3 plot_digitization.py cos2.root</pre></div>
           <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
@@ -1084,7 +1080,7 @@ Treated as a coincidence without a timing condition.
 
   <footer>
     <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
-    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 6 · Geant4 11.4.p01 · Birks (1964) · PDG RPP 2024</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 6 章 · Geant4 11.4.p01 · Birks (1964) · PDG RPP 2024</span>
+    <span lang="en">Sources: Geant4 11.4.p01 · Birks (1964) · PDG RPP 2024 · our own Geant4 runs</span><span lang="zh-Hans">来源：Geant4 11.4.p01 · Birks (1964) · PDG RPP 2024 · 我们自己的 Geant4 运行</span>
   </footer>
 </div>
 <script src="assets/course.js"></script>

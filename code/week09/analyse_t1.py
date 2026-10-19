@@ -1,4 +1,4 @@
-"""Week 9 analysis of musrSim's t1 tree (textbook 11.3-11.4).
+"""Lab 9 analysis of musrSim's t1 tree: event-level vs hit-level, then a lifetime fit.
 
     pip install uproot awkward numpy scipy
     python3 analyse_t1.py data/musrSim_201.root
@@ -19,7 +19,7 @@ with uproot.open(path) as f:
                   "muDecayTime", "muDecayDetID"], library="ak")
     print("events:", t.num_entries)
 
-# --- 11.3: event-level vs hit-level -----------------------------------------
+# --- event-level vs hit-level -----------------------------------------------
 print("hits per event (mean det_n):", round(float(ak.mean(d.det_n)), 3))
 all_edep = ak.flatten(d.det_edep)                      # every hit in every detector
 mask = d.det_ID == 11                                  # jagged mask, same shape as det_edep
@@ -32,7 +32,7 @@ try:
 except Exception as err:
     print("flatten-then-mask fails:", type(err).__name__)
 
-# --- 11.4: lifetime of muons that decayed in volume 201 -----------------------
+# --- lifetime of muons that decayed in volume 201 ----------------------------
 def decay(tt, N0, tau, bkg):
     return N0 * np.exp(-tt / tau) + bkg
 

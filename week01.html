@@ -36,7 +36,7 @@
       <p class="lede" lang="zh-Hans">先用纯 Python 写一个小型蒙特卡罗：抽样缪子方向，让它们穿过双层望远镜，统计到达的数目，并给结果配上不确定度。本课程之后每一个 Geant4 测量都要缴纳你在这里第一次遇到的“统计税”。</p>
       <ul class="meta">
         <li class="stage"><b>1 · See it</b><span lang="en">stage · 观测</span><span lang="zh-Hans">阶段 · 观测</span></li>
-        <li><b>Mission 0</b><span lang="en">textbook ch. 1</span><span lang="zh-Hans">教材第 1 章</span></li>
+        <li><b>Lab 1</b><span lang="en">hands-on lab</span><span lang="zh-Hans">动手实验</span></li>
         <li><b>≈ 2 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
       </ul>
     </div>
@@ -127,7 +127,7 @@
         <p lang="zh-Hans"><dfn>蒙特卡罗方法</dfn>是一类通过重复<dfn>随机抽样<span class="kt" lang="en">random sampling</span></dfn>来求解确定性或随机性问题的数值方法：为所求的量建立概率模型，反复抽样并计数，用样本统计量估计真值，并用统计涨落给出不确定度。</p>
       </div>
 
-      <div class="flow" role="img" aria-label="The Chapter 1 Monte Carlo loop"><b>physics question</b> <span class="a">→</span> sample θ, φ, x, y <span class="a">→</span> propagate track <span class="a">→</span> telescope hit? <span class="a">→</span> <b>count k/N</b><br><span class="a">model</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a">randomness</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a">geometry</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a">observable</span></div>
+      <div class="flow" role="img" aria-label="The Monte Carlo loop of this week"><b>physics question</b> <span class="a">→</span> sample θ, φ, x, y <span class="a">→</span> propagate track <span class="a">→</span> telescope hit? <span class="a">→</span> <b>count k/N</b><br><span class="a">model</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a">randomness</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a">geometry</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a">observable</span></div>
       <p class="cap"><span lang="en">Figure 1.1. Define a physical question, sample a population, propagate each trial through a minimal geometry, and turn the outcome into a measurable conditional transmission probability.</span><span lang="zh-Hans">图 1.1　提出物理问题，抽样一个总体，让每次试验穿过最简几何，把结果变成可测量的条件透射概率。</span></p>
 
       <div class="aside">
@@ -173,8 +173,8 @@
 
       <div class="aside">
         <p class="aside-label"><span lang="en">Think about it</span><span lang="zh-Hans">想一想</span></p>
-        <p lang="en">Before you run anything, predict: if <i>N</i> goes from 1,000 to 100,000, roughly how much does the relative uncertainty on the transmission probability shrink? The same 1/√<i>N</i> rule returns in the energy-loss scan (Mission 4, week 4) and the experiment reproduction (Mission 10, week 11).</p>
-        <p lang="zh-Hans">运行之前先预测：<i>N</i> 从 1,000 增加到 100,000，透射概率的相对不确定度大约缩小多少？同样的 1/√<i>N</i> 规律会在能损扫描（任务 4，第 4 周）和实验复现（任务 10，第 11 周）中再次出现。</p>
+        <p lang="en">Before you run anything, predict: if <i>N</i> goes from 1,000 to 100,000, roughly how much does the relative uncertainty on the transmission probability shrink? The same 1/√<i>N</i> rule returns in the energy-loss scan (Week 4's lab) and the validation benchmark (Week 11's lab).</p>
+        <p lang="zh-Hans">运行之前先预测：<i>N</i> 从 1,000 增加到 100,000，透射概率的相对不确定度大约缩小多少？同样的 1/√<i>N</i> 规律会在能损扫描（第 4 周的实验）和验证基准（第 11 周的实验）中再次出现。</p>
       </div>
     </div>
   </section>
@@ -280,7 +280,7 @@ hit = (np.abs(x1) &lt; L / 2) &amp; (np.abs(y1) &lt; L / 2)</pre>
 
   <!-- HANDS-ON -->
   <section class="run" aria-labelledby="h-task">
-    <p class="cmd">/control/shell python3 telescope_transmission.py<span lang="en">hands-on · Mission 0</span><span lang="zh-Hans">动手任务 · 任务 0</span></p>
+    <p class="cmd">/control/shell python3 telescope_transmission.py<span lang="en">hands-on · Lab 1</span><span lang="zh-Hans">动手任务 · 实验 1</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Run it, validate it, break it, then give it a real sky.</span><span lang="zh-Hans">运行、验证、破坏，再换上真实的天空。</span></h2>
       <p lang="en">Work in your own terminal. Every expected output below was produced with NumPy 2.5.3 and the fixed seed in the script; any NumPy with <code>default_rng</code> should print the same digits. Tick each step when you have matched it.</p>
@@ -294,7 +294,7 @@ pip install numpy
 python3 -c "import numpy; print(numpy.__version__)"</pre></div>
         </li>
         <li>
-          <div class="step-head"><h3 class="bi"><span lang="en">Save and run the textbook script</span><span lang="zh-Hans">保存并运行教材脚本</span></h3><label class="done" for="w01-s2"><input type="checkbox" id="w01-s2" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="step-head"><h3 class="bi"><span lang="en">Save and run the script</span><span lang="zh-Hans">保存并运行脚本</span></h3><label class="done" for="w01-s2"><input type="checkbox" id="w01-s2" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="code"><div class="code-head"><span class="l"><b>telescope_transmission.py</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c-py">copy</button></div>
 <pre id="c-py"><span class="k">import</span> numpy <span class="k">as</span> np
 
@@ -366,8 +366,8 @@ N= 100000 eps=0.0482 sigma=0.0007 rel.unc.=1.40%</pre></div>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Break it on purpose: sample θ uniformly</span><span lang="zh-Hans">故意破坏：让 θ 均匀分布</span></h3><label class="done" for="w01-s4"><input type="checkbox" id="w01-s4" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
-          <p lang="en">In <code>sample_directions()</code>, replace the two highlighted lines with the one below and rerun. This is the biased sampling the textbook asks you to try before you touch Geant4.</p>
-          <p lang="zh-Hans">在 <code>sample_directions()</code> 中，把高亮的两行换成下面这一行，然后重新运行。这就是教材要求你在接触 Geant4 之前先尝试的有偏抽样。</p>
+          <p lang="en">In <code>sample_directions()</code>, replace the two highlighted lines with the one below and rerun. This is a deliberately biased sampling: try it before you touch Geant4, so you see how much a wrong angular model moves the answer.</p>
+          <p lang="zh-Hans">在 <code>sample_directions()</code> 中，把高亮的两行换成下面这一行，然后重新运行。这是一种故意有偏的抽样：在接触 Geant4 之前先试一试，看看错误的角分布模型会让答案偏多少。</p>
           <div class="code"><div class="code-head"><span class="l"><b>sample_directions()</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c-s4">copy</button></div>
 <pre id="c-s4">    theta = rng.uniform(0.0, np.pi / 2, N)   <span class="bad"># BROKEN: uniform in theta</span></pre></div>
           <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected output</span><span lang="zh-Hans">预期输出</span></b></span></div>
@@ -388,13 +388,13 @@ N= 100000 eps=0.1699 sigma=0.0012 rel.unc.=0.70%</pre></div>
 <pre>N=   1000 eps=0.1490 sigma=0.0113 rel.unc.=7.56%
 N=  10000 eps=0.1340 sigma=0.0034 rel.unc.=2.54%
 N= 100000 eps=0.1341 sigma=0.0011 rel.unc.=0.80%</pre></div>
-          <p lang="en">Reference integral: 0.1336. Muons crossing a horizontal layer carry one more factor of cosθ (the projected area), so the crossing distribution goes as cos³θ and <i>c</i> = <i>u</i><sup>1/4</sup>. Try it: you should get 0.1699 at <i>N</i> = 100,000 against a reference of 0.1702. The textbook's first-pass model, isotropic per solid angle, is neither of these, as its docstring warns.</p>
-          <p lang="zh-Hans">参考积分值为 0.1336。穿过水平探测层的缪子还要再乘一个 cosθ（投影面积），所以穿越分布为 cos³θ，<i>c</i> = <i>u</i><sup>1/4</sup>。试一试：<i>N</i> = 100,000 时应得到 0.1699，参考值为 0.1702。教材第一版的“单位立体角各向同性”模型两者都不是，正如它的文档字符串所提醒的。</p>
+          <p lang="en">Reference integral: 0.1336. Muons crossing a horizontal layer carry one more factor of cosθ (the projected area), so the crossing distribution goes as cos³θ and <i>c</i> = <i>u</i><sup>1/4</sup>. Try it: you should get 0.1699 at <i>N</i> = 100,000 against a reference of 0.1702. The script's first-pass model, isotropic per solid angle, is neither of these, as its docstring warns.</p>
+          <p lang="zh-Hans">参考积分值为 0.1336。穿过水平探测层的缪子还要再乘一个 cosθ（投影面积），所以穿越分布为 cos³θ，<i>c</i> = <i>u</i><sup>1/4</sup>。试一试：<i>N</i> = 100,000 时应得到 0.1699，参考值为 0.1702。脚本中第一版的“单位立体角各向同性”模型两者都不是，正如它的文档字符串所提醒的。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Fill in the research notebook</span><span lang="zh-Hans">填写研究笔记</span></h3><label class="done" for="w01-s6"><input type="checkbox" id="w01-s6" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
-          <p lang="en">Write these five lines for Mission 0 before you start Week 2. If you can complete them, you already think like a simulation experimentalist.</p>
-          <p lang="zh-Hans">在开始第 2 周之前，为任务 0 写下这五行。如果你能写完，你已经在像模拟实验者一样思考了。</p>
+          <p lang="en">Write these five lines for Lab 1 before you start Week 2. If you can complete them, you already think like a simulation experimentalist.</p>
+          <p lang="zh-Hans">在开始第 2 周之前，为实验 1 写下这五行。如果你能写完，你已经在像模拟实验者一样思考了。</p>
           <div class="scroll">
             <table class="tbl">
               <tbody>
@@ -559,8 +559,8 @@ Mixed units: L in cm, d in m.
       </ul>
       <div class="aside">
         <p class="aside-label"><span lang="en">Remark · debt repaid, debt taken on</span><span lang="zh-Hans">小结 · 还清的债与新欠的债</span></p>
-        <p lang="en">Repaid: random sampling, conditional transmission probability and statistical uncertainty are now numbers you computed yourself. Taken on: all of it happened in a matter-free toy world where particles fly in straight lines and lose no energy. Next week the particle enters the Geant4 world, and Mission 4 will ask how much it loses when it crosses matter.</p>
-        <p lang="zh-Hans">还清的债：随机抽样、条件透射概率和统计不确定度，已经是你亲手算出的数字。新欠的债：这一切都发生在没有物质、没有能损、粒子走直线的“真空玩具世界”里。下周粒子将进入 Geant4 的世界，而任务 4 会追问：粒子穿过物质时究竟损失多少能量？</p>
+        <p lang="en">Repaid: random sampling, conditional transmission probability and statistical uncertainty are now numbers you computed yourself. Taken on: all of it happened in a matter-free toy world where particles fly in straight lines and lose no energy. Next week the particle enters the Geant4 world, and Week 4's lab will ask how much it loses when it crosses matter.</p>
+        <p lang="zh-Hans">还清的债：随机抽样、条件透射概率和统计不确定度，已经是你亲手算出的数字。新欠的债：这一切都发生在没有物质、没有能损、粒子走直线的“真空玩具世界”里。下周粒子将进入 Geant4 的世界，而第 4 周的实验会追问：粒子穿过物质时究竟损失多少能量？</p>
       </div>
     </div>
   </section>
@@ -585,7 +585,7 @@ Mixed units: L in cm, d in m.
 
   <footer>
     <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
-    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 1 and appendix A.1 · PDG RPP 2024</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 1 章与附录 A.1 · PDG RPP 2024</span>
+    <span lang="en">Source: PDG RPP 2024, sec. 30 (cosmic rays) · our own runs of the scripts on this page</span><span lang="zh-Hans">来源：PDG RPP 2024 第 30 节（宇宙线）· 本页脚本的实际运行结果</span>
   </footer>
 </div>
 <script src="assets/course.js"></script>

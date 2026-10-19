@@ -10,7 +10,7 @@
 int main(int argc, char** argv)
 {
   // Single-threaded so the per-step printout of one event stays in order.
-  // (The textbook main.cc uses G4RunManagerType::Default.)
+  // (The usual main() uses G4RunManagerType::Default.)
   auto* runManager =
     G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
 

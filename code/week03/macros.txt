@@ -19,7 +19,7 @@
 /run/beamOn 5
 
 # ======== vrml.mac ========
-# Create a VRML 2.0 scene without opening a Qt window (textbook vis-vrml.mac)
+# Create a VRML 2.0 scene without opening a Qt window
 /vis/open VRML2FILE
 /vis/drawVolume
 /vis/viewer/set/viewpointThetaPhi 70 20

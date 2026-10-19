@@ -1,4 +1,4 @@
-# Mission 7: 1000 mu- at each of five momenta, one CSV file per run
+# Lab 7.1: 1000 mu- at each of five momenta, one CSV file per run
 /control/verbose 0
 /run/verbose 0
 /tracking/verbose 0

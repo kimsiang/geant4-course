@@ -6,8 +6,8 @@
 #include "G4PVPlacement.hh"
 #include "G4SystemOfUnits.hh"
 
-// Mission 4: a 50 x 50 x 10 cm3 plastic scintillator slab in air,
-// the bench counter of the course front matter (Example 0.2).
+// Lab 4: a 50 x 50 x 10 cm3 plastic scintillator slab in air,
+// the plastic bench counter of Week 1.
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
   G4NistManager* nist = G4NistManager::Instance();

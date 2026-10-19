@@ -1,4 +1,4 @@
-"""Mission 8: read the merged ROOT file without Geant4 and redo the Week 5 numbers.
+"""Lab 8.1: read the merged ROOT file without Geant4 and redo the Week 5 numbers.
 
 The file holds two trees: 'daq' (detector-facing, triggered events only) and
 'truth' (Monte Carlo truth, every event). Only column names connect this script

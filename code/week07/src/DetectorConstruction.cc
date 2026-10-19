@@ -11,7 +11,7 @@
 
 #include "FringeField.hh"
 
-// Mission 7: tracker 1 (3 Si planes) -- 1 m dipole, By = 1.5 T -- tracker 2 (3 Si planes)
+// Lab 7.1: tracker 1 (3 Si planes) -- 1 m dipole, By = 1.5 T -- tracker 2 (3 Si planes)
 //
 //   z [m]:  -1.0 -0.8 -0.6 | -0.5 ... magnet ... +0.5 | +0.6 +0.8 +1.0
 //
@@ -42,10 +42,10 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 void DetectorConstruction::ConstructSDandField()
 {
   // (sensitive detectors would be registered here too; Week 5)
-  const G4bool useFringeMap = false;   // Mission 7B: set true, rebuild, rerun
+  const G4bool useFringeMap = false;   // Lab 7.2: set true, rebuild, rerun
 
   if (!useFringeMap) {
-    // Mission 7: ideal uniform field inside the magnet box only
+    // Lab 7.1: ideal uniform field inside the magnet box only
     G4ThreeVector fieldValue(0., 1.5 * tesla, 0.);
     auto* magField = new G4UniformMagField(fieldValue);
     auto* fieldMgr = new G4FieldManager();
@@ -54,7 +54,7 @@ void DetectorConstruction::ConstructSDandField()
     // attach the field to the magnet volume only (and its daughters)
     fLogicMagnet->SetFieldManager(fieldMgr, true);
   } else {
-    // Mission 7B: a field "map" defined everywhere, so it goes on the global field manager
+    // Lab 7.2: a field "map" defined everywhere, so it goes on the global field manager
     auto* magField = new FringeField();
     auto* fieldMgr = G4TransportationManager::GetTransportationManager()->GetFieldManager();
     fieldMgr->SetDetectorField(magField);

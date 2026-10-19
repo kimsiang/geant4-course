@@ -1,5 +1,5 @@
 # ======== trigger.mac ========
-# Mission 5 / 5C / 6: efficiencies, trigger and digitization
+# Labs 5.1-5.3: efficiencies, trigger and digitization
 /control/verbose 1
 /run/verbose 0
 

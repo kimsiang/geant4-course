@@ -1,4 +1,4 @@
-"""Mission 6: compare the Geant4 truth (Edep) with the digitized observable (ADC).
+"""Lab 5.3: compare the Geant4 truth (Edep) with the digitized observable (ADC).
 
     pip install uproot matplotlib numpy
     python3 plot_digitization.py cos2.root

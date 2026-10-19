@@ -1,4 +1,4 @@
-"""validate_dedx.py -- Mission 10: compare Geant4's mean muon energy loss in plastic scintillator
+"""validate_dedx.py -- Lab 11.2: compare Geant4's mean muon energy loss in plastic scintillator
 with the PDG muon table, and say which rung of the validation ladder that comparison reaches.
 
 Input: edep_<T>MeV*.root files from the week04 app (10 cm of G4_PLASTIC_SC_VINYLTOLUENE), whose

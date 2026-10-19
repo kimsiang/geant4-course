@@ -1,5 +1,5 @@
 #!/bin/bash
-# Week 9: split one macro into independent jobs (textbook 11.6, corrected).
+# Lab 9: split one macro into independent jobs, with seeds that actually differ.
 # The seed offset (3rd argument) only takes effect with /musr/run/randomOption 1
 # in the macro; 201.mac as shipped uses randomOption 2, which gives identical jobs.
 set -e

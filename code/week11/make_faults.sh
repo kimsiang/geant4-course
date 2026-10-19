@@ -1,5 +1,5 @@
 #!/bin/bash
-# make_faults.sh -- Mission 9 for instructors: turn the working week05 counter into a repository
+# make_faults.sh -- Lab 11.1 for instructors: turn the working week05 counter into a repository
 # with one deliberately broken simulation per branch. Each fault is ONE line, compiles, and runs.
 # Usage: bash make_faults.sh path/to/week05  faultlab
 #        cd faultlab && git branch          # main, fault-1 ... fault-6

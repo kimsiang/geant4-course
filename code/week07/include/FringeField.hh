@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-// Mission 7B: a synthetic 1D field map. By(z) falls off at both magnet ends with a
+// Lab 7.2: a synthetic 1D field map. By(z) falls off at both magnet ends with a
 // Fermi-function edge of width a. Its field integral equals the uniform 1.5 T x 1 m
 // (to 0.1%), but the field now leaks into the trackers. Units: Geant4 internal.
 class FringeField : public G4MagneticField

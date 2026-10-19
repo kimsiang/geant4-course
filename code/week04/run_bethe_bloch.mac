@@ -1,4 +1,4 @@
-# Mission 4: headless energy-loss scan, five kinetic energies, 10^4 events each
+# Lab 4: headless energy-loss scan, five kinetic energies, 10^4 events each
 /control/verbose 0
 /run/verbose 0
 /event/verbose 0

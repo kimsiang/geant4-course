@@ -17,7 +17,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   G4double stepLen = step->GetStepLength();
   G4ThreeVector pos = postStepPoint->GetPosition();
 
-  // Two additions to the textbook listing, so the output can be filtered:
+  // Two additions to the minimal listing, so the output can be filtered:
   // the volume the step happened in, and the track ID (1 = the primary).
   const G4String& volume = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
   G4int trackID = step->GetTrack()->GetTrackID();

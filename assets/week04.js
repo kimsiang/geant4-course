@@ -1,4 +1,4 @@
-/* Week 04 — Bethe–Bloch curve and a toy energy-loss straggling Monte Carlo (textbook Ch. 5).
+/* Week 04 — Bethe–Bloch curve and a toy energy-loss straggling Monte Carlo (Week 4).
    Curve: PDG Eq. (34.5) mean stopping power with the Sternheimer density-effect correction
    (parameters from the PDG atomic and nuclear properties tables); spin and shell terms neglected.
    TOY MODEL for the deposit histogram, not Geant4: energy loss in a slab =
@@ -133,14 +133,14 @@
       a: 1, why: { en: 'Most collisions transfer little energy, but occasionally a δ-ray takes up to T<sub>max</sub> (≈ 100 MeV at 1 GeV). That Landau tail pulls the mean above the peak. Compare a histogram\'s Mean with its peak in the toy model.', zh: '绝大多数碰撞只转移很少能量，但偶尔一个 δ 电子能带走接近 T<sub>max</sub>（1 GeV 时约 100 MeV）的能量。这条朗道尾巴把均值拉到峰值之上。可以在玩具模型中比较直方图的 Mean 与峰位。' } },
     { prompt: { en: 'The primary-muon −dE/dx and Edep/10 cm differ by a few percent. Which statement is right?', zh: '主缪子的 −dE/dx 与 Edep/10 cm 相差几个百分点。哪种说法正确？' },
       opts: [{ en: 'One of them is a bug', zh: '其中一个有 bug' }, { en: 'Edep is lower because energetic δ-rays leave the slab', zh: 'Edep 较低，因为高能 δ 电子逃出了板' }, { en: 'Edep is higher because of photons from outside', zh: 'Edep 较高，因为有外来光子' }, { en: 'They must agree exactly', zh: '两者必须完全一致' }],
-      a: 1, why: { en: 'The primary loses energy to δ-rays; a δ-ray whose range exceeds the distance to the back face carries part of it out. Edep is a detector-response quantity, the primary loss is closer to the stopping power. The textbook warns not to force them equal.', zh: '主粒子把能量交给 δ 电子；射程超过到后表面距离的 δ 电子会把一部分能量带出去。Edep 是探测器响应量，主粒子损失更接近阻止本领。教材提醒不要强求两者相等。' } },
+      a: 1, why: { en: 'The primary loses energy to δ-rays; a δ-ray whose range exceeds the distance to the back face carries part of it out. Edep is a detector-response quantity, the primary loss is closer to the stopping power. Do not force them to be equal.', zh: '主粒子把能量交给 δ 电子；射程超过到后表面距离的 δ 电子会把一部分能量带出去。Edep 是探测器响应量，主粒子损失更接近阻止本领。不要强求两者相等。' } },
     { prompt: { en: 'You run 10<sup>4</sup> events per energy. The Edep rms is 4 MeV. What is the statistical uncertainty on the mean?', zh: '每个能量点 10<sup>4</sup> 个事例，Edep 的 rms 为 4 MeV。均值的统计不确定度是多少？' },
       opts: [{ en: '4 MeV', zh: '4 MeV' }, { en: '0.04 MeV', zh: '0.04 MeV' }, { en: '0.4 MeV', zh: '0.4 MeV' }, { en: '0.0004 MeV', zh: '0.0004 MeV' }],
       a: 1, why: { en: 'σ<sub>mean</sub> = rms/√N = 4/100 = 0.04 MeV: the same 1/√N tax as Week 1. The rms describes single events; the error of the mean describes your measurement.', zh: 'σ<sub>均值</sub> = rms/√N = 4/100 = 0.04 MeV，与第 1 周一样的 1/√N 税。rms 描述单个事例，均值误差描述你的测量。' } },
     { prompt: { en: 'Why are cosmic muons such a common calibration source?', zh: '为什么宇宙线缪子是如此常用的刻度源？' },
       opts: [{ en: 'They are all exactly at the minimum', zh: '它们都恰好处于最小值' }, { en: 'Over a wide momentum range their dE/dx stays within ~10–20% of the minimum', zh: '在很宽的动量范围内，它们的 dE/dx 与最小值相差在 10–20% 以内' }, { en: 'They do not produce δ-rays', zh: '它们不产生 δ 电子' }, { en: 'They are monoenergetic', zh: '它们是单能的' }],
       a: 1, why: { en: 'The sea-level spectrum peaks at a few GeV, where the curve is flat: roughly 1–2 MeV cm²/g in most materials. A muon peak in an ADC spectrum is therefore an almost universal energy reference.', zh: '海平面缪子能谱的峰在几 GeV，那里曲线很平坦：大多数材料中约为 1–2 MeV cm²/g。因此 ADC 谱中的缪子峰几乎是一个通用的能量标尺。' } },
-    { prompt: { en: 'The textbook books Edep from 0 to 20 MeV for 10 cm of scintillator. What goes wrong?', zh: '教材为 10 cm 闪烁体把 Edep 直方图设为 0–20 MeV，会出什么问题？' },
+    { prompt: { en: 'You book the Edep histogram from 0 to 20 MeV for 10 cm of scintillator. What goes wrong?', zh: '为 10 cm 闪烁体把 Edep 直方图设为 0–20 MeV，会出什么问题？' },
       opts: [{ en: 'Nothing', zh: '没有问题' }, { en: 'The peak sits at the edge and most of the tail lands in overflow, so the histogram mean is biased low', zh: '峰位于边缘，大部分尾巴落入溢出，直方图均值被低估' }, { en: 'Geant4 refuses to fill it', zh: 'Geant4 拒绝填充' }, { en: 'The run gets slower', zh: '运行变慢' }],
       a: 1, why: { en: 'At the minimum, 10 cm of polyvinyltoluene gives ≈ 20 MeV; at 100 MeV kinetic energy about 24 MeV. A histogram mean only counts in-range entries, so a 20 MeV ceiling clips most events. This course books 0–80 MeV.', zh: '最小电离时 10 cm 聚乙烯基甲苯约沉积 20 MeV，100 MeV 动能时约 24 MeV。直方图均值只统计范围内的条目，20 MeV 上限会截掉大部分事例。本课程设为 0–80 MeV。' } }
   ]);

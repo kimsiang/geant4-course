@@ -1,5 +1,5 @@
 #!/bin/bash
-# run_scan.sh -- Mission 12: the same experiment at several fields, plus the "no spin" control.
+# run_scan.sh -- Lab 10: the same experiment at several fields, plus the "no spin" control.
 # Run from the build directory, next to ./week10 and tf.mac.
 set -e
 mkdir -p data

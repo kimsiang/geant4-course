@@ -35,7 +35,7 @@
       <p class="lede" lang="zh-Hans">只把数字打印到终端的模拟，对研究组来说还没有用处。你将用两个线程写出一个与实验室 DAQ 格式相同的 ROOT 数据集，并在不再打开 Geant4 源码的情况下完成分析。</p>
       <ul class="meta">
         <li class="stage"><b>4 · Build it</b><span lang="en">stage · 建造</span><span lang="zh-Hans">阶段 · 建造</span></li>
-        <li><b>Missions 8, 8B</b><span lang="en">textbook ch. 9</span><span lang="zh-Hans">教材第 9 章</span></li>
+        <li><b>Labs 8.1–8.2</b><span lang="en">hands-on lab</span><span lang="zh-Hans">动手实验</span></li>
         <li><b>≈ 2 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
       </ul>
     </div>
@@ -86,17 +86,17 @@
   </section>
 
   <section class="run" aria-labelledby="h-parity">
-    <p class="cmd">/control/manual<span lang="en">9.1 · DAQ parity</span><span lang="zh-Hans">9.1 · DAQ 一致性</span></p>
+    <p class="cmd">/control/manual<span lang="en">8.1 · DAQ parity</span><span lang="zh-Hans">8.1 · DAQ 一致性</span></p>
     <div class="prose">
       <h2 id="h-parity" class="bi"><span lang="en">Make the simulated event look like a real DAQ event.</span><span lang="zh-Hans">让模拟事例看起来像真实的 DAQ 事例。</span></h2>
       <p lang="en">Keep the simulated output as close as possible to the laboratory DAQ format. The point is not to imitate every byte of a commercial digitizer. The point is that the same decoder and the same analysis can consume simulated and real data, so the simulation becomes a test bench for the analysis software rather than a separate universe. A deliberately simple raw packet carries run, event, timestamp, trigger word, number of channels, and per-channel records.</p>
       <p lang="zh-Hans">让模拟输出尽可能接近实验室 DAQ 格式。目的不是模仿商用数字化器的每一个字节，而是让同一个解码器和同一个分析程序既能处理模拟数据、也能处理真实数据。这样模拟就成了分析软件的测试平台，而不是另一个平行宇宙。一个刻意简化的原始数据包包含：运行号、事例号、时间戳、触发字、通道数，以及每个通道的记录。</p>
       <div class="flow" role="img" aria-label="The simulation-to-data chain"><b>Geant4</b> <span class="a">→</span> events <span class="a">→</span> detector response <span class="a">→</span> DAQ-like record <span class="a">→</span> ROOT <span class="a">→</span> <b>analysis</b></div>
 <!-- fig:svg-w08 -->
-<figure class="fig-svg"><svg viewBox="0 0 820 265" role="img" aria-label="Pipeline from Geant4 steps through hits and ntuples to a ROOT file read in Python, with a lab DAQ feeding the same tree"><defs><marker id="ah-pipeline" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="20" y="40" width="120" height="44" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="80" y="67" text-anchor="middle" font-size="12" lang="en">Geant4 steps</text><text x="80" y="67" text-anchor="middle" font-size="12" lang="zh-Hans">Geant4 步</text><rect x="150" y="40" width="120" height="44" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="210" y="67" text-anchor="middle" font-size="12" lang="en">hits / digits</text><text x="210" y="67" text-anchor="middle" font-size="12" lang="zh-Hans">击中 / 数字化</text><rect x="280" y="40" width="120" height="44" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="340" y="67" text-anchor="middle" font-size="12" lang="en">EventAction</text><text x="340" y="67" text-anchor="middle" font-size="12" lang="zh-Hans">EventAction</text><rect x="410" y="40" width="120" height="44" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="470" y="67" text-anchor="middle" font-size="12" lang="en">ntuple rows</text><text x="470" y="67" text-anchor="middle" font-size="12" lang="zh-Hans">ntuple 行</text><rect x="540" y="40" width="120" height="44" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="600" y="67" text-anchor="middle" font-size="12" lang="en">muons.root</text><text x="600" y="67" text-anchor="middle" font-size="12" lang="zh-Hans">muons.root</text><rect x="670" y="40" width="120" height="44" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="730" y="67" text-anchor="middle" font-size="12" lang="en">Python</text><text x="730" y="67" text-anchor="middle" font-size="12" lang="zh-Hans">Python</text><line x1="141" y1="62" x2="149" y2="62" class="s-m" stroke-width="1.2" marker-end="url(#ah-pipeline)" fill="none"/><line x1="271" y1="62" x2="279" y2="62" class="s-m" stroke-width="1.2" marker-end="url(#ah-pipeline)" fill="none"/><line x1="401" y1="62" x2="409" y2="62" class="s-m" stroke-width="1.2" marker-end="url(#ah-pipeline)" fill="none"/><line x1="531" y1="62" x2="539" y2="62" class="s-m" stroke-width="1.2" marker-end="url(#ah-pipeline)" fill="none"/><line x1="661" y1="62" x2="669" y2="62" class="s-m" stroke-width="1.2" marker-end="url(#ah-pipeline)" fill="none"/><rect x="540" y="100" width="120" height="26" rx="3" class="s-neu" fill="none" stroke-width="1.2"/><text x="600" y="117" text-anchor="middle" class="neu" font-size="11" lang="en">tree: daq</text><text x="600" y="117" text-anchor="middle" class="neu" font-size="11" lang="zh-Hans">树：daq</text><rect x="540" y="132" width="120" height="26" rx="3" class="s-m" fill="none" stroke-width="1.2" stroke-dasharray="3 3"/><text x="600" y="149" text-anchor="middle" class="m" font-size="11" lang="en">tree: truth</text><text x="600" y="149" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">树：truth</text><rect x="280" y="180" width="250" height="40" rx="3" class="s-fg" fill="none" stroke-width="1.2"/><text x="405" y="205" text-anchor="middle" font-size="12" lang="en">lab DAQ → decoder</text><text x="405" y="205" text-anchor="middle" font-size="12" lang="zh-Hans">实验室 DAQ → 解码器</text><path d="M530 200 Q525 113 538 113" class="s-neu" fill="none" stroke-width="1.3" marker-end="url(#ah-pipeline)"/><text x="20" y="250" class="m" font-size="11" lang="en">same branch names, units and trigger word: the same analysis runs on both</text><text x="20" y="250" class="m" font-size="11" lang="zh-Hans">相同的分支名、单位和触发字：同一分析程序在两者上都能运行</text></svg><figcaption><span lang="en">The chain Chapter 9 builds. Detector-facing quantities go in the daq tree, simulation truth in a separate tree; a decoder writes real DAQ data into the same daq format.</span><span lang="zh-Hans">第 9 章搭建的链条。面向探测器的量写入 daq 树，模拟真值写入单独的树；解码器把真实 DAQ 数据写成同样的 daq 格式。</span></figcaption></figure>
+<figure class="fig-svg"><svg viewBox="0 0 820 265" role="img" aria-label="Pipeline from Geant4 steps through hits and ntuples to a ROOT file read in Python, with a lab DAQ feeding the same tree"><defs><marker id="ah-pipeline" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="20" y="40" width="120" height="44" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="80" y="67" text-anchor="middle" font-size="12" lang="en">Geant4 steps</text><text x="80" y="67" text-anchor="middle" font-size="12" lang="zh-Hans">Geant4 步</text><rect x="150" y="40" width="120" height="44" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="210" y="67" text-anchor="middle" font-size="12" lang="en">hits / digits</text><text x="210" y="67" text-anchor="middle" font-size="12" lang="zh-Hans">击中 / 数字化</text><rect x="280" y="40" width="120" height="44" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="340" y="67" text-anchor="middle" font-size="12" lang="en">EventAction</text><text x="340" y="67" text-anchor="middle" font-size="12" lang="zh-Hans">EventAction</text><rect x="410" y="40" width="120" height="44" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="470" y="67" text-anchor="middle" font-size="12" lang="en">ntuple rows</text><text x="470" y="67" text-anchor="middle" font-size="12" lang="zh-Hans">ntuple 行</text><rect x="540" y="40" width="120" height="44" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="600" y="67" text-anchor="middle" font-size="12" lang="en">muons.root</text><text x="600" y="67" text-anchor="middle" font-size="12" lang="zh-Hans">muons.root</text><rect x="670" y="40" width="120" height="44" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="730" y="67" text-anchor="middle" font-size="12" lang="en">Python</text><text x="730" y="67" text-anchor="middle" font-size="12" lang="zh-Hans">Python</text><line x1="141" y1="62" x2="149" y2="62" class="s-m" stroke-width="1.2" marker-end="url(#ah-pipeline)" fill="none"/><line x1="271" y1="62" x2="279" y2="62" class="s-m" stroke-width="1.2" marker-end="url(#ah-pipeline)" fill="none"/><line x1="401" y1="62" x2="409" y2="62" class="s-m" stroke-width="1.2" marker-end="url(#ah-pipeline)" fill="none"/><line x1="531" y1="62" x2="539" y2="62" class="s-m" stroke-width="1.2" marker-end="url(#ah-pipeline)" fill="none"/><line x1="661" y1="62" x2="669" y2="62" class="s-m" stroke-width="1.2" marker-end="url(#ah-pipeline)" fill="none"/><rect x="540" y="100" width="120" height="26" rx="3" class="s-neu" fill="none" stroke-width="1.2"/><text x="600" y="117" text-anchor="middle" class="neu" font-size="11" lang="en">tree: daq</text><text x="600" y="117" text-anchor="middle" class="neu" font-size="11" lang="zh-Hans">树：daq</text><rect x="540" y="132" width="120" height="26" rx="3" class="s-m" fill="none" stroke-width="1.2" stroke-dasharray="3 3"/><text x="600" y="149" text-anchor="middle" class="m" font-size="11" lang="en">tree: truth</text><text x="600" y="149" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">树：truth</text><rect x="280" y="180" width="250" height="40" rx="3" class="s-fg" fill="none" stroke-width="1.2"/><text x="405" y="205" text-anchor="middle" font-size="12" lang="en">lab DAQ → decoder</text><text x="405" y="205" text-anchor="middle" font-size="12" lang="zh-Hans">实验室 DAQ → 解码器</text><path d="M530 200 Q525 113 538 113" class="s-neu" fill="none" stroke-width="1.3" marker-end="url(#ah-pipeline)"/><text x="20" y="250" class="m" font-size="11" lang="en">same branch names, units and trigger word: the same analysis runs on both</text><text x="20" y="250" class="m" font-size="11" lang="zh-Hans">相同的分支名、单位和触发字：同一分析程序在两者上都能运行</text></svg><figcaption><span lang="en">The chain this week builds. Detector-facing quantities go in the daq tree, simulation truth in a separate tree; a decoder writes real DAQ data into the same daq format.</span><span lang="zh-Hans">本周搭建的链条。面向探测器的量写入 daq 树，模拟真值写入单独的树；解码器把真实 DAQ 数据写成同样的 daq 格式。</span></figcaption></figure>
 <!-- /fig:svg-w08 -->
       <div class="box">
-        <p class="box-label">Definition 9.1 · <span lang="en">The full simulation-to-data chain</span><span lang="zh-Hans">完整的模拟—数据链</span></p>
+        <p class="box-label">Definition 8.1 · <span lang="en">The full simulation-to-data chain</span><span lang="zh-Hans">完整的模拟—数据链</span></p>
         <p lang="en">Geant4 generates events; detector response generates hits; DAQ-style formatting packs each event's key quantities into one record; the record is written to a ROOT tree; downstream analysis reads it. Every link should explain itself, with clear variable names and explicit units, so the analysis never needs the Geant4 source.</p>
         <p lang="zh-Hans">Geant4 产生事例，探测器响应产生击中，DAQ 式格式化把每个事例的关键量打包成一条记录，记录写入 ROOT 树，下游分析读取它。每一环都应自我说明——变量名清楚、单位明确——这样分析时永远不需要 Geant4 源码。</p>
       </div>
@@ -116,7 +116,7 @@ analysis-&gt;CreateNtupleDColumn("Edep0_MeV");</pre>
         <p lang="zh-Hans">写两个解码器：一个读实验室二进制包，一个读模拟记录。两者送入同一个写出函数，再对两者执行同一个选择。没有硬件对应量的分支（如 <code>Edep</code>）放进单独的真值树，绝不放进面向探测器的树。</p>
       </div>
       <div class="box">
-        <p class="box-label">Example 9.1 · <span lang="en">Mission 8B: one analysis script for simulation and hardware</span><span lang="zh-Hans">任务 8B：同一个脚本分析模拟与硬件数据</span></p>
+        <p class="box-label">Example 8.1 · <span lang="en">Lab 8.2: one analysis script for simulation and hardware</span><span lang="zh-Hans">实验 8.2：同一个脚本分析模拟与硬件数据</span></p>
         <p lang="en">Make the two-layer trigger output DAQ-like: event number, trigger word, timestamp, per-channel ADC, hit time, channel identifier. The analysis must select events using the trigger word and must not inspect whether a file came from Geant4 or the laboratory.</p>
         <p lang="zh-Hans">让双层触发的输出具备 DAQ 形式：事例号、触发字、时间戳、各通道 ADC、击中时间、通道标识。分析必须用触发字选择事例，且不得检查文件来自 Geant4 还是实验室。</p>
       </div>
@@ -124,11 +124,11 @@ analysis-&gt;CreateNtupleDColumn("Edep0_MeV");</pre>
   </section>
 
   <section class="run" aria-labelledby="h-mt">
-    <p class="cmd">/run/numberOfThreads 2<span lang="en">9.2 · someone else's data</span><span lang="zh-Hans">9.2 · 给别人用的数据</span></p>
+    <p class="cmd">/run/numberOfThreads 2<span lang="en">8.2 · someone else's data</span><span lang="zh-Hans">8.2 · 给别人用的数据</span></p>
     <div class="prose">
       <h2 id="h-mt" class="bi"><span lang="en">A simulation's real endpoint is someone else being able to use your data.</span><span lang="zh-Hans">模拟的真正终点，是别人能够使用你的数据。</span></h2>
-      <p lang="en">In a research group one person produces simulated data and another analyses it, sometimes the same person months later. A structured file is the only interface. This week also returns to the textbook's <code>G4RunManagerType::Default</code>, which makes the run multithreaded. Two things change. Every worker thread has its own RunAction and its own analysis objects: histograms are merged automatically, but ntuples need <code>SetNtupleMerging(true)</code>. And plain counters in RunAction only count that worker's events, so the course switches them to <code>G4Accumulable</code>, which the master sums.</p>
-      <p lang="zh-Hans">在研究组里，一个人生产模拟数据，另一个人分析——有时是同一个人在几个月后。结构化文件是唯一的接口。本周也回到教材的 <code>G4RunManagerType::Default</code>，运行变为多线程。这带来两点变化：每个工作线程都有自己的 RunAction 和分析对象，直方图会自动合并，ntuple 则需要 <code>SetNtupleMerging(true)</code>；RunAction 里的普通计数器只统计本线程的事例，所以本课程改用 <code>G4Accumulable</code>，由主线程汇总。</p>
+      <p lang="en">In a research group one person produces simulated data and another analyses it, sometimes the same person months later. A structured file is the only interface. This week also switches from the serial run manager of Weeks 2–7 to <code>G4RunManagerType::Default</code>, which makes the run multithreaded. Two things change. Every worker thread has its own RunAction and its own analysis objects: histograms are merged automatically, but ntuples need <code>SetNtupleMerging(true)</code>. And plain counters in RunAction only count that worker's events, so the course switches them to <code>G4Accumulable</code>, which the master sums.</p>
+      <p lang="zh-Hans">在研究组里，一个人生产模拟数据，另一个人分析——有时是同一个人在几个月后。结构化文件是唯一的接口。本周也从第 2–7 周的串行运行管理器换成 <code>G4RunManagerType::Default</code>，运行变为多线程。这带来两点变化：每个工作线程都有自己的 RunAction 和分析对象，直方图会自动合并，ntuple 则需要 <code>SetNtupleMerging(true)</code>；RunAction 里的普通计数器只统计本线程的事例，所以本课程改用 <code>G4Accumulable</code>，由主线程汇总。</p>
       <div class="code">
         <div class="code-head"><span class="l"><b>Code microscope · RunAction::EndOfRunAction</b><span class="tag geant4">GEANT4</span></span></div>
 <pre>G4AccumulableManager::Instance()-&gt;<mark>Merge()</mark>;   <span class="c">// on the master: the sum over workers</span>
@@ -186,7 +186,7 @@ analysis-&gt;<mark>CloseFile()</mark>;                       <span class="c">// 
   </section>
 
   <section class="run" aria-labelledby="h-task">
-    <p class="cmd">/control/execute daq.mac<span lang="en">hands-on · Missions 8 and 8B</span><span lang="zh-Hans">动手任务 · 任务 8 与 8B</span></p>
+    <p class="cmd">/control/execute daq.mac<span lang="en">hands-on · Labs 8.1 and 8.2</span><span lang="zh-Hans">动手实验 · 实验 8.1 与 8.2</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Write one merged file, read it without Geant4, then push it through a second decoder.</span><span lang="zh-Hans">写出一个合并文件，不用 Geant4 读取它，再让它经过第二个解码器。</span></h2>
       <p lang="en">Expected outputs are from Geant4 11.4.p01 runs of these files (course test physics list, two threads). The trigger counts depend on the random sequence; compare in units of σ.</p>
@@ -227,7 +227,7 @@ endforeach()</pre></details>
 
 int main(int argc, char** argv)
 {
-  // Back to the textbook's Default run manager: multithreaded (or task-based).
+  // Back to the Default run manager: multithreaded (or task-based).
   auto* runManager =
     G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
   runManager-&gt;SetNumberOfThreads(2);   // must be set before Initialize()
@@ -481,13 +481,13 @@ void EventAction::EndOfEventAction(const G4Event* event)
   analysis-&gt;FillNtupleIColumn(1, 5, coinc ? 1 : 0);
   analysis-&gt;AddNtupleRow(1);
 }</pre></details>
-            <details><summary><b>daq.mac</b><button class="copy" type="button" data-copy="f8-mac">copy</button></summary><pre id="f8-mac" data-src="code/week08/daq.mac"># Mission 8: one merged ROOT file, two ntuples, 20 000 cos^2 muons on 2 threads
+            <details><summary><b>daq.mac</b><button class="copy" type="button" data-copy="f8-mac">copy</button></summary><pre id="f8-mac" data-src="code/week08/daq.mac"># Lab 8.1: one merged ROOT file, two ntuples, 20 000 cos^2 muons on 2 threads
 /control/verbose 1
 /run/verbose 1
 /week08/gun/model cos2
 /analysis/setFileName muons
 /run/beamOn 20000</pre></details>
-            <details><summary><b>read_muons.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f8-rd">copy</button></summary><pre id="f8-rd" data-src="code/week08/read_muons.py">"""Mission 8: read the merged ROOT file without Geant4 and redo the Week 5 numbers.
+            <details><summary><b>read_muons.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f8-rd">copy</button></summary><pre id="f8-rd" data-src="code/week08/read_muons.py">"""Lab 8.1: read the merged ROOT file without Geant4 and redo the Week 5 numbers.
 
 The file holds two trees: 'daq' (detector-facing, triggered events only) and
 'truth' (Monte Carlo truth, every event). Only column names connect this script
@@ -517,7 +517,7 @@ trig_daq = set(daq["event"].tolist())
 print(f"truth/daq event lists identical {trig_truth == trig_daq}")
 print(f"mean ADC, top / bottom          {daq['ch0_adc'].mean():.1f} / {daq['ch1_adc'].mean():.1f}")
 print(f"mean Edep top, triggered [MeV]  {truth['Edep0_MeV'][truth['triggered'] == 1].mean():.3f}")</pre></details>
-            <details><summary><b>parity.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f8-par">copy</button></summary><pre id="f8-par" data-src="code/week08/parity.py">"""Mission 8B: one analysis for simulation and hardware.
+            <details><summary><b>parity.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f8-par">copy</button></summary><pre id="f8-par" data-src="code/week08/parity.py">"""Lab 8.2: one analysis for simulation and hardware.
 
 A deliberately simple 'laboratory' binary format (one header + two channel records per
 event, little-endian) stands in for a real digitizer. The simulated ROOT 'daq' tree is
@@ -605,7 +605,7 @@ Run 0 complete: 20000 events (all threads)
           <p lang="zh-Hans">线程之间的分配每次运行都不同，但总数必须正好是 20,000。在我们的构建中 <code>Default</code> 变成了 <code>G4TaskRunManager</code>（Geant4 以 tasking 方式编译）；不带 tasking 时为 <code>G4MTRunManager</code>。两种情况代码都相同。</p>
         </li>
         <li>
-          <div class="step-head"><h3 class="bi"><span lang="en">Mission 8: read it with Python only</span><span lang="zh-Hans">任务 8：只用 Python 读取</span></h3><label class="done" for="w08-s3"><input type="checkbox" id="w08-s3" data-progress="w08"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="step-head"><h3 class="bi"><span lang="en">Lab 8.1: read it with Python only</span><span lang="zh-Hans">实验 8.1：只用 Python 读取</span></h3><label class="done" for="w08-s3"><input type="checkbox" id="w08-s3" data-progress="w08"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c8-py">copy</button></div>
 <pre id="c8-py">pip install uproot numpy
 python3 read_muons.py</pre></div>
@@ -621,7 +621,7 @@ mean Edep top, triggered [MeV]  1.979</pre></div>
           <p lang="zh-Hans">效率与 RunAction 打印值一致，事例列表逐一对应。这是对 Geant4 → ROOT → Python 翻译的端到端检查，并不验证物理或探测器模型；那要到第 11 周用独立数据来完成。</p>
         </li>
         <li>
-          <div class="step-head"><h3 class="bi"><span lang="en">Mission 8B: the same analysis through a second decoder</span><span lang="zh-Hans">任务 8B：同一分析经过第二个解码器</span></h3><label class="done" for="w08-s4"><input type="checkbox" id="w08-s4" data-progress="w08"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="step-head"><h3 class="bi"><span lang="en">Lab 8.2: the same analysis through a second decoder</span><span lang="zh-Hans">实验 8.2：同一分析经过第二个解码器</span></h3><label class="done" for="w08-s4"><input type="checkbox" id="w08-s4" data-progress="w08"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <p lang="en"><code>parity.py</code> writes the daq tree into a simple lab-style binary stream (header + two channel records per event), decodes it with a separate decoder, and runs one <code>analysis()</code> on both. Replace <code>write_binary</code> with your digitizer's real format document when you have it.</p>
           <p lang="zh-Hans"><code>parity.py</code> 把 daq 树写成一个简单的实验室式二进制流（每个事例一个包头加两条通道记录），用另一个解码器解码，再对两者运行同一个 <code>analysis()</code>。拿到你的数字化器的真实格式文档后，用它替换 <code>write_binary</code>。</p>
           <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
@@ -776,7 +776,7 @@ Filling in internal units (MeV for energy, mm for length, ns for time)
 
   <footer>
     <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
-    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 9 · Geant4 11.4.p01</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 9 章 · Geant4 11.4.p01</span>
+    <span lang="en">Source: Geant4 11.4.p01 (G4AnalysisManager, G4Accumulable) · ROOT / uproot · our own Geant4 runs</span><span lang="zh-Hans">来源：Geant4 11.4.p01（G4AnalysisManager、G4Accumulable）· ROOT / uproot · 我们自己的 Geant4 运行</span>
   </footer>
 </div>
 <script src="assets/course.js"></script>

@@ -10,7 +10,7 @@
 int main(int argc, char** argv)
 {
   // Week 2 runs single-threaded so /tracking/verbose output is not
-  // interleaved between worker threads. The textbook's main.cc uses
+  // interleaved between worker threads. The usual main() uses
   // G4RunManagerType::Default; we switch to it when we merge MT output.
   auto* runManager =
     G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);

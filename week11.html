@@ -52,7 +52,7 @@
       <p class="lede" lang="zh-Hans">你第 5 周计数器的六个副本，每个都有一行写错。大多数能编译、能运行，还能打印出看似合理的数字。你要按固定顺序走一棵决策树来找出它们，而不是靠猜。然后你把一个正常的模拟与 PDG 比较，会发现两个明显的“不一致”其实都是比较本身出了错。</p>
       <ul class="meta">
         <li class="stage"><b>5 · Trust it</b><span lang="en">stage · 信任</span><span lang="zh-Hans">阶段 · 信任</span></li>
-        <li><b>Missions 9–10</b><span lang="en">textbook ch. 13–14</span><span lang="zh-Hans">教材第 13–14 章</span></li>
+        <li><b>Labs 11.1–11.2</b><span lang="en">hands-on lab</span><span lang="zh-Hans">动手实验</span></li>
         <li><b>≈ 3 h</b><span lang="en">in groups</span><span lang="zh-Hans">分组进行</span></li>
       </ul>
     </div>
@@ -103,19 +103,19 @@
   </section>
 
   <section class="run" aria-labelledby="h-tree">
-    <p class="cmd">/tracking/verbose 1<span lang="en">13 · debugging is a tree</span><span lang="zh-Hans">13 · 调试是一棵树</span></p>
+    <p class="cmd">/tracking/verbose 1<span lang="en">11.1 · debugging is a tree</span><span lang="zh-Hans">11.1 · 调试是一棵树</span></p>
     <div class="prose">
       <h2 id="h-tree" class="bi"><span lang="en">Retrace the path you took to build the system, and find where it left your expectation.</span><span lang="zh-Hans">沿着搭建系统的路径倒走一遍，找出它在哪里偏离了你的预期。</span></h2>
 <!-- fig:svg-w11 -->
-<figure class="fig-svg"><svg viewBox="0 0 820 228" role="img" aria-label="The debugging tree as nine boxes from L0 statistics to L8 analysis"><defs><marker id="ah-tree" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="14" y="30" width="150" height="52" rx="3" class="s-neg" fill="none" stroke-width="1.3"/><text x="24" y="52" font-size="13">L0</text><text x="24" y="70" class="m" font-size="9.6" lang="en">beyond 2–3σ?</text><text x="24" y="70" class="m" font-size="9.6" lang="zh-Hans">超过 2–3σ？</text><line x1="165" y1="56" x2="173" y2="56" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="174" y="30" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="184" y="52" font-size="13">L1</text><text x="184" y="70" class="m" font-size="9.6" lang="en">particle generated?</text><text x="184" y="70" class="m" font-size="9.6" lang="zh-Hans">粒子产生了？</text><line x1="325" y1="56" x2="333" y2="56" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="334" y="30" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="344" y="52" font-size="13">L2</text><text x="344" y="70" class="m" font-size="9.6" lang="en">geometry correct?</text><text x="344" y="70" class="m" font-size="9.6" lang="zh-Hans">几何正确？</text><line x1="485" y1="56" x2="493" y2="56" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="494" y="30" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="504" y="52" font-size="13">L3</text><text x="504" y="70" class="m" font-size="9.6" lang="en">reached detector?</text><text x="504" y="70" class="m" font-size="9.6" lang="zh-Hans">进入探测器？</text><line x1="645" y1="56" x2="653" y2="56" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="654" y="30" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="664" y="52" font-size="13">L4</text><text x="664" y="70" class="m" font-size="9.6" lang="en">physics enabled?</text><text x="664" y="70" class="m" font-size="9.6" lang="zh-Hans">物理开启？</text><rect x="94" y="130" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="104" y="152" font-size="13">L5</text><text x="104" y="170" class="m" font-size="9.6" lang="en">SD attached?</text><text x="104" y="170" class="m" font-size="9.6" lang="zh-Hans">SD 挂上？</text><line x1="245" y1="156" x2="253" y2="156" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="254" y="130" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="264" y="152" font-size="13">L6</text><text x="264" y="170" class="m" font-size="9.6" lang="en">hit generated?</text><text x="264" y="170" class="m" font-size="9.6" lang="zh-Hans">产生击中？</text><line x1="405" y1="156" x2="413" y2="156" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="414" y="130" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="424" y="152" font-size="13">L7</text><text x="424" y="170" class="m" font-size="9.6" lang="en">data recorded?</text><text x="424" y="170" class="m" font-size="9.6" lang="zh-Hans">数据记录？</text><line x1="565" y1="156" x2="573" y2="156" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="574" y="130" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="584" y="152" font-size="13">L8</text><text x="584" y="170" class="m" font-size="9.6" lang="en">analysis correct?</text><text x="584" y="170" class="m" font-size="9.6" lang="zh-Hans">分析正确？</text><path d="M720 82 Q730 110 170 110 Q110 112 110 128" class="s-m" fill="none" stroke-width="1.2" marker-end="url(#ah-tree)"/><text x="20" y="214" class="m" font-size="11" lang="en">walk in this order every time; stop at the first layer whose evidence fails</text><text x="20" y="214" class="m" font-size="11" lang="zh-Hans">每次都按这个顺序走；在第一个证据不成立的层停下</text></svg><figcaption><span lang="en">Definition 13.1, with the statistics check (L0) added in front from the textbook's last pitfall.</span><span lang="zh-Hans">定义 13.1，并按教材最后一个陷阱在最前面加上了统计检查（L0）。</span></figcaption></figure>
+<figure class="fig-svg"><svg viewBox="0 0 820 228" role="img" aria-label="The debugging tree as nine boxes from L0 statistics to L8 analysis"><defs><marker id="ah-tree" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="14" y="30" width="150" height="52" rx="3" class="s-neg" fill="none" stroke-width="1.3"/><text x="24" y="52" font-size="13">L0</text><text x="24" y="70" class="m" font-size="9.6" lang="en">beyond 2–3σ?</text><text x="24" y="70" class="m" font-size="9.6" lang="zh-Hans">超过 2–3σ？</text><line x1="165" y1="56" x2="173" y2="56" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="174" y="30" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="184" y="52" font-size="13">L1</text><text x="184" y="70" class="m" font-size="9.6" lang="en">particle generated?</text><text x="184" y="70" class="m" font-size="9.6" lang="zh-Hans">粒子产生了？</text><line x1="325" y1="56" x2="333" y2="56" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="334" y="30" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="344" y="52" font-size="13">L2</text><text x="344" y="70" class="m" font-size="9.6" lang="en">geometry correct?</text><text x="344" y="70" class="m" font-size="9.6" lang="zh-Hans">几何正确？</text><line x1="485" y1="56" x2="493" y2="56" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="494" y="30" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="504" y="52" font-size="13">L3</text><text x="504" y="70" class="m" font-size="9.6" lang="en">reached detector?</text><text x="504" y="70" class="m" font-size="9.6" lang="zh-Hans">进入探测器？</text><line x1="645" y1="56" x2="653" y2="56" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="654" y="30" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="664" y="52" font-size="13">L4</text><text x="664" y="70" class="m" font-size="9.6" lang="en">physics enabled?</text><text x="664" y="70" class="m" font-size="9.6" lang="zh-Hans">物理开启？</text><rect x="94" y="130" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="104" y="152" font-size="13">L5</text><text x="104" y="170" class="m" font-size="9.6" lang="en">SD attached?</text><text x="104" y="170" class="m" font-size="9.6" lang="zh-Hans">SD 挂上？</text><line x1="245" y1="156" x2="253" y2="156" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="254" y="130" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="264" y="152" font-size="13">L6</text><text x="264" y="170" class="m" font-size="9.6" lang="en">hit generated?</text><text x="264" y="170" class="m" font-size="9.6" lang="zh-Hans">产生击中？</text><line x1="405" y1="156" x2="413" y2="156" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="414" y="130" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="424" y="152" font-size="13">L7</text><text x="424" y="170" class="m" font-size="9.6" lang="en">data recorded?</text><text x="424" y="170" class="m" font-size="9.6" lang="zh-Hans">数据记录？</text><line x1="565" y1="156" x2="573" y2="156" class="s-m" stroke-width="1.2" marker-end="url(#ah-tree)" fill="none"/><rect x="574" y="130" width="150" height="52" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="584" y="152" font-size="13">L8</text><text x="584" y="170" class="m" font-size="9.6" lang="en">analysis correct?</text><text x="584" y="170" class="m" font-size="9.6" lang="zh-Hans">分析正确？</text><path d="M720 82 Q730 110 170 110 Q110 112 110 128" class="s-m" fill="none" stroke-width="1.2" marker-end="url(#ah-tree)"/><text x="20" y="214" class="m" font-size="11" lang="en">walk in this order every time; stop at the first layer whose evidence fails</text><text x="20" y="214" class="m" font-size="11" lang="zh-Hans">每次都按这个顺序走；在第一个证据不成立的层停下</text></svg><figcaption><span lang="en">Definition 11.1, with a statistics check (L0) added in front.</span><span lang="zh-Hans">定义 11.1，并在最前面加上了统计检查（L0）。</span></figcaption></figure>
 <!-- /fig:svg-w11 -->
       <div class="box">
-        <p class="box-label">Definition 13.1 · <span lang="en">Debugging tree</span><span lang="zh-Hans">调试决策树</span></p>
+        <p class="box-label">Definition 11.1 · <span lang="en">Debugging tree</span><span lang="zh-Hans">调试决策树</span></p>
         <p lang="en">A causally ordered checklist that narrows a vague symptom to one code-level culprit: generated? → geometry? → entered the detector? → physics enabled? → sensitive detector attached? → hit generated? → data recorded? → analysis correct? Investigate in the same order every time. That fixed order is what makes debugging a skill you can transfer to the next project.</p>
         <p lang="zh-Hans">一份按因果排序的检查清单，把模糊的症状收窄到代码中的某一处：产生了吗？→ 几何对吗？→ 进入探测器了吗？→ 物理过程开了吗？→ 灵敏探测器挂上了吗？→ 产生击中了吗？→ 数据记录了吗？→ 分析对吗？每次都按同样的顺序排查。正是这个固定顺序，让调试成为能带到下一个项目的技能。</p>
       </div>
-      <p lang="en">We add a layer 0 in front, taken from the textbook's last pitfall: is the deviation beyond 2–3σ at all? It costs one line of arithmetic and, in our fault lab, it would have saved one of the six investigations. Each layer has a cheap test:</p>
-      <p lang="zh-Hans">我们在最前面加了第 0 层，取自教材的最后一个陷阱：偏差到底有没有超过 2–3σ？只需一行算术，在我们的故障实验里它能省掉六次排查中的一次。每一层都有一个低成本的检查：</p>
+      <p lang="en">We add a layer 0 in front: is the deviation beyond 2–3σ at all? A difference inside the combined uncertainty is not evidence of a bug. Checking it costs one line of arithmetic and, in our fault lab, it would have saved one of the six investigations. Each layer has a cheap test:</p>
+      <p lang="zh-Hans">我们在最前面加了第 0 层：偏差到底有没有超过 2–3σ？落在合成不确定度之内的差别并不是 bug 的证据。检查它只需一行算术，在我们的故障实验里它能省掉六次排查中的一次。每一层都有一个低成本的检查：</p>
       <div class="scroll"><table class="tbl">
         <thead><tr><th>layer</th><th><span lang="en">cheap test</span><span lang="zh-Hans">低成本检查</span></th><th><span lang="en">what it looked like in our runs</span><span lang="zh-Hans">在我们的运行中是什么样</span></th></tr></thead>
         <tbody>
@@ -129,8 +129,8 @@
       </table></div>
       <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W11-a
-      issued by : textbook 13.1, Fault 1 "FIXED"
-The fix sets SetParticlePosition(0, 0, -1 m) in a 1 m world, whose
+      issued by : fault lab, Fault 1, the obvious "fix"
+The obvious fix sets SetParticlePosition(0, 0, -1 m) in a 1 m world, whose
   half-length is 0.5 m: still outside. Geant4 11.4 does not stop it.
   In our fault-1 run a vertex 30 cm outside the world was located
   "in World" and transported through air that does not exist. The
@@ -140,8 +140,8 @@ The fix sets SetParticlePosition(0, 0, -1 m) in a 1 m world, whose
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
       <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W11-a
-      issued by : 教材 13.1 节，故障 1 的“修正版”
-修正版用 SetParticlePosition(0, 0, -1 m)，而 1 m 的 world 半长只有
+      issued by : 故障实验，故障 1 的“显而易见的修正”
+显而易见的修正用 SetParticlePosition(0, 0, -1 m)，而 1 m 的 world 半长只有
   0.5 m：仍在外面。Geant4 11.4 不会阻止它。在我们的 fault-1 运行中，
   world 外 30 cm 处的顶点被定位为“在 World 中”，缪子穿过了并不存在
   的空气。竖直束流的效率纹丝不动（0.1079 对 0.1095），cos2 效率却减
@@ -150,9 +150,9 @@ The fix sets SetParticlePosition(0, 0, -1 m) in a 1 m world, whose
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
       <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W11-b
-      issued by : textbook 13.1, Fault 2 and Fault 3
-Fault 2's "FIXED" ProcessHits still applies the threshold to each STEP,
-  which Chapter 6 forbids: efficiency then depends on how Geant4 splits
+      issued by : fault lab, Fault 2 and Fault 3
+A tempting "fix" for Fault 2 keeps the threshold in ProcessHits, on each
+  STEP, which Week 5 forbids: efficiency then depends on how Geant4 splits
   the track. The real fix is no threshold in ProcessHits; threshold the
   event sum in EventAction (fault-2 below inverts exactly that line).
 Fault 3 is not silent in Geant4 11.4: SetSensitiveDetector("counter")
@@ -162,8 +162,8 @@ Fault 3 is not silent in Geant4 11.4: SetSensitiveDetector("counter")
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
       <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W11-b
-      issued by : 教材 13.1 节，故障 2 与故障 3
-故障 2 的“修正版” ProcessHits 仍对每一“步”加阈值，这正是第 6 章禁止
+      issued by : 故障实验，故障 2 与故障 3
+故障 2 的一种诱人“修正”仍在 ProcessHits 里对每一“步”加阈值，这正是第 5 周禁止
   的：效率会依赖 Geant4 如何切分径迹。真正的修正是 ProcessHits 里不加
   阈值，在 EventAction 中对事例总和加阈值（下面的 fault-2 正是把那一行
   写反了）。
@@ -172,7 +172,7 @@ Fault 3 is not silent in Geant4 11.4: SetSensitiveDetector("counter")
   存在但错误的体积上。
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
-      <h3 class="bi"><span lang="en">13.2 · AI-assisted debugging: delegate syntax, keep the physics</span><span lang="zh-Hans">13.2 · AI 辅助调试：语法可以交出去，物理留给自己</span></h3>
+      <h3 class="bi"><span lang="en">11.2 · AI-assisted debugging: delegate syntax, keep the physics</span><span lang="zh-Hans">11.2 · AI 辅助调试：语法可以交出去，物理留给自己</span></h3>
       <p lang="en">An assistant (Claude, Gemini, DeepSeek) is a fast way to navigate the Geant4 API if you give it evidence, not "my code is broken". Ask for hypotheses you can test, and keep the decisions about what a hit is, which units, thread safety and validation for yourself. "It compiles" is never the acceptance criterion: require a minimal diff, a smoke test, a numerical sanity check and a comparison with an independent expectation. Never paste credentials, unpublished collaboration data or proprietary code into an external service.</p>
       <p lang="zh-Hans">如果你给 AI 助手（Claude、Gemini、DeepSeek）的是证据而不是“我的代码坏了”，它是浏览 Geant4 API 的快捷方式。请它提出你能检验的假设；什么算击中、用什么单位、是否线程安全、怎样验证，这些决定留给自己。“能编译”永远不是验收标准：要求最小改动、冒烟测试、数值合理性检查，以及与独立预期的比较。绝不要把凭据、未发表的合作组数据或专有代码贴进外部服务。</p>
 <pre>I am debugging Geant4 11.4.1 on Linux with CMake.
@@ -188,33 +188,33 @@ Please: 1. the most likely root cause and the evidence for it; 2. the Geant4 rul
   </section>
 
   <section class="run" aria-labelledby="h-valid">
-    <p class="cmd">discrepancy_sigma()<span lang="en">14 · what counts as validated</span><span lang="zh-Hans">14 · 什么才算“验证”</span></p>
+    <p class="cmd">discrepancy_sigma()<span lang="en">11.3 · what counts as validated</span><span lang="zh-Hans">11.3 · 什么才算“验证”</span></p>
     <div class="prose">
       <h2 id="h-valid" class="bi"><span lang="en">A simulation producing a number is not the same as that number being trustworthy.</span><span lang="zh-Hans">模拟算出一个数，不等于这个数值得信任。</span></h2>
       <div class="box">
-        <p class="box-label">Definition 14.1 · <span lang="en">Levels of validation</span><span lang="zh-Hans">验证的层级</span></p>
+        <p class="box-label">Definition 11.2 · <span lang="en">Levels of validation</span><span lang="zh-Hans">验证的层级</span></p>
         <p lang="en">1 executable: runs and produces a defined observable. 2 sanity checked: units, conservation, limiting cases, geometry, numerical stability. 3 physics benchmarked: compared with an analytic result or established reference over a defined domain. 4 detector benchmarked: detector response compared with independent measurements. 5 predictively validated: reproduces an observable not used to tune it. 6 domain qualified: remaining assumptions, uncertainties and failure modes documented. A result can pass one rung and fail the next. Use this ladder instead of "fully validated".</p>
         <p lang="zh-Hans">1 可执行：能运行并给出定义明确的可观测量。2 完整性检查：单位、守恒、极限情形、几何、数值稳定性。3 物理基准：在限定范围内与解析结果或公认参考比较。4 探测器基准：探测器响应与独立测量比较。5 预测性验证：重现未用于调参的可观测量。6 领域限定：剩余假设、不确定度和失效模式均有记录。一个结果可以通过某一阶而在下一阶失败。用这个阶梯代替“完全验证”。</p>
       </div>
-      <p lang="en">The comparison itself is one line: |sim − ref| / √(σ_sim² + σ_ref,stat² + σ_ref,sys²). It never compares two numbers directly, only their difference in units of combined uncertainty. It also assumes that sim and ref are the same quantity, and that is where both of our Mission 10 "discrepancies" came from.</p>
-      <p lang="zh-Hans">比较本身只有一行：|sim − ref| / √(σ_sim² + σ_ref,stat² + σ_ref,sys²)。它从不直接比较两个数，只比较它们的差相对于合成不确定度有多大。它还默认 sim 和 ref 是同一个量，而我们任务 10 中的两个“不一致”都出在这里。</p>
+      <p lang="en">The comparison itself is one line: |sim − ref| / √(σ_sim² + σ_ref,stat² + σ_ref,sys²). It never compares two numbers directly, only their difference in units of combined uncertainty. It also assumes that sim and ref are the same quantity, and that is where both of our Lab 11.2 "discrepancies" came from.</p>
+      <p lang="zh-Hans">比较本身只有一行：|sim − ref| / √(σ_sim² + σ_ref,stat² + σ_ref,sys²)。它从不直接比较两个数，只比较它们的差相对于合成不确定度有多大。它还默认 sim 和 ref 是同一个量，而我们实验 11.2 中的两个“不一致”都出在这里。</p>
       <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W11-c
-      issued by : textbook 14.1, compare_to_reference.py
-The listing's numbers (1.94 +/- 0.03 vs 1.98 MeV/cm) are marked
-  ILLUSTRATIVE and in MeV/cm. A PDG table is in MeV cm2/g: multiply by
-  the density (1.032 g/cm3 for polyvinyltoluene) before comparing.
-  Before any sigma, confirm the two numbers describe the same
-  quantity: entrance energy or path average, full mean or truncated.
+      issued by : compare_to_reference.py, any version
+Geant4 output such as 1.94 +/- 0.03 MeV/cm is per unit length. A PDG
+  table is in MeV cm2/g: multiply by the density (1.032 g/cm3 for
+  polyvinyltoluene) before comparing. Before any sigma, confirm the
+  two numbers describe the same quantity: entrance energy or path
+  average, full mean or truncated.
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
       <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W11-c
-      issued by : 教材 14.1 节，compare_to_reference.py
-程序中的数值（1.94 +/- 0.03 对 1.98 MeV/cm）标明为“仅作示意”，单位
-  是 MeV/cm。PDG 表的单位是 MeV cm2/g：比较前先乘以密度（聚乙烯基甲苯
-  为 1.032 g/cm3）。算任何 sigma 之前，先确认两个数描述的是同一个量：
-  入射能量处还是路径平均，完整均值还是截断均值。
+      issued by : compare_to_reference.py（任何版本）
+像 1.94 +/- 0.03 MeV/cm 这样的 Geant4 输出是单位长度上的量。PDG 表
+  的单位是 MeV cm2/g：比较前先乘以密度（聚乙烯基甲苯为 1.032 g/cm3）。
+  算任何 sigma 之前，先确认两个数描述的是同一个量：入射能量处还是路径
+  平均，完整均值还是截断均值。
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
     </div>
@@ -237,7 +237,7 @@ The listing's numbers (1.94 +/- 0.03 vs 1.98 MeV/cm) are marked
         <button type="button" id="w11-p-path"><span lang="en">… vs path average</span><span lang="zh-Hans">… 对路径平均</span></button>
         <button type="button" id="w11-p-trunc"><span lang="en">10 GeV, truncated</span><span lang="zh-Hans">10 GeV，截断</span></button>
         <button type="button" id="w11-p-wide"><span lang="en">10 GeV, full range</span><span lang="zh-Hans">10 GeV，全范围</span></button>
-        <button type="button" id="w11-p-book"><span lang="en">textbook (illustrative)</span><span lang="zh-Hans">教材（示意）</span></button>
+        <button type="button" id="w11-p-book"><span lang="en">illustrative example</span><span lang="zh-Hans">示意例子</span></button>
       </div>
       <div class="controls" style="border-top:0">
         <div class="w11-num">
@@ -252,22 +252,22 @@ The listing's numbers (1.94 +/- 0.03 vs 1.98 MeV/cm) are marked
       <div class="panels one"><div><div class="verbose"><pre id="w11-out"></pre></div></div></div>
       <div class="toybox">
         <p><b><span lang="en">What this is and is not</span><span lang="zh-Hans">它是什么、不是什么</span></b></p>
-        <p lang="en">The walker is not a simulation: it replays our recorded runs (course test physics list, Geant4 11.4.p01). The calculator is the textbook's discrepancy_sigma(). The 1% reference uncertainty is our assumption for the PDG table (mostly the mean excitation energy); PDG does not quote one. The ladder logic only counts rungs climbed in order. It cannot tell whether you deserved the tick.</p>
-        <p lang="zh-Hans">这个决策树演练器不是模拟：它回放的是我们记录下来的运行（课程测试物理列表，Geant4 11.4.p01）。计算器就是教材的 discrepancy_sigma()。PDG 表 1% 的参考不确定度是我们的假设（主要来自平均激发能），PDG 并未给出。阶梯逻辑只认按顺序爬上的阶，它无法判断你勾选得是否应当。</p>
+        <p lang="en">The walker is not a simulation: it replays our recorded runs (course test physics list, Geant4 11.4.p01). The calculator is discrepancy_sigma() from validate_dedx.py in Lab 11.2 below. The 1% reference uncertainty is our assumption for the PDG table (mostly the mean excitation energy); PDG does not quote one. The ladder logic only counts rungs climbed in order. It cannot tell whether you deserved the tick.</p>
+        <p lang="zh-Hans">这个决策树演练器不是模拟：它回放的是我们记录下来的运行（课程测试物理列表，Geant4 11.4.p01）。计算器就是下面实验 11.2 中 validate_dedx.py 里的 discrepancy_sigma()。PDG 表 1% 的参考不确定度是我们的假设（主要来自平均激发能），PDG 并未给出。阶梯逻辑只认按顺序爬上的阶，它无法判断你勾选得是否应当。</p>
       </div>
     </div>
   </section>
 
   <section class="run" aria-labelledby="h-task">
-    <p class="cmd">bash make_faults.sh<span lang="en">hands-on · Missions 9 and 10</span><span lang="zh-Hans">动手任务 · 任务 9 与 10</span></p>
+    <p class="cmd">bash make_faults.sh<span lang="en">hands-on · Labs 11.1 and 11.2</span><span lang="zh-Hans">动手实验 · 实验 11.1 与 11.2</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Diagnose six broken copies of your own counter, then benchmark one working simulation.</span><span lang="zh-Hans">诊断你自己计数器的六个坏副本，再为一个正常的模拟做基准比较。</span></h2>
       <ol class="steps">
         <li>
-          <div class="step-head"><h3 class="bi"><span lang="en">Instructor: build the fault lab</span><span lang="zh-Hans">教师：搭建故障实验室</span></h3><label class="done" for="w11-s1"><input type="checkbox" id="w11-s1" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="step-head"><h3 class="bi"><span lang="en">Lab 11.1: instructor builds the fault lab</span><span lang="zh-Hans">实验 11.1：教师搭建故障实验室</span></h3><label class="done" for="w11-s1"><input type="checkbox" id="w11-s1" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="files">
             <details><summary><b>make_faults.sh</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f11-mf">copy</button></summary><pre id="f11-mf" data-src="code/week11/make_faults.sh">#!/bin/bash
-# make_faults.sh -- Mission 9 for instructors: turn the working week05 counter into a repository
+# make_faults.sh -- Lab 11.1 for instructors: turn the working week05 counter into a repository
 # with one deliberately broken simulation per branch. Each fault is ONE line, compiles, and runs.
 # Usage: bash make_faults.sh path/to/week05  faultlab
 #        cd faultlab &amp;&amp; git branch          # main, fault-1 ... fault-6
@@ -349,9 +349,9 @@ fault-6   0     0.1250 ± 0.0234   0.0250 ± 0.0110   0.0050 ± 0.0050   nothing
           <p lang="zh-Hans">六个中有五个正常退出。只有一个打印错误，另有一个打印的警告被埋在约 24 万行物理表输出的上方。评分看排查过程而不是修复：症状、所在层、排除其上每一层的证据，以及一句下次能给同学参考的话。</p>
         </li>
         <li>
-          <div class="step-head"><h3 class="bi"><span lang="en">Mission 10: compare Geant4 with the PDG table, naively first</span><span lang="zh-Hans">任务 10：把 Geant4 与 PDG 表比较，先用天真的方法</span></h3><label class="done" for="w11-s3"><input type="checkbox" id="w11-s3" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="step-head"><h3 class="bi"><span lang="en">Lab 11.2: compare Geant4 with the PDG table, naively first</span><span lang="zh-Hans">实验 11.2：把 Geant4 与 PDG 表比较，先用天真的方法</span></h3><label class="done" for="w11-s3"><input type="checkbox" id="w11-s3" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="files">
-            <details><summary><b>validate_dedx.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f11-vd">copy</button></summary><pre id="f11-vd" data-src="code/week11/validate_dedx.py">"""validate_dedx.py -- Mission 10: compare Geant4's mean muon energy loss in plastic scintillator
+            <details><summary><b>validate_dedx.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f11-vd">copy</button></summary><pre id="f11-vd" data-src="code/week11/validate_dedx.py">"""validate_dedx.py -- Lab 11.2: compare Geant4's mean muon energy loss in plastic scintillator
 with the PDG muon table, and say which rung of the validation ladder that comparison reaches.
 
 Input: edep_&lt;T&gt;MeV*.root files from the week04 app (10 cm of G4_PLASTIC_SC_VINYLTOLUENE), whose
@@ -446,13 +446,13 @@ T =   1000 MeV  Geant4 2.1193 +/- 0.0063 MeV/cm | PDG at entry 2.1331, path-aver
            REFUSED: 6 of 10000 entries outside the histogram range; this mean is truncated. Widen the range (/analysis/h1/set) and rerun.
 T =  10000 MeV  Geant4 2.2340 +/- 0.0085 MeV/cm | PDG at entry 2.5232, path-averaged 2.5230 (exits at 9974.8 MeV)
            REFUSED: 99 of 10000 entries outside the histogram range; this mean is truncated. Widen the range (/analysis/h1/set) and rerun.</pre></div>
-          <p lang="en">At 100 MeV the muon leaves the 10 cm slab at 76 MeV, where the stopping power is higher, so the right reference is the PDG table integrated along the path. At 10 GeV the textbook's 0–10 MeV/cm histogram drops the 1% of events with large δ-ray losses. ROOT-style histogram statistics ignore overflow, so its mean is a truncated mean, and the PDG mean includes exactly that tail.</p>
-          <p lang="zh-Hans">在 100 MeV，缪子离开 10 cm 厚的板时只剩 76 MeV，那里的阻止本领更大，所以正确的参考是沿路径积分的 PDG 表。在 10 GeV，教材 0–10 MeV/cm 的直方图丢掉了 1% 带有大 δ 电子损失的事例。ROOT 式的直方图统计忽略溢出，所以它的均值是截断均值，而 PDG 均值恰恰包含这条尾巴。</p>
+          <p lang="en">At 100 MeV the muon leaves the 10 cm slab at 76 MeV, where the stopping power is higher, so the right reference is the PDG table integrated along the path. At 10 GeV the week04 app's 0–10 MeV/cm histogram drops the 1% of events with large δ-ray losses. ROOT-style histogram statistics ignore overflow, so its mean is a truncated mean, and the PDG mean includes exactly that tail.</p>
+          <p lang="zh-Hans">在 100 MeV，缪子离开 10 cm 厚的板时只剩 76 MeV，那里的阻止本领更大，所以正确的参考是沿路径积分的 PDG 表。在 10 GeV，week04 程序 0–10 MeV/cm 的直方图丢掉了 1% 带有大 δ 电子损失的事例。ROOT 式的直方图统计忽略溢出，所以它的均值是截断均值，而 PDG 均值恰恰包含这条尾巴。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Rerun with a histogram wide enough for a mean</span><span lang="zh-Hans">用宽到足以求均值的直方图重跑</span></h3><label class="done" for="w11-s4"><input type="checkbox" id="w11-s4" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="files">
-            <details><summary><b>validate.mac</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f11-vm">copy</button></summary><pre id="f11-vm" data-src="code/week11/validate.mac"># validate.mac -- Mission 10: rerun the Week 4 scan with a histogram wide enough for the mean.
+            <details><summary><b>validate.mac</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f11-vm">copy</button></summary><pre id="f11-vm" data-src="code/week11/validate.mac"># validate.mac -- Lab 11.2: rerun the Week 4 scan with a histogram wide enough for the mean.
 # Run with the week04 executable:  ./week04 validate.mac
 # 0-1000 MeV/cm: nothing overflows, so the histogram mean is the true mean (ROOT-style histogram
 # statistics ignore under/overflow entries).
@@ -500,8 +500,8 @@ Ladder: physics benchmarked against a calculated table over 10 cm of plastic. No
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Place it on the ladder, then name the next rung</span><span lang="zh-Hans">放到阶梯上，再说出下一阶</span></h3><label class="done" for="w11-s5"><input type="checkbox" id="w11-s5" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
-          <p lang="en">Agreement with a calculated table over 100 MeV–10 GeV in 10 cm of plastic is rung 3, physics benchmarked. Rung 4 needs a measurement: a published cosmic-muon spectrum from a counter of known thickness, with its threshold and trigger efficiency. For Mission 10 proper, choose such a paper. Extract geometry, material, energy spectrum, the measured value and both of its uncertainties. Report the discrepancy in σ and the unreproduced experimental detail most likely to explain any gap.</p>
-          <p lang="zh-Hans">在 100 MeV–10 GeV、10 cm 塑料范围内与计算数据表一致，属于第 3 阶：物理基准。第 4 阶需要测量数据：已发表的、厚度已知的计数器所测的宇宙线缪子能谱，以及其阈值和触发效率。正式的任务 10 请选这样一篇论文。提取几何、材料、能谱、测量值及其两类不确定度。以 σ 报告偏差，并指出最可能解释差距的、未能复现的实验细节。</p>
+          <p lang="en">Agreement with a calculated table over 100 MeV–10 GeV in 10 cm of plastic is rung 3, physics benchmarked. Rung 4 needs a measurement: a published cosmic-muon spectrum from a counter of known thickness, with its threshold and trigger efficiency. For the full Lab 11.2, choose such a paper. Extract geometry, material, energy spectrum, the measured value and both of its uncertainties. Report the discrepancy in σ and the unreproduced experimental detail most likely to explain any gap.</p>
+          <p lang="zh-Hans">在 100 MeV–10 GeV、10 cm 塑料范围内与计算数据表一致，属于第 3 阶：物理基准。第 4 阶需要测量数据：已发表的、厚度已知的计数器所测的宇宙线缪子能谱，以及其阈值和触发效率。完整的实验 11.2 请选这样一篇论文。提取几何、材料、能谱、测量值及其两类不确定度。以 σ 报告偏差，并指出最可能解释差距的、未能复现的实验细节。</p>
         </li>
       </ol>
       <p class="progress" data-progress-out="w11"></p>
@@ -555,7 +555,7 @@ Testing with the one beam that cannot see the fault. fault-1 and
       issued by : validation
 "Roughly similar" reported as agreement, or "disagrees" reported as a
   physics failure, with no uncertainty and no check that the two
-  numbers are the same quantity. Both of our Mission 10 outliers were
+  numbers are the same quantity. Both of our Lab 11.2 outliers were
   comparison errors, not physics.
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
@@ -563,7 +563,7 @@ Testing with the one beam that cannot see the fault. fault-1 and
 *** G4Exception : Course-W11-f
       issued by : 验证
 把“大致相近”报成一致，或把“不一致”报成物理失败，却既没有不确定度，
-  也没确认两个数是同一个量。我们任务 10 的两个离群点都是比较出错，
+  也没确认两个数是同一个量。我们实验 11.2 的两个离群点都是比较出错，
   不是物理问题。
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
@@ -625,7 +625,7 @@ An agent's patch accepted because it compiles. A generated singleton,
 
   <footer>
     <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
-    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 13–14 · PDG 2024 muon table for polyvinyltoluene · Geant4 11.4 source</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 13–14 章 · PDG 2024 聚乙烯基甲苯缪子表 · Geant4 11.4 源码</span>
+    <span lang="en">Source: PDG RPP 2024 muon table for polyvinyltoluene · Geant4 11.4 source · our own Geant4 runs</span><span lang="zh-Hans">来源：PDG RPP 2024 聚乙烯基甲苯缪子表 · Geant4 11.4 源码 · 我们自己的 Geant4 运行</span>
   </footer>
 </div>
 <script src="assets/course.js"></script>

@@ -1,3 +1,3 @@
-# Mission 1, run 1: one 1 GeV mu- with the step table switched on
+# Lab 2, run 1: one 1 GeV mu- with the step table switched on
 /tracking/verbose 1
 /run/beamOn 1

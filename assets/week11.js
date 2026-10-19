@@ -1,8 +1,8 @@
-/* Week 11 — debugging-tree walker and validation-ladder calculator (textbook Ch. 13–14).
+/* Week 11 — debugging-tree walker and validation-ladder calculator.
    Not a simulation: every report and every piece of evidence below is copied from our Geant4
    11.4.p01 runs of the six fault-lab branches (make_faults.sh applied to the week05 counter,
-   course test physics list), lightly trimmed. The calculator is the textbook's
-   discrepancy_sigma() with the Definition 14.1 ladder. */
+   course test physics list), lightly trimmed. The calculator is discrepancy_sigma()
+   from validate_dedx.py with the Definition 11.2 ladder. */
 (function () {
   'use strict';
   var G = window.G4C;
@@ -45,7 +45,7 @@
     { name: 'fault-3', broken: 5,
       report: '*** G4Exception : Run0053\n      issued by : G4VUserDetectorConstruction::SetSensitiveDetector()\nNo logical volume of name <counter> is found. The specified sensitive\ndetector <MuonSD> couldn\'t be assigned to any volume.\n*** Fatal Error In Argument *** core dump ***',
       ev: { 5: 'DetectorConstruction.cc: SetSensitiveDetector("counter", muonSD)\nlogical volume created as "Counter"' },
-      why: { en: 'Lower-case "counter" matches no logical volume. The textbook calls this fault silent; in Geant4 11.4 it is a fatal exception at initialisation, so read the message before anything else. The silent version today is attaching the detector to the wrong volume that does exist.', zh: '小写的 "counter" 找不到对应的逻辑体。教材说这个故障是无声的；在 Geant4 11.4 中它在初始化时就是致命异常，所以先读报错信息。如今真正无声的版本，是把探测器挂到一个确实存在但错误的体积上。' } },
+      why: { en: 'Lower-case "counter" matches no logical volume. You might expect this typo to fail silently; in Geant4 11.4 it is a fatal exception at initialisation, so read the message before anything else. The silent version today is attaching the detector to the wrong volume that does exist.', zh: '小写的 "counter" 找不到对应的逻辑体。你可能以为这个拼写错误会无声地失败；在 Geant4 11.4 中它在初始化时就是致命异常，所以先读报错信息。如今真正无声的版本，是把探测器挂到一个确实存在但错误的体积上。' } },
     { name: 'fault-4', broken: 4,
       report: 'vertical  top fired 0   bottom fired 0   trigger 0\ncos2      top fired 0   bottom fired 0   trigger 0\ncos2_noise trigger 52 (eff 0.0026)\n"The new list is much faster."',
       ev: { 0: '0 out of 20000 where main has 2191: not a fluctuation.',
@@ -136,7 +136,7 @@
       a: 1, why: { en: 'The tree runs in causal order: no particle, nothing downstream can work. One /tracking/verbose 1 event answers it in seconds.', zh: '决策树按因果顺序排列：没有粒子，下游什么都不可能对。一个 /tracking/verbose 1 事例几秒钟就能回答。' } },
     { prompt: { en: 'In Geant4 11.4 the source sits 30 cm outside the world box, aimed inwards. What happens?', zh: '在 Geant4 11.4 中，源位于 world 盒外 30 cm 处并朝内发射，会发生什么？' },
       opts: [{ en: 'Fatal exception Tracking0010', zh: '致命异常 Tracking0010' }, { en: 'The muon is transported through 30 cm of air that does not exist, with no warning', zh: '缪子被输运穿过 30 cm 并不存在的空气，没有任何警告' }, { en: 'Zero tracks', zh: '零条径迹' }, { en: 'The world grows automatically', zh: 'world 自动变大' }],
-      a: 1, why: { en: 'Our fault-1 trace: Step 0 at z = −800 mm, NextVolume World, world half-length 500 mm. Only the cos² acceptance changed (0.0127 → 0.0060). The textbook\'s "fixed" gun at −1 m in a 1 m world is the same accident.', zh: '我们的 fault-1 径迹：第 0 步在 z = −800 mm，NextVolume 为 World，而 world 半长 500 mm。只有 cos² 接受度变了（0.0127 → 0.0060）。教材中“修好的”枪放在 1 m world 的 −1 m 处，是同一个意外。' } },
+      a: 1, why: { en: 'Our fault-1 trace: Step 0 at z = −800 mm, NextVolume World, world half-length 500 mm. Only the cos² acceptance changed (0.0127 → 0.0060). The obvious "fix", a gun at −1 m in a 1 m world, is the same accident.', zh: '我们的 fault-1 径迹：第 0 步在 z = −800 mm，NextVolume 为 World，而 world 半长 500 mm。只有 cos² 接受度变了（0.0127 → 0.0060）。显而易见的“修正”——把枪放在 1 m world 的 −1 m 处——是同一个意外。' } },
     { prompt: { en: 'Your efficiency is 0.125 ± 0.023; yesterday\'s was 0.1095 ± 0.0022. Bug?', zh: '你的效率是 0.125 ± 0.023，昨天是 0.1095 ± 0.0022。有 bug 吗？' },
       opts: [{ en: 'Yes: 14% is a big change', zh: '有：14% 变化很大' }, { en: 'No evidence of one: 0.7σ', zh: '没有证据：只有 0.7σ' }, { en: 'Yes: the error bars differ', zh: '有：误差棒不一样' }, { en: 'Cannot tell without the source', zh: '不看源码无法判断' }],
       a: 1, why: { en: '(0.125 − 0.1095)/0.023 = 0.7σ. The error bar is ten times larger because the run had 200 events (fault-6). Ask the statistics question before reading code.', zh: '(0.125 − 0.1095)/0.023 = 0.7σ。误差棒大了十倍，因为这次运行只有 200 个事例（fault-6）。读代码之前先问统计问题。' } },

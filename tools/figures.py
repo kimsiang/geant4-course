@@ -61,8 +61,8 @@ EVD = {
     "w07": (
         ("Six points, one bend, one momentum.", "六个点、一次弯折、一个动量。"),
         "3D replay of Geant4 spectrometer events: a muon crosses three silicon planes, bends in a 1.5 tesla magnet, crosses three more planes; the momentum is reconstructed from the six crossing points",
-        ("<b>GEANT4 11.4 DATA.</b> μ⁻ from our spectrometer runs at 1, 2, 5, 10 and 20 GeV/c. The six yellow points are the plane crossings Geant4 recorded; the path between them, and inside the magnet, is interpolated for drawing. The display reconstructs p from the six points with the two-line method of Eq. (8.1). At 20 GeV/c the deflection is only 22 mrad, which is why the resolution degrades with momentum.",
-         "<b>GEANT4 11.4 数据。</b>取自我们 1、2、5、10、20 GeV/c 的谱仪运行的 μ⁻。六个黄点是 Geant4 记录的平面穿越点；它们之间以及磁铁内部的路径为绘图插值。显示屏用式 (8.1) 的两直线法由六个点重建 p。20 GeV/c 时偏转角只有 22 mrad，这就是分辨率随动量变差的原因。"),
+        ("<b>GEANT4 11.4 DATA.</b> μ⁻ from our spectrometer runs at 1, 2, 5, 10 and 20 GeV/c. The six yellow points are the plane crossings Geant4 recorded; the path between them, and inside the magnet, is interpolated for drawing. The display reconstructs p from the six points with the two-line method of Eq. (7.1). At 20 GeV/c the deflection is only 22 mrad, which is why the resolution degrades with momentum.",
+         "<b>GEANT4 11.4 数据。</b>取自我们 1、2、5、10、20 GeV/c 的谱仪运行的 μ⁻。六个黄点是 Geant4 记录的平面穿越点；它们之间以及磁铁内部的路径为绘图插值。显示屏用式 (7.1) 的两直线法由六个点重建 p。20 GeV/c 时偏转角只有 22 mrad，这就是分辨率随动量变差的原因。"),
     ),
     "w10": (
         ("Watch the spin turn, then see where the positron goes.", "看自旋转动，再看正电子飞向哪里。"),

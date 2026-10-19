@@ -1,4 +1,4 @@
-# Mission 1: change the gun from the macro, no recompilation
+# Lab 2: change the gun from the macro, no recompilation
 /tracking/verbose 1
 /gun/particle proton
 /run/beamOn 1

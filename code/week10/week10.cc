@@ -1,4 +1,4 @@
-// Week 10: transverse-field muSR in plain Geant4 11.4, using the geometry of the textbook's tf_musr.mac.
+// Week 10: transverse-field muSR in plain Geant4 11.4, using the geometry of tf_musr.mac.
 // Usage:  ./week10 tf.mac            spin-aware muon decay (the physics a muSR study needs)
 //         ./week10 tf.mac nospin     stock decay only: what an application gets if nobody adds spin
 #include "ActionInitialization.hh"

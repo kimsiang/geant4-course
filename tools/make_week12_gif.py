@@ -1,4 +1,4 @@
-"""Render media/week12-journey.gif: the textbook's section 16.2 chain, each step tagged with the
+"""Render media/week12-journey.gif: the question-to-defence chain of Week 12, each step tagged with the
 week that taught it, ending in RESEARCH and the core principle. Bottom panel: our real
 reproducibility check of the Week 10 headline (same macro, three runs on two threads).
 Usage: python3 tools/make_week12_gif.py

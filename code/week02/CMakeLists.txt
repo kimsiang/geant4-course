@@ -15,6 +15,6 @@ target_include_directories(week02 PRIVATE include)
 target_link_libraries(week02 PRIVATE ${Geant4_LIBRARIES})
 
 # copy the macros next to the executable
-foreach(_mac run1.mac mission1.mac outward.mac pion.mac vis.mac)
+foreach(_mac run1.mac gun.mac outward.mac pion.mac vis.mac)
   configure_file(${PROJECT_SOURCE_DIR}/${_mac} ${PROJECT_BINARY_DIR}/${_mac} COPYONLY)
 endforeach()

@@ -35,7 +35,7 @@
       <p class="lede" lang="zh-Hans">极化的 μ⁺ 停在 10 mT 磁场中的铜靶里。它的自旋以 1.355 MHz 转动，衰变正电子记住了自旋当时的指向。两个计数器、一个比值和一次拟合就能把它变成磁场的数值。前提是物理列表知道缪子有自旋。</p>
       <ul class="meta">
         <li class="stage"><b>4 · Build it</b><span lang="en">stage · 建造</span><span lang="zh-Hans">阶段 · 建造</span></li>
-        <li><b>Mission 12</b><span lang="en">textbook ch. 12 · capstone</span><span lang="zh-Hans">教材第 12 章 · 综合实验</span></li>
+        <li><b>Lab 10</b><span lang="en">hands-on lab · capstone</span><span lang="zh-Hans">动手实验 · 综合实验</span></li>
         <li><b>≈ 3 h</b><span lang="en">incl. a field scan</span><span lang="zh-Hans">含磁场扫描</span></li>
       </ul>
     </div>
@@ -96,7 +96,7 @@
 <!-- /fig:evd-w10 -->
 
   <section class="run" aria-labelledby="h-field">
-    <p class="cmd">/musr/command globalfield<span lang="en">12.1 · attach a field</span><span lang="zh-Hans">12.1 · 加上磁场</span></p>
+    <p class="cmd">/musr/command globalfield<span lang="en">10.1 · attach a field</span><span lang="zh-Hans">10.1 · 加上磁场</span></p>
     <div class="prose">
       <h2 id="h-field" class="bi"><span lang="en">A field can be wrong while the simulation runs perfectly.</span><span lang="zh-Hans">磁场可能是错的，而模拟照样跑得好好的。</span></h2>
 <!-- fig:svg-w10 -->
@@ -111,12 +111,12 @@
       <p lang="en">The field box uses half-lengths too, so 400 400 400 is 800 mm on a side. In the musrsim-sms source the uniform field values are read in tesla (and kV/mm for E). After defining a map, print the field at several points you can check by hand: wrong axis order, centre offset or scale factor all give a trajectory that looks plausible. Integration controls (<code>SetLargestAcceptableStep</code>, <code>SetMinimumEpsilonStep</code>, <code>SetDeltaOneStep</code>) are numbers whose effect you test, as in Week 7.</p>
       <p lang="zh-Hans">磁场盒也用半长，所以 400 400 400 是边长 800 mm。在 musrsim-sms 源码中，均匀场的数值以特斯拉读入（电场以 kV/mm 读入）。定义场图之后，在几个你能手算核对的点上打印磁场：坐标轴顺序、中心偏移或缩放因子出错时，径迹看起来都很合理。积分控制参数（<code>SetLargestAcceptableStep</code>、<code>SetMinimumEpsilonStep</code>、<code>SetDeltaOneStep</code>）是需要检验其效果的数值，和第 7 周一样。</p>
       <div class="box">
-        <p class="box-label">Theorem 12.1 · <span lang="en">Muon spin precession</span><span lang="zh-Hans">缪子自旋进动</span></p>
+        <p class="box-label">Theorem 10.1 · <span lang="en">Muon spin precession</span><span lang="zh-Hans">缪子自旋进动</span></p>
         <p lang="en">A stopped μ⁺ in a transverse field B precesses at f = (γμ/2π)·B, with γμ/2π = 135.5388 MHz/T. At 10 mT: f = 1.3554 MHz, period 0.738 µs, about three turns per lifetime (τμ = 2.1970 µs). Direction: dS/dt = γμ S × B with γμ &gt; 0, so a spin starting along −z in B ∥ +x turns towards −y first.</p>
         <p lang="zh-Hans">横向磁场 B 中静止的 μ⁺ 以 f = (γμ/2π)·B 进动，γμ/2π = 135.5388 MHz/T。10 mT 时 f = 1.3554 MHz，周期 0.738 µs，每个寿命（τμ = 2.1970 µs）内约转三圈。方向：dS/dt = γμ S × B，γμ &gt; 0，所以在 B ∥ +x 中初始沿 −z 的自旋先转向 −y。</p>
       </div>
       <div class="box">
-        <p class="box-label">Definition 12.1 · <span lang="en">Decay asymmetry</span><span lang="zh-Hans">衰变不对称度</span></p>
+        <p class="box-label">Definition 10.1 · <span lang="en">Decay asymmetry</span><span lang="zh-Hans">衰变不对称度</span></p>
         <p lang="en">The positron from μ⁺ → e⁺ ν ν̄ is emitted preferentially along the muon spin: dN/dΩ ∝ 1 + a cos θ. Averaged over the whole positron energy spectrum a = 1/3; it rises to 1 for the most energetic positrons. With two opposite counters, N_U,D(t) ∝ e^(−t/τ)(1 ∓ A0 sin ωt) and A(t) = (N_D − N_U)/(N_D + N_U) = A0 sin(ωt + φ): the lifetime envelope cancels and the precession remains.</p>
         <p lang="zh-Hans">μ⁺ → e⁺ ν ν̄ 的正电子倾向于沿缪子自旋方向发射：dN/dΩ ∝ 1 + a cos θ。对整个正电子能谱平均，a = 1/3；能量最高的正电子 a 升至 1。用两个相对的计数器，N_U,D(t) ∝ e^(−t/τ)(1 ∓ A0 sin ωt)，A(t) = (N_D − N_U)/(N_D + N_U) = A0 sin(ωt + φ)：寿命包络相消，进动留了下来。</p>
       </div>
@@ -124,7 +124,7 @@
   </section>
 
   <section class="run" aria-labelledby="h-phys">
-    <p class="cmd">/process/list Decay<span lang="en">12.2 · keep the physics list honest</span><span lang="zh-Hans">12.2 · 让物理列表保持诚实</span></p>
+    <p class="cmd">/process/list Decay<span lang="en">10.2 · keep the physics list honest</span><span lang="zh-Hans">10.2 · 让物理列表保持诚实</span></p>
     <div class="prose">
       <h2 id="h-phys" class="bi"><span lang="en">The macro configures the experiment. The physics list decides whether the spin exists.</span><span lang="zh-Hans">宏配置的是实验，物理列表决定自旋是否存在。</span></h2>
       <p lang="en">In musrSim the physics list is chosen in C++, not assembled from macro lines. Old example macros may still contain <code>process addProcess</code> lines that do not configure the active list. If a process seems absent or present, read the source-level physics list before editing the macro.</p>
@@ -166,7 +166,7 @@ musrSim.cc（musrsim-sms，提交 767208f）自建的 FTFP_BERT 只注册了
   physicsList-&gt;RegisterPhysics(new G4SpinDecayPhysics());
 *** 对 μSR 结果是致命的，对程序却毫无声响 ***
 <span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
-      <h3 class="bi"><span lang="en">12.3 · Optical photons are a fidelity switch</span><span lang="zh-Hans">12.3 · 光学光子是一个保真度开关</span></h3>
+      <h3 class="bi"><span lang="en">10.3 · Optical photons are a fidelity switch</span><span lang="zh-Hans">10.3 · 光学光子是一个保真度开关</span></h3>
 <pre>/musr/command G4OpticalPhotons true    <span class="c"># off by default: photon counts explode</span></pre>
       <p lang="en">Optical transport means something only when the materials carry optical properties. It adds branches such as <code>nOptPhot</code> and <code>odet_nPhot</code>. Ask which observable needs information a parameterised response cannot keep: photon arrival times, surfaces, photocathode response. The muSR asymmetry needs only which counter fired and when, so it stays off this week (Week 5's parameterisation versus optical transport, again).</p>
       <p lang="zh-Hans">只有材料带有光学属性时，光学输运才有意义。它会增加 <code>nOptPhot</code>、<code>odet_nPhot</code> 等分支。要问：哪个可观测量需要参数化响应保留不了的信息？光子到达时间、表面、光阴极响应。μSR 不对称度只需要哪个计数器何时响应，所以本周不打开它（又一次是第 5 周的参数化与光学输运之争）。</p>
@@ -213,16 +213,16 @@ musrSim.cc（musrsim-sms，提交 767208f）自建的 FTFP_BERT 只注册了
   </section>
 
   <section class="run" aria-labelledby="h-task">
-    <p class="cmd">./week10 tf.mac<span lang="en">hands-on · Mission 12</span><span lang="zh-Hans">动手任务 · 任务 12</span></p>
+    <p class="cmd">./week10 tf.mac<span lang="en">hands-on · Lab 10</span><span lang="zh-Hans">动手实验 · 实验 10</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Measure 10 mT with muons, prove the spin matters, then scan the field.</span><span lang="zh-Hans">用缪子测出 10 mT，证明自旋至关重要，再扫描磁场。</span></h2>
-      <p lang="en">The week10 app is tf_musr.mac rebuilt in Geant4 11.4: the same World, copper target (ID 5), counters (IDs 11 and 1), 10 mT field and polarized 29.8 MeV/c beam, writing a <code>t1</code> tree with musrSim's branch names. That way the textbook's analysis runs unchanged on it, and on real musrSim output.</p>
-      <p lang="zh-Hans">week10 程序是用 Geant4 11.4 重建的 tf_musr.mac：同样的 World、铜靶（ID 5）、计数器（ID 11 和 1）、10 mT 磁场和 29.8 MeV/c 极化束流，写出带 musrSim 分支名的 <code>t1</code> 树。这样，教材的分析程序不加修改就能在它上面运行，也能在真实的 musrSim 输出上运行。</p>
+      <p lang="en">The week10 app is tf_musr.mac rebuilt in Geant4 11.4: the same World, copper target (ID 5), counters (IDs 11 and 1), 10 mT field and polarized 29.8 MeV/c beam, writing a <code>t1</code> tree with musrSim's branch names. That way the same analysis script, asymmetry.py, runs unchanged on it and on real musrSim output.</p>
+      <p lang="zh-Hans">week10 程序是用 Geant4 11.4 重建的 tf_musr.mac：同样的 World、铜靶（ID 5）、计数器（ID 11 和 1）、10 mT 磁场和 29.8 MeV/c 极化束流，写出带 musrSim 分支名的 <code>t1</code> 树。这样，同一个分析脚本 asymmetry.py 不加修改就能在它上面运行，也能在真实的 musrSim 输出上运行。</p>
       <ol class="steps">
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Build the app</span><span lang="zh-Hans">编译程序</span></h3><label class="done" for="w10-s1"><input type="checkbox" id="w10-s1" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="files">
-            <details><summary><b>week10.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f10-main">copy</button></summary><pre id="f10-main" data-src="code/week10/week10.cc">// Week 10: transverse-field muSR in plain Geant4 11.4, using the geometry of the textbook's tf_musr.mac.
+            <details><summary><b>week10.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f10-main">copy</button></summary><pre id="f10-main" data-src="code/week10/week10.cc">// Week 10: transverse-field muSR in plain Geant4 11.4, using the geometry of tf_musr.mac.
 // Usage:  ./week10 tf.mac            spin-aware muon decay (the physics a muSR study needs)
 //         ./week10 tf.mac nospin     stock decay only: what an application gets if nobody adds spin
 #include "ActionInitialization.hh"
@@ -351,7 +351,7 @@ void DetectorConstruction::ConstructSDandField()
 class G4GenericMessenger;
 class G4LogicalVolume;
 
-// Geometry of the textbook's tf_musr.mac, built in C++.
+// Geometry of tf_musr.mac, built in C++.
 // Copy numbers play the role of musrSim volume IDs: World -1, Target 5, CounterU 11, CounterD 1.
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
@@ -599,7 +599,7 @@ void RunAction::EndOfRunAction(const G4Run* run)
 
 #include &lt;vector&gt;
 
-// Books a "t1" ntuple with musrSim branch names, so the textbook's asymmetry.py reads it unchanged.
+// Books a "t1" ntuple with musrSim branch names, so asymmetry.py reads it unchanged.
 class RunAction : public G4UserRunAction
 {
   public:
@@ -705,7 +705,7 @@ Run complete: 200000 muons</pre></div>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Recover the field</span><span lang="zh-Hans">反推磁场</span></h3><label class="done" for="w10-s3"><input type="checkbox" id="w10-s3" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="files">
-            <details><summary><b>asymmetry.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f10-asy">copy</button></summary><pre id="f10-asy" data-src="code/week10/asymmetry.py">"""asymmetry.py -- recover the field from the precession of the muon spin (textbook 12.5, annotated).
+            <details><summary><b>asymmetry.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f10-asy">copy</button></summary><pre id="f10-asy" data-src="code/week10/asymmetry.py">"""asymmetry.py -- recover the field from the precession of the muon spin (annotated).
 
 Reads a t1 tree with musrSim branch names: the course app writes data/tf_10mT.root;
 musrSim writes data/musrSim_0_tf.root for tf_musr.mac (run number 0, output name "tf").
@@ -738,7 +738,7 @@ if measured:
     tU = np.asarray(ak.fill_none(ak.firsts(D.det_time_start[D.det_ID == 11]), -1.0))[hitU]
     tD = np.asarray(ak.fill_none(ak.firsts(D.det_time_start[D.det_ID == 1]), -1.0))[hitD]
 else:
-    t = np.asarray(D.muDecayTime)                       # Monte Carlo truth (textbook choice)
+    t = np.asarray(D.muDecayTime)                       # Monte Carlo truth (our choice: no detector timing)
     tU, tD = t[hitU], t[hitD]
 print(f"positrons in U (ID 11): {len(tU)}   in D (ID 1): {len(tD)}")
 
@@ -812,10 +812,10 @@ B   = 10.228 +/- 0.186 mT</pre></div>
           <p lang="zh-Hans">几何相同，束流相同，每个计数器中的正电子数也几乎相同（26 871 和 26 625），却没有振荡：A0 在 1σ 内为零。拟合照样收敛，还打印出一个磁场 10.2 ± 0.2 mT，因为频率根本没有离开 1.35 MHz 的初值。所以脚本现在在 A0 不显著时拒绝相信 f。拟合给出的一个自信的数字并不是测量。</p>
         </li>
         <li>
-          <div class="step-head"><h3 class="bi"><span lang="en">Mission 12: f against B</span><span lang="zh-Hans">任务 12：f 对 B 的关系</span></h3><label class="done" for="w10-s5"><input type="checkbox" id="w10-s5" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="step-head"><h3 class="bi"><span lang="en">Lab 10: f against B</span><span lang="zh-Hans">实验 10：f 对 B 的关系</span></h3><label class="done" for="w10-s5"><input type="checkbox" id="w10-s5" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="files">
             <details><summary><b>run_scan.sh</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f10-scan">copy</button></summary><pre id="f10-scan" data-src="code/week10/run_scan.sh">#!/bin/bash
-# run_scan.sh -- Mission 12: the same experiment at several fields, plus the "no spin" control.
+# run_scan.sh -- Lab 10: the same experiment at several fields, plus the "no spin" control.
 # Run from the build directory, next to ./week10 and tf.mac.
 set -e
 mkdir -p data
@@ -829,7 +829,7 @@ done
 sed "s|data/tf_10mT|data/tf_10mT_nospin|" tf.mac &gt; tf_nospin.mac
 ./week10 tf_nospin.mac nospin &gt; tf_nospin.log
 echo "no-spin control -&gt; data/tf_10mT_nospin.root"</pre></details>
-            <details><summary><b>field_scan.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f10-fs">copy</button></summary><pre id="f10-fs" data-src="code/week10/field_scan.py">"""field_scan.py -- Mission 12: fitted precession frequency versus configured field.
+            <details><summary><b>field_scan.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f10-fs">copy</button></summary><pre id="f10-fs" data-src="code/week10/field_scan.py">"""field_scan.py -- Lab 10: fitted precession frequency versus configured field.
 Usage: python3 field_scan.py data/tf_5mT.root data/tf_10mT.root data/tf_20mT.root data/tf_30mT.root
 The configured field is read from the file name (tf_&lt;B&gt;mT.root).
 """
@@ -872,7 +872,7 @@ slope k = 135.459 +/- 0.057 MHz/T   (gamma_mu/2pi = 135.5388)   chi2/ndf = 3.14/
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">The same experiment in musrSim</span><span lang="zh-Hans">在 musrSim 中做同一个实验</span></h3><label class="done" for="w10-s6"><input type="checkbox" id="w10-s6" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="files">
-            <details><summary><b>tf_musr.mac</b><span class="tag musrsim">MUSRSIM</span><button class="copy" type="button" data-copy="f10-tfm">copy</button></summary><pre id="f10-tfm" data-src="code/week10/tf_musr.mac"># tf_musr.mac -- the textbook's integrated TF-muSR experiment (section 12.4), for musrSim.
+            <details><summary><b>tf_musr.mac</b><span class="tag musrsim">MUSRSIM</span><button class="copy" type="button" data-copy="f10-tfm">copy</button></summary><pre id="f10-tfm" data-src="code/week10/tf_musr.mac"># tf_musr.mac -- the integrated TF-muSR experiment of this week, for musrSim.
 # Run in build/run with data/ present:  ../musrSim tf_musr.mac   -&gt; data/musrSim_0_tf.root
 # CHECK FIRST (Course-W10-a): your musrSim build must use spin-aware muon decay, or A(t) is flat.
 # ---- GEOMETRY ----
@@ -968,7 +968,7 @@ A0 read as "the polarization". A0 = a x P x (geometry) x (energy
   永远不要拿它和 1 比。
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
-      <p class="cap"><span lang="en">Course-W10-a (no spin in the decay) is in section 12.2 above. It is the most expensive of the five, because nothing crashes.</span><span lang="zh-Hans">Course-W10-a（衰变中没有自旋）见上文第 12.2 节。它是五个错误中代价最大的，因为什么都不会崩溃。</span></p>
+      <p class="cap"><span lang="en">Course-W10-a (no spin in the decay) is in section 10.2 above. It is the most expensive of the five, because nothing crashes.</span><span lang="zh-Hans">Course-W10-a（衰变中没有自旋）见上文第 10.2 节。它是五个错误中代价最大的，因为什么都不会崩溃。</span></p>
     </div>
   </section>
 
@@ -1010,7 +1010,7 @@ A0 read as "the polarization". A0 = a x P x (geometry) x (energy
 
   <footer>
     <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
-    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 12 · Geant4 10.7.2 / 11.4 source · musrsim-sms source · PDG RPP 2024</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 12 章 · Geant4 10.7.2 / 11.4 源码 · musrsim-sms 源码 · PDG RPP 2024</span>
+    <span lang="en">Source: Geant4 10.7.2 / 11.4 source · musrsim-sms source · PDG RPP 2024 · our own Geant4 runs</span><span lang="zh-Hans">来源：Geant4 10.7.2 / 11.4 源码 · musrsim-sms 源码 · PDG RPP 2024 · 我们自己的 Geant4 运行</span>
   </footer>
 </div>
 <script src="assets/course.js"></script>

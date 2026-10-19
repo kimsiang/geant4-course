@@ -1,6 +1,6 @@
 """Render media/week11-debug-validate.gif. Numbers are from our Geant4 11.4.p01 runs:
 top, the debugging tree walked for fault-1 (evidence lines from the real trace);
-bottom, Mission 10's Geant4/PDG ratios, first as naively compared (PDG at the entrance energy,
+bottom, the Week 11 dE/dx benchmark's Geant4/PDG ratios, first as naively compared (PDG at the entrance energy,
 default 0-10 MeV/cm histogram), then like with like (path-averaged PDG, 0-1000 MeV/cm).
 Usage: python3 tools/make_week11_gif.py
 """

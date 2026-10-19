@@ -1,4 +1,4 @@
-"""Mission 8B: one analysis for simulation and hardware.
+"""Lab 8.2: one analysis for simulation and hardware.
 
 A deliberately simple 'laboratory' binary format (one header + two channel records per
 event, little-endian) stands in for a real digitizer. The simulated ROOT 'daq' tree is

@@ -6,7 +6,7 @@
 
 #include <vector>
 
-// Books a "t1" ntuple with musrSim branch names, so the textbook's asymmetry.py reads it unchanged.
+// Books a "t1" ntuple with musrSim branch names, so asymmetry.py reads it unchanged.
 class RunAction : public G4UserRunAction
 {
   public:

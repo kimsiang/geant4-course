@@ -10,7 +10,7 @@
 int main(int argc, char** argv)
 {
   // Serial keeps the histogram code simple this week; Week 8 switches to
-  // the textbook's G4RunManagerType::Default and merges threads.
+  // G4RunManagerType::Default and merges threads.
   auto* runManager =
     G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
 

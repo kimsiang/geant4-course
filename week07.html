@@ -35,7 +35,7 @@
       <p class="lede" lang="zh-Hans">磁场把径迹探测器变成谱仪。你将搭建“径迹室—磁铁—径迹室”，由径迹弯曲的程度重建动量，并与 Geant4 的真值比较。这是你的第一个反问题：探测器只知道位置，动量要靠推断。</p>
       <ul class="meta">
         <li class="stage"><b>3 · Understand it</b><span lang="en">stage · 理解</span><span lang="zh-Hans">阶段 · 理解</span></li>
-        <li><b>Mission 7</b><span lang="en">textbook ch. 8</span><span lang="zh-Hans">教材第 8 章</span></li>
+        <li><b>Labs 7.1–7.2</b><span lang="en">hands-on lab</span><span lang="zh-Hans">动手实验</span></li>
         <li><b>≈ 2.5 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
       </ul>
     </div>
@@ -89,21 +89,21 @@
     <p class="cmd">/vis/open TSG<span lang="en">event display</span><span lang="zh-Hans">事例显示</span></p>
     <div>
       <h2 id="h-evd" class="bi"><span lang="en">Six points, one bend, one momentum.</span><span lang="zh-Hans">六个点、一次弯折、一个动量。</span></h2>
-      <figure class="evd-fig"><div data-scene="w07" data-poster="media/evd-w07.gif" data-label="3D replay of Geant4 spectrometer events: a muon crosses three silicon planes, bends in a 1.5 tesla magnet, crosses three more planes; the momentum is reconstructed from the six crossing points"></div><figcaption class="evd-cap"><span lang="en"><b>GEANT4 11.4 DATA.</b> μ⁻ from our spectrometer runs at 1, 2, 5, 10 and 20 GeV/c. The six yellow points are the plane crossings Geant4 recorded; the path between them, and inside the magnet, is interpolated for drawing. The display reconstructs p from the six points with the two-line method of Eq. (8.1). At 20 GeV/c the deflection is only 22 mrad, which is why the resolution degrades with momentum.</span><span lang="zh-Hans"><b>GEANT4 11.4 数据。</b>取自我们 1、2、5、10、20 GeV/c 的谱仪运行的 μ⁻。六个黄点是 Geant4 记录的平面穿越点；它们之间以及磁铁内部的路径为绘图插值。显示屏用式 (8.1) 的两直线法由六个点重建 p。20 GeV/c 时偏转角只有 22 mrad，这就是分辨率随动量变差的原因。</span></figcaption></figure>
+      <figure class="evd-fig"><div data-scene="w07" data-poster="media/evd-w07.gif" data-label="3D replay of Geant4 spectrometer events: a muon crosses three silicon planes, bends in a 1.5 tesla magnet, crosses three more planes; the momentum is reconstructed from the six crossing points"></div><figcaption class="evd-cap"><span lang="en"><b>GEANT4 11.4 DATA.</b> μ⁻ from our spectrometer runs at 1, 2, 5, 10 and 20 GeV/c. The six yellow points are the plane crossings Geant4 recorded; the path between them, and inside the magnet, is interpolated for drawing. The display reconstructs p from the six points with the two-line method of Eq. (7.1). At 20 GeV/c the deflection is only 22 mrad, which is why the resolution degrades with momentum.</span><span lang="zh-Hans"><b>GEANT4 11.4 数据。</b>取自我们 1、2、5、10、20 GeV/c 的谱仪运行的 μ⁻。六个黄点是 Geant4 记录的平面穿越点；它们之间以及磁铁内部的路径为绘图插值。显示屏用式 (7.1) 的两直线法由六个点重建 p。20 GeV/c 时偏转角只有 22 mrad，这就是分辨率随动量变差的原因。</span></figcaption></figure>
     </div>
   </section>
 
 <!-- /fig:evd-w07 -->
 
   <section class="run" aria-labelledby="h-theory">
-    <p class="cmd">/control/manual<span lang="en">8.1 · curvature to momentum</span><span lang="zh-Hans">8.1 · 由曲率到动量</span></p>
+    <p class="cmd">/control/manual<span lang="en">7.1 · curvature to momentum</span><span lang="zh-Hans">7.1 · 由曲率到动量</span></p>
     <div class="prose">
       <h2 id="h-theory" class="bi"><span lang="en">From "it passed through" to "it passed through carrying this much momentum".</span><span lang="zh-Hans">从“它穿过了”到“它带着这么多动量穿过了”。</span></h2>
 <!-- fig:svg-w07 -->
-<figure class="fig-svg"><svg viewBox="0 0 820 296" role="img" aria-label="Top view of the tracker magnet tracker spectrometer with a bending track and six hits"><defs><marker id="ah-spectro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><line x1="60" y1="40" x2="60" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="110" y1="40" x2="110" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="160" y1="40" x2="160" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="520" y1="40" x2="520" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="570" y1="40" x2="570" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="620" y1="40" x2="620" y2="240" class="s-fg" stroke-width="2" fill="none"/><rect x="250" y="50" width="180" height="180" rx="3" class="s-pos" fill="none" stroke-width="1.4"/><circle cx="290" cy="90" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="290" cy="90" r="1.8" class="f-pos"/><circle cx="290" cy="140" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="290" cy="140" r="1.8" class="f-pos"/><circle cx="290" cy="190" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="290" cy="190" r="1.8" class="f-pos"/><circle cx="340" cy="90" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="340" cy="90" r="1.8" class="f-pos"/><circle cx="340" cy="140" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="340" cy="140" r="1.8" class="f-pos"/><circle cx="340" cy="190" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="340" cy="190" r="1.8" class="f-pos"/><circle cx="390" cy="90" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="390" cy="90" r="1.8" class="f-pos"/><circle cx="390" cy="140" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="390" cy="140" r="1.8" class="f-pos"/><circle cx="390" cy="190" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="390" cy="190" r="1.8" class="f-pos"/><text x="340" y="44" text-anchor="middle" class="pos" font-size="11" lang="en">B ⊥ page, length L</text><text x="340" y="44" text-anchor="middle" class="pos" font-size="11" lang="zh-Hans">B 垂直于纸面，长度 L</text><path d="M20 140 L250 140 Q340 140 430 115 L700 40" class="s-neg" fill="none" stroke-width="2" marker-end="url(#ah-spectro)"/><circle cx="60" cy="140" r="4.5" class="f-hit"/><circle cx="110" cy="140" r="4.5" class="f-hit"/><circle cx="160" cy="140" r="4.5" class="f-hit"/><circle cx="520" cy="90" r="4.5" class="f-hit"/><circle cx="570" cy="76" r="4.5" class="f-hit"/><circle cx="620" cy="62" r="4.5" class="f-hit"/><text x="110" y="260" text-anchor="middle" class="m" font-size="11" lang="en">tracker 1: line in</text><text x="110" y="260" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">径迹室 1：入射直线</text><text x="570" y="260" text-anchor="middle" class="m" font-size="11" lang="en">tracker 2: line out</text><text x="570" y="260" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">径迹室 2：出射直线</text><text x="340" y="284" text-anchor="middle" font-size="12">sin θout − sin θin = 0.3 B[T] L[m] / p[GeV/c]</text></svg><figcaption><span lang="en">Fit one straight line in each tracker; the change in angle across a known field gives p (Eq. 8.1). For 10 GeV/c in 1.5 T × 1 m the deflection is 45 mrad.</span><span lang="zh-Hans">在每组径迹室中各拟合一条直线；穿过已知磁场的角度变化给出 p（式 8.1）。10 GeV/c 在 1.5 T × 1 m 中偏转 45 mrad。</span></figcaption></figure>
+<figure class="fig-svg"><svg viewBox="0 0 820 296" role="img" aria-label="Top view of the tracker magnet tracker spectrometer with a bending track and six hits"><defs><marker id="ah-spectro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><line x1="60" y1="40" x2="60" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="110" y1="40" x2="110" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="160" y1="40" x2="160" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="520" y1="40" x2="520" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="570" y1="40" x2="570" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="620" y1="40" x2="620" y2="240" class="s-fg" stroke-width="2" fill="none"/><rect x="250" y="50" width="180" height="180" rx="3" class="s-pos" fill="none" stroke-width="1.4"/><circle cx="290" cy="90" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="290" cy="90" r="1.8" class="f-pos"/><circle cx="290" cy="140" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="290" cy="140" r="1.8" class="f-pos"/><circle cx="290" cy="190" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="290" cy="190" r="1.8" class="f-pos"/><circle cx="340" cy="90" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="340" cy="90" r="1.8" class="f-pos"/><circle cx="340" cy="140" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="340" cy="140" r="1.8" class="f-pos"/><circle cx="340" cy="190" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="340" cy="190" r="1.8" class="f-pos"/><circle cx="390" cy="90" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="390" cy="90" r="1.8" class="f-pos"/><circle cx="390" cy="140" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="390" cy="140" r="1.8" class="f-pos"/><circle cx="390" cy="190" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="390" cy="190" r="1.8" class="f-pos"/><text x="340" y="44" text-anchor="middle" class="pos" font-size="11" lang="en">B ⊥ page, length L</text><text x="340" y="44" text-anchor="middle" class="pos" font-size="11" lang="zh-Hans">B 垂直于纸面，长度 L</text><path d="M20 140 L250 140 Q340 140 430 115 L700 40" class="s-neg" fill="none" stroke-width="2" marker-end="url(#ah-spectro)"/><circle cx="60" cy="140" r="4.5" class="f-hit"/><circle cx="110" cy="140" r="4.5" class="f-hit"/><circle cx="160" cy="140" r="4.5" class="f-hit"/><circle cx="520" cy="90" r="4.5" class="f-hit"/><circle cx="570" cy="76" r="4.5" class="f-hit"/><circle cx="620" cy="62" r="4.5" class="f-hit"/><text x="110" y="260" text-anchor="middle" class="m" font-size="11" lang="en">tracker 1: line in</text><text x="110" y="260" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">径迹室 1：入射直线</text><text x="570" y="260" text-anchor="middle" class="m" font-size="11" lang="en">tracker 2: line out</text><text x="570" y="260" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">径迹室 2：出射直线</text><text x="340" y="284" text-anchor="middle" font-size="12">sin θout − sin θin = 0.3 B[T] L[m] / p[GeV/c]</text></svg><figcaption><span lang="en">Fit one straight line in each tracker; the change in angle across a known field gives p (Eq. 7.1). For 10 GeV/c in 1.5 T × 1 m the deflection is 45 mrad.</span><span lang="zh-Hans">在每组径迹室中各拟合一条直线；穿过已知磁场的角度变化给出 p（式 7.1）。10 GeV/c 在 1.5 T × 1 m 中偏转 45 mrad。</span></figcaption></figure>
 <!-- /fig:svg-w07 -->
       <div class="box">
-        <p class="box-label">Theorem 8.1 · <span lang="en">The momentum–curvature relation</span><span lang="zh-Hans">动量—曲率关系</span></p>
+        <p class="box-label">Theorem 7.1 · <span lang="en">The momentum–curvature relation</span><span lang="zh-Hans">动量—曲率关系</span></p>
         <p lang="en">A particle of charge q and transverse momentum p<sub>T</sub> in a uniform field B follows a circle of radius R with p<sub>T</sub> = |q| B R, or p<sub>T</sub> [GeV/c] = 0.299792458 |q/e| B [T] R [m]. p<sub>T</sub> equals p only when the motion is perpendicular to the field; otherwise p<sub>T</sub> = p sin α. A stronger field and a longer lever arm improve resolution, at the cost of a bigger magnet.</p>
         <p lang="zh-Hans">电荷为 q、横动量为 p<sub>T</sub> 的粒子在均匀磁场 B 中沿半径为 R 的圆周运动，p<sub>T</sub> = |q| B R，即 p<sub>T</sub> [GeV/c] = 0.299792458 |q/e| B [T] R [m]。只有运动垂直于磁场时 p<sub>T</sub> 才等于 p；否则 p<sub>T</sub> = p sin α。更强的磁场和更长的杠杆臂能提高分辨率，代价是更大的磁铁。</p>
       </div>
@@ -111,13 +111,13 @@
       <p lang="zh-Hans">对“径迹室—磁铁—径迹室”布局，有用的形式来自同一个圆：在沿 z 长为 L 的磁场中，sin θ 随 z 以 1/R 的速率线性增长，所以两组径迹室测得</p>
       <div class="eq" role="math" aria-label="sine theta out minus sine theta in equals 0.2998 B L over p">
         <span>sin θ<sub>out</sub> − sin θ<sub>in</sub> = <span class="frac"><span>0.2998 <i>B</i> <i>L</i></span><span><i>p</i></span></span></span>
-        <span class="eqno">(8.1)</span>
+        <span class="eqno">(7.1)</span>
       </div>
-      <p lang="en">Fit one straight line through each tracker, take the change in slope, and Eq. (8.1) gives p with no assumption about where the hits sit. For 10 GeV/c in 1.5 T × 1 m the deflection is 45 mrad.</p>
-      <p lang="zh-Hans">在每组径迹室里各拟合一条直线，取斜率的变化，式 (8.1) 就给出 p，无需假设测点位于何处。10 GeV/c 在 1.5 T × 1 m 中的偏转为 45 mrad。</p>
+      <p lang="en">Fit one straight line through each tracker, take the change in slope, and Eq. (7.1) gives p with no assumption about where the hits sit. For 10 GeV/c in 1.5 T × 1 m the deflection is 45 mrad.</p>
+      <p lang="zh-Hans">在每组径迹室里各拟合一条直线，取斜率的变化，式 (7.1) 就给出 p，无需假设测点位于何处。10 GeV/c 在 1.5 T × 1 m 中的偏转为 45 mrad。</p>
 
       <div class="box">
-        <p class="box-label">Example 8.1 · <span lang="en">Mission 7: a tracker–magnet–tracker system</span><span lang="zh-Hans">任务 7：径迹室—磁铁—径迹室系统</span></p>
+        <p class="box-label">Example 7.1 · <span lang="en">Lab 7.1: a tracker–magnet–tracker system</span><span lang="zh-Hans">实验 7.1：径迹室—磁铁—径迹室系统</span></p>
         <p lang="en">Build tracker 1 — magnet — tracker 2 with at least three position measurements in each tracker. Reconstruct p from the measured positions and compare it, event by event, with Geant4's truth. Plot (p<sub>rec</sub> − p<sub>true</sub>)/p<sub>true</sub>; report its width, its bias, and how both depend on p.</p>
         <p lang="zh-Hans">搭建“径迹室 1—磁铁—径迹室 2”，每组径迹室至少三个位置测量。由测得的位置重建 p，并逐事例与 Geant4 真值比较。画出 (p<sub>rec</sub> − p<sub>true</sub>)/p<sub>true</sub>；报告其宽度、偏差，以及两者如何随 p 变化。</p>
       </div>
@@ -133,8 +133,8 @@ fLogicMagnet-&gt;<mark>SetFieldManager(fieldMgr, true)</mark>;  <span class="c">
       </div>
       <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W07-a
-      issued by : textbook 8.1, CreateChordFinder comment
-The textbook says the default is G4Mag_UsualEqRhs + G4ClassicalRK4.
+      issued by : field setup, CreateChordFinder()
+Older tutorials say the default is G4Mag_UsualEqRhs + G4ClassicalRK4.
   In Geant4 11.4 (G4ChordFinder.cc) the default driver type is the
   templated Dormand-Prince 4/5; ClassicalRK4 is "the old default".
   Our run prints:  G4ChordFinder: stepperDriverId: 2  (templated).
@@ -144,8 +144,8 @@ The textbook says the default is G4Mag_UsualEqRhs + G4ClassicalRK4.
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
       <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W07-a
-      issued by : 教材 8.1 节 CreateChordFinder 注释
-教材称默认是 G4Mag_UsualEqRhs + G4ClassicalRK4。
+      issued by : 磁场设置，CreateChordFinder()
+较早的教程说默认是 G4Mag_UsualEqRhs + G4ClassicalRK4。
   Geant4 11.4（G4ChordFinder.cc）中默认驱动类型是模板化的
   Dormand-Prince 4/5；ClassicalRK4 是“旧的默认值”。
   我们的运行打印：G4ChordFinder: stepperDriverId: 2（模板化）。
@@ -156,21 +156,21 @@ The textbook says the default is G4Mag_UsualEqRhs + G4ClassicalRK4.
 
       <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W07-b
-      issued by : textbook reconstruct_pt(), quadratic x(z) = a z^2 + b z + c
+      issued by : reconstruct_pt(), quadratic x(z) = a z^2 + b z + c
 A single quadratic through hits from BOTH trackers assumes every
   hit is inside the field. Here the track is straight-arc-straight.
   Our Geant4 tracks: the quadratic overestimates p by +47% at 1 GeV
-  and +61% at 20 GeV. Use two lines and Eq. (8.1). The quadratic is
+  and +61% at 20 GeV. Use two lines and Eq. (7.1). The quadratic is
   right for a tracker immersed in a solenoid.
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
       <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W07-b
-      issued by : 教材 reconstruct_pt()，二次拟合 x(z) = a z^2 + b z + c
+      issued by : reconstruct_pt()，二次拟合 x(z) = a z^2 + b z + c
 用一条抛物线拟合两组径迹室的所有测点，等于假设所有测点都在
   磁场中。这里的径迹是“直线—圆弧—直线”。在我们的 Geant4
   径迹上，抛物线在 1 GeV 把 p 高估 47%，20 GeV 高估 61%。
-  请用两条直线和式 (8.1)。抛物线模型适用于浸在螺线管中的径迹室。
+  请用两条直线和式 (7.1)。抛物线模型适用于浸在螺线管中的径迹室。
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
 
@@ -238,7 +238,7 @@ A single quadratic through hits from BOTH trackers assumes every
   </section>
 
   <section class="run" aria-labelledby="h-task">
-    <p class="cmd">/control/execute spectrometer.mac<span lang="en">hands-on · Missions 7 and 7B</span><span lang="zh-Hans">动手任务 · 任务 7 与 7B</span></p>
+    <p class="cmd">/control/execute spectrometer.mac<span lang="en">hands-on · Labs 7.1 and 7.2</span><span lang="zh-Hans">动手实验 · 实验 7.1 与 7.2</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Build the spectrometer, write the hits, reconstruct p, then distort the field.</span><span lang="zh-Hans">搭建谱仪、写出击中点、重建 p，再让磁场变形。</span></h2>
       <p lang="en">Expected outputs are from Geant4 11.4.p01 runs of these files with the course test physics list. Muon tracking in fields and the muon EM processes are the same as with <code>FTFP_BERT</code>, so your numbers should agree within the statistical errors (about ±0.01–0.04% on the bias, ±3% relative on σ).</p>
@@ -280,7 +280,7 @@ endforeach()</pre></details>
 int main(int argc, char** argv)
 {
   // Serial: one CSV file per run. Week 8 switches to
-  // the textbook's G4RunManagerType::Default and merges threads.
+  // G4RunManagerType::Default (multithreaded) and merges threads.
   auto* runManager =
     G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
 
@@ -338,7 +338,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
 #include "FringeField.hh"
 
-// Mission 7: tracker 1 (3 Si planes) -- 1 m dipole, By = 1.5 T -- tracker 2 (3 Si planes)
+// Lab 7.1: tracker 1 (3 Si planes) -- 1 m dipole, By = 1.5 T -- tracker 2 (3 Si planes)
 //
 //   z [m]:  -1.0 -0.8 -0.6 | -0.5 ... magnet ... +0.5 | +0.6 +0.8 +1.0
 //
@@ -369,10 +369,10 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 void DetectorConstruction::ConstructSDandField()
 {
   // (sensitive detectors would be registered here too; Week 5)
-  const G4bool useFringeMap = false;   // Mission 7B: set true, rebuild, rerun
+  const G4bool useFringeMap = false;   // Lab 7.2: set true, rebuild, rerun
 
   if (!useFringeMap) {
-    // Mission 7: ideal uniform field inside the magnet box only
+    // Lab 7.1: ideal uniform field inside the magnet box only
     G4ThreeVector fieldValue(0., 1.5 * tesla, 0.);
     auto* magField = new G4UniformMagField(fieldValue);
     auto* fieldMgr = new G4FieldManager();
@@ -381,7 +381,7 @@ void DetectorConstruction::ConstructSDandField()
     // attach the field to the magnet volume only (and its daughters)
     fLogicMagnet-&gt;SetFieldManager(fieldMgr, true);
   } else {
-    // Mission 7B: a field "map" defined everywhere, so it goes on the global field manager
+    // Lab 7.2: a field "map" defined everywhere, so it goes on the global field manager
     auto* magField = new FringeField();
     auto* fieldMgr = G4TransportationManager::GetTransportationManager()-&gt;GetFieldManager();
     fieldMgr-&gt;SetDetectorField(magField);
@@ -396,7 +396,7 @@ void DetectorConstruction::ConstructSDandField()
 
 #include &lt;cmath&gt;
 
-// Mission 7B: a synthetic 1D field map. By(z) falls off at both magnet ends with a
+// Lab 7.2: a synthetic 1D field map. By(z) falls off at both magnet ends with a
 // Fermi-function edge of width a. Its field integral equals the uniform 1.5 T x 1 m
 // (to 0.1%), but the field now leaks into the trackers. Units: Geant4 internal.
 class FringeField : public G4MagneticField
@@ -580,7 +580,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 {
   fParticleGun-&gt;GeneratePrimaryVertex(event);
 }</pre></details>
-            <details><summary><b>spectrometer.mac</b><button class="copy" type="button" data-copy="f7-mac">copy</button></summary><pre id="f7-mac" data-src="code/week07/spectrometer.mac"># Mission 7: 1000 mu- at each of five momenta, one CSV file per run
+            <details><summary><b>spectrometer.mac</b><button class="copy" type="button" data-copy="f7-mac">copy</button></summary><pre id="f7-mac" data-src="code/week07/spectrometer.mac"># Lab 7.1: 1000 mu- at each of five momenta, one CSV file per run
 /control/verbose 0
 /run/verbose 0
 /tracking/verbose 0
@@ -600,7 +600,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 /gun/energy 20 GeV
 /analysis/setFileName tracks_20GeV
 /run/beamOn 1000</pre></details>
-            <details><summary><b>reconstruct.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f7-py">copy</button></summary><pre id="f7-py" data-src="code/week07/reconstruct.py">"""Mission 7 analysis: reconstruct momentum from the six tracker planes.
+            <details><summary><b>reconstruct.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f7-py">copy</button></summary><pre id="f7-py" data-src="code/week07/reconstruct.py">"""Lab 7.1 analysis: reconstruct momentum from the six tracker planes.
 
 Truth -&gt; measurement -&gt; reconstruction, kept apart:
   truth          x_i, z_i where the primary entered plane i (Geant4)        [CSV]
@@ -608,7 +608,7 @@ Truth -&gt; measurement -&gt; reconstruction, kept apart:
   reconstruction a straight line through each tracker; the change of slope across
                  the dipole gives p:   sin(theta_out) - sin(theta_in) = 0.2998 B L / p
 
-Also runs the textbook's global quadratic fit on the same hits, to show its bias
+Also runs a global quadratic fit through all six hits on the same events, to show its bias
 for a tracker-magnet-tracker layout (that model assumes all hits sit inside the field).
 
     python3 reconstruct.py            # needs numpy only
@@ -642,7 +642,7 @@ def p_two_lines(z, x):
 
 
 def p_quadratic(z, x):
-    """Textbook reconstruct_pt(): x(z) = a z^2 + b z + c through all six points."""
+    """Global quadratic x(z) = a z^2 + b z + c through all six points (biased here)."""
     out = np.empty(len(z))
     for i in range(len(z)):
         a = np.polyfit(z[i], x[i], 2)[0]
@@ -693,8 +693,8 @@ tracks_20GeV_nt_tracks.csv    20.105        +0.0002     0.0113      +0.608</pre>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Check the integrator before blaming the physics</span><span lang="zh-Hans">先检查积分器，再怀疑物理</span></h3><label class="done" for="w07-s4"><input type="checkbox" id="w07-s4" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
-          <p lang="en">The textbook warns that a loose integration step can fake a resolution effect. Test it: add <code>#include "G4ChordFinder.hh"</code> and, after <code>CreateChordFinder</code>,</p>
-          <p lang="zh-Hans">教材提醒：过松的积分步长会伪装成分辨率效应。测试一下：加入 <code>#include "G4ChordFinder.hh"</code>，并在 <code>CreateChordFinder</code> 之后加上</p>
+          <p lang="en">A loose integration step can fake a resolution effect. Test it: add <code>#include "G4ChordFinder.hh"</code> and, after <code>CreateChordFinder</code>,</p>
+          <p lang="zh-Hans">过松的积分步长会伪装成分辨率效应。测试一下：加入 <code>#include "G4ChordFinder.hh"</code>，并在 <code>CreateChordFinder</code> 之后加上</p>
           <div class="code"><div class="code-head"><span class="l"><b>src/DetectorConstruction.cc</b><span class="tag geant4">GEANT4</span></span><button class="copy" type="button" data-copy="c7-tight">copy</button></div>
 <pre id="c7-tight">fieldMgr-&gt;GetChordFinder()-&gt;SetDeltaChord(0.01 * mm);
 fieldMgr-&gt;SetDeltaOneStep(0.001 * mm);
@@ -706,14 +706,14 @@ tracks_20GeV_nt_tracks.csv    20.105        -0.0004     0.0114      +0.607</pre>
           <p lang="zh-Hans">偏差没有变化，说明默认精度对这个可观测量已经足够。1 GeV 的 σ 与第 3 步不同（0.0031 对 0.0040），是因为这次运行的随机散射不同，而不是积分造成的：要以它自身的误差为单位来比较。</p>
         </li>
         <li>
-          <div class="step-head"><h3 class="bi"><span lang="en">Mission 7B: same field integral, different field</span><span lang="zh-Hans">任务 7B：同样的场积分，不同的磁场</span></h3><label class="done" for="w07-s5"><input type="checkbox" id="w07-s5" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="step-head"><h3 class="bi"><span lang="en">Lab 7.2: same field integral, different field</span><span lang="zh-Hans">实验 7.2：同样的场积分，不同的磁场</span></h3><label class="done" for="w07-s5"><input type="checkbox" id="w07-s5" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <p lang="en">Set <code>useFringeMap = true</code>, rebuild, and rerun at 1 and 20 GeV. <code>FringeField</code> is a synthetic 1D map with 5 cm Fermi-function edges. Its ∫B dl equals the uniform 1.5 T·m to 0.1%, but the field now reaches into the trackers (12% of B<sub>0</sub> at the inner planes), and reconstruct.py still assumes the uniform box.</p>
           <p lang="zh-Hans">把 <code>useFringeMap</code> 设为 <code>true</code>，重新编译，在 1 和 20 GeV 下重新运行。<code>FringeField</code> 是一个合成的一维场图，边缘为 5 cm 宽的费米函数。它的 ∫B dl 与均匀的 1.5 T·m 相差不到 0.1%，但磁场伸进了径迹室（内侧平面处为 B<sub>0</sub> 的 12%），而 reconstruct.py 仍按均匀方盒假设。</p>
           <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our Geant4 11.4 run)</span><span lang="zh-Hans">预期（我们的 Geant4 11.4 运行）</span></b></span></div>
 <pre>tracks_01GeV_nt_tracks.csv     1.101        +0.0011     0.0033      +0.470
 tracks_20GeV_nt_tracks.csv    20.105        +0.0015     0.0119      +0.610</pre></div>
-          <p lang="en">The bias moves from −0.05% to about +0.13%, roughly 15σ at 1 GeV and 5σ at 20 GeV, while the resolution hardly changes. A correct ∫B dl is not enough when the trackers sit in the fringe: bending inside the tracker spoils the straight-line fits. This is the 10⁻³-level systematic the textbook warns about. To separate it from tracker resolution and scattering, compare runs that differ only in the field.</p>
-          <p lang="zh-Hans">偏差从 −0.05% 变为约 +0.13%，在 1 GeV 约为 15σ，在 20 GeV 约为 5σ，而分辨率几乎不变。当径迹室处于边缘场中时，∫B dl 正确并不够：径迹室内部的弯曲破坏了直线拟合。这正是教材提醒的 10⁻³ 量级系统误差。要把它与径迹室分辨率和散射区分开，就比较只在磁场上不同的两组运行。</p>
+          <p lang="en">The bias moves from −0.05% to about +0.13%, roughly 15σ at 1 GeV and 5σ at 20 GeV, while the resolution hardly changes. A correct ∫B dl is not enough when the trackers sit in the fringe: bending inside the tracker spoils the straight-line fits. This is a typical 10⁻³-level systematic of a real spectrometer. To separate it from tracker resolution and scattering, compare runs that differ only in the field.</p>
+          <p lang="zh-Hans">偏差从 −0.05% 变为约 +0.13%，在 1 GeV 约为 15σ，在 20 GeV 约为 5σ，而分辨率几乎不变。当径迹室处于边缘场中时，∫B dl 正确并不够：径迹室内部的弯曲破坏了直线拟合。这是真实谱仪中典型的 10⁻³ 量级系统误差。要把它与径迹室分辨率和散射区分开，就比较只在磁场上不同的两组运行。</p>
         </li>
       </ol>
       <p class="progress" data-progress-out="w07"></p>
@@ -856,7 +856,7 @@ Quoting one event's difference as "the resolution".
 
   <footer>
     <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
-    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 8 and appendix A.2 · Geant4 11.4.p01 · PDG RPP 2024</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 8 章与附录 A.2 · Geant4 11.4.p01 · PDG RPP 2024</span>
+    <span lang="en">Source: Geant4 11.4.p01 (G4ChordFinder, G4UniformMagField) · PDG RPP 2024, sec. 34 (multiple scattering) · our own Geant4 runs</span><span lang="zh-Hans">来源：Geant4 11.4.p01（G4ChordFinder、G4UniformMagField）· PDG RPP 2024 第 34 节（多次散射）· 我们自己的 Geant4 运行</span>
   </footer>
 </div>
 <script src="assets/course.js"></script>

@@ -1,4 +1,4 @@
-/* Week 03 — toy step-by-step crossing (textbook Ch. 3–4).
+/* Week 03 — toy step-by-step crossing (Week 3).
    TOY MODEL, not Geant4. A muon crosses a 10 cm block in a straight line. Its steps end either at
    the block boundary (Transportation) or where it knocks out a delta-ray electron above the
    production threshold Tcut (muIoni). Delta-rays above Tcut are a Poisson process with

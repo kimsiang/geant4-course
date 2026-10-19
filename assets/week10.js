@@ -1,4 +1,4 @@
-/* Week 10 — toy transverse-field muSR (textbook Ch. 12).
+/* Week 10 — toy transverse-field muSR.
    TOY MODEL, not Geant4 and not musrSim. Every muon stops at the target centre at t = 0 with spin
    P·(0,0,-1) and decays after an exponential time (tau = 2.1969811 us, PDG). Its spin precesses about
    B = B x-hat at gamma_mu/2pi = 135.5388 MHz/T, so S(t) = P(0, -sin wt, -cos wt). The positron
@@ -232,14 +232,14 @@
   run();
 
   G.quiz(el('quiz'), 'w10', [
-    { prompt: { en: 'The textbook macro sets 10 mT. What precession frequency and period should the fit find?', zh: '教材宏设定 10 mT，拟合应得到什么进动频率和周期？' },
+    { prompt: { en: 'The tf_musr.mac macro sets 10 mT. What precession frequency and period should the fit find?', zh: 'tf_musr.mac 宏设定 10 mT，拟合应得到什么进动频率和周期？' },
       opts: [{ en: '13.55 MHz, 74 ns', zh: '13.55 MHz，74 ns' }, { en: '1.355 MHz, 0.738 µs', zh: '1.355 MHz，0.738 µs' }, { en: '135.5 MHz, 7.4 ns', zh: '135.5 MHz，7.4 ns' }, { en: '0.455 MHz, 2.2 µs', zh: '0.455 MHz，2.2 µs' }],
       a: 1, why: { en: 'f = (γμ/2π)·B = 135.5388 MHz/T × 0.010 T = 1.3554 MHz; T = 1/f = 0.738 µs, about three turns per muon lifetime. Our Geant4 run gave the number on this page.', zh: 'f = (γμ/2π)·B = 135.5388 MHz/T × 0.010 T = 1.3554 MHz；T = 1/f = 0.738 µs，每个缪子寿命内约转三圈。我们的 Geant4 运行结果见本页。' } },
     { prompt: { en: 'Why form A = (N_D − N_U)/(N_D + N_U) instead of fitting N_U(t) alone?', zh: '为什么要构造 A = (N_D − N_U)/(N_D + N_U)，而不是只拟合 N_U(t)？' },
       opts: [{ en: 'It has more events', zh: '它的事例更多' }, { en: 'The common exp(−t/τ) envelope and normalisation cancel, leaving the oscillation', zh: '共同的 exp(−t/τ) 包络和归一化相消，只剩下振荡' }, { en: 'ROOT cannot fit exponentials', zh: 'ROOT 不能拟合指数' }, { en: 'It removes the field', zh: '它能去掉磁场' }],
       a: 1, why: { en: 'Both counters see N0 e^{−t/τ}(1 ± A0 sin ωt). The ratio removes e^{−t/τ} and N0. It does not remove a relative efficiency difference between U and D, which real analyses fit as a parameter α.', zh: '两个计数器都看到 N0 e^{−t/τ}(1 ± A0 sin ωt)。比值消去了 e^{−t/τ} 和 N0，但消不掉 U 与 D 之间的相对效率差，实际分析中会把它作为参数 α 拟合。' } },
     { prompt: { en: 'An application registers FTFP_BERT with its stock G4DecayPhysics and nothing else. What does A(t) look like?', zh: '某应用只注册了带默认 G4DecayPhysics 的 FTFP_BERT，A(t) 是什么样子？' },
-      opts: [{ en: 'The textbook oscillation', zh: '教材中的振荡' }, { en: 'Flat at zero: the positrons are emitted isotropically', zh: '在零附近平坦：正电子各向同性发射' }, { en: 'A faster oscillation', zh: '更快的振荡' }, { en: 'The run crashes', zh: '运行崩溃' }],
+      opts: [{ en: 'The full-amplitude oscillation', zh: '完整幅度的振荡' }, { en: 'Flat at zero: the positrons are emitted isotropically', zh: '在零附近平坦：正电子各向同性发射' }, { en: 'A faster oscillation', zh: '更快的振荡' }, { en: 'The run crashes', zh: '运行崩溃' }],
       a: 1, why: { en: 'G4MuonDecayChannel "neglects muon polarization" (its source says so, in 10.7.2 and 11.4) and G4Decay does not precess the spin at rest. Our Geant4 11.4 control run without G4SpinDecayPhysics gives A0 consistent with zero.', zh: 'G4MuonDecayChannel“忽略缪子极化”（10.7.2 和 11.4 的源码都这样写），G4Decay 也不会在静止时让自旋进动。我们不加 G4SpinDecayPhysics 的 Geant4 11.4 对照运行给出的 A0 与零相容。' } },
     { prompt: { en: 'You add a field gradient across the target. What changes in the fit?', zh: '在靶上加一个磁场梯度，拟合中什么会变？' },
       opts: [{ en: 'Only f', zh: '只有 f' }, { en: 'Mainly λ: muons precess at slightly different rates and dephase', zh: '主要是 λ：缪子以略有不同的速率进动而失相' }, { en: 'Only A0 at t = 0', zh: '只有 t = 0 时的 A0' }, { en: 'Nothing', zh: '没有变化' }],

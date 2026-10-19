@@ -3,7 +3,7 @@
 
 #include "globals.hh"
 
-// Mission 6: deposited energy -> photoelectrons -> ADC number and a pulse time.
+// Week 5 lab: deposited energy -> photoelectrons -> ADC number and a pulse time.
 // Every number below is a TOY assumption, not a property of a real product.
 struct Signal
 {
