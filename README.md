@@ -1,6 +1,6 @@
 # Geant4 2.0 · Course pages
 
-**Twelve weekly web labs that take students from a 40-line Python Monte Carlo to a virtual experiment they can defend.**
+**Twelve weekly web labs that take students from a 50-line Python Monte Carlo to a virtual experiment they can defend.**
 
 Built from the textbook *The Geant4 Laboratory* (musrSim-integrated edition) by the Muon Physics Group, Tsung-Dao Lee Institute, Shanghai Jiao Tong University.
 
