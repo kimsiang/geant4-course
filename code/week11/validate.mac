@@ -1,0 +1,27 @@
+# validate.mac -- Mission 10: rerun the Week 4 scan with a histogram wide enough for the mean.
+# Run with the week04 executable:  ./week04 validate.mac
+# 0-1000 MeV/cm: nothing overflows, so the histogram mean is the true mean (ROOT-style histogram
+# statistics ignore under/overflow entries).
+/control/verbose 1
+/run/verbose 0
+/analysis/h1/set 1 10000 0 1000
+
+/gun/energy 100 MeV
+/analysis/setFileName edep_0100MeV_wide
+/run/beamOn 10000
+
+/gun/energy 200 MeV
+/analysis/setFileName edep_0200MeV_wide
+/run/beamOn 10000
+
+/gun/energy 500 MeV
+/analysis/setFileName edep_0500MeV_wide
+/run/beamOn 10000
+
+/gun/energy 1000 MeV
+/analysis/setFileName edep_1000MeV_wide
+/run/beamOn 10000
+
+/gun/energy 10000 MeV
+/analysis/setFileName edep_10000MeV_wide
+/run/beamOn 10000
