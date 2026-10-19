@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 09 · musrSim and t1</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0, Week 09: run a muon experiment from a text macro with musrSim, then read its t1 tree with uproot and awkward and run it as a production campaign.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+<style>#w9-macro{width:100%;min-height:180px;font:400 0.8rem/1.55 var(--mono);color:var(--fg);background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:10px 12px;resize:vertical}</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Week 09 of 12</span><span lang="zh-Hans">第 09 / 12 周</span></span>
+    <span class="bar-r">
+      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">$ <span>../musrSim first_sim.mac</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">Run Geant4 without writing C++, then read the muon experiment.</span><span lang="zh-Hans">不写 C++ 运行 Geant4，再读懂这个缪子实验。</span></h1>
+      <p class="lede" lang="en">musrSim is a Geant4 application that moves detector, beam, field and output into a text macro. You build it once, ask it which commands it really has, describe an experiment in a few lines, and turn its t1 ROOT tree into a lifetime measurement and a production campaign.</p>
+      <p class="lede" lang="zh-Hans">musrSim 是一个 Geant4 应用程序，它把探测器、束流、磁场和输出都搬进了一个文本宏。你只需编译一次，问清它实际有哪些命令，用几行文字描述一个实验，再把它的 t1 ROOT 树变成一次寿命测量和一次批量生产。</p>
+      <ul class="meta">
+        <li class="stage"><b>4 · Build it</b><span lang="en">stage · 建造</span><span lang="zh-Hans">阶段 · 建造</span></li>
+        <li><b>Mission 11</b><span lang="en">textbook ch. 10–11</span><span lang="zh-Hans">教材第 10–11 章</span></li>
+        <li><b>≈ 3 h</b><span lang="en">incl. the build</span><span lang="zh-Hans">含编译</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="Week summary">
+      <div role="row"><span role="cell">week09</span></div>
+      <div role="row"><span role="cell">Application</span><span role="cell">musrsim-sms</span></div>
+      <div role="row"><span role="cell">Geant4</span><span role="cell"><b>10.7.x</b> <span lang="en">(not 11.4)</span><span lang="zh-Hans">（不是 11.4）</span></span></div>
+      <div role="row"><span role="cell">Output</span><span role="cell">data/musrSim_&lt;run&gt;.root : t1</span></div>
+      <div role="row"><span role="cell">Analysis</span><span role="cell">uproot + awkward + SciPy</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-goals">
+    <p class="cmd">/run/initialize<span lang="en">learning goals</span><span lang="zh-Hans">学习目标</span></p>
+    <div class="prose">
+      <h2 id="h-goals" class="bi"><span lang="en">By the end of this week you can express a muon experiment as a macro and analyse it as data.</span><span lang="zh-Hans">本周结束时，你能把一个缪子实验写成宏，并把它当作数据来分析。</span></h2>
+      <ol class="goals">
+        <li><span lang="en">Explain the three layers of a run: your <dfn>macro<span class="kt" lang="zh-Hans">宏</span></dfn> → the <dfn>musrSim</dfn> executable → Geant4 + ROOT, and which commands belong to which layer.</span><span lang="zh-Hans">说明一次运行的三层：你的<dfn>宏<span class="kt" lang="en">macro</span></dfn> → <dfn>musrSim</dfn> 可执行文件 → Geant4 + ROOT，以及哪些命令属于哪一层。</span></li>
+        <li><span lang="en">Write <code>/musr/command construct</code> lines with <dfn>half-lengths<span class="kt" lang="zh-Hans">半长</span></dfn>, mothers before daughters, and detector IDs.</span><span lang="zh-Hans">用<dfn>半长<span class="kt" lang="en">half-lengths</span></dfn>、先母体后子体、带探测器 ID 的方式编写 <code>/musr/command construct</code>。</span></li>
+        <li><span lang="en">Separate event-level branches from <dfn>jagged arrays<span class="kt" lang="zh-Hans">锯齿数组</span></dfn> of hits in t1, and mask by <code>det_ID</code> before flattening.</span><span lang="zh-Hans">区分 t1 中的事例级分支与击中的<dfn>锯齿数组<span class="kt" lang="en">jagged arrays</span></dfn>，并在展平前按 <code>det_ID</code> 掩码。</span></li>
+        <li><span lang="en">Remove <dfn>sentinel<span class="kt" lang="zh-Hans">哨兵值</span></dfn> values and fit the μ⁺ lifetime.</span><span lang="zh-Hans">去除<dfn>哨兵值<span class="kt" lang="en">sentinel</span></dfn>并拟合 μ⁺ 寿命。</span></li>
+        <li><span lang="en">Run independent production jobs with distinct seeds and recorded provenance.</span><span lang="zh-Hans">用不同种子运行相互独立的生产作业，并记录来源信息。</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-layer">
+    <p class="cmd">/control/manual /musr<span lang="en">10 · the application layer</span><span lang="zh-Hans">10 · 应用层</span></p>
+    <div class="prose">
+      <h2 id="h-layer" class="bi"><span lang="en">musrSim does not replace Geant4. It packages it.</span><span lang="zh-Hans">musrSim 不是取代 Geant4，而是把它打包起来。</span></h2>
+      <div class="box">
+        <p class="box-label">Definition 10.1 · <span lang="en">Three layers of a musrSim run</span><span lang="zh-Hans">一次 musrSim 运行的三层</span></p>
+        <p lang="en">your macro → musrSim executable → Geant4 + ROOT. The macro states the experiment; musrSim interprets the commands and builds the application; Geant4 transports the particles and ROOT stores the selected observables. Commands beginning with <code>/run</code>, <code>/vis</code>, <code>/control</code> are Geant4's; <code>/musr/…</code> and much of <code>/gun/…</code> belong to this distribution.</p>
+        <p lang="zh-Hans">你的宏 → musrSim 可执行文件 → Geant4 + ROOT。宏描述实验；musrSim 解释命令并构建应用；Geant4 输运粒子，ROOT 保存选定的可观测量。以 <code>/run</code>、<code>/vis</code>、<code>/control</code> 开头的命令属于 Geant4；<code>/musr/…</code> 以及大部分 <code>/gun/…</code> 属于这个发行版。</p>
+      </div>
+      <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W09-a
+      issued by : version contract
+musrsim-sms targets Geant4 10.7.x (README: "based on Geant4 version
+  10.7.2"). The rest of this course uses 11.4. Keep two environments.
+  A compile error against 11.x is a version mismatch first, not a C++
+  mistake.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W09-a
+      issued by : 版本约定
+musrsim-sms 面向 Geant4 10.7.x（README：“based on Geant4 version
+  10.7.2”）。本课程其余部分使用 11.4，请保留两套环境。
+  针对 11.x 编译出错，首先是版本不匹配，而不是 C++ 写错了。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <h3 class="bi"><span lang="en">Geometry as a command grammar</span><span lang="zh-Hans">把几何写成命令语法</span></h3>
+<pre>/musr/command construct &lt;solid&gt; &lt;name&gt; &lt;dimensions&gt; &lt;material&gt; &lt;x y z&gt; &lt;mother&gt; &lt;rotation&gt; &lt;sensitivity&gt; &lt;volumeID&gt;
+<span class="c"># box  : half-x half-y half-z           (mm)</span>
+<span class="c"># tubs : rmin rmax half-z phi0 dphi     (mm, deg)</span>
+<span class="c"># mother: log_&lt;name&gt;, constructed EARLIER; World uses no_logical_volume</span>
+<span class="c"># sensitivity: musr/ScintSD (a detector) or dead; volumeID becomes det_ID</span></pre>
+      <p lang="en">The textbook's first macro has four ingredients: a World (500 500 500 is a 1 m cube), a sensitive slab (50 50 5 is 100 × 100 × 10 mm, volume ID 1), a beam, and <code>/run/beamOn</code>. There is no <code>/run/initialize</code>: musrSim initialises in its C++ layer.</p>
+      <p lang="zh-Hans">教材的第一个宏有四个要素：World（500 500 500 是 1 m 的立方体）、一块灵敏板（50 50 5 即 100 × 100 × 10 mm，体积 ID 为 1）、束流，以及 <code>/run/beamOn</code>。宏里没有 <code>/run/initialize</code>：musrSim 在其 C++ 层完成初始化。</p>
+      <h3 class="bi"><span lang="en">The beam is more than a particle gun</span><span lang="zh-Hans">束流不只是粒子枪</span></h3>
+      <p lang="en">The <code>/gun</code> family exposes what matters for muon experiments: vertex and spread, momentum and smearing, tilt and pitch, spin polarization, decay-time limits and TURTLE input. For <code>vertexsigma</code>, a positive value gives a Gaussian spread, a negative value a uniform one, and zero none. A 29.8 MeV/c surface muon has 4.1 MeV kinetic energy and stops within about 1.5 mm of plastic. Its spin is the state that precesses in Week 10, which is why polarization sits in the beam model.</p>
+      <p lang="zh-Hans"><code>/gun</code> 系列命令提供了缪子实验关心的一切：顶点及其展宽、动量及其弥散、倾角与 pitch、自旋极化、衰变时间窗以及 TURTLE 输入。对 <code>vertexsigma</code>，正值给出高斯展宽，负值给出均匀分布，零表示无展宽。29.8 MeV/c 的表面缪子动能为 4.1 MeV，在约 1.5 mm 的塑料内就会停止。它的自旋正是第 10 周中会进动的状态，所以极化写在束流模型里。</p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-t1">
+    <p class="cmd">t1-&gt;Draw("det_edep","det_ID==11")<span lang="en">11 · the t1 tree</span><span lang="zh-Hans">11 · t1 树</span></p>
+    <div class="prose">
+      <h2 id="h-t1" class="bi"><span lang="en">One event can contain many hits, and detector identity is data.</span><span lang="zh-Hans">一个事例可以有许多击中，探测器身份本身就是数据。</span></h2>
+      <div class="box">
+        <p class="box-label">Definition 11.1 · <span lang="en">Two layers of the t1 tree</span><span lang="zh-Hans">t1 树的两层</span></p>
+        <p lang="en">Event-level branches hold one value per event: <code>muIniPosX</code>, <code>muDecayTime</code>, <code>muDecayDetID</code>. Hit branches hold <code>det_n</code> values per event: <code>det_ID</code>, <code>det_edep</code>, <code>det_time_start</code>, <code>det_x</code>. Do not flatten or select the two layers the same way.</p>
+        <p lang="zh-Hans">事例级分支每个事例一个值：<code>muIniPosX</code>、<code>muDecayTime</code>、<code>muDecayDetID</code>。击中分支每个事例有 <code>det_n</code> 个值：<code>det_ID</code>、<code>det_edep</code>、<code>det_time_start</code>、<code>det_x</code>。这两层不能用同样的方式展平或选择。</p>
+      </div>
+      <p lang="en">Units, from the musrsim-sms source: energies in MeV, times (<code>muDecayTime</code>, <code>det_time_start</code>) in µs, positions in mm. Event-level branches start every event at the sentinel −1000, meaning "not defined for this event". Several counters can share the <code>musr/ScintSD</code> type; the integer volume ID tells them apart, so selecting a detector is an analysis operation, not a new C++ class.</p>
+      <p lang="zh-Hans">由 musrsim-sms 源码可知单位：能量 MeV，时间（<code>muDecayTime</code>、<code>det_time_start</code>）µs，位置 mm。事例级分支在每个事例开始时被设为哨兵值 −1000，表示“该事例中未定义”。多个计数器可以共用 <code>musr/ScintSD</code> 类型，靠整数体积 ID 区分。因此选择某个探测器是一个分析操作，而不是新写一个 C++ 类。</p>
+      <div class="code">
+        <div class="code-head"><span class="l"><b>Code microscope · mask first, then flatten</b><span class="tag analysis">ANALYSIS</span></span></div>
+<pre>mask = d.det_ID == 11                       <span class="c"># jagged, same shape as det_edep</span>
+edep_F1 = ak.flatten(d.det_edep[<mark>mask</mark>])    <span class="c"># right</span>
+<span class="bad">ak.flatten(d.det_edep)[mask]</span>                <span class="c"># wrong: event structure already gone</span>
+t = t[sel &amp; <mark>(t &gt; 0)</mark>]                       <span class="c"># remove -1000 sentinels before any statistic</span></pre>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Research thread · prune before the million-event run</span><span lang="zh-Hans">研究线索 · 百万事例运行之前先剪枝</span></p>
+        <p lang="en">A branch you do not analyse still costs I/O, storage and parsing time. Decide which quantities answer the question, run a small sample with extra diagnostics, then switch the rest off with <code>/musr/command rootOutput &lt;branch&gt; off</code> and the <code>storeOnly…</code> switches.</p>
+        <p lang="zh-Hans">不分析的分支照样消耗 I/O、存储和解析时间。先确定哪些量能回答问题，用带额外诊断的小样本试跑，然后用 <code>/musr/command rootOutput &lt;branch&gt; off</code> 和 <code>storeOnly…</code> 系列开关关掉其余分支。</p>
+      </div>
+      <div class="g4ex" role="note" lang="en"><span class="e">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W09-b
+      issued by : textbook 11.6 production loop, checked against musrsim-sms source
+"../musrSim 201.mac job$i $i" uses $i as a seed offset. In
+  musrDetectorMessenger.cc the offset enters ONLY under
+  /musr/run/randomOption 1 (seeds = system time + 100 x offset).
+  201.mac ships with randomOption 2 (seed = event number), and the
+  default is 0 (no initialisation): every job is then IDENTICAL.
+  Set randomOption 1 in the production macro and keep the printed
+  "seed1: ... seed2: ..." line with each output file.
+*** This is just a warning message. ***
+<span class="e">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="e">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W09-b
+      issued by : 教材 11.6 节生产循环，对照 musrsim-sms 源码
+"../musrSim 201.mac job$i $i" 把 $i 当作种子偏移。在
+  musrDetectorMessenger.cc 中，偏移只在 /musr/run/randomOption 1
+  下生效（种子 = 系统时间 + 100 × 偏移）。201.mac 自带的是
+  randomOption 2（种子 = 事例号），默认值为 0（不初始化）：
+  此时每个作业都完全相同。请在生产宏中设置 randomOption 1，
+  并把打印出的 "seed1: ... seed2: ..." 行与输出文件一起保存。
+*** This is just a warning message. ***
+<span class="e">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-toy">
+    <p class="cmd">/musr/command construct<span lang="en">interactive toy model</span><span lang="zh-Hans">交互玩具模型</span></p>
+    <div>
+      <h2 id="h-toy" class="bi"><span lang="en">Type a macro and see the geometry it really builds.</span><span lang="zh-Hans">输入一个宏，看它实际搭出什么几何。</span></h2>
+      <p class="prose" style="color:var(--muted);max-width:64ch;margin-top:14px" lang="en">Edit the macro or load a preset. The parser applies the textbook's rules: half-lengths, mothers first, <code>log_</code> names, unique IDs, no <code>/run/initialize</code>.</p>
+      <p class="prose" style="color:var(--muted);max-width:64ch" lang="zh-Hans">编辑宏或载入预设。解析器按教材的规则检查：半长、先母体、<code>log_</code> 命名、ID 唯一、不写 <code>/run/initialize</code>。</p>
+      <div class="btns" style="border:1px solid var(--rule);border-radius:4px 4px 0 0;margin-top:20px">
+        <button type="button" data-w9preset="first" id="w9-p1">first_sim.mac</button>
+        <button type="button" data-w9preset="tf" id="w9-p2">tf_musr.mac</button>
+        <button type="button" data-w9preset="order" id="w9-p3"><span lang="en">broken: order</span><span lang="zh-Hans">错误：顺序</span></button>
+        <button type="button" data-w9preset="full" id="w9-p4"><span lang="en">broken: full lengths</span><span lang="zh-Hans">错误：全长</span></button>
+      </div>
+      <label for="w9-macro" class="ctl" style="margin:0;border:1px solid var(--rule);border-top:0;padding:12px;background:var(--panel)"><span>macro</span><textarea id="w9-macro" spellcheck="false"></textarea></label>
+      <div class="display">
+        <div class="display-head"><span class="toy">TOY PARSER · <span lang="en">not musrSim</span><span lang="zh-Hans">非 musrSim</span></span><span><span lang="en">blue: musr/ScintSD · grey: dead</span><span lang="zh-Hans">蓝色：musr/ScintSD · 灰色：dead</span></span></div>
+        <canvas id="w9-display" class="tele" aria-label="Side view of the geometry built by the macro"></canvas>
+      </div>
+      <div class="panels one">
+        <div>
+          <div class="verbose"><pre id="w9-msgs"></pre></div>
+          <div class="scroll"><table class="tbl" id="w9-table"></table></div>
+        </div>
+      </div>
+      <h3 class="bi"><span lang="en">Mask first, then flatten</span><span lang="zh-Hans">先掩码，再展平</span></h3>
+      <div class="controls" style="border-top:1px solid var(--rule);border-radius:4px 4px 0 0">
+        <label class="ctl" for="w9-det"><span class="ctl-row">mask = d.det_ID ==</span><select id="w9-det"><option value="1">1</option><option value="11" selected>11</option><option value="201">201</option></select></label>
+      </div>
+      <div class="panels one">
+        <div>
+          <div class="scroll"><table class="tbl" id="w9-jag"></table></div>
+<pre style="margin-top:12px"><span class="ok" id="w9-right"></span>
+<span class="bad" id="w9-wrong"></span></pre>
+        </div>
+      </div>
+      <div class="toybox">
+        <p><b>TOY · <span lang="en">what it does and does not do</span><span lang="zh-Hans">它能做什么、不能做什么</span></b></p>
+        <p lang="en">The parser follows the construct grammar of the musrsim-sms tutorial and source for box and tubs. It ignores rotations and fork-specific solids, does not run Geant4, and checks protrusion only along the mother's axes. The five-event table is made up to show the array shapes; the error message is the one awkward 2.x raises in our test.</p>
+        <p lang="zh-Hans">解析器按 musrsim-sms 教程与源码中 box 和 tubs 的 construct 语法工作。它忽略旋转和分支特有的实体，不运行 Geant4，只沿母体坐标轴检查是否伸出。五个事例的表格是为展示数组形状编造的；错误信息是 awkward 2.x 在我们的测试中给出的。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-task">
+    <p class="cmd">../musrSim 201.mac job1 1<span lang="en">hands-on · Mission 11</span><span lang="zh-Hans">动手任务 · 任务 11</span></p>
+    <div class="prose">
+      <h2 id="h-task" class="bi"><span lang="en">Build musrSim, ask it what it can do, run a macro, analyse t1, then go to production.</span><span lang="zh-Hans">编译 musrSim，问它能做什么，运行一个宏，分析 t1，再进入批量生产。</span></h2>
+      <p lang="en">We could not build musrSim in our sandbox (it needs Geant4 10.7 and ROOT). Commands, file names and printed messages below are taken from the musrsim-sms source and README, not from a run, and are marked as such. The Python analysis was run and checked on a synthetic t1 file with the same branch names, units and sentinels.</p>
+      <p lang="zh-Hans">我们无法在沙盒中编译 musrSim（它需要 Geant4 10.7 和 ROOT）。下面的命令、文件名和打印信息均取自 musrsim-sms 源码与 README，而非实际运行，并已标明。Python 分析在一个分支名、单位和哨兵值都相同的合成 t1 文件上实际运行并核对过。</p>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Set up a Geant4 10.7 + ROOT environment and build</span><span lang="zh-Hans">建立 Geant4 10.7 + ROOT 环境并编译</span></h3><label class="done" for="w09-s1"><input type="checkbox" id="w09-s1" data-progress="w09"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag musrsim">MUSRSIM</span></span><button class="copy" type="button" data-copy="c9-b">copy</button></div>
+<pre id="c9-b"># a matched Geant4 + ROOT view, e.g. on a CVMFS cluster (README):
+source /cvmfs/sft.cern.ch/lcg/views/LCG_101/x86_64-centos7-gcc11-opt/setup.sh
+geant4-config --version          # expect 10.7.x
+root-config --version
+git clone https://github.com/kimsiang/musrsim-sms.git
+cd musrsim-sms &amp;&amp; mkdir build &amp;&amp; cd build
+cmake .. &amp;&amp; make -j4             # the executable is ./musrSim (CMakeLists: add_executable(musrSim …))</pre></div>
+          <p lang="en">The README's build lines omit <code>cmake ..</code>; the textbook includes it. If the build fails against Geant4 11.x, check the version before reading the C++ errors.</p>
+          <p lang="zh-Hans">README 的编译步骤漏了 <code>cmake ..</code>，教材里有。如果针对 Geant4 11.x 编译失败，先检查版本，再去读 C++ 报错。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Ask the executable what it supports</span><span lang="zh-Hans">问可执行文件支持什么</span></h3><label class="done" for="w09-s2"><input type="checkbox" id="w09-s2" data-progress="w09"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag musrsim">MUSRSIM</span></span><button class="copy" type="button" data-copy="c9-ls">copy</button></div>
+<pre id="c9-ls">mkdir -p run/data &amp;&amp; cd run
+../musrSim
+# at the Idle&gt; prompt:
+ls /musr/command
+help /musr/command/construct
+ls /gun
+/control/manual /musr
+exit</pre></div>
+          <p lang="en">A PDF describes an intended interface; the executable shows the one you have. For forked scientific software, <code>ls</code>, <code>help</code> and <code>/control/manual</code> are part of reproducibility, not just debugging.</p>
+          <p lang="zh-Hans">PDF 描述的是设想中的接口，可执行文件展示的才是你手上真正的接口。对于有多个分支的科学软件，<code>ls</code>、<code>help</code> 和 <code>/control/manual</code> 是可复现性的一部分，而不只是调试手段。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Run your first macro</span><span lang="zh-Hans">运行第一个宏</span></h3><label class="done" for="w09-s3"><input type="checkbox" id="w09-s3" data-progress="w09"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="files">
+            <details><summary><b>first_sim.mac</b><span class="tag musrsim">MUSRSIM</span><button class="copy" type="button" data-copy="f9-mac">copy</button></summary><pre id="f9-mac" data-src="code/week09/first_sim.mac"># ---- GEOMETRY (half-lengths in mm) ----
+/musr/command construct box World 500 500 500 G4_AIR 0 0 0 no_logical_volume norot dead -1
+/musr/command construct box Slab 50 50 5 G4_PLASTIC_SC_VINYLTOLUENE 0 0 0 log_World norot musr/ScintSD 1
+# ---- OUTPUT ----
+/musr/command SetOutputFileName DEFAULT
+/musr/command storeOnlyEventsWithHits true
+# ---- BEAM ----
+/gun/primaryparticle mu+
+/gun/vertex 0 0 -100 mm
+/gun/vertexsigma 5 5 0 mm
+/gun/momentum 29.8 MeV
+/gun/muonPolarizVector 0 0 -1
+/gun/muonPolarizFraction 1
+/gun/decaytimelimits -1 -1 2197.03 ns
+# ---- GO (no /run/initialize: musrSim initialises in C++) ----
+/run/beamOn 2000</pre></details>
+          </div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal (in build/run, with data/ present)</b></span><button class="copy" type="button" data-copy="c9-r">copy</button></div>
+<pre id="c9-r">../musrSim first_sim.mac
+root -l data/musrSim_0.root -e 't1->Draw("det_edep","det_ID==1")'</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">printed by musrSim.cc (from the source)</span><span lang="zh-Hans">musrSim.cc 打印的信息（取自源码）</span></b></span></div>
+<pre>musrSim.cc: Set default output ROOT file: data/musrSim_0.root</pre></div>
+          <p lang="en">The run number is <code>atoi()</code> of the macro name: "first_sim.mac" gives 0, "201.mac" gives 201, and "run/201.mac" also gives 0. Run from the macro's directory, and create <code>data/</code> first, or ROOT cannot create the output file. Physics to expect: the 29.8 MeV/c μ⁺ stops in the slab and deposits its 4.1 MeV kinetic energy; its decay positrons add a broader component.</p>
+          <p lang="zh-Hans">运行号是宏文件名的 <code>atoi()</code>：“first_sim.mac” 得 0，“201.mac” 得 201，而 “run/201.mac” 也得 0。请在宏所在目录运行，并先建好 <code>data/</code>，否则 ROOT 无法创建输出文件。预期的物理：29.8 MeV/c 的 μ⁺ 停在板中，沉积其 4.1 MeV 动能；衰变正电子再贡献一个较宽的成分。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Analyse t1 in Python</span><span lang="zh-Hans">用 Python 分析 t1</span></h3><label class="done" for="w09-s4"><input type="checkbox" id="w09-s4" data-progress="w09"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">No musrSim build yet? <code>make_synthetic_t1.py</code> writes <code>data/musrSim_201.root</code> with t1's branch names, jagged hits, units and −1000 sentinels (μ⁺ lifetime 2.1969811 µs). It is not musrSim output, but it lets you finish the analysis today and rerun it unchanged on real files.</p>
+          <p lang="zh-Hans">还没编译好 musrSim？<code>make_synthetic_t1.py</code> 会写出 <code>data/musrSim_201.root</code>，其分支名、锯齿击中结构、单位和 −1000 哨兵值都与 t1 相同（μ⁺ 寿命 2.1969811 µs）。它不是 musrSim 的输出，但能让你今天就完成分析，之后不改一行就能在真实文件上重跑。</p>
+          <div class="files">
+            <details><summary><b>make_synthetic_t1.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f9-syn">copy</button></summary><pre id="f9-syn" data-src="code/week09/make_synthetic_t1.py">"""Write data/musrSim_201.root: a SYNTHETIC tree with the branch names, jagged hit
+structure, units (MeV, microseconds) and -1000 sentinels of musrSim's t1 tree.
+It is NOT musrSim output. It exists so the Week 9 analysis can be run and checked
+before you have a musrSim build. Physics in it: mu+ lifetime 2.1969811 us (PDG).
+"""
+import os
+
+import awkward as ak
+import numpy as np
+import uproot
+
+rng = np.random.default_rng(2026)
+N = 20000
+TAU = 2.1969811
+os.makedirs("data", exist_ok=True)
+
+# Where the muon decayed: 80% in the sample (volume ID 201), 15% in the counter 11, 5% elsewhere/escaped
+where = rng.choice([201, 11, -1000], size=N, p=[0.80, 0.15, 0.05])
+t_dec = rng.exponential(TAU, N)
+mu_decay_time = np.where(where == -1000, -1000.0, t_dec)          # sentinel when not defined
+mu_decay_det = where.astype(np.int32)
+
+det_ID, det_edep, det_t = [], [], []
+for i in range(N):
+    ids, ed, tt = [], [], []
+    if where[i] != -1000 and rng.random() &lt; 0.95:                  # the stopping muon deposits in its volume
+        ids.append(int(where[i])); ed.append(float(rng.normal(4.1, 0.3))); tt.append(float(rng.normal(0.010, 0.002)))
+    for counter in (1, 11):                                         # decay positron may hit a counter
+        if where[i] != -1000 and rng.random() &lt; 0.30:
+            z = rng.normal()
+            ids.append(counter); ed.append(float(max(0.05, 1.6 + 0.12 * -np.log(z * z + 1e-12)))); tt.append(float(t_dec[i] + rng.normal(0, 0.001)))
+    det_ID.append(ids); det_edep.append(ed); det_t.append(tt)
+
+det_ID = ak.Array(det_ID)
+branches = {
+    "muDecayDetID": mu_decay_det,
+    "muDecayTime": mu_decay_time,
+    "det": ak.zip({"ID": ak.values_astype(det_ID, np.int32), "edep": ak.Array(det_edep), "time_start": ak.Array(det_t)}),
+}
+with uproot.recreate("data/musrSim_201.root") as f:
+    # musrSim names: det_n (hit counter), det_ID, det_edep, det_time_start
+    f.mktree("t1", {k: v.type if hasattr(v, "type") else v.dtype for k, v in branches.items()},
+             counter_name=lambda counted: counted + "_n",
+             field_name=lambda outer, inner: outer + "_" + inner)
+    f["t1"].extend(branches)
+print("wrote data/musrSim_201.root with", N, "events (SYNTHETIC)")</pre></details>
+            <details><summary><b>analyse_t1.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f9-an">copy</button></summary><pre id="f9-an" data-src="code/week09/analyse_t1.py">"""Week 9 analysis of musrSim's t1 tree (textbook 11.3-11.4).
+
+    pip install uproot awkward numpy scipy
+    python3 analyse_t1.py data/musrSim_201.root
+
+Works on real musrSim output and on the synthetic file from make_synthetic_t1.py.
+"""
+import sys
+
+import awkward as ak
+import numpy as np
+import uproot
+from scipy.optimize import curve_fit
+
+path = sys.argv[1] if len(sys.argv) &gt; 1 else "data/musrSim_201.root"
+with uproot.open(path) as f:
+    t = f["t1"]
+    d = t.arrays(["det_n", "det_ID", "det_edep", "det_time_start",
+                  "muDecayTime", "muDecayDetID"], library="ak")
+    print("events:", t.num_entries)
+
+# --- 11.3: event-level vs hit-level -----------------------------------------
+print("hits per event (mean det_n):", round(float(ak.mean(d.det_n)), 3))
+all_edep = ak.flatten(d.det_edep)                      # every hit in every detector
+mask = d.det_ID == 11                                  # jagged mask, same shape as det_edep
+edep_F1 = ak.flatten(d.det_edep[mask])                 # mask FIRST, then flatten
+print("hits in all detectors:", len(all_edep), "  hits in det 11:", len(edep_F1),
+      "  mean Edep det 11 [MeV]:", round(float(np.mean(edep_F1)), 3))
+try:
+    wrong = ak.flatten(d.det_edep)[mask]               # flatten FIRST: the event structure is gone
+    print("flatten-then-mask returned", len(wrong), "values (not what you wanted)")
+except Exception as err:
+    print("flatten-then-mask fails:", type(err).__name__)
+
+# --- 11.4: lifetime of muons that decayed in volume 201 -----------------------
+def decay(tt, N0, tau, bkg):
+    return N0 * np.exp(-tt / tau) + bkg
+
+tdec = np.asarray(d.muDecayTime)
+sel = np.asarray(d.muDecayDetID) == 201
+print("sentinel values (-1000) in muDecayTime:", int((tdec == -1000).sum()))
+
+# A sentinel is not a measurement. A fixed histogram range happens to hide it; a mean does not.
+print("mean decay time, sentinels kept   [us]:", round(float(tdec[sel | (tdec == -1000)].mean()), 2))
+good = sel &amp; (tdec &gt; 0)
+print("mean decay time, sentinels removed [us]:", round(float(tdec[good].mean()), 4))
+
+tt = tdec[good]
+counts, edges = np.histogram(tt, bins=120, range=(0, 12))
+centres = 0.5 * (edges[:-1] + edges[1:])
+popt, pcov = curve_fit(decay, centres, counts, p0=[counts.max(), 2.2, 0.0])
+print(f"fit: tau = {popt[1]:.4f} +/- {np.sqrt(pcov[1, 1]):.4f} us   (PDG mu+: 2.1970 us)")</pre></details>
+          </div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c9-py">copy</button></div>
+<pre id="c9-py">pip install uproot awkward numpy scipy
+python3 make_synthetic_t1.py
+python3 analyse_t1.py data/musrSim_201.root</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (synthetic file, our run)</span><span lang="zh-Hans">预期（合成文件，我们的运行）</span></b></span></div>
+<pre>events: 20000
+hits per event (mean det_n): 1.469
+hits in all detectors: 29386   hits in det 11: 8450   mean Edep det 11 [MeV]: 2.533
+flatten-then-mask fails: IndexError
+sentinel values (-1000) in muDecayTime: 1023
+mean decay time, sentinels kept   [us]: -57.96
+mean decay time, sentinels removed [us]: 2.1843
+fit: tau = 2.1847 +/- 0.0270 us   (PDG mu+: 2.1970 us)</pre></div>
+          <p lang="en">The fit agrees with the input lifetime within 0.5σ. A fixed histogram range of 0–12 µs happens to hide the sentinels, but a mean does not: −58 µs is what one forgotten cut does. On real musrSim data, also check that <code>muDecayDetID == 201</code> really is your sample's volume ID.</p>
+          <p lang="zh-Hans">拟合结果与输入寿命在 0.5σ 内一致。0–12 µs 的固定直方图范围碰巧把哨兵值挡在了外面，但均值不会：−58 µs 就是漏掉一个选择条件的后果。在真实的 musrSim 数据上，还要确认 <code>muDecayDetID == 201</code> 确实是你样品的体积 ID。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Mission 11: two independent samples, then a campaign</span><span lang="zh-Hans">任务 11：两个独立样本，再到批量生产</span></h3><label class="done" for="w09-s5"><input type="checkbox" id="w09-s5" data-progress="w09"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Run two samples with different seed offsets, produce the same energy spectrum and efficiency from each and from the combination, and explain why the statistical uncertainty shrinks as 1/√N (Week 1). Switch off one branch you do not need. Then scale up with the corrected script, which forces <code>randomOption 1</code>, creates <code>data/</code> and keeps each job's seeds.</p>
+          <p lang="zh-Hans">用不同的种子偏移运行两个样本，分别以及合并后给出相同的能谱和效率，并解释统计不确定度为何按 1/√N 缩小（第 1 周）。关掉一个你不需要的分支。然后用修正后的脚本扩大规模：它强制使用 <code>randomOption 1</code>，建立 <code>data/</code>，并保存每个作业的种子。</p>
+          <div class="files">
+            <details><summary><b>production.sh</b><span class="tag musrsim">MUSRSIM</span><button class="copy" type="button" data-copy="f9-prod">copy</button></summary><pre id="f9-prod" data-src="code/week09/production.sh">#!/bin/bash
+# Week 9: split one macro into independent jobs (textbook 11.6, corrected).
+# The seed offset (3rd argument) only takes effect with /musr/run/randomOption 1
+# in the macro; 201.mac as shipped uses randomOption 2, which gives identical jobs.
+set -e
+cd "$(dirname "$0")"          # run where 201.mac lives: the run number is atoi("201.mac")
+mkdir -p data                 # musrSim writes data/musrSim_&lt;run&gt;_&lt;name&gt;.root and will not create data/
+sed 's|^/musr/run/randomOption .*|/musr/run/randomOption 1|' 201.mac &gt; 201_prod.mac
+grep -q '^/musr/run/randomOption 1' 201_prod.mac || echo '/musr/run/randomOption 1' | cat - 201_prod.mac &gt; tmp &amp;&amp; mv tmp 201_prod.mac
+for i in $(seq 1 50); do
+  ../musrSim 201_prod.mac job${i} ${i} &gt; data/job${i}.log 2&gt;&amp;1
+  grep -m1 "seed1:" data/job${i}.log     # keep the seeds: they are your provenance
+done
+hadd -f data/musrSim_201_merged.root data/musrSim_201_job*.root</pre></details>
+          </div>
+          <p lang="en">Proof that two jobs are independent: their first ten <code>muDecayTime</code> values differ. If they are identical, the seeds were not set, whatever the command line said.</p>
+          <p lang="zh-Hans">证明两个作业相互独立：它们的前十个 <code>muDecayTime</code> 值不同。如果完全相同，说明种子没有设置成功，无论命令行写了什么。</p>
+        </li>
+      </ol>
+      <p class="progress" data-progress-out="w09"></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-quiz">
+    <p class="cmd">/control/verbose 2<span lang="en">self-check</span><span lang="zh-Hans">自测</span></p>
+    <div>
+      <h2 id="h-quiz" class="bi"><span lang="en">Five questions. Each answer explains itself.</span><span lang="zh-Hans">五道题，每个答案都附有解释。</span></h2>
+      <div id="quiz"></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-err">
+    <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
+    <div>
+      <h2 id="h-err" class="bi"><span lang="en">Five musrSim mistakes that still produce a ROOT file.</span><span lang="zh-Hans">五个照样能产出 ROOT 文件的 musrSim 错误。</span></h2>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W09-c
+      issued by : /musr/command construct box …
+Full lengths typed where half-lengths are expected: every volume is
+  2x too large and may now overlap its neighbours. Write the intended
+  full size in a comment next to each line.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W09-c
+      issued by : /musr/command construct box …
+在应填半长的地方填了全长：每个体积都大了一倍，可能与相邻体积
+  重叠。在每行旁的注释中写明设计的全尺寸。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W09-d
+      issued by : macro
+/run/initialize copied from a generic Geant4 tutorial. musrSim
+  initialises in C++; the extra line duplicates work or conflicts
+  with the application's sequence. Go straight to /run/beamOn.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W09-d
+      issued by : 宏文件
+从通用 Geant4 教程里抄来了 /run/initialize。musrSim 在 C++ 中
+  完成初始化；多出的这一行会重复工作或打乱应用的执行顺序。
+  直接写 /run/beamOn。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W09-e
+      issued by : analysis
+Sentinel values (-1000) kept in a fit, a mean or an auto-ranged
+  histogram. Our synthetic test: mean decay time -57.96 us instead
+  of 2.18 us. Cut t &gt; 0 (or != -1000) first.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W09-e
+      issued by : 分析
+在拟合、均值或自动范围的直方图中保留了哨兵值（-1000）。
+  我们的合成测试：平均衰变时间为 -57.96 us，而不是 2.18 us。
+  先选 t &gt; 0（或 != -1000）。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
+*** G4Exception : FATAL (musrErrorMessage)
+      issued by : musrRootOutput::BeginOfRunAction()
+"Root output file data/musrSim_0.root can not be created".
+  The data/ directory does not exist. musrSim does not create it.
+*** Fatal Exception ***
+<span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
+*** G4Exception : FATAL (musrErrorMessage)
+      issued by : musrRootOutput::BeginOfRunAction()
+"Root output file data/musrSim_0.root can not be created"。
+  data/ 目录不存在，musrSim 不会自动创建它。
+*** Fatal Exception ***
+<span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
+      <p class="cap"><span lang="en">The FATAL message text is from musrRootOutput.cc. Course-W09-b (identical jobs) is in section 11 above.</span><span lang="zh-Hans">FATAL 信息原文取自 musrRootOutput.cc。Course-W09-b（作业完全相同）见上文第 11 节。</span></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-review">
+    <p class="cmd">/control/saveHistory<span lang="en">review notes</span><span lang="zh-Hans">复习要点</span></p>
+    <div class="prose">
+      <h2 id="h-review" class="bi"><span lang="en">Before you close the run.</span><span lang="zh-Hans">结束运行之前。</span></h2>
+      <ul class="review">
+        <li><label for="w09-r1"><input type="checkbox" id="w09-r1"><span lang="en">Did I verify the musrSim/Geant4 version combination before debugging compilation?</span><span lang="zh-Hans">调试编译之前，我是否核实了 musrSim/Geant4 的版本组合？</span></label></li>
+        <li><label for="w09-r2"><input type="checkbox" id="w09-r2"><span lang="en">Did I inspect the live command tree rather than assume a command exists?</span><span lang="zh-Hans">我是否查看了实际的命令树，而不是假定某条命令存在？</span></label></li>
+        <li><label for="w09-r3"><input type="checkbox" id="w09-r3"><span lang="en">Did I check every box and tube dimension as a half-length?</span><span lang="zh-Hans">我是否把每个盒子和圆管的尺寸都当作半长检查过？</span></label></li>
+        <li><label for="w09-r4"><input type="checkbox" id="w09-r4"><span lang="en">Did I mask on det_ID before flattening, and remove sentinels before fitting?</span><span lang="zh-Hans">我是否先按 det_ID 掩码再展平，并在拟合前去掉哨兵值？</span></label></li>
+        <li><label for="w09-r5"><input type="checkbox" id="w09-r5"><span lang="en">Can another person analyse my ROOT file without opening the musrSim source?</span><span lang="zh-Hans">别人能否在不打开 musrSim 源码的情况下分析我的 ROOT 文件？</span></label></li>
+      </ul>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Remark · debt repaid, debt taken on</span><span lang="zh-Hans">小结 · 还清的债与新欠的债</span></p>
+        <p lang="en">Repaid: geometry is still geometry and a sensitive detector is still a sensitive detector; now you assemble them through a reproducible text interface. Taken on: the muon's spin has been decorative so far. Next week it precesses in a field and becomes the measurement.</p>
+        <p lang="zh-Hans">还清的债：几何仍然是几何，灵敏探测器仍然是灵敏探测器；只是现在你通过一个可复现的文本接口来组装它们。新欠的债：缪子的自旋到目前为止只是装饰。下周它将在磁场中进动，成为测量本身。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-share">
+    <p class="cmd">/vis/ogl/export week09.gif<span lang="en">share this week</span><span lang="zh-Hans">分享本周成果</span></p>
+    <div class="share">
+      <figure class="fig">
+        <img src="media/week09-musrsim.gif" width="720" height="900" alt="A musrSim macro builds its geometry line by line, then a muon decay-time histogram fills and follows the 2.197 microsecond exponential" loading="lazy">
+        <figcaption><span lang="en">Geometry from tf_musr.mac drawn to scale; the histogram is the SYNTHETIC t1 file. Long-press or right-click to save.</span><span lang="zh-Hans">按 tf_musr.mac 等比例绘制的几何；直方图来自合成 t1 文件。长按或右键即可保存。</span></figcaption>
+      </figure>
+      <div class="prose">
+        <h2 id="h-share" class="bi"><span lang="en">Fifteen lines of text are an experiment.</span><span lang="zh-Hans">十五行文字，就是一个实验。</span></h2>
+        <p lang="en">Post your fitted lifetime with its error, and the first ten muDecayTime values of two jobs side by side, proving they are independent.</p>
+        <p lang="zh-Hans">发出你拟合得到的寿命及误差，以及两个作业的前十个 muDecayTime 值并排对照，证明它们相互独立。</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" id="pager" aria-label="Week navigation"></nav>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 10–11 · musrsim-sms source and README · PDG RPP 2024</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 10–11 章 · musrsim-sms 源码与 README · PDG RPP 2024</span>
+  </footer>
+</div>
+<script src="assets/course.js"></script>
+<script src="assets/week09.js"></script>
+</body>
+</html>

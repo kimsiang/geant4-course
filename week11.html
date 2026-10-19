@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 11 · Debug and validate</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0, Week 11: walk a debugging tree through six deliberately broken simulations, then say exactly how far a Geant4 result has been validated.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+<style>
+#w11-cases button.on{background:var(--fg);color:var(--bg)}
+.w11-tree{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-top:0}
+.w11-node{border-top:1px solid var(--rule);padding:10px 12px}
+.w11-node.is-broken{background:color-mix(in srgb,var(--neg) 10%,transparent)}
+.w11-row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.w11-q{flex:1 1 280px}
+.w11-q small{display:block;color:var(--muted);font:400 .74rem/1.4 var(--mono);margin-top:2px}
+.w11-act{display:flex;gap:6px}
+.w11-act button{font:500 .74rem/1 var(--mono);padding:7px 10px;border:1px solid var(--rule);background:var(--panel);color:var(--fg);border-radius:3px;cursor:pointer}
+.w11-act button:disabled{opacity:.4;cursor:default}
+.w11-ev{margin:10px 0 0;font-size:.74rem;overflow-x:auto}
+#w11-report{white-space:pre-wrap}
+#w11-rungs input[type=checkbox]{width:18px;height:18px;flex:none}
+.w11-num{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.w11-num input{width:100%;font:400 .85rem var(--mono);padding:6px 8px;border:1px solid var(--rule);background:var(--panel);color:var(--fg);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Week 11 of 12</span><span lang="zh-Hans">第 11 / 12 周</span></span>
+    <span class="bar-r">
+      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">$ <span>git checkout fault-1</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">Break the simulation on purpose, then say exactly how far you trust it.</span><span lang="zh-Hans">故意弄坏模拟，然后准确说出你有多信任它。</span></h1>
+      <p class="lede" lang="en">Six copies of your Week 5 counter, each with one wrong line. Most compile, run and print plausible numbers. You find them by walking a tree in a fixed order rather than by guessing. Then you compare a working simulation with the PDG and find that two clear "disagreements" were both mistakes in the comparison.</p>
+      <p class="lede" lang="zh-Hans">你第 5 周计数器的六个副本，每个都有一行写错。大多数能编译、能运行，还能打印出看似合理的数字。你要按固定顺序走一棵决策树来找出它们，而不是靠猜。然后你把一个正常的模拟与 PDG 比较，会发现两个明显的“不一致”其实都是比较本身出了错。</p>
+      <ul class="meta">
+        <li class="stage"><b>5 · Trust it</b><span lang="en">stage · 信任</span><span lang="zh-Hans">阶段 · 信任</span></li>
+        <li><b>Missions 9–10</b><span lang="en">textbook ch. 13–14</span><span lang="zh-Hans">教材第 13–14 章</span></li>
+        <li><b>≈ 3 h</b><span lang="en">in groups</span><span lang="zh-Hans">分组进行</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="Week summary">
+      <div role="row"><span role="cell">week11</span></div>
+      <div role="row"><span role="cell"><span lang="en">fault branches</span><span lang="zh-Hans">故障分支</span></span><span role="cell">6</span></div>
+      <div role="row"><span role="cell"><span lang="en">that crash</span><span lang="zh-Hans">会崩溃的</span></span><span role="cell"><b>1</b></span></div>
+      <div role="row"><span role="cell">dE/dx vs PDG</span><span role="cell">≤ 0.4σ <span lang="en">at 5 energies</span><span lang="zh-Hans">（5 个能量点）</span></span></div>
+      <div role="row"><span role="cell"><span lang="en">ladder rung</span><span lang="zh-Hans">阶梯</span></span><span role="cell">3 · physics benchmarked</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-goals">
+    <p class="cmd">/run/initialize<span lang="en">learning goals</span><span lang="zh-Hans">学习目标</span></p>
+    <div class="prose">
+      <h2 id="h-goals" class="bi"><span lang="en">By the end of this week you can find a one-line fault and grade a result honestly.</span><span lang="zh-Hans">本周结束时，你能找出一行之错，并诚实地给结果定级。</span></h2>
+      <ol class="goals">
+        <li><span lang="en">Walk the <dfn>debugging tree<span class="kt" lang="zh-Hans">调试决策树</span></dfn> in causal order and name the evidence each layer needs.</span><span lang="zh-Hans">按因果顺序走<dfn>调试决策树<span class="kt" lang="en">debugging tree</span></dfn>，并说出每一层需要什么证据。</span></li>
+        <li><span lang="en">Separate a <dfn>symptom<span class="kt" lang="zh-Hans">症状</span></dfn> from its <dfn>root cause<span class="kt" lang="zh-Hans">根本原因</span></dfn>, and rule out statistics before suspecting code.</span><span lang="zh-Hans">区分<dfn>症状<span class="kt" lang="en">symptom</span></dfn>与<dfn>根本原因<span class="kt" lang="en">root cause</span></dfn>，在怀疑代码之前先排除统计涨落。</span></li>
+        <li><span lang="en">Use an AI assistant with evidence and a falsifiable request, and keep the physics decisions yourself.</span><span lang="zh-Hans">带着证据和可证伪的请求使用 AI 助手，物理上的决定仍由自己做。</span></li>
+        <li><span lang="en">Quote a discrepancy in units of combined uncertainty, after checking that the two observables are the same quantity.</span><span lang="zh-Hans">先确认两个可观测量是同一个量，再以合成不确定度为单位给出偏差。</span></li>
+        <li><span lang="en">Place a result on the <dfn>validation ladder<span class="kt" lang="zh-Hans">验证阶梯</span></dfn> and say which rung comes next.</span><span lang="zh-Hans">把结果放到<dfn>验证阶梯<span class="kt" lang="en">validation ladder</span></dfn>上，并说出下一阶是什么。</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-tree">
+    <p class="cmd">/tracking/verbose 1<span lang="en">13 · debugging is a tree</span><span lang="zh-Hans">13 · 调试是一棵树</span></p>
+    <div class="prose">
+      <h2 id="h-tree" class="bi"><span lang="en">Retrace the path you took to build the system, and find where it left your expectation.</span><span lang="zh-Hans">沿着搭建系统的路径倒走一遍，找出它在哪里偏离了你的预期。</span></h2>
+      <div class="box">
+        <p class="box-label">Definition 13.1 · <span lang="en">Debugging tree</span><span lang="zh-Hans">调试决策树</span></p>
+        <p lang="en">A causally ordered checklist that narrows a vague symptom to one code-level culprit: generated? → geometry? → entered the detector? → physics enabled? → sensitive detector attached? → hit generated? → data recorded? → analysis correct? Investigate in the same order every time. That fixed order is what makes debugging a skill you can transfer to the next project.</p>
+        <p lang="zh-Hans">一份按因果排序的检查清单，把模糊的症状收窄到代码中的某一处：产生了吗？→ 几何对吗？→ 进入探测器了吗？→ 物理过程开了吗？→ 灵敏探测器挂上了吗？→ 产生击中了吗？→ 数据记录了吗？→ 分析对吗？每次都按同样的顺序排查。正是这个固定顺序，让调试成为能带到下一个项目的技能。</p>
+      </div>
+      <p lang="en">We add a layer 0 in front, taken from the textbook's last pitfall: is the deviation beyond 2–3σ at all? It costs one line of arithmetic and, in our fault lab, it would have saved one of the six investigations. Each layer has a cheap test:</p>
+      <p lang="zh-Hans">我们在最前面加了第 0 层，取自教材的最后一个陷阱：偏差到底有没有超过 2–3σ？只需一行算术，在我们的故障实验里它能省掉六次排查中的一次。每一层都有一个低成本的检查：</p>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>layer</th><th lang="en">cheap test</th><th lang="zh-Hans">低成本检查</th><th lang="en">what it looked like in our runs</th><th lang="zh-Hans">在我们的运行中是什么样</th></tr></thead>
+        <tbody>
+          <tr><td>L0</td><td>(x − x_ref)/σ</td><td lang="en">fault-6: 0.125 ± 0.023 vs 0.1095 → 0.7σ, nothing broken</td><td lang="zh-Hans">fault-6：0.125 ± 0.023 对 0.1095 → 0.7σ，什么都没坏</td></tr>
+          <tr><td>L1</td><td>/tracking/verbose 1</td><td lang="en">fault-1: Step 0 at z = −800 mm in a world of half-length 500 mm</td><td lang="zh-Hans">fault-1：第 0 步在 z = −800 mm，world 半长 500 mm</td></tr>
+          <tr><td>L2</td><td>checkOverlaps = true</td><td lang="en">fault-5: G4Exception GeomVol1002, just a warning; the run went on</td><td lang="zh-Hans">fault-5：G4Exception GeomVol1002，只是警告；运行照常继续</td></tr>
+          <tr><td>L3–L4</td><td>trace + /process/list</td><td lang="en">fault-4: crosses the counter with dE = 0; list shows Transportation, Decay</td><td lang="zh-Hans">fault-4：穿过计数器但 dE = 0；列表只有 Transportation、Decay</td></tr>
+          <tr><td>L5</td><td lang="en">read the init log</td><td lang="en">fault-3: fatal G4Exception Run0053, the only crash of the six</td><td lang="zh-Hans">fault-3：致命 G4Exception Run0053，六个中唯一的崩溃</td></tr>
+          <tr><td>L6</td><td lang="en">print Edep and fired</td><td lang="en">fault-2: Edep = 0 → fired = 1; Edep = 1.59 MeV → fired = 0</td><td lang="zh-Hans">fault-2：Edep = 0 → fired = 1；Edep = 1.59 MeV → fired = 0</td></tr>
+        </tbody>
+      </table></div>
+      <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-a
+      issued by : textbook 13.1, Fault 1 "FIXED"
+The fix sets SetParticlePosition(0, 0, -1 m) in a 1 m world, whose
+  half-length is 0.5 m: still outside. Geant4 11.4 does not stop it.
+  In our fault-1 run a vertex 30 cm outside the world was located
+  "in World" and transported through air that does not exist. The
+  vertical-beam efficiency did not move (0.1079 vs 0.1095); the cos2
+  efficiency halved. Put the source INSIDE the world: z = -0.4 m.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-a
+      issued by : 教材 13.1 节，故障 1 的“修正版”
+修正版用 SetParticlePosition(0, 0, -1 m)，而 1 m 的 world 半长只有
+  0.5 m：仍在外面。Geant4 11.4 不会阻止它。在我们的 fault-1 运行中，
+  world 外 30 cm 处的顶点被定位为“在 World 中”，缪子穿过了并不存在
+  的空气。竖直束流的效率纹丝不动（0.1079 对 0.1095），cos2 效率却减
+  半。把源放在 world 之内：z = -0.4 m。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-b
+      issued by : textbook 13.1, Fault 2 and Fault 3
+Fault 2's "FIXED" ProcessHits still applies the threshold to each STEP,
+  which Chapter 6 forbids: efficiency then depends on how Geant4 splits
+  the track. The real fix is no threshold in ProcessHits; threshold the
+  event sum in EventAction (fault-2 below inverts exactly that line).
+Fault 3 is not silent in Geant4 11.4: SetSensitiveDetector("counter")
+  is fatal at initialisation (Run0053). The silent version today is an
+  SD attached to a volume that exists but is the wrong one.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-b
+      issued by : 教材 13.1 节，故障 2 与故障 3
+故障 2 的“修正版” ProcessHits 仍对每一“步”加阈值，这正是第 6 章禁止
+  的：效率会依赖 Geant4 如何切分径迹。真正的修正是 ProcessHits 里不加
+  阈值，在 EventAction 中对事例总和加阈值（下面的 fault-2 正是把那一行
+  写反了）。
+故障 3 在 Geant4 11.4 中并不无声：SetSensitiveDetector("counter") 在
+  初始化时就是致命错误（Run0053）。如今真正无声的版本，是把 SD 挂到一个
+  存在但错误的体积上。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <h3 class="bi"><span lang="en">13.2 · AI-assisted debugging: delegate syntax, keep the physics</span><span lang="zh-Hans">13.2 · AI 辅助调试：语法可以交出去，物理留给自己</span></h3>
+      <p lang="en">An assistant (Claude, Gemini, DeepSeek) is a fast way to navigate the Geant4 API if you give it evidence, not "my code is broken". Ask for hypotheses you can test, and keep the decisions about what a hit is, which units, thread safety and validation for yourself. "It compiles" is never the acceptance criterion: require a minimal diff, a smoke test, a numerical sanity check and a comparison with an independent expectation. Never paste credentials, unpublished collaboration data or proprietary code into an external service.</p>
+      <p lang="zh-Hans">如果你给 AI 助手（Claude、Gemini、DeepSeek）的是证据而不是“我的代码坏了”，它是浏览 Geant4 API 的快捷方式。请它提出你能检验的假设；什么算击中、用什么单位、是否线程安全、怎样验证，这些决定留给自己。“能编译”永远不是验收标准：要求最小改动、冒烟测试、数值合理性检查，以及与独立预期的比较。绝不要把凭据、未发表的合作组数据或专有代码贴进外部服务。</p>
+<pre>I am debugging Geant4 11.4.1 on Linux with CMake.
+Command: ./week05 trigger.mac
+Symptom: cos2 trigger efficiency 0.0060 +/- 0.0005, was 0.0127 +/- 0.0008 (7.1 sigma);
+         vertical unchanged (0.1079 vs 0.1095). No warnings.
+First step of one event (/tracking/verbose 1): z = -800 mm, NextVolume World.
+World: G4Box half-lengths 1.5 m, 1.5 m, 0.5 m.
+Please: 1. the most likely root cause and the evidence for it; 2. the Geant4 rule involved;
+3. one minimal diagnostic change; 4. what result would falsify your hypothesis;
+5. do not rewrite the project.</pre>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-valid">
+    <p class="cmd">discrepancy_sigma()<span lang="en">14 · what counts as validated</span><span lang="zh-Hans">14 · 什么才算“验证”</span></p>
+    <div class="prose">
+      <h2 id="h-valid" class="bi"><span lang="en">A simulation producing a number is not the same as that number being trustworthy.</span><span lang="zh-Hans">模拟算出一个数，不等于这个数值得信任。</span></h2>
+      <div class="box">
+        <p class="box-label">Definition 14.1 · <span lang="en">Levels of validation</span><span lang="zh-Hans">验证的层级</span></p>
+        <p lang="en">1 executable: runs and produces a defined observable. 2 sanity checked: units, conservation, limiting cases, geometry, numerical stability. 3 physics benchmarked: compared with an analytic result or established reference over a defined domain. 4 detector benchmarked: detector response compared with independent measurements. 5 predictively validated: reproduces an observable not used to tune it. 6 domain qualified: remaining assumptions, uncertainties and failure modes documented. A result can pass one rung and fail the next. Use this ladder instead of "fully validated".</p>
+        <p lang="zh-Hans">1 可执行：能运行并给出定义明确的可观测量。2 完整性检查：单位、守恒、极限情形、几何、数值稳定性。3 物理基准：在限定范围内与解析结果或公认参考比较。4 探测器基准：探测器响应与独立测量比较。5 预测性验证：重现未用于调参的可观测量。6 领域限定：剩余假设、不确定度和失效模式均有记录。一个结果可以通过某一阶而在下一阶失败。用这个阶梯代替“完全验证”。</p>
+      </div>
+      <p lang="en">The comparison itself is one line: |sim − ref| / √(σ_sim² + σ_ref,stat² + σ_ref,sys²). It never compares two numbers directly, only their difference in units of combined uncertainty. It also assumes that sim and ref are the same quantity, and that is where both of our Mission 10 "discrepancies" came from.</p>
+      <p lang="zh-Hans">比较本身只有一行：|sim − ref| / √(σ_sim² + σ_ref,stat² + σ_ref,sys²)。它从不直接比较两个数，只比较它们的差相对于合成不确定度有多大。它还默认 sim 和 ref 是同一个量，而我们任务 10 中的两个“不一致”都出在这里。</p>
+      <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-c
+      issued by : textbook 14.1, compare_to_reference.py
+The listing's numbers (1.94 +/- 0.03 vs 1.98 MeV/cm) are marked
+  ILLUSTRATIVE and in MeV/cm. A PDG table is in MeV cm2/g: multiply by
+  the density (1.032 g/cm3 for polyvinyltoluene) before comparing.
+  Before any sigma, confirm the two numbers describe the same
+  quantity: entrance energy or path average, full mean or truncated.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-c
+      issued by : 教材 14.1 节，compare_to_reference.py
+程序中的数值（1.94 +/- 0.03 对 1.98 MeV/cm）标明为“仅作示意”，单位
+  是 MeV/cm。PDG 表的单位是 MeV cm2/g：比较前先乘以密度（聚乙烯基甲苯
+  为 1.032 g/cm3）。算任何 sigma 之前，先确认两个数描述的是同一个量：
+  入射能量处还是路径平均，完整均值还是截断均值。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-toy">
+    <p class="cmd">git checkout fault-?<span lang="en">interactive · six real cases</span><span lang="zh-Hans">交互 · 六个真实案例</span></p>
+    <div>
+      <h2 id="h-toy" class="bi"><span lang="en">Read the report, check one layer at a time, and say where it broke.</span><span lang="zh-Hans">读报告，一次检查一层，说出它坏在哪里。</span></h2>
+      <p class="prose" style="color:var(--muted);max-width:64ch;margin-top:14px" lang="en">Every report and every piece of evidence here is copied from our Geant4 11.4 runs of the six branches. Fewer checks is better, but a verdict that skips a layer above the culprit is a guess that happened to be right.</p>
+      <p class="prose" style="color:var(--muted);max-width:64ch" lang="zh-Hans">这里的每份报告和每条证据都取自我们对六个分支的 Geant4 11.4 实际运行。检查次数越少越好，但跳过故障层之上的某一层得出的结论，只是碰巧猜对。</p>
+      <div class="btns" id="w11-cases" style="border:1px solid var(--rule);border-radius:4px 4px 0 0;margin-top:20px"></div>
+      <div class="verbose" style="border:1px solid var(--rule);border-top:0"><p class="panel-title" style="margin:0 0 6px"><span lang="en">what the student reported</span><span lang="zh-Hans">学生的报告</span></p><pre id="w11-report"></pre></div>
+      <ol class="w11-tree" id="w11-tree"></ol>
+      <p class="cap" id="w11-verdict" aria-live="polite"></p>
+
+      <h3 class="bi" style="margin-top:36px"><span lang="en">Validation ladder calculator</span><span lang="zh-Hans">验证阶梯计算器</span></h3>
+      <div class="btns" style="border:1px solid var(--rule);border-radius:4px 4px 0 0">
+        <button type="button" id="w11-p-entry"><span lang="en">100 MeV vs PDG at entry</span><span lang="zh-Hans">100 MeV 对入射处 PDG</span></button>
+        <button type="button" id="w11-p-path"><span lang="en">… vs path average</span><span lang="zh-Hans">… 对路径平均</span></button>
+        <button type="button" id="w11-p-trunc"><span lang="en">10 GeV, truncated</span><span lang="zh-Hans">10 GeV，截断</span></button>
+        <button type="button" id="w11-p-wide"><span lang="en">10 GeV, full range</span><span lang="zh-Hans">10 GeV，全范围</span></button>
+        <button type="button" id="w11-p-book"><span lang="en">textbook (illustrative)</span><span lang="zh-Hans">教材（示意）</span></button>
+      </div>
+      <div class="controls" style="border-top:0">
+        <div class="w11-num">
+          <label for="w11-sim"><span class="ctl-row">sim</span><input id="w11-sim" type="number" step="any" value="2.3938"></label>
+          <label for="w11-sime"><span class="ctl-row">σ sim</span><input id="w11-sime" type="number" step="any" value="0.0014"></label>
+          <label for="w11-ref"><span class="ctl-row">ref</span><input id="w11-ref" type="number" step="any" value="2.3086"></label>
+          <label for="w11-refs"><span class="ctl-row">σ ref, stat</span><input id="w11-refs" type="number" step="any" value="0"></label>
+          <label for="w11-refy"><span class="ctl-row">σ ref, sys</span><input id="w11-refy" type="number" step="any" value="0.023"></label>
+        </div>
+      </div>
+      <div class="controls" id="w11-rungs" style="border-top:0"></div>
+      <div class="panels one"><div><div class="verbose"><pre id="w11-out"></pre></div></div></div>
+      <div class="toybox">
+        <p><b><span lang="en">What this is and is not</span><span lang="zh-Hans">它是什么、不是什么</span></b></p>
+        <p lang="en">The walker is not a simulation: it replays our recorded runs (course test physics list, Geant4 11.4.p01). The calculator is the textbook's discrepancy_sigma(). The 1% reference uncertainty is our assumption for the PDG table (mostly the mean excitation energy); PDG does not quote one. The ladder logic only counts rungs climbed in order. It cannot tell whether you deserved the tick.</p>
+        <p lang="zh-Hans">这个决策树演练器不是模拟：它回放的是我们记录下来的运行（课程测试物理列表，Geant4 11.4.p01）。计算器就是教材的 discrepancy_sigma()。PDG 表 1% 的参考不确定度是我们的假设（主要来自平均激发能），PDG 并未给出。阶梯逻辑只认按顺序爬上的阶，它无法判断你勾选得是否应当。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-task">
+    <p class="cmd">bash make_faults.sh<span lang="en">hands-on · Missions 9 and 10</span><span lang="zh-Hans">动手任务 · 任务 9 与 10</span></p>
+    <div class="prose">
+      <h2 id="h-task" class="bi"><span lang="en">Diagnose six broken copies of your own counter, then benchmark one working simulation.</span><span lang="zh-Hans">诊断你自己计数器的六个坏副本，再为一个正常的模拟做基准比较。</span></h2>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Instructor: build the fault lab</span><span lang="zh-Hans">教师：搭建故障实验室</span></h3><label class="done" for="w11-s1"><input type="checkbox" id="w11-s1" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="files">
+            <details><summary><b>make_faults.sh</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f11-mf">copy</button></summary><pre id="f11-mf" data-src="code/week11/make_faults.sh">#!/bin/bash
+# make_faults.sh -- Mission 9 for instructors: turn the working week05 counter into a repository
+# with one deliberately broken simulation per branch. Each fault is ONE line, compiles, and runs.
+# Usage: bash make_faults.sh path/to/week05  faultlab
+#        cd faultlab &amp;&amp; git branch          # main, fault-1 ... fault-6
+set -e
+SRC=$1; OUT=${2:-faultlab}
+rm -rf "$OUT"; cp -r "$SRC" "$OUT"; cd "$OUT"
+git init -q -b main &amp;&amp; git add -A &amp;&amp; git commit -qm "working counter (week05)"
+
+fault () {   # fault &lt;n&gt; &lt;file&gt; &lt;sed expression&gt; &lt;commit message&gt;
+  git checkout -q -b "fault-$1" main
+  sed -i "$3" "$2"
+  git diff --quiet &amp;&amp; { echo "fault-$1: pattern not found in $2"; exit 1; }
+  git commit -qam "fault-$1"            # the message gives nothing away
+  git checkout -q main
+}
+
+# 1  generator: source plane moved to z = -80 cm, outside the world (half-length 50 cm)
+fault 1 src/PrimaryGeneratorAction.cc 's/G4ThreeVector(x, y, -20\. \* cm)/G4ThreeVector(x, y, -80. * cm)/'
+# 2  digitization: threshold comparison inverted (event level)
+fault 2 src/EventAction.cc 's/edep\[0\] &gt;= fEdepThreshold, edep\[1\] &gt;= fEdepThreshold/edep[0] &lt; fEdepThreshold, edep[1] &lt; fEdepThreshold/'
+# 3  sensitive detector: logical-volume name typed in lower case
+fault 3 src/DetectorConstruction.cc 's/SetSensitiveDetector("Counter", muonSD)/SetSensitiveDetector("counter", muonSD)/'
+# 4  physics: a "lightweight" list with decay only -- no ionisation at all
+git checkout -q -b fault-4 main
+cat &gt; include/LightPhysicsList.hh &lt;&lt;'EOF'
+#pragma once
+#include "G4DecayPhysics.hh"
+#include "G4VModularPhysicsList.hh"
+// "Faster than FTFP_BERT for a muon counter." (It is: nothing happens in matter.)
+class LightPhysicsList : public G4VModularPhysicsList
+{
+  public:
+    LightPhysicsList() { RegisterPhysics(new G4DecayPhysics()); }
+};
+EOF
+sed -i 's/#include "FTFP_BERT.hh"/#include "LightPhysicsList.hh"/; s/new FTFP_BERT()/new LightPhysicsList()/' week05.cc
+git add -A &amp;&amp; git commit -qm "fault-4" &amp;&amp; git checkout -q main
+# 5  geometry: bottom counter placed at z = -9.5 cm instead of +10 cm; it overlaps the top one
+fault 5 src/DetectorConstruction.cc 's/G4ThreeVector(0, 0, +10\. \* cm)/G4ThreeVector(0, 0, -9.5 * cm)/'
+# 6  no code change: a 200-event run whose efficiency "looks wrong"
+git checkout -q -b fault-6 main
+sed -i 's/beamOn 20000/beamOn 200/' trigger.mac
+git commit -qam "fault-6" &amp;&amp; git checkout -q main
+
+git branch</pre></details>
+          </div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c11-a">copy</button></div>
+<pre id="c11-a">bash make_faults.sh path/to/week05 faultlab
+cd faultlab &amp;&amp; git branch</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
+<pre>  fault-1
+  fault-2
+  fault-3
+  fault-4
+  fault-5
+  fault-6
+* main</pre></div>
+          <p lang="en">Each fault is one line (fault-4 adds a header) on its own branch, and the commit message gives nothing away. Students may read <code>git diff main</code> only after they have named the layer and written down their evidence.</p>
+          <p lang="zh-Hans">每个故障都是一行改动（fault-4 另加了一个头文件），各在自己的分支上，提交信息不透露任何线索。学生必须先说出故障所在层并写下证据，之后才能看 <code>git diff main</code>。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Students: run every branch and fill the symptom table</span><span lang="zh-Hans">学生：运行每个分支，填写症状表</span></h3><label class="done" for="w11-s2"><input type="checkbox" id="w11-s2" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c11-b">copy</button></div>
+<pre id="c11-b">for b in main fault-1 fault-2 fault-3 fault-4 fault-5 fault-6; do
+  git checkout -q $b &amp;&amp; cmake --build build -j4 &gt; /dev/null
+  (cd build &amp;&amp; ./week05 trigger.mac &gt; ../$b.log 2&gt;&amp;1); echo "$b exit $?"
+done
+grep -H -E "G4Exception :|trigger \(both" *.log</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">our runs (Geant4 11.4.p01, test physics list), trigger efficiency</span><span lang="zh-Hans">我们的运行（Geant4 11.4.p01，测试物理列表），触发效率</span></b></span></div>
+<pre>branch    exit  vertical          cos2              cos2_noise        log says
+main      0     0.1095 ± 0.0022   0.0127 ± 0.0008   0.0193 ± 0.0010   nothing
+fault-1   0     0.1079 ± 0.0022   0.0060 ± 0.0005   0.0087 ± 0.0007   nothing
+fault-2   0     0.1095 ± 0.0022   0.0127 ± 0.0008   0.0193 ± 0.0010   nothing (singles 0.89!)
+fault-3   134   -                 -                 -                 G4Exception Run0053, fatal
+fault-4   0     0                 0                 0.0026 ± 0.0004   nothing
+fault-5   0     0.1100 ± 0.0022   0.1003 ± 0.0021   0.1055 ± 0.0022   GeomVol1002 (warning)
+fault-6   0     0.1250 ± 0.0234   0.0250 ± 0.0110   0.0050 ± 0.0050   nothing</pre></div>
+          <p lang="en">Five of six exit cleanly. Only one prints an error, and one prints a warning that scrolls away above about 240 000 lines of physics tables. Grade the walk, not the fix: symptom, the layer, the evidence that clears each layer above it, and one sentence a labmate could use next time.</p>
+          <p lang="zh-Hans">六个中有五个正常退出。只有一个打印错误，另有一个打印的警告被埋在约 24 万行物理表输出的上方。评分看排查过程而不是修复：症状、所在层、排除其上每一层的证据，以及一句下次能给同学参考的话。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Mission 10: compare Geant4 with the PDG table, naively first</span><span lang="zh-Hans">任务 10：把 Geant4 与 PDG 表比较，先用天真的方法</span></h3><label class="done" for="w11-s3"><input type="checkbox" id="w11-s3" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="files">
+            <details><summary><b>validate_dedx.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f11-vd">copy</button></summary><pre id="f11-vd" data-src="code/week11/validate_dedx.py">"""validate_dedx.py -- Mission 10: compare Geant4's mean muon energy loss in plastic scintillator
+with the PDG muon table, and say which rung of the validation ladder that comparison reaches.
+
+Input: edep_&lt;T&gt;MeV*.root files from the week04 app (10 cm of G4_PLASTIC_SC_VINYLTOLUENE), whose
+"PrimarydEdx" histogram holds, per event, the primary muon's kinetic-energy loss / path [MeV/cm].
+Usage: python3 validate_dedx.py edep_0100MeV.root edep_1000MeV.root ...
+
+Two rules this script enforces, both learned the hard way in our own runs:
+  1. Compare like with like. The muon slows down inside 10 cm, so the reference is the PDG table
+     INTEGRATED along the path, not the table value at the entrance energy.
+  2. A histogram mean ignores entries outside its range. If anything overflowed, the mean is a
+     truncated mean and is not comparable with the PDG mean: the script refuses to give a sigma.
+"""
+import re
+import sys
+
+import numpy as np
+import uproot
+
+RHO = 1.032    # g/cm3, PDG polyvinyltoluene (I = 64.7 eV)
+L = 10.0       # cm of scintillator in the week04 app
+# PDG 2024, muE_polyvinyltoluene.txt: kinetic energy [MeV], total dE/dx [MeV cm2/g]
+T_TAB = np.array([50, 55, 60, 70, 80, 90, 100, 120, 140, 170, 200, 250, 300, 324.6, 350, 400, 450, 500,
+                  550, 600, 700, 800, 900, 1000, 1200, 1400, 1700, 2000, 2500, 3000, 3500, 4000, 4500,
+                  5000, 5500, 6000, 7000, 8000, 9000, 10000, 12000], dtype=float)
+S_TAB = np.array([2.861, 2.744, 2.647, 2.498, 2.388, 2.303, 2.237, 2.143, 2.082, 2.025, 1.992, 1.966,
+                  1.957, 1.957, 1.957, 1.962, 1.969, 1.978, 1.987, 1.997, 2.016, 2.034, 2.051, 2.067,
+                  2.096, 2.121, 2.153, 2.181, 2.219, 2.249, 2.275, 2.297, 2.317, 2.334, 2.350, 2.364,
+                  2.389, 2.410, 2.429, 2.445, 2.474])
+REF_SYS = 0.01   # ASSUMPTION: 1% on the tabulated value (mean excitation energy I); not quoted by PDG
+
+
+def pdg_dedx(T):
+    """Total stopping power at kinetic energy T [MeV], in MeV/cm (log-log interpolation)."""
+    return RHO * np.exp(np.interp(np.log(T), np.log(T_TAB), np.log(S_TAB)))
+
+
+def pdg_path_average(T0, n=2000):
+    """Mean energy loss per cm over L, integrating dT/dx = -dE/dx(T) through the slab."""
+    T, dx = T0, L / n
+    for _ in range(n):
+        T -= pdg_dedx(T) * dx
+    return (T0 - T) / L, T
+
+
+def discrepancy_sigma(sim, sim_unc, ref, ref_stat, ref_sys=0.0):
+    """Discrepancy in combined-sigma units. Evidence for a comparison, not a verdict."""
+    return abs(sim - ref) / np.sqrt(sim_unc**2 + ref_stat**2 + ref_sys**2)
+
+
+for fn in sys.argv[1:]:
+    T = float(re.search(r"edep_(\d+)MeV", fn).group(1))
+    h = uproot.open(fn)["PrimarydEdx"]
+    vals = h.values(flow=True)
+    outside = vals[0] + vals[-1]
+    sw = h.member("fTsumw")
+    mean = h.member("fTsumwx") / sw
+    rms = np.sqrt(h.member("fTsumwx2") / sw - mean**2)
+    err = rms / np.sqrt(sw)
+    entry = pdg_dedx(T)
+    ref, Tout = pdg_path_average(T)
+    print(f"T = {T:6.0f} MeV  Geant4 {mean:.4f} +/- {err:.4f} MeV/cm | PDG at entry {entry:.4f}, "
+          f"path-averaged {ref:.4f} (exits at {Tout:.1f} MeV)")
+    if outside &gt; 0:
+        print(f"           REFUSED: {outside:.0f} of {h.member('fEntries'):.0f} entries outside the histogram range; "
+              f"this mean is truncated. Widen the range (/analysis/h1/set) and rerun.")
+        continue
+    ns = discrepancy_sigma(mean, err, ref, 0.0, REF_SYS * ref)
+    print(f"           ratio {mean / ref:.4f}   discrepancy {ns:.1f} sigma (stat + 1% reference)")
+print("Ladder: physics benchmarked against a calculated table over 10 cm of plastic. Not yet detector "
+      "benchmarked: no measured spectrum, threshold or trigger has been compared.")</pre></details>
+          </div>
+          <p lang="en">Start from the Week 4 output files. The quick comparison a tired student makes is ratio = Geant4 mean / (PDG at the entry energy × 1.032). From our runs:</p>
+          <p lang="zh-Hans">从第 4 周的输出文件开始。疲惫的学生会做的快速比较是：比值 = Geant4 均值 / (入射能量处的 PDG 值 × 1.032)。我们的运行结果：</p>
+<pre>T [MeV]   Geant4 [MeV/cm]     PDG at entry   ratio    sigma
+  100     2.3938 ± 0.0014     2.3086         1.0369    3.7   &lt;- "Geant4 is 4% high"
+  200     2.0650 ± 0.0019     2.0557         1.0045    0.4
+  500     2.0317 ± 0.0036     2.0413         0.9953    0.5
+ 1000     2.1193 ± 0.0063     2.1331         0.9935    0.6
+10000     2.2340 ± 0.0085     2.5232         0.8854   10.9   &lt;- "Geant4 is 11% low"</pre>
+          <p lang="en">Both outliers are real numbers from a working simulation. Before reading on, write down one testable explanation for each. Then run the script, which compares like with like:</p>
+          <p lang="zh-Hans">两个离群点都是正常模拟给出的真实数字。往下读之前，先为每个写下一个可检验的解释。然后运行这个脚本，它比较的是同类量：</p>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal (week04 build directory)</b></span><button class="copy" type="button" data-copy="c11-c">copy</button></div>
+<pre id="c11-c">python3 validate_dedx.py edep_0100MeV.root edep_0200MeV.root edep_0500MeV.root edep_1000MeV.root edep_10000MeV.root</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our Week 4 files)</span><span lang="zh-Hans">预期（我们的第 4 周文件）</span></b></span></div>
+<pre>T =    100 MeV  Geant4 2.3938 +/- 0.0014 MeV/cm | PDG at entry 2.3086, path-averaged 2.3966 (exits at 76.0 MeV)
+           ratio 0.9988   discrepancy 0.1 sigma (stat + 1% reference)
+T =    200 MeV  Geant4 2.0650 +/- 0.0019 MeV/cm | PDG at entry 2.0557, path-averaged 2.0669 (exits at 179.3 MeV)
+           ratio 0.9991   discrepancy 0.1 sigma (stat + 1% reference)
+T =    500 MeV  Geant4 2.0317 +/- 0.0036 MeV/cm | PDG at entry 2.0413, path-averaged 2.0395 (exits at 479.6 MeV)
+           ratio 0.9962   discrepancy 0.4 sigma (stat + 1% reference)
+T =   1000 MeV  Geant4 2.1193 +/- 0.0063 MeV/cm | PDG at entry 2.1331, path-averaged 2.1315 (exits at 978.7 MeV)
+           REFUSED: 6 of 10000 entries outside the histogram range; this mean is truncated. Widen the range (/analysis/h1/set) and rerun.
+T =  10000 MeV  Geant4 2.2340 +/- 0.0085 MeV/cm | PDG at entry 2.5232, path-averaged 2.5230 (exits at 9974.8 MeV)
+           REFUSED: 99 of 10000 entries outside the histogram range; this mean is truncated. Widen the range (/analysis/h1/set) and rerun.</pre></div>
+          <p lang="en">At 100 MeV the muon leaves the 10 cm slab at 76 MeV, where the stopping power is higher, so the right reference is the PDG table integrated along the path. At 10 GeV the textbook's 0–10 MeV/cm histogram drops the 1% of events with large δ-ray losses. ROOT-style histogram statistics ignore overflow, so its mean is a truncated mean, and the PDG mean includes exactly that tail.</p>
+          <p lang="zh-Hans">在 100 MeV，缪子离开 10 cm 厚的板时只剩 76 MeV，那里的阻止本领更大，所以正确的参考是沿路径积分的 PDG 表。在 10 GeV，教材 0–10 MeV/cm 的直方图丢掉了 1% 带有大 δ 电子损失的事例。ROOT 式的直方图统计忽略溢出，所以它的均值是截断均值，而 PDG 均值恰恰包含这条尾巴。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Rerun with a histogram wide enough for a mean</span><span lang="zh-Hans">用宽到足以求均值的直方图重跑</span></h3><label class="done" for="w11-s4"><input type="checkbox" id="w11-s4" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="files">
+            <details><summary><b>validate.mac</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f11-vm">copy</button></summary><pre id="f11-vm" data-src="code/week11/validate.mac"># validate.mac -- Mission 10: rerun the Week 4 scan with a histogram wide enough for the mean.
+# Run with the week04 executable:  ./week04 validate.mac
+# 0-1000 MeV/cm: nothing overflows, so the histogram mean is the true mean (ROOT-style histogram
+# statistics ignore under/overflow entries).
+/control/verbose 1
+/run/verbose 0
+/analysis/h1/set 1 10000 0 1000
+
+/gun/energy 100 MeV
+/analysis/setFileName edep_0100MeV_wide
+/run/beamOn 10000
+
+/gun/energy 200 MeV
+/analysis/setFileName edep_0200MeV_wide
+/run/beamOn 10000
+
+/gun/energy 500 MeV
+/analysis/setFileName edep_0500MeV_wide
+/run/beamOn 10000
+
+/gun/energy 1000 MeV
+/analysis/setFileName edep_1000MeV_wide
+/run/beamOn 10000
+
+/gun/energy 10000 MeV
+/analysis/setFileName edep_10000MeV_wide
+/run/beamOn 10000</pre></details>
+          </div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal (week04 build directory)</b></span><button class="copy" type="button" data-copy="c11-d">copy</button></div>
+<pre id="c11-d">./week04 validate.mac
+python3 validate_dedx.py edep_0100MeV_wide.root edep_0200MeV_wide.root edep_0500MeV_wide.root edep_1000MeV_wide.root edep_10000MeV_wide.root</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our run)</span><span lang="zh-Hans">预期（我们的运行）</span></b></span></div>
+<pre>T =    100 MeV  Geant4 2.3938 +/- 0.0014 MeV/cm | PDG at entry 2.3086, path-averaged 2.3966 (exits at 76.0 MeV)
+           ratio 0.9988   discrepancy 0.1 sigma (stat + 1% reference)
+T =    200 MeV  Geant4 2.0650 +/- 0.0019 MeV/cm | PDG at entry 2.0557, path-averaged 2.0669 (exits at 179.3 MeV)
+           ratio 0.9991   discrepancy 0.1 sigma (stat + 1% reference)
+T =    500 MeV  Geant4 2.0317 +/- 0.0036 MeV/cm | PDG at entry 2.0413, path-averaged 2.0395 (exits at 479.6 MeV)
+           ratio 0.9962   discrepancy 0.4 sigma (stat + 1% reference)
+T =   1000 MeV  Geant4 2.1247 +/- 0.0067 MeV/cm | PDG at entry 2.1331, path-averaged 2.1315 (exits at 978.7 MeV)
+           ratio 0.9968   discrepancy 0.3 sigma (stat + 1% reference)
+T =  10000 MeV  Geant4 2.5138 +/- 0.0571 MeV/cm | PDG at entry 2.5232, path-averaged 2.5230 (exits at 9974.8 MeV)
+           ratio 0.9963   discrepancy 0.1 sigma (stat + 1% reference)
+Ladder: physics benchmarked against a calculated table over 10 cm of plastic. Not yet detector benchmarked: no measured spectrum, threshold or trigger has been compared.</pre></div>
+          <p lang="en">All five agree within 0.4σ. The price shows at 10 GeV: the error grew from 0.0085 to 0.057, because the mean of a heavy-tailed quantity is dominated by rare events. That is why detector papers quote a most probable value or a truncated mean, and say which. The reference systematic is our assumption (1%); write it down as one. Our runs use the course's dataset-free test physics list; with FTFP_BERT, expect agreement at the same level and check it.</p>
+          <p lang="zh-Hans">五个能量点都在 0.4σ 以内一致。代价在 10 GeV 处显现：误差从 0.0085 增大到 0.057，因为重尾量的均值由罕见事例主导。这就是探测器论文给出最可几值或截断均值，并且说明用的是哪一个的原因。参考系统误差是我们的假设（1%），要把它作为假设写明。我们的运行用的是课程中不需要数据集的测试物理列表；换成 FTFP_BERT，预期一致程度相同，请自己核对。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Place it on the ladder, then name the next rung</span><span lang="zh-Hans">放到阶梯上，再说出下一阶</span></h3><label class="done" for="w11-s5"><input type="checkbox" id="w11-s5" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Agreement with a calculated table over 100 MeV–10 GeV in 10 cm of plastic is rung 3, physics benchmarked. Rung 4 needs a measurement: a published cosmic-muon spectrum from a counter of known thickness, with its threshold and trigger efficiency. For Mission 10 proper, choose such a paper. Extract geometry, material, energy spectrum, the measured value and both of its uncertainties. Report the discrepancy in σ and the unreproduced experimental detail most likely to explain any gap.</p>
+          <p lang="zh-Hans">在 100 MeV–10 GeV、10 cm 塑料范围内与计算数据表一致，属于第 3 阶：物理基准。第 4 阶需要测量数据：已发表的、厚度已知的计数器所测的宇宙线缪子能谱，以及其阈值和触发效率。正式的任务 10 请选这样一篇论文。提取几何、材料、能谱、测量值及其两类不确定度。以 σ 报告偏差，并指出最可能解释差距的、未能复现的实验细节。</p>
+        </li>
+      </ol>
+      <p class="progress" data-progress-out="w11"></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-quiz">
+    <p class="cmd">/control/verbose 2<span lang="en">self-check</span><span lang="zh-Hans">自测</span></p>
+    <div>
+      <h2 id="h-quiz" class="bi"><span lang="en">Six questions. Each answer explains itself.</span><span lang="zh-Hans">六道题，每个答案都附有解释。</span></h2>
+      <div id="quiz"></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-err">
+    <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
+    <div>
+      <h2 id="h-err" class="bi"><span lang="en">Four habits that turn a simple fault into a lost week.</span><span lang="zh-Hans">四个把小故障拖成一周损失的习惯。</span></h2>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-d
+      issued by : log reading
+Reading only the last screen of the log. Our fault-5 overlap warning
+  appears once, at construction, above ~240 000 lines of physics
+  tables. grep -n "G4Exception" run.log before anything else.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-d
+      issued by : 读日志
+只看日志的最后一屏。我们 fault-5 的重叠警告只在构建时出现一次，上面
+  压着约 24 万行物理表。先执行 grep -n "G4Exception" run.log。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-e
+      issued by : test design
+Testing with the one beam that cannot see the fault. fault-1 and
+  fault-5 both pass the vertical-beam test within 1 sigma. Keep a
+  regression set that varies direction, energy and position.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-e
+      issued by : 测试设计
+只用一种看不见故障的束流做测试。fault-1 和 fault-5 都在 1 sigma 内
+  通过了竖直束流测试。保留一套在方向、能量和位置上都有变化的回归测试。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-f
+      issued by : validation
+"Roughly similar" reported as agreement, or "disagrees" reported as a
+  physics failure, with no uncertainty and no check that the two
+  numbers are the same quantity. Both of our Mission 10 outliers were
+  comparison errors, not physics.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-f
+      issued by : 验证
+把“大致相近”报成一致，或把“不一致”报成物理失败，却既没有不确定度，
+  也没确认两个数是同一个量。我们任务 10 的两个离群点都是比较出错，
+  不是物理问题。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-g
+      issued by : AI-assisted fix
+An agent's patch accepted because it compiles. A generated singleton,
+  unit conversion or shared accumulator can produce plausible plots.
+  Accept only a minimal diff that passes the smoke test, the sanity
+  check and the comparison you already had.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W11-g
+      issued by : AI 辅助修复
+因为能编译就接受了 AI 代理的补丁。生成的单例、单位换算或共享累加器都
+  可能画出看似合理的图。只接受能通过冒烟测试、合理性检查和你已有比较
+  的最小改动。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-review">
+    <p class="cmd">/control/saveHistory<span lang="en">review notes</span><span lang="zh-Hans">复习要点</span></p>
+    <div class="prose">
+      <h2 id="h-review" class="bi"><span lang="en">Before you close the run.</span><span lang="zh-Hans">结束运行之前。</span></h2>
+      <ul class="review">
+        <li><label for="w11-r1x"><input type="checkbox" id="w11-r1x"><span lang="en">For each broken simulation, did I walk the tree layer by layer rather than jump to a guess?</span><span lang="zh-Hans">对每个坏掉的模拟，我是否逐层走决策树，而不是直接跳到猜测？</span></label></li>
+        <li><label for="w11-r2x"><input type="checkbox" id="w11-r2x"><span lang="en">Before concluding "bug", did I rule out a statistical fluctuation?</span><span lang="zh-Hans">在下“有 bug”的结论之前，我是否排除了统计涨落？</span></label></li>
+        <li><label for="w11-r3x"><input type="checkbox" id="w11-r3x"><span lang="en">Can I state each fault's symptom and root cause in one sentence a labmate could use?</span><span lang="zh-Hans">我能否用一句同学能用上的话说清每个故障的症状和根本原因？</span></label></li>
+        <li><label for="w11-r4x"><input type="checkbox" id="w11-r4x"><span lang="en">Does my comparison report the discrepancy with the full uncertainty model, and say which components are missing?</span><span lang="zh-Hans">我的比较是否用完整的不确定度模型报告偏差，并说明缺了哪些分量？</span></label></li>
+        <li><label for="w11-r5x"><input type="checkbox" id="w11-r5x"><span lang="en">Did I check that the simulated and reference observables, phase space and definitions are really comparable?</span><span lang="zh-Hans">我是否核实了模拟与参考的可观测量、相空间和定义确实可比？</span></label></li>
+      </ul>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Remark · debt repaid, debt taken on</span><span lang="zh-Hans">小结 · 还清的债与新欠的债</span></p>
+        <p lang="en">Repaid: debugging is a trainable procedure, and "validated" now has a scale you can quote. Taken on: until now an instructor defined every question. Next week the question is yours, and so is the defence of its answer.</p>
+        <p lang="zh-Hans">还清的债：调试是可以训练的流程，“验证”有了可以引用的尺度。新欠的债：到目前为止，每个问题都由教师定义。下周，问题由你自己提出，答案也由你自己答辩。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-share">
+    <p class="cmd">/vis/ogl/export week11.gif<span lang="en">share this week</span><span lang="zh-Hans">分享本周成果</span></p>
+    <div class="share">
+      <figure class="fig">
+        <img src="media/week11-debug-validate.gif" width="720" height="900" alt="The debugging tree is walked until layer 1 turns red, then the Geant4 to PDG ratios move from two outliers onto the line at one" loading="lazy">
+        <figcaption><span lang="en">Tree evidence and ratios are from our Geant4 11.4 runs. Long-press or right-click to save.</span><span lang="zh-Hans">决策树证据和比值均来自我们的 Geant4 11.4 运行。长按或右键即可保存。</span></figcaption>
+      </figure>
+      <div class="prose">
+        <h2 id="h-share" class="bi"><span lang="en">Most disagreements are questions about the comparison.</span><span lang="zh-Hans">大多数不一致，问的其实是比较本身。</span></h2>
+        <p lang="en">Post your symptom table with one line per fault, and your ratio plot before and after you compared like with like.</p>
+        <p lang="zh-Hans">发出你的症状表（每个故障一行），以及比较同类量之前和之后的比值图。</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" id="pager" aria-label="Week navigation"></nav>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 13–14 · PDG 2024 muon table for polyvinyltoluene · Geant4 11.4 source</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 13–14 章 · PDG 2024 聚乙烯基甲苯缪子表 · Geant4 11.4 源码</span>
+  </footer>
+</div>
+<script src="assets/course.js"></script>
+<script src="assets/week11.js"></script>
+</body>
+</html>

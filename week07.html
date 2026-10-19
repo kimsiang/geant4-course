@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 07 · Bend the Particle</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0, Week 07: build a tracker–magnet–tracker spectrometer in Geant4 11.4, reconstruct momentum from curvature, and measure its resolution.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Week 07 of 12</span><span lang="zh-Hans">第 07 / 12 周</span></span>
+    <span class="bar-r">
+      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">Idle&gt; <span>/gun/energy 10 GeV</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">Bend the particle: measure momentum with a magnetic field.</span><span lang="zh-Hans">让粒子转弯：用磁场测量动量。</span></h1>
+      <p class="lede" lang="en">A field turns a tracking detector into a spectrometer. You build tracker–magnet–tracker, reconstruct momentum from how much the track bends, and compare it with Geant4's truth. It is your first inverse problem: the detector knows positions, and you infer momentum.</p>
+      <p class="lede" lang="zh-Hans">磁场把径迹探测器变成谱仪。你将搭建“径迹室—磁铁—径迹室”，由径迹弯曲的程度重建动量，并与 Geant4 的真值比较。这是你的第一个反问题：探测器只知道位置，动量要靠推断。</p>
+      <ul class="meta">
+        <li class="stage"><b>3 · Understand it</b><span lang="en">stage · 理解</span><span lang="zh-Hans">阶段 · 理解</span></li>
+        <li><b>Mission 7</b><span lang="en">textbook ch. 8</span><span lang="zh-Hans">教材第 8 章</span></li>
+        <li><b>≈ 2.5 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="Week summary">
+      <div role="row"><span role="cell">week07</span></div>
+      <div role="row"><span role="cell">Trackers</span><span role="cell">2 × 3 Si planes, 300 µm</span></div>
+      <div role="row"><span role="cell">Magnet</span><span role="cell">1 m, B<sub>y</sub> = 1.5 T</span></div>
+      <div role="row"><span role="cell">Primary</span><span role="cell">μ⁻, 1–20 GeV</span></div>
+      <div role="row"><span role="cell">Observable</span><span role="cell">(p<sub>rec</sub> − p<sub>true</sub>)/p<sub>true</sub></span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-goals">
+    <p class="cmd">/run/initialize<span lang="en">learning goals</span><span lang="zh-Hans">学习目标</span></p>
+    <div class="prose">
+      <h2 id="h-goals" class="bi"><span lang="en">By the end of this week you can quote a momentum resolution and say what limits it.</span><span lang="zh-Hans">本周结束时，你能给出动量分辨率，并说出是什么限制了它。</span></h2>
+      <ol class="goals">
+        <li><span lang="en">Use p<sub>T</sub> [GeV/c] = 0.2998 B [T] R [m] and the deflection form Δ(sin θ) = 0.2998 B L / p.</span><span lang="zh-Hans">使用 p<sub>T</sub> [GeV/c] = 0.2998 B [T] R [m] 以及偏转形式 Δ(sin θ) = 0.2998 B L / p。</span></li>
+        <li><span lang="en">Attach a field to one volume with a <dfn>field manager<span class="kt" lang="zh-Hans">场管理器</span></dfn> in <code>ConstructSDandField()</code>, and know which integrator Geant4 11.4 uses by default.</span><span lang="zh-Hans">在 <code>ConstructSDandField()</code> 中用<dfn>场管理器<span class="kt" lang="en">field manager</span></dfn>把磁场挂到一个体积上，并知道 Geant4 11.4 默认使用哪个积分器。</span></li>
+        <li><span lang="en">Keep truth, measurement and <dfn>momentum reconstruction<span class="kt" lang="zh-Hans">动量重建</span></dfn> apart: Geant4 positions, smeared hits, fitted <dfn>curvature<span class="kt" lang="zh-Hans">曲率</span></dfn>.</span><span lang="zh-Hans">把真相、测量与<dfn>动量重建<span class="kt" lang="en">momentum reconstruction</span></dfn>分开：Geant4 位置、弥散后的击中点、拟合出的<dfn>曲率<span class="kt" lang="en">curvature</span></dfn>。</span></li>
+        <li><span lang="en">Separate the measurement term (∝ p) and the multiple-scattering term (flat) of σ<sub>p</sub>/p.</span><span lang="zh-Hans">区分 σ<sub>p</sub>/p 中的测量项（∝ p）与多次散射项（平坦）。</span></li>
+        <li><span lang="en">Show that a reconstruction model must match the layout, and that a field map can bias p at the 10⁻³ level.</span><span lang="zh-Hans">说明重建模型必须与布局相符，并且场图可以在 10⁻³ 量级上使 p 产生偏差。</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-theory">
+    <p class="cmd">/control/manual<span lang="en">8.1 · curvature to momentum</span><span lang="zh-Hans">8.1 · 由曲率到动量</span></p>
+    <div class="prose">
+      <h2 id="h-theory" class="bi"><span lang="en">From "it passed through" to "it passed through carrying this much momentum".</span><span lang="zh-Hans">从“它穿过了”到“它带着这么多动量穿过了”。</span></h2>
+      <div class="box">
+        <p class="box-label">Theorem 8.1 · <span lang="en">The momentum–curvature relation</span><span lang="zh-Hans">动量—曲率关系</span></p>
+        <p lang="en">A particle of charge q and transverse momentum p<sub>T</sub> in a uniform field B follows a circle of radius R with p<sub>T</sub> = |q| B R, or p<sub>T</sub> [GeV/c] = 0.299792458 |q/e| B [T] R [m]. p<sub>T</sub> equals p only when the motion is perpendicular to the field; otherwise p<sub>T</sub> = p sin α. A stronger field and a longer lever arm improve resolution, at the cost of a bigger magnet.</p>
+        <p lang="zh-Hans">电荷为 q、横动量为 p<sub>T</sub> 的粒子在均匀磁场 B 中沿半径为 R 的圆周运动，p<sub>T</sub> = |q| B R，即 p<sub>T</sub> [GeV/c] = 0.299792458 |q/e| B [T] R [m]。只有运动垂直于磁场时 p<sub>T</sub> 才等于 p；否则 p<sub>T</sub> = p sin α。更强的磁场和更长的杠杆臂能提高分辨率，代价是更大的磁铁。</p>
+      </div>
+      <p lang="en">For tracker–magnet–tracker the useful form follows from the same circle. Inside a field of length L along z, sin θ grows linearly with z at rate 1/R, so the two trackers measure</p>
+      <p lang="zh-Hans">对“径迹室—磁铁—径迹室”布局，有用的形式来自同一个圆：在沿 z 长为 L 的磁场中，sin θ 随 z 以 1/R 的速率线性增长，所以两组径迹室测得</p>
+      <div class="eq" role="math" aria-label="sine theta out minus sine theta in equals 0.2998 B L over p">
+        <span>sin θ<sub>out</sub> − sin θ<sub>in</sub> = <span class="frac"><span>0.2998 <i>B</i> <i>L</i></span><span><i>p</i></span></span></span>
+        <span class="eqno">(8.1)</span>
+      </div>
+      <p lang="en">Fit one straight line through each tracker, take the change in slope, and Eq. (8.1) gives p with no assumption about where the hits sit. For 10 GeV/c in 1.5 T × 1 m the deflection is 45 mrad.</p>
+      <p lang="zh-Hans">在每组径迹室里各拟合一条直线，取斜率的变化，式 (8.1) 就给出 p，无需假设测点位于何处。10 GeV/c 在 1.5 T × 1 m 中的偏转为 45 mrad。</p>
+
+      <div class="box">
+        <p class="box-label">Example 8.1 · <span lang="en">Mission 7: a tracker–magnet–tracker system</span><span lang="zh-Hans">任务 7：径迹室—磁铁—径迹室系统</span></p>
+        <p lang="en">Build tracker 1 — magnet — tracker 2 with at least three position measurements in each tracker. Reconstruct p from the measured positions and compare it, event by event, with Geant4's truth. Plot (p<sub>rec</sub> − p<sub>true</sub>)/p<sub>true</sub>; report its width, its bias, and how both depend on p.</p>
+        <p lang="zh-Hans">搭建“径迹室 1—磁铁—径迹室 2”，每组径迹室至少三个位置测量。由测得的位置重建 p，并逐事例与 Geant4 真值比较。画出 (p<sub>rec</sub> − p<sub>true</sub>)/p<sub>true</sub>；报告其宽度、偏差，以及两者如何随 p 变化。</p>
+      </div>
+
+      <div class="code">
+        <div class="code-head"><span class="l"><b>Code microscope · DetectorConstruction::ConstructSDandField()</b><span class="tag geant4">GEANT4</span></span></div>
+<pre>G4ThreeVector fieldValue(0., 1.5*tesla, 0.);
+<span class="k">auto</span>* magField = <span class="k">new</span> G4UniformMagField(fieldValue);
+<span class="k">auto</span>* fieldMgr = <span class="k">new</span> G4FieldManager();
+fieldMgr-&gt;SetDetectorField(magField);
+fieldMgr-&gt;<mark>CreateChordFinder(magField)</mark>;          <span class="c">// 11.4 default: templated Dormand–Prince 4/5</span>
+fLogicMagnet-&gt;<mark>SetFieldManager(fieldMgr, true)</mark>;  <span class="c">// this volume and its daughters only</span></pre>
+      </div>
+      <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W07-a
+      issued by : textbook 8.1, CreateChordFinder comment
+The textbook says the default is G4Mag_UsualEqRhs + G4ClassicalRK4.
+  In Geant4 11.4 (G4ChordFinder.cc) the default driver type is the
+  templated Dormand-Prince 4/5; ClassicalRK4 is "the old default".
+  Our run prints:  G4ChordFinder: stepperDriverId: 2  (templated).
+  To tune it: #include "G4ChordFinder.hh", then
+  fieldMgr->GetChordFinder()->SetDeltaChord(...).
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W07-a
+      issued by : 教材 8.1 节 CreateChordFinder 注释
+教材称默认是 G4Mag_UsualEqRhs + G4ClassicalRK4。
+  Geant4 11.4（G4ChordFinder.cc）中默认驱动类型是模板化的
+  Dormand-Prince 4/5；ClassicalRK4 是“旧的默认值”。
+  我们的运行打印：G4ChordFinder: stepperDriverId: 2（模板化）。
+  如需调整：#include "G4ChordFinder.hh"，然后
+  fieldMgr->GetChordFinder()->SetDeltaChord(...)。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+
+      <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W07-b
+      issued by : textbook reconstruct_pt(), quadratic x(z) = a z^2 + b z + c
+A single quadratic through hits from BOTH trackers assumes every
+  hit is inside the field. Here the track is straight-arc-straight.
+  Our Geant4 tracks: the quadratic overestimates p by +47% at 1 GeV
+  and +61% at 20 GeV. Use two lines and Eq. (8.1). The quadratic is
+  right for a tracker immersed in a solenoid.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W07-b
+      issued by : 教材 reconstruct_pt()，二次拟合 x(z) = a z^2 + b z + c
+用一条抛物线拟合两组径迹室的所有测点，等于假设所有测点都在
+  磁场中。这里的径迹是“直线—圆弧—直线”。在我们的 Geant4
+  径迹上，抛物线在 1 GeV 把 p 高估 47%，20 GeV 高估 61%。
+  请用两条直线和式 (8.1)。抛物线模型适用于浸在螺线管中的径迹室。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Researcher's notebook · truth, measurement, reconstruction</span><span lang="zh-Hans">研究笔记 · 真相、测量、重建</span></p>
+        <p lang="en">The generator knows p<sub>true</sub>. The tracker measures positions. The algorithm infers p<sub>rec</sub>. A good study keeps the three apart and asks how resolution, alignment, multiple scattering and field knowledge move p<sub>rec</sub> away from p<sub>true</sub>.</p>
+        <p lang="zh-Hans">产生器知道 p<sub>true</sub>，径迹室测量位置，算法推断 p<sub>rec</sub>。好的研究把三者分开，并追问分辨率、准直、多次散射和磁场知识如何让 p<sub>rec</sub> 偏离 p<sub>true</sub>。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Intuition · a bent ruler</span><span lang="zh-Hans">直觉 · 弯曲的尺子</span></p>
+        <p lang="en">The stronger the field or the lower the momentum, the more the track bends and the easier the bend is to measure. A very stiff track is nearly straight, its radius heads to infinity, and position errors are amplified. High-energy experiments need stronger fields or longer lever arms for that reason.</p>
+        <p lang="zh-Hans">磁场越强或动量越低，径迹弯得越厉害，弯曲就越容易测准。很“硬”的径迹几乎是直的，半径趋于无穷，位置误差被放大。正因如此，高能实验需要更强的磁场或更长的杠杆臂。</p>
+      </div>
+      <h3 class="bi"><span lang="en">8.2 From an ideal field to a measured field map</span><span lang="zh-Hans">8.2 从理想磁场到实测场图</span></h3>
+      <p lang="en">Real magnets have fringe fields, coil imperfections and gradients. A 1D map B(z) suits a symmetric field; a 3D map is needed when transverse structure matters. The map must state its coordinates, units, interpolation, coverage and what happens outside it. Never silently replace a measured map with a uniform field: a 1% variation matters for a 10⁻³ observable. Step 5 measures exactly this.</p>
+      <p lang="zh-Hans">真实磁铁有边缘场、线圈缺陷和梯度。对称磁场适合用一维场图 B(z)；横向结构重要时需要三维场图。场图必须写明坐标约定、单位、插值方法、覆盖范围以及范围外的处理。绝不要悄悄用均匀场代替实测场图：对 10⁻³ 量级的可观测量，1% 的变化就很重要。第 5 步测量的正是这一点。</p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-toy">
+    <p class="cmd">/run/beamOn 2000<span lang="en">interactive toy model</span><span lang="zh-Hans">交互玩具模型</span></p>
+    <div>
+      <h2 id="h-toy" class="bi"><span lang="en">Change B, the plane resolution or the momentum, and watch what limits σ<sub>p</sub>/p.</span><span lang="zh-Hans">改变 B、平面分辨率或动量，看是什么限制了 σ<sub>p</sub>/p。</span></h2>
+      <div class="display" style="margin-top:20px">
+        <div class="display-head"><span class="toy">TOY MODEL · <span lang="en">not Geant4</span><span lang="zh-Hans">非 Geant4</span></span><span><span lang="en">12 tracks, last one with hits and fits</span><span lang="zh-Hans">12 条径迹，最后一条显示击中点与拟合</span></span></div>
+        <canvas id="w7-display" class="tele" aria-label="Toy spectrometer top view with tracks, hits and fitted lines"></canvas>
+        <div class="legend">
+          <span><i style="background:#FF6369"></i>μ⁻</span>
+          <span><i class="dot" style="background:#F2D06B"></i><span lang="en">measured hit</span><span lang="zh-Hans">测量点</span></span>
+          <span><i class="dash" style="color:#E2B04A"></i><span lang="en">fitted line per tracker</span><span lang="zh-Hans">每组径迹室的拟合直线</span></span>
+        </div>
+      </div>
+      <div class="controls">
+        <label class="ctl" for="w7-p"><span class="ctl-row"><span>p</span><output id="w7-p-out" for="w7-p">10 GeV/c</output></span><input id="w7-p" type="range" min="-0.3" max="2" step="any" value="1"></label>
+        <label class="ctl" for="w7-B"><span class="ctl-row"><span>B<sub>y</sub></span><output id="w7-B-out" for="w7-B">1.50 T</output></span><input id="w7-B" type="range" min="0.1" max="4" step="0.05" value="1.5"></label>
+        <label class="ctl" for="w7-sig"><span class="ctl-row"><span lang="en">plane resolution σ<sub>x</sub></span><span lang="zh-Hans">平面分辨率 σ<sub>x</sub></span><output id="w7-sig-out" for="w7-sig">50 µm</output></span><input id="w7-sig" type="range" min="5" max="500" step="5" value="50"></label>
+        <label class="ctl" for="w7-t"><span class="ctl-row"><span lang="en">plane thickness</span><span lang="zh-Hans">平面厚度</span><output id="w7-t-out" for="w7-t">300 µm Si</output></span><input id="w7-t" type="range" min="50" max="3000" step="50" value="300"></label>
+        <label class="ctl" for="w7-method"><span class="ctl-row"><span lang="en">reconstruction</span><span lang="zh-Hans">重建方法</span></span><select id="w7-method"></select></label>
+      </div>
+      <div class="panels">
+        <div>
+          <div class="statbox" role="table" aria-label="Resolution budget">
+            <div role="row"><span role="cell">resolution</span></div>
+            <div role="row"><span role="cell"><span lang="en">deflection</span><span lang="zh-Hans">偏转角</span></span><span role="cell" id="w7-defl">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">measurement term</span><span lang="zh-Hans">测量项</span></span><span role="cell" id="w7-meas">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">scattering term</span><span lang="zh-Hans">散射项</span></span><span role="cell" id="w7-ms">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">sum in quadrature</span><span lang="zh-Hans">平方和</span></span><span role="cell" id="w7-tot">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">toy: median bias</span><span lang="zh-Hans">玩具：偏差中位数</span></span><span role="cell" id="w7-bias">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">toy: Std Dev</span><span lang="zh-Hans">玩具：标准差</span></span><span role="cell" id="w7-sd">—</span></div>
+          </div>
+          <canvas id="w7-hist" style="aspect-ratio:16/10;margin-top:14px" aria-label="Histogram of relative momentum residual"></canvas>
+        </div>
+        <div>
+          <p class="panel-title"><span lang="en">σ<sub>p</sub>/p vs p (toy points, analytic line)</span><span lang="zh-Hans">σ<sub>p</sub>/p 随 p 的变化（玩具点，解析线）</span></p>
+          <canvas id="w7-curve" style="aspect-ratio:16/11" aria-label="Momentum resolution versus momentum on log-log axes"></canvas>
+          <p class="cap" id="w7-g4note"><span lang="en">Green squares: our Geant4 11.4 runs at the default settings (1.5 T, 50 µm, 300 µm Si, two-line fit).</span><span lang="zh-Hans">绿色方块：我们在默认设置（1.5 T、50 µm、300 µm Si、两直线拟合）下的 Geant4 11.4 运行结果。</span></p>
+        </div>
+      </div>
+      <div class="toybox">
+        <p><b>TOY MODEL · <span lang="en">approximations</span><span lang="zh-Hans">近似</span></b></p>
+        <p lang="en">Same layout as the week07 app. Exact circular arc in a uniform field; straight lines outside. Multiple scattering is a Gaussian kick at each plane from the Highland formula (PDG, β = 1), plus one kick per air gap. No energy loss, no δ-rays, no fringe field. The analytic line adds the measurement term (√2 × σ<sub>x</sub>/√Σ(z − z̄)² over the deflection) and the scattering term in quadrature. The σ shown is the half-width of the central 68%. Below about 2 GeV the toy is up to 2× more optimistic than Geant4, which also has energy-loss fluctuations and full scattering tails.</p>
+        <p lang="zh-Hans">布局与 week07 程序相同。均匀磁场中为精确圆弧，场外为直线。多次散射为每个平面上的高斯角度冲击（Highland 公式，PDG，β = 1），每段空气间隙再加一次。没有能量损失、δ 电子和边缘场。解析线把测量项（√2 × σ<sub>x</sub>/√Σ(z − z̄)² 除以偏转角）与散射项平方相加。显示的 σ 是中心 68% 的半宽。约 2 GeV 以下，玩具模型比 Geant4 乐观多达 2 倍，因为 Geant4 还包含能损涨落和完整的散射尾巴。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-task">
+    <p class="cmd">/control/execute spectrometer.mac<span lang="en">hands-on · Missions 7 and 7B</span><span lang="zh-Hans">动手任务 · 任务 7 与 7B</span></p>
+    <div class="prose">
+      <h2 id="h-task" class="bi"><span lang="en">Build the spectrometer, write the hits, reconstruct p, then distort the field.</span><span lang="zh-Hans">搭建谱仪、写出击中点、重建 p，再让磁场变形。</span></h2>
+      <p lang="en">Expected outputs are from Geant4 11.4.p01 runs of these files with the course test physics list. Muon tracking in fields and the muon EM processes are the same as with <code>FTFP_BERT</code>, so your numbers should agree within the statistical errors (about ±0.01–0.04% on the bias, ±3% relative on σ).</p>
+      <p lang="zh-Hans">预期输出来自这些文件在 Geant4 11.4.p01 上、使用课程测试物理列表的运行。磁场中的缪子输运和缪子电磁过程与 <code>FTFP_BERT</code> 相同，所以你的结果应在统计误差内一致（偏差约 ±0.01–0.04%，σ 相对 ±3%）。</p>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Create the project</span><span lang="zh-Hans">建立工程</span></h3><label class="done" for="w07-s1"><input type="checkbox" id="w07-s1" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Start from Week 4's layout (main, PrimaryGeneratorAction, ActionInitialization) and add these files. The SteppingAction records where the primary <em>enters</em> each plane: the step whose pre-step point has status <code>fGeomBoundary</code>.</p>
+          <p lang="zh-Hans">以第 4 周的结构（主程序、PrimaryGeneratorAction、ActionInitialization）为基础，加入下列文件。SteppingAction 记录主粒子<em>进入</em>每个平面的位置：即前步点状态为 <code>fGeomBoundary</code> 的那一步。</p>
+          <div class="files">
+            <details><summary><b>CMakeLists.txt</b><button class="copy" type="button" data-copy="f7-cm">copy</button></summary><pre id="f7-cm" data-src="code/week07/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
+project(Week07 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Geant4 REQUIRED ui_all vis_all)
+include(${Geant4_USE_FILE})
+
+file(GLOB sources CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/include/*.hh)
+
+add_executable(week07 week07.cc ${sources} ${headers})
+target_include_directories(week07 PRIVATE include)
+target_link_libraries(week07 PRIVATE ${Geant4_LIBRARIES})
+
+foreach(_f spectrometer.mac vis.mac reconstruct.py)
+  configure_file(${PROJECT_SOURCE_DIR}/${_f} ${PROJECT_BINARY_DIR}/${_f} COPYONLY)
+endforeach()</pre></details>
+            <details><summary><b>week07.cc</b><button class="copy" type="button" data-copy="f7-main">copy</button></summary><pre id="f7-main" data-src="code/week07/week07.cc">#include "ActionInitialization.hh"
+#include "DetectorConstruction.hh"
+
+#include "FTFP_BERT.hh"
+#include "G4RunManagerFactory.hh"
+#include "G4UIExecutive.hh"
+#include "G4UImanager.hh"
+#include "G4VisExecutive.hh"
+
+int main(int argc, char** argv)
+{
+  // Serial: one CSV file per run. Week 8 switches to
+  // the textbook's G4RunManagerType::Default and merges threads.
+  auto* runManager =
+    G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
+
+  runManager-&gt;SetUserInitialization(new DetectorConstruction());
+  runManager-&gt;SetUserInitialization(new FTFP_BERT());
+  runManager-&gt;SetUserInitialization(new ActionInitialization());
+  runManager-&gt;Initialize();
+
+  auto* uiManager = G4UImanager::GetUIpointer();
+  if (argc &gt; 1) {
+    // headless: ./week07 spectrometer.mac
+    uiManager-&gt;ApplyCommand("/control/execute " + G4String(argv[1]));
+  } else {
+    // diagnosis only: ./week07 opens the viewer
+    auto* ui = new G4UIExecutive(argc, argv);
+    auto* visManager = new G4VisExecutive();
+    visManager-&gt;Initialize();
+    uiManager-&gt;ApplyCommand("/control/execute vis.mac");
+    ui-&gt;SessionStart();
+    delete visManager;
+    delete ui;
+  }
+
+  delete runManager;
+  return 0;
+}</pre></details>
+            <details><summary><b>include/DetectorConstruction.hh</b><button class="copy" type="button" data-copy="f7-dch">copy</button></summary><pre id="f7-dch" data-src="code/week07/include/DetectorConstruction.hh">#ifndef DetectorConstruction_h
+#define DetectorConstruction_h 1
+
+#include "G4VUserDetectorConstruction.hh"
+
+class G4LogicalVolume;
+
+class DetectorConstruction : public G4VUserDetectorConstruction
+{
+  public:
+    G4VPhysicalVolume* Construct() override;
+    void ConstructSDandField() override;
+
+  private:
+    G4LogicalVolume* fLogicMagnet = nullptr;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/DetectorConstruction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f7-dc">copy</button></summary><pre id="f7-dc" data-src="code/week07/src/DetectorConstruction.cc">#include "DetectorConstruction.hh"
+
+#include "G4Box.hh"
+#include "G4FieldManager.hh"
+#include "G4LogicalVolume.hh"
+#include "G4NistManager.hh"
+#include "G4PVPlacement.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4TransportationManager.hh"
+#include "G4UniformMagField.hh"
+
+#include "FringeField.hh"
+
+// Mission 7: tracker 1 (3 Si planes) -- 1 m dipole, By = 1.5 T -- tracker 2 (3 Si planes)
+//
+//   z [m]:  -1.0 -0.8 -0.6 | -0.5 ... magnet ... +0.5 | +0.6 +0.8 +1.0
+//
+G4VPhysicalVolume* DetectorConstruction::Construct()
+{
+  auto* nist = G4NistManager::Instance();
+  auto* air = nist-&gt;FindOrBuildMaterial("G4_AIR");
+  auto* si = nist-&gt;FindOrBuildMaterial("G4_Si");
+
+  auto* logicWorld = new G4LogicalVolume(new G4Box("World", 1.5 * m, 1.5 * m, 1.5 * m), air, "World");
+  auto* physWorld = new G4PVPlacement(nullptr, {}, logicWorld, "World", nullptr, false, 0, true);
+
+  // Field region: an air box 1 m long in z. The field is attached to it below.
+  fLogicMagnet = new G4LogicalVolume(new G4Box("Magnet", 0.5 * m, 0.5 * m, 0.5 * m), air, "Magnet");
+  new G4PVPlacement(nullptr, {}, fLogicMagnet, "Magnet", logicWorld, false, 0, true);
+
+  // Six 300 um silicon planes, 1 x 1 m (a 1 GeV muon is bent 0.44 m sideways by plane 5).
+  // The copy number is the plane index 0..5.
+  auto* logicPlane = new G4LogicalVolume(new G4Box("Plane", 50 * cm, 50 * cm, 150 * um), si, "Plane");
+  const G4double zPlane[6] = {-1.0 * m, -0.8 * m, -0.6 * m, 0.6 * m, 0.8 * m, 1.0 * m};
+  for (G4int i = 0; i &lt; 6; ++i) {
+    new G4PVPlacement(nullptr, G4ThreeVector(0., 0., zPlane[i]), logicPlane, "Plane",
+                      logicWorld, false, i, true);
+  }
+  return physWorld;
+}
+
+void DetectorConstruction::ConstructSDandField()
+{
+  // (sensitive detectors would be registered here too; Week 5)
+  const G4bool useFringeMap = false;   // Mission 7B: set true, rebuild, rerun
+
+  if (!useFringeMap) {
+    // Mission 7: ideal uniform field inside the magnet box only
+    G4ThreeVector fieldValue(0., 1.5 * tesla, 0.);
+    auto* magField = new G4UniformMagField(fieldValue);
+    auto* fieldMgr = new G4FieldManager();
+    fieldMgr-&gt;SetDetectorField(magField);
+    fieldMgr-&gt;CreateChordFinder(magField);   // Geant4 11.4 default: templated Dormand-Prince 4/5
+    // attach the field to the magnet volume only (and its daughters)
+    fLogicMagnet-&gt;SetFieldManager(fieldMgr, true);
+  } else {
+    // Mission 7B: a field "map" defined everywhere, so it goes on the global field manager
+    auto* magField = new FringeField();
+    auto* fieldMgr = G4TransportationManager::GetTransportationManager()-&gt;GetFieldManager();
+    fieldMgr-&gt;SetDetectorField(magField);
+    fieldMgr-&gt;CreateChordFinder(magField);
+  }
+}</pre></details>
+            <details><summary><b>include/FringeField.hh</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f7-ff">copy</button></summary><pre id="f7-ff" data-src="code/week07/include/FringeField.hh">#ifndef FringeField_h
+#define FringeField_h 1
+
+#include "G4MagneticField.hh"
+#include "G4SystemOfUnits.hh"
+
+#include &lt;cmath&gt;
+
+// Mission 7B: a synthetic 1D field map. By(z) falls off at both magnet ends with a
+// Fermi-function edge of width a. Its field integral equals the uniform 1.5 T x 1 m
+// (to 0.1%), but the field now leaks into the trackers. Units: Geant4 internal.
+class FringeField : public G4MagneticField
+{
+  public:
+    FringeField(G4double b0 = 1.5 * tesla, G4double halfLength = 0.5 * m, G4double edge = 5. * cm)
+      : fB0(b0), fHalf(halfLength), fEdge(edge) {}
+
+    void GetFieldValue(const G4double point[4], G4double* field) const override
+    {
+      const G4double z = point[2];
+      field[0] = 0.;
+      field[1] = fB0 / (1. + std::exp((std::abs(z) - fHalf) / fEdge));
+      field[2] = 0.;
+    }
+
+  private:
+    G4double fB0, fHalf, fEdge;
+};
+
+#endif</pre></details>
+            <details><summary><b>include/EventAction.hh</b><button class="copy" type="button" data-copy="f7-eah">copy</button></summary><pre id="f7-eah" data-src="code/week07/include/EventAction.hh">#ifndef EventAction_h
+#define EventAction_h 1
+
+#include "G4UserEventAction.hh"
+#include "globals.hh"
+
+// One row per event: true momentum at the gun, and the true x, z where the
+// primary enters each of the six planes (truth; smearing happens in Python).
+class EventAction : public G4UserEventAction
+{
+  public:
+    void BeginOfEventAction(const G4Event*) override;
+    void EndOfEventAction(const G4Event*) override;
+    void SetHit(G4int plane, G4double x, G4double z)
+    {
+      if (plane &gt;= 0 &amp;&amp; plane &lt; 6 &amp;&amp; !fSeen[plane]) { fX[plane] = x; fZ[plane] = z; fSeen[plane] = true; }
+    }
+
+  private:
+    G4double fX[6] = {0.};
+    G4double fZ[6] = {0.};
+    G4bool fSeen[6] = {false};
+};
+
+#endif</pre></details>
+            <details><summary><b>src/EventAction.cc</b><button class="copy" type="button" data-copy="f7-ea">copy</button></summary><pre id="f7-ea" data-src="code/week07/src/EventAction.cc">#include "EventAction.hh"
+
+#include "G4AnalysisManager.hh"
+#include "G4Event.hh"
+#include "G4PrimaryParticle.hh"
+#include "G4PrimaryVertex.hh"
+#include "G4SystemOfUnits.hh"
+
+void EventAction::BeginOfEventAction(const G4Event*)
+{
+  for (G4int i = 0; i &lt; 6; ++i) { fX[i] = 0.; fZ[i] = 0.; fSeen[i] = false; }
+}
+
+void EventAction::EndOfEventAction(const G4Event* event)
+{
+  for (G4int i = 0; i &lt; 6; ++i) if (!fSeen[i]) return;  // keep only tracks that hit all planes
+
+  const G4PrimaryParticle* primary = event-&gt;GetPrimaryVertex()-&gt;GetPrimary();
+  const G4ThreeVector p = primary-&gt;GetMomentum();       // truth, at the gun
+
+  auto* am = G4AnalysisManager::Instance();
+  am-&gt;FillNtupleDColumn(0, p.mag() / GeV);
+  am-&gt;FillNtupleDColumn(1, p.perp(G4ThreeVector(0., 1., 0.)) / GeV);  // pT w.r.t. the field (y)
+  for (G4int i = 0; i &lt; 6; ++i) {
+    am-&gt;FillNtupleDColumn(2 + i, fX[i] / mm);
+    am-&gt;FillNtupleDColumn(8 + i, fZ[i] / mm);
+  }
+  am-&gt;AddNtupleRow();
+}</pre></details>
+            <details><summary><b>include/SteppingAction.hh</b><button class="copy" type="button" data-copy="f7-sah">copy</button></summary><pre id="f7-sah" data-src="code/week07/include/SteppingAction.hh">#ifndef SteppingAction_h
+#define SteppingAction_h 1
+
+#include "G4UserSteppingAction.hh"
+
+class EventAction;
+
+class SteppingAction : public G4UserSteppingAction
+{
+  public:
+    explicit SteppingAction(EventAction* eventAction) : fEventAction(eventAction) {}
+    void UserSteppingAction(const G4Step* step) override;
+
+  private:
+    EventAction* fEventAction = nullptr;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/SteppingAction.cc</b><button class="copy" type="button" data-copy="f7-sa">copy</button></summary><pre id="f7-sa" data-src="code/week07/src/SteppingAction.cc">#include "SteppingAction.hh"
+
+#include "EventAction.hh"
+
+#include "G4Step.hh"
+#include "G4VPhysicalVolume.hh"
+
+void SteppingAction::UserSteppingAction(const G4Step* step)
+{
+  if (step-&gt;GetTrack()-&gt;GetParentID() != 0) return;  // primary muon only
+
+  const G4StepPoint* pre = step-&gt;GetPreStepPoint();
+  if (pre-&gt;GetStepStatus() != fGeomBoundary) return; // the step that ENTERS a volume
+  const G4VPhysicalVolume* vol = pre-&gt;GetPhysicalVolume();
+  if (!vol || vol-&gt;GetName() != "Plane") return;
+
+  const G4ThreeVector&amp; pos = pre-&gt;GetPosition();
+  fEventAction-&gt;SetHit(vol-&gt;GetCopyNo(), pos.x(), pos.z());
+}</pre></details>
+            <details><summary><b>include/RunAction.hh</b><button class="copy" type="button" data-copy="f7-rah">copy</button></summary><pre id="f7-rah" data-src="code/week07/include/RunAction.hh">#ifndef RunAction_h
+#define RunAction_h 1
+
+#include "G4UserRunAction.hh"
+
+class RunAction : public G4UserRunAction
+{
+  public:
+    RunAction();
+    void BeginOfRunAction(const G4Run*) override;
+    void EndOfRunAction(const G4Run*) override;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/RunAction.cc</b><button class="copy" type="button" data-copy="f7-ra">copy</button></summary><pre id="f7-ra" data-src="code/week07/src/RunAction.cc">#include "RunAction.hh"
+
+#include "G4AnalysisManager.hh"
+#include "G4Run.hh"
+#include "G4ios.hh"
+
+RunAction::RunAction()
+{
+  auto* am = G4AnalysisManager::Instance();
+  am-&gt;SetDefaultFileType("csv");     // plain text: numpy can read it without ROOT
+  am-&gt;SetFileName("tracks");         // per run: /analysis/setFileName
+  am-&gt;CreateNtuple("tracks", "true momentum and true plane crossings");
+  am-&gt;CreateNtupleDColumn("p_GeV");
+  am-&gt;CreateNtupleDColumn("pT_GeV");
+  for (int i = 0; i &lt; 6; ++i) am-&gt;CreateNtupleDColumn("x" + std::to_string(i) + "_mm");
+  for (int i = 0; i &lt; 6; ++i) am-&gt;CreateNtupleDColumn("z" + std::to_string(i) + "_mm");
+  am-&gt;FinishNtuple();
+}
+
+void RunAction::BeginOfRunAction(const G4Run*)
+{
+  G4AnalysisManager::Instance()-&gt;OpenFile();
+}
+
+void RunAction::EndOfRunAction(const G4Run* run)
+{
+  auto* am = G4AnalysisManager::Instance();
+  G4cout &lt;&lt; "Run " &lt;&lt; run-&gt;GetRunID() &lt;&lt; ": " &lt;&lt; run-&gt;GetNumberOfEvent()
+         &lt;&lt; " events written to " &lt;&lt; am-&gt;GetFileName() &lt;&lt; G4endl;
+  am-&gt;Write();
+  am-&gt;CloseFile();
+}</pre></details>
+            <details><summary><b>src/PrimaryGeneratorAction.cc</b><button class="copy" type="button" data-copy="f7-pg">copy</button></summary><pre id="f7-pg" data-src="code/week07/src/PrimaryGeneratorAction.cc">#include "PrimaryGeneratorAction.hh"
+
+#include "G4Event.hh"
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
+#include "G4SystemOfUnits.hh"
+
+PrimaryGeneratorAction::PrimaryGeneratorAction()
+{
+  fParticleGun = new G4ParticleGun(1);
+  fParticleGun-&gt;SetParticleDefinition(G4ParticleTable::GetParticleTable()-&gt;FindParticle("mu-"));
+  fParticleGun-&gt;SetParticleMomentumDirection(G4ThreeVector(0., 0., 1.));
+  fParticleGun-&gt;SetParticleEnergy(1. * GeV);                          // changed per run by /gun/energy
+  fParticleGun-&gt;SetParticlePosition(G4ThreeVector(0., 0., -1.2 * m)); // upstream of tracker 1
+}
+
+PrimaryGeneratorAction::~PrimaryGeneratorAction()
+{
+  delete fParticleGun;
+}
+
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
+{
+  fParticleGun-&gt;GeneratePrimaryVertex(event);
+}</pre></details>
+            <details><summary><b>spectrometer.mac</b><button class="copy" type="button" data-copy="f7-mac">copy</button></summary><pre id="f7-mac" data-src="code/week07/spectrometer.mac"># Mission 7: 1000 mu- at each of five momenta, one CSV file per run
+/control/verbose 0
+/run/verbose 0
+/tracking/verbose 0
+/gun/particle mu-
+/gun/energy 1 GeV
+/analysis/setFileName tracks_01GeV
+/run/beamOn 1000
+/gun/energy 2 GeV
+/analysis/setFileName tracks_02GeV
+/run/beamOn 1000
+/gun/energy 5 GeV
+/analysis/setFileName tracks_05GeV
+/run/beamOn 1000
+/gun/energy 10 GeV
+/analysis/setFileName tracks_10GeV
+/run/beamOn 1000
+/gun/energy 20 GeV
+/analysis/setFileName tracks_20GeV
+/run/beamOn 1000</pre></details>
+            <details><summary><b>reconstruct.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f7-py">copy</button></summary><pre id="f7-py" data-src="code/week07/reconstruct.py">"""Mission 7 analysis: reconstruct momentum from the six tracker planes.
+
+Truth -&gt; measurement -&gt; reconstruction, kept apart:
+  truth          x_i, z_i where the primary entered plane i (Geant4)        [CSV]
+  measurement    x_i smeared by the plane resolution sigma_x (here, in Python)
+  reconstruction a straight line through each tracker; the change of slope across
+                 the dipole gives p:   sin(theta_out) - sin(theta_in) = 0.2998 B L / p
+
+Also runs the textbook's global quadratic fit on the same hits, to show its bias
+for a tracker-magnet-tracker layout (that model assumes all hits sit inside the field).
+
+    python3 reconstruct.py            # needs numpy only
+"""
+import glob
+import math
+
+import numpy as np
+
+B_T, L_M = 1.5, 1.0          # field [T] and magnet length [m], as in DetectorConstruction
+SIGMA_X_MM = 0.050           # plane resolution: 50 um
+K = 0.299792458              # GeV / (T m)
+rng = np.random.default_rng(7)
+
+
+def load(path):
+    data = np.loadtxt(path, delimiter=",", comments="#")
+    return data[:, 0], data[:, 2:8] / 1000.0, data[:, 8:14] / 1000.0   # p [GeV], x [m], z [m]
+
+
+def line_slope(z, x):
+    """Least-squares slope dx/dz for each event (rows) through 3 points."""
+    zm, xm = z.mean(axis=1, keepdims=True), x.mean(axis=1, keepdims=True)
+    return ((z - zm) * (x - xm)).sum(axis=1) / ((z - zm) ** 2).sum(axis=1)
+
+
+def p_two_lines(z, x):
+    t_in, t_out = line_slope(z[:, :3], x[:, :3]), line_slope(z[:, 3:], x[:, 3:])
+    s_in, s_out = t_in / np.sqrt(1 + t_in ** 2), t_out / np.sqrt(1 + t_out ** 2)
+    return K * B_T * L_M / np.abs(s_out - s_in)
+
+
+def p_quadratic(z, x):
+    """Textbook reconstruct_pt(): x(z) = a z^2 + b z + c through all six points."""
+    out = np.empty(len(z))
+    for i in range(len(z)):
+        a = np.polyfit(z[i], x[i], 2)[0]
+        out[i] = K * B_T / abs(2 * a)
+    return out
+
+
+print(f"{'file':&lt;28}{'p_true':&gt;8}{'bias(2 lines)':&gt;15}{'sigma_p/p':&gt;11}{'bias(quad)':&gt;12}")
+for path in sorted(glob.glob("tracks_*GeV_nt_tracks.csv")):
+    p_true, x, z = load(path)
+    x_meas = x + rng.normal(0.0, SIGMA_X_MM / 1000.0, x.shape)       # measurement
+    r2 = (p_two_lines(z, x_meas) - p_true) / p_true
+    rq = (p_quadratic(z, x_meas) - p_true) / p_true
+    print(f"{path:&lt;28}{p_true.mean():8.3f}{np.median(r2):+15.4f}{np.std(r2):11.4f}{np.median(rq):+12.3f}")</pre></details>
+          </div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Build and write five momentum samples</span><span lang="zh-Hans">编译并写出五个动量样本</span></h3><label class="done" for="w07-s2"><input type="checkbox" id="w07-s2" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c7-b">copy</button></div>
+<pre id="c7-b">mkdir -p build &amp;&amp; cd build &amp;&amp; cmake .. &amp;&amp; make -j4
+./week07 spectrometer.mac | grep -E "ChordFinder|^Run"
+ls tracks_*</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01)</span><span lang="zh-Hans">预期（Geant4 11.4.p01）</span></b></span></div>
+<pre> G4ChordFinder: stepperDriverId: 2
+Run 0: 1000 events written to tracks_01GeV.csv
+Run 1: 1000 events written to tracks_02GeV.csv
+Run 2: 1000 events written to tracks_05GeV.csv
+Run 3: 1000 events written to tracks_10GeV.csv
+Run 4: 1000 events written to tracks_20GeV.csv
+tracks_01GeV_nt_tracks.csv  tracks_02GeV_nt_tracks.csv  tracks_05GeV_nt_tracks.csv
+tracks_10GeV_nt_tracks.csv  tracks_20GeV_nt_tracks.csv</pre></div>
+          <p lang="en">The CSV writer appends <code>_nt_&lt;ntuple name&gt;</code> to the file name. A file is created only if at least one row is written: with 50 cm planes, the 1 GeV tracks (bent 0.44 m sideways by plane 5) missed tracker 2 and no file appeared. That is why the planes are 1 m wide. Expect also one or two <code>GeomNav1002 Stuck Track</code> warnings at the magnet boundary from low-energy δ-ray electrons; they do not affect the muon.</p>
+          <p lang="zh-Hans">CSV 写出器会在文件名后加 <code>_nt_&lt;ntuple 名&gt;</code>。只有写入至少一行时才会生成文件：用 50 cm 宽的平面时，1 GeV 径迹在第 5 个平面处横向偏离 0.44 m，错过了径迹室 2，结果没有生成文件。这就是平面做成 1 m 宽的原因。你还可能在磁铁边界看到一两条由低能 δ 电子引起的 <code>GeomNav1002 Stuck Track</code> 警告，它们不影响缪子。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Reconstruct: two lines and the deflection</span><span lang="zh-Hans">重建：两条直线与偏转角</span></h3><label class="done" for="w07-s3"><input type="checkbox" id="w07-s3" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c7-r">copy</button></div>
+<pre id="c7-r">python3 reconstruct.py</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our Geant4 11.4 run)</span><span lang="zh-Hans">预期（我们的 Geant4 11.4 运行）</span></b></span></div>
+<pre>file                          p_true  bias(2 lines)  sigma_p/p  bias(quad)
+tracks_01GeV_nt_tracks.csv     1.101        -0.0005     0.0040      +0.467
+tracks_02GeV_nt_tracks.csv     2.103        -0.0005     0.0031      +0.570
+tracks_05GeV_nt_tracks.csv     5.105        -0.0003     0.0042      +0.602
+tracks_10GeV_nt_tracks.csv    10.105        +0.0005     0.0064      +0.607
+tracks_20GeV_nt_tracks.csv    20.105        +0.0002     0.0113      +0.608</pre></div>
+          <p lang="en">p<sub>true</sub> is the momentum at the gun: <code>/gun/energy</code> sets kinetic energy, so 1 GeV gives p = 1.101 GeV/c. The two-line method is unbiased to 5 × 10⁻⁴; the small negative bias at low p is the energy lost in air and silicon before the magnet (about 0.5 MeV). σ<sub>p</sub>/p is flat at about 0.3–0.4% (scattering) up to 5 GeV, then grows ∝ p (measurement): 1.13% at 20 GeV, as the toy model's analytic line predicts.</p>
+          <p lang="zh-Hans">p<sub>true</sub> 是枪口处的动量：<code>/gun/energy</code> 设置的是动能，所以 1 GeV 对应 p = 1.101 GeV/c。两直线法的偏差小于 5 × 10⁻⁴；低 p 处的小负偏差来自进入磁铁前在空气和硅中损失的能量（约 0.5 MeV）。σ<sub>p</sub>/p 在 5 GeV 以下平坦，约 0.3–0.4%（散射主导），之后 ∝ p 增长（测量主导）：20 GeV 时 1.13%，与玩具模型的解析线一致。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Check the integrator before blaming the physics</span><span lang="zh-Hans">先检查积分器，再怀疑物理</span></h3><label class="done" for="w07-s4"><input type="checkbox" id="w07-s4" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">The textbook warns that a loose integration step can fake a resolution effect. Test it: add <code>#include "G4ChordFinder.hh"</code> and, after <code>CreateChordFinder</code>,</p>
+          <p lang="zh-Hans">教材提醒：过松的积分步长会伪装成分辨率效应。测试一下：加入 <code>#include "G4ChordFinder.hh"</code>，并在 <code>CreateChordFinder</code> 之后加上</p>
+          <div class="code"><div class="code-head"><span class="l"><b>src/DetectorConstruction.cc</b><span class="tag geant4">GEANT4</span></span><button class="copy" type="button" data-copy="c7-tight">copy</button></div>
+<pre id="c7-tight">fieldMgr-&gt;GetChordFinder()-&gt;SetDeltaChord(0.01 * mm);
+fieldMgr-&gt;SetDeltaOneStep(0.001 * mm);
+fieldMgr-&gt;SetDeltaIntersection(0.0001 * mm);</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected: no change beyond statistics</span><span lang="zh-Hans">预期：除统计涨落外无变化</span></b></span></div>
+<pre>tracks_01GeV_nt_tracks.csv     1.101        -0.0005     0.0031      +0.467
+tracks_20GeV_nt_tracks.csv    20.105        -0.0004     0.0114      +0.607</pre></div>
+          <p lang="en">The bias does not move, so the default accuracy is adequate for this observable. The 1 GeV σ differs from step 3 (0.0031 against 0.0040) because the run produces different random scattering, not because of integration: compare in units of its own error.</p>
+          <p lang="zh-Hans">偏差没有变化，说明默认精度对这个可观测量已经足够。1 GeV 的 σ 与第 3 步不同（0.0031 对 0.0040），是因为这次运行的随机散射不同，而不是积分造成的：要以它自身的误差为单位来比较。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Mission 7B: same field integral, different field</span><span lang="zh-Hans">任务 7B：同样的场积分，不同的磁场</span></h3><label class="done" for="w07-s5"><input type="checkbox" id="w07-s5" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Set <code>useFringeMap = true</code>, rebuild, and rerun at 1 and 20 GeV. <code>FringeField</code> is a synthetic 1D map with 5 cm Fermi-function edges. Its ∫B dl equals the uniform 1.5 T·m to 0.1%, but the field now reaches into the trackers (12% of B<sub>0</sub> at the inner planes), and reconstruct.py still assumes the uniform box.</p>
+          <p lang="zh-Hans">把 <code>useFringeMap</code> 设为 <code>true</code>，重新编译，在 1 和 20 GeV 下重新运行。<code>FringeField</code> 是一个合成的一维场图，边缘为 5 cm 宽的费米函数。它的 ∫B dl 与均匀的 1.5 T·m 相差不到 0.1%，但磁场伸进了径迹室（内侧平面处为 B<sub>0</sub> 的 12%），而 reconstruct.py 仍按均匀方盒假设。</p>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our Geant4 11.4 run)</span><span lang="zh-Hans">预期（我们的 Geant4 11.4 运行）</span></b></span></div>
+<pre>tracks_01GeV_nt_tracks.csv     1.101        +0.0011     0.0033      +0.470
+tracks_20GeV_nt_tracks.csv    20.105        +0.0015     0.0119      +0.610</pre></div>
+          <p lang="en">The bias moves from −0.05% to about +0.13%, roughly 15σ at 1 GeV and 5σ at 20 GeV, while the resolution hardly changes. A correct ∫B dl is not enough when the trackers sit in the fringe: bending inside the tracker spoils the straight-line fits. This is the 10⁻³-level systematic the textbook warns about. To separate it from tracker resolution and scattering, compare runs that differ only in the field.</p>
+          <p lang="zh-Hans">偏差从 −0.05% 变为约 +0.13%，在 1 GeV 约为 15σ，在 20 GeV 约为 5σ，而分辨率几乎不变。当径迹室处于边缘场中时，∫B dl 正确并不够：径迹室内部的弯曲破坏了直线拟合。这正是教材提醒的 10⁻³ 量级系统误差。要把它与径迹室分辨率和散射区分开，就比较只在磁场上不同的两组运行。</p>
+        </li>
+      </ol>
+      <p class="progress" data-progress-out="w07"></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-quiz">
+    <p class="cmd">/control/verbose 2<span lang="en">self-check</span><span lang="zh-Hans">自测</span></p>
+    <div>
+      <h2 id="h-quiz" class="bi"><span lang="en">Five questions. Each answer explains itself.</span><span lang="zh-Hans">五道题，每个答案都附有解释。</span></h2>
+      <div id="quiz"></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-err">
+    <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
+    <div>
+      <h2 id="h-err" class="bi"><span lang="en">Five ways a spectrometer study goes wrong quietly.</span><span lang="zh-Hans">谱仪研究悄悄出错的五种方式。</span></h2>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : GeomNav1002
+      issued by : G4Navigator::ComputeStep()
+Stuck Track: potential geometry or navigation problem.
+  Seen in our run for a low-energy electron at the Magnet/World
+  boundary. One or two per thousand events: harmless. Hundreds: check
+  overlaps and that the field volume matches the magnet geometry.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : GeomNav1002
+      issued by : G4Navigator::ComputeStep()
+Stuck Track：可能的几何或导航问题。
+  我们的运行中在 Magnet/World 边界处出现，来自一个低能电子。
+  每千个事例一两次：无害。成百上千次：检查重叠，并确认磁场
+  体积与磁铁几何一致。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W07-c
+      issued by : reconstruct.py
+Fitting Geant4 positions directly, without smearing.
+  Truth positions give the scattering-only resolution: 0.31%
+  instead of 1.13% at 20 GeV in our run. Smear by the plane
+  resolution first.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W07-c
+      issued by : reconstruct.py
+直接拟合 Geant4 的位置，没有做弥散。
+  真实位置只给出散射造成的分辨率：我们的运行中 20 GeV 时
+  为 0.31%，而不是 1.13%。先按平面分辨率弥散。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W07-d
+      issued by : /gun/energy 10 GeV
+Treating the gun energy as momentum.
+  /gun/energy is KINETIC energy: p = sqrt(T^2 + 2 T m). For a muon
+  at 1 GeV, p = 1.101 GeV/c: a 10% "bias" if you forget it.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W07-d
+      issued by : /gun/energy 10 GeV
+把枪的能量当成动量。
+  /gun/energy 设置的是动能：p = sqrt(T^2 + 2 T m)。1 GeV 缪子
+  的 p = 1.101 GeV/c；忘了这一点就会多出 10% 的“偏差”。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W07-e
+      issued by : SetFieldManager(fieldMgr, true)
+Field attached to the wrong logical volume, or with
+  forceToAllDaughters = false while trackers sit inside the magnet.
+  Symptom: straight tracks and p_rec = infinity. Print the field at a
+  point inside the magnet before any physics.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W07-e
+      issued by : SetFieldManager(fieldMgr, true)
+磁场挂错了逻辑体，或径迹室位于磁铁内部时
+  forceToAllDaughters = false。
+  症状：径迹笔直，p_rec = 无穷大。做物理之前先打印磁铁内
+  某点的磁场。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W07-f
+      issued by : resolution plot
+Quoting one event's difference as "the resolution".
+  Resolution is the WIDTH of a distribution of many events, with the
+  bias reported separately, and both as a function of p.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W07-f
+      issued by : 分辨率图
+把单个事例的差值当成“分辨率”。
+  分辨率是大量事例分布的宽度，偏差需单独报告，
+  并且两者都要作为 p 的函数给出。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-review">
+    <p class="cmd">/control/saveHistory<span lang="en">review notes</span><span lang="zh-Hans">复习要点</span></p>
+    <div class="prose">
+      <h2 id="h-review" class="bi"><span lang="en">Before you close the run.</span><span lang="zh-Hans">结束运行之前。</span></h2>
+      <ul class="review">
+        <li><label for="w07-r1"><input type="checkbox" id="w07-r1"><span lang="en">Is my momentum resolution the width of a distribution, rather than the difference for a single event?</span><span lang="zh-Hans">我的动量分辨率是否是分布的宽度，而不是单个事例的差值？</span></label></li>
+        <li><label for="w07-r2"><input type="checkbox" id="w07-r2"><span lang="en">Did I check the field integration accuracy, ruling out numerical error disguised as a physical effect?</span><span lang="zh-Hans">我是否检查了磁场积分精度，排除了伪装成物理效应的数值误差？</span></label></li>
+        <li><label for="w07-r3"><input type="checkbox" id="w07-r3"><span lang="en">Can I explain in one sentence why a stronger field generally means better momentum resolution?</span><span lang="zh-Hans">我能否用一句话解释，为什么更强的磁场通常意味着更好的动量分辨率？</span></label></li>
+      </ul>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Remark · debt repaid, debt taken on</span><span lang="zh-Hans">小结 · 还清的债与新欠的债</span></p>
+        <p lang="en">Repaid: momentum is no longer a number you typed into the gun. You inferred it from curvature, your first inverse problem. Taken on: you still checked it against a truth the simulation produced. Next week the output becomes a dataset that looks and behaves like real DAQ data.</p>
+        <p lang="zh-Hans">还清的债：动量不再是你输入粒子枪的一个数，而是由曲率推断出来的——你的第一个反问题。新欠的债：你仍在用模拟自己产生的真值来检验它。下周，输出将变成一个外观和行为都像真实 DAQ 数据的数据集。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-share">
+    <p class="cmd">/vis/ogl/export week07.gif<span lang="en">share this week</span><span lang="zh-Hans">分享本周成果</span></p>
+    <div class="share">
+      <figure class="fig">
+        <img src="media/week07-spectrometer.gif" width="720" height="900" alt="Real Geant4 muon tracks through a tracker–magnet–tracker spectrometer at 1 to 20 GeV, getting stiffer, with the momentum resolution plotted against momentum" loading="lazy">
+        <figcaption><span lang="en">Real Geant4 11.4 plane crossings from <code>spectrometer.mac</code>; the curve in the magnet is drawn through the two fitted lines. Long-press or right-click to save.</span><span lang="zh-Hans">来自 <code>spectrometer.mac</code> 的真实 Geant4 11.4 平面穿越点；磁铁内的曲线按两条拟合直线绘制。长按或右键即可保存。</span></figcaption>
+      </figure>
+      <div class="prose">
+        <h2 id="h-share" class="bi"><span lang="en">The stiffer the track, the harder the question.</span><span lang="zh-Hans">径迹越硬，问题越难。</span></h2>
+        <p lang="en">Post your σ<sub>p</sub>/p table and the GIF, and say at which momentum your spectrometer turns from scattering-limited to resolution-limited.</p>
+        <p lang="zh-Hans">把你的 σ<sub>p</sub>/p 表和这张 GIF 发出来，并说明你的谱仪在什么动量从散射主导转为分辨率主导。</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" id="pager" aria-label="Week navigation"></nav>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 8 and appendix A.2 · Geant4 11.4.p01 · PDG RPP 2024</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 8 章与附录 A.2 · Geant4 11.4.p01 · PDG RPP 2024</span>
+  </footer>
+</div>
+<script src="assets/course.js"></script>
+<script src="assets/week07.js"></script>
+</body>
+</html>

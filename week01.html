@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 01 · Monte Carlo Primer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0, Week 01: build a toy Monte Carlo of a two-layer muon telescope in Python and measure the 1/√N statistical tax before writing any Geant4.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Week 01 of 12</span><span lang="zh-Hans">第 01 / 12 周</span></span>
+    <span class="bar-r">
+      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">Idle&gt; <span>/control/execute week01.mac</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">A Monte Carlo primer, before the first line of Geant4.</span><span lang="zh-Hans">蒙特卡罗入门：在写第一行 Geant4 之前。</span></h1>
+      <p class="lede" lang="en">You build a small Monte Carlo in pure Python: sample muon directions, send them through a two-layer telescope, count what arrives, and attach an uncertainty to the count. Every later Geant4 measurement in this course pays the same statistical tax you meet here.</p>
+      <p class="lede" lang="zh-Hans">先用纯 Python 写一个小型蒙特卡罗：抽样缪子方向，让它们穿过双层望远镜，统计到达的数目，并给结果配上不确定度。本课程之后每一个 Geant4 测量都要缴纳你在这里第一次遇到的“统计税”。</p>
+      <ul class="meta">
+        <li class="stage"><b>1 · See it</b><span lang="en">stage · 观测</span><span lang="zh-Hans">阶段 · 观测</span></li>
+        <li><b>Mission 0</b><span lang="en">textbook ch. 1</span><span lang="zh-Hans">教材第 1 章</span></li>
+        <li><b>≈ 2 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="Week summary">
+      <div role="row"><span role="cell">week01</span></div>
+      <div role="row"><span role="cell">Language</span><span role="cell">Python 3 + NumPy</span></div>
+      <div role="row"><span role="cell">Geant4</span><span role="cell"><span lang="en">not yet (Week 2)</span><span lang="zh-Hans">暂不使用（第 2 周）</span></span></div>
+      <div role="row"><span role="cell">Observable</span><span role="cell">ε = k/N ± σ<sub>ε</sub></span></div>
+      <div role="row"><span role="cell">Deliverable</span><span role="cell"><span lang="en">ε with uncertainty, 4 beam models</span><span lang="zh-Hans">4 种束流模型下的 ε 与不确定度</span></span></div>
+    </div>
+  </section>
+
+  <!-- GOALS -->
+  <section class="run" aria-labelledby="h-goals">
+    <p class="cmd">/run/initialize<span lang="en">learning goals</span><span lang="zh-Hans">学习目标</span></p>
+    <div class="prose">
+      <h2 id="h-goals" class="bi"><span lang="en">By the end of this week you can put an error bar on a simulation.</span><span lang="zh-Hans">本周结束时，你能给模拟结果配上误差棒。</span></h2>
+      <ol class="goals">
+        <li><span lang="en">State the <dfn>Monte Carlo method<span class="kt" lang="zh-Hans">蒙特卡罗方法</span></dfn> as repeated random sampling whose spread gives the uncertainty.</span><span lang="zh-Hans">把<dfn>蒙特卡罗方法<span class="kt" lang="en">Monte Carlo method</span></dfn>表述为重复随机抽样，并由样本的涨落给出不确定度。</span></li>
+        <li><span lang="en">Sample isotropic directions correctly (cosθ uniform) and keep the beam model separate from the geometry.</span><span lang="zh-Hans">正确抽样各向同性方向（cosθ 均匀），并把束流模型与几何分开。</span></li>
+        <li><span lang="en">Estimate a <dfn>conditional transmission probability<span class="kt" lang="zh-Hans">条件透射概率</span></dfn> ε = k/N with σ<sub>ε</sub> = √(ε(1−ε)/N), and tell it apart from acceptance and efficiency.</span><span lang="zh-Hans">用 ε = k/N 和 σ<sub>ε</sub> = √(ε(1−ε)/N) 估计<dfn>条件透射概率<span class="kt" lang="en">conditional transmission probability</span></dfn>，并把它与接受度、效率区分开。</span></li>
+        <li><span lang="en">Show the 1/√N scaling of the <dfn>statistical uncertainty<span class="kt" lang="zh-Hans">统计不确定度</span></dfn> and use it to plan how many events a measurement needs.</span><span lang="zh-Hans">演示<dfn>统计不确定度<span class="kt" lang="en">statistical uncertainty</span></dfn>的 1/√N 标度，并据此估算一次测量需要多少事例。</span></li>
+        <li><span lang="en">Check a Monte Carlo result against an independent expectation and quote the difference in units of σ.</span><span lang="zh-Hans">把蒙特卡罗结果与独立的预期值比较，并以 σ 为单位给出差异。</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- LESSON 1: why python -->
+  <section class="run" aria-labelledby="h-why">
+    <p class="cmd">/control/manual<span lang="en">1.1 · why Python first</span><span lang="zh-Hans">1.1 · 为什么先用 Python</span></p>
+    <div class="prose">
+      <h2 id="h-why" class="bi"><span lang="en">Ten new ideas on one screen is a problem of order, not of difficulty.</span><span lang="zh-Hans">一屏十个新概念，问题在于顺序，而不在于难度。</span></h2>
+      <p lang="en">Open an official Geant4 example and you meet, on one screen, C++ syntax, the CMake build, detector construction, physics lists, the primary generator, user actions, sensitive detectors, visualization macros and random-number management. None of these is hard alone. The order is wrong, because no experimental question tells you why each class is needed.</p>
+      <p lang="zh-Hans">打开一个官方 Geant4 示例，同一屏上会出现 C++ 语法、CMake 构建、探测器构建、物理列表、初级粒子产生器、用户动作、灵敏探测器、可视化宏和随机数管理。单独看每一项都不难，难的是顺序不对：没有一个实验问题告诉你为什么需要某个类。</p>
+      <p lang="en">Geant4 2.0 reverses the order. You first finish a Monte Carlo experiment in Python, then move the same experiment into Geant4. When you meet <code>G4ParticleGun</code> next week you already know what "firing a particle" means. Only the language changes.</p>
+      <p lang="zh-Hans">Geant4 2.0 把顺序倒过来：先用 Python 完成一个蒙特卡罗实验，再把同一个实验搬进 Geant4。下周遇到 <code>G4ParticleGun</code> 时，你已经知道“发射一个粒子”是什么意思，变的只是语言。</p>
+
+      <div class="box">
+        <p class="box-label">Example 1.1 · <span lang="en">Today's laboratory question</span><span lang="zh-Hans">今天的实验问题</span></p>
+        <p lang="en">A plastic scintillator on your bench is read out by a PMT and an oscilloscope. Cosmic-ray muons cross it at random. Before building any Geant4 geometry, answer a simpler question: if muons arrive randomly, what fraction of sampled trajectories transmit through the telescope, and how much statistical uncertainty should you expect after a given number of events?</p>
+        <p lang="zh-Hans">实验台上一块塑料闪烁体接 PMT 和示波器，宇宙线缪子随机地穿过它。在搭建任何 Geant4 几何之前，先回答一个更简单的问题：如果缪子随机到达，抽样径迹中有多大比例能穿过望远镜？给定事例数后，应当预期多大的统计不确定度？</p>
+      </div>
+
+      <div class="box">
+        <p class="box-label">Definition 1.1 · <span lang="en">Monte Carlo method</span><span lang="zh-Hans">蒙特卡罗方法</span></p>
+        <p lang="en">The <dfn>Monte Carlo method</dfn> is a class of numerical techniques that solve deterministic or stochastic problems through repeated <dfn>random sampling<span class="kt" lang="zh-Hans">随机抽样</span></dfn>. You build a probabilistic model for the quantity sought, draw and tally samples repeatedly, estimate the true value from the sample statistic, and take the uncertainty from the statistical fluctuation.</p>
+        <p lang="zh-Hans"><dfn>蒙特卡罗方法</dfn>是一类通过重复<dfn>随机抽样<span class="kt" lang="en">random sampling</span></dfn>来求解确定性或随机性问题的数值方法：为所求的量建立概率模型，反复抽样并计数，用样本统计量估计真值，并用统计涨落给出不确定度。</p>
+      </div>
+
+      <div class="flow" role="img" aria-label="The Chapter 1 Monte Carlo loop"><b>physics question</b> <span class="a">→</span> sample θ, φ, x, y <span class="a">→</span> propagate track <span class="a">→</span> telescope hit? <span class="a">→</span> <b>count k/N</b><br><span class="a">model</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a">randomness</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a">geometry</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="a">observable</span></div>
+      <p class="cap"><span lang="en">Figure 1.1. Define a physical question, sample a population, propagate each trial through a minimal geometry, and turn the outcome into a measurable conditional transmission probability.</span><span lang="zh-Hans">图 1.1　提出物理问题，抽样一个总体，让每次试验穿过最简几何，把结果变成可测量的条件透射概率。</span></p>
+
+      <div class="aside">
+        <p class="aside-label"><span lang="en">History</span><span lang="zh-Hans">历史</span></p>
+        <p lang="en">Stanisław Ulam and John von Neumann named the method after the Monaco casino in the 1940s, during nuclear-weapons research at Los Alamos; Ulam's uncle was a habitual gambler. Neutron transport through fissile material is nearly intractable analytically, but simulating many neutron histories by random sampling is feasible. Nearly every detector simulation in particle physics today, Geant4 included, descends from that work.</p>
+        <p lang="zh-Hans">20 世纪 40 年代，乌拉姆（Stanisław Ulam）和冯·诺依曼在洛斯阿拉莫斯从事核武器研究时，用摩纳哥的赌城为这一方法命名——乌拉姆的叔叔是个嗜赌之人。中子在裂变材料中的输运几乎无法解析求解，但用随机抽样模拟大量中子历史却完全可行。今天粒子物理中几乎所有的探测器模拟，包括 Geant4，都源于这一脉。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 2: the experiment -->
+  <section class="run" aria-labelledby="h-exp">
+    <p class="cmd">/gun/particle mu-<span lang="en">1.2 · the minimal experiment</span><span lang="zh-Hans">1.2 · 最小实验</span></p>
+    <div class="prose">
+      <h2 id="h-exp" class="bi"><span lang="en">Two square layers, one question: how many tracks make it through both?</span><span lang="zh-Hans">两块方形探测层，一个问题：有多少径迹能同时穿过两层？</span></h2>
+      <div class="box">
+        <p class="box-label">Example 1.2 · <span lang="en">Monte Carlo estimate of a telescope's transmission probability</span><span lang="zh-Hans">望远镜透射概率的蒙特卡罗估计</span></p>
+        <p lang="en">Both layers are squares of side <i>L</i>, separated by a distance <i>d</i>, with normals along the vertical. Sample <i>N</i> downward-going directions and <i>N</i> impact points on the upper layer, then count the number <i>k</i> of tracks that cross both layers. For this first pass use an isotropic downward hemisphere; a later step replaces it with the approximately cos²θ sea-level muon angular distribution. Keeping the beam model separate from the detector geometry is deliberate.</p>
+        <p lang="zh-Hans">两层都是边长为 <i>L</i> 的正方形，间距为 <i>d</i>，法线沿竖直方向。抽样 <i>N</i> 个向下的方向和上层上的 <i>N</i> 个入射点，统计同时穿过两层的径迹数 <i>k</i>。第一版使用向下半球内的各向同性分布；后面一步换成近似 cos²θ 的海平面缪子角分布。把<dfn>束流模型<span class="kt" lang="en">beam model</span></dfn>与探测器几何分开，是有意为之。</p>
+      </div>
+
+      <p lang="en">The measured quantity is a <strong>conditional transmission probability</strong>: the fraction of trajectories that have already crossed the upper layer and then also cross the lower layer. It is not the full geometric acceptance of a detector exposed to a flux. The estimate and its uncertainty are</p>
+      <p lang="zh-Hans">所测的量是<strong>条件透射概率</strong>：在已经穿过上层的径迹中，同时也穿过下层的比例。它不是探测器在通量照射下的完整几何接受度。估计值及其不确定度为</p>
+      <div class="eq" role="math" aria-label="epsilon approximately k over N, sigma epsilon approximately square root of epsilon times one minus epsilon over N">
+        <span><i>ε</i> ≃ <span class="frac"><span><i>k</i></span><span><i>N</i></span></span>,</span>
+        <span><i>σ</i><sub><i>ε</i></sub> ≃ <span class="sqrt"><span><span class="frac"><span><i>ε</i>(1 − <i>ε</i>)</span><span><i>N</i></span></span></span></span></span>
+        <span class="eqno">(1.1)</span>
+      </div>
+      <p lang="en">The count <i>k</i> follows a <dfn>binomial distribution<span class="kt" lang="zh-Hans">二项分布</span></dfn> Bin(<i>N</i>, <i>ε</i>) with variance <i>Nε</i>(1 − <i>ε</i>); dividing by <i>N</i>² gives Eq. (1.1). Raising <i>N</i> by a factor of 100 shrinks <i>σ<sub>ε</sub></i> by only a factor of 10. Every later Geant4 measurement in this course pays this statistical tax.</p>
+      <p lang="zh-Hans">计数 <i>k</i> 服从<dfn>二项分布<span class="kt" lang="en">binomial distribution</span></dfn> Bin(<i>N</i>, <i>ε</i>)，方差为 <i>Nε</i>(1 − <i>ε</i>)；除以 <i>N</i>² 即得式 (1.1)。<i>N</i> 增加 100 倍，<i>σ<sub>ε</sub></i> 只缩小 10 倍——这是本课程之后每一个 Geant4 测量都要缴纳的“统计税”。</p>
+
+      <h3 class="bi"><span lang="en">Three numbers that are easy to confuse</span><span lang="zh-Hans">三个容易混淆的量</span></h3>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th><span lang="en">Quantity</span><span lang="zh-Hans">物理量</span></th><th><span lang="en">What it is</span><span lang="zh-Hans">含义</span></th><th><span lang="en">Where</span><span lang="zh-Hans">出现</span></th></tr></thead>
+          <tbody>
+            <tr><td class="n">ε</td><td><span lang="en"><strong>Conditional transmission</strong>: of the tracks that cross the upper layer, the fraction that also cross the lower layer. Dimensionless.</span><span lang="zh-Hans"><strong>条件透射概率</strong>：穿过上层的径迹中，同时穿过下层的比例。无量纲。</span></td><td class="wk"><span lang="en">this week</span><span lang="zh-Hans">本周</span></td></tr>
+            <tr><td class="n">AΩ</td><td><span lang="en"><strong><dfn>Geometric acceptance</dfn><span class="kt" lang="zh-Hans">几何接受度</span></strong>: the integral over positions and directions that turns an intensity into a rate. Units m²·sr. Needs a defined flux.</span><span lang="zh-Hans"><strong><dfn>几何接受度</dfn><span class="kt" lang="en">geometric acceptance</span></strong>：对位置和方向的积分，把强度换算成计数率。单位 m²·sr，需要先定义通量。</span></td><td class="wk"><span lang="en">wk 12 projects</span><span lang="zh-Hans">第 12 周项目</span></td></tr>
+            <tr><td class="n">η</td><td><span lang="en"><strong><dfn>Detector efficiency</dfn><span class="kt" lang="zh-Hans">探测效率</span></strong>: of the particles that cross the detector, the fraction that produce a recorded signal above threshold.</span><span lang="zh-Hans"><strong><dfn>探测效率</dfn><span class="kt" lang="en">detector efficiency</span></strong>：穿过探测器的粒子中，产生超过阈值并被记录的信号的比例。</span></td><td class="wk"><span lang="en">week 5</span><span lang="zh-Hans">第 5 周</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Think about it</span><span lang="zh-Hans">想一想</span></p>
+        <p lang="en">Before you run anything, predict: if <i>N</i> goes from 1,000 to 100,000, roughly how much does the relative uncertainty on the transmission probability shrink? The same 1/√<i>N</i> rule returns in the energy-loss scan (Mission 4, week 4) and the experiment reproduction (Mission 10, week 11).</p>
+        <p lang="zh-Hans">运行之前先预测：<i>N</i> 从 1,000 增加到 100,000，透射概率的相对不确定度大约缩小多少？同样的 1/√<i>N</i> 规律会在能损扫描（任务 4，第 4 周）和实验复现（任务 10，第 11 周）中再次出现。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 3: implementation map -->
+  <section class="run" aria-labelledby="h-impl">
+    <p class="cmd">/random/setSeeds 0 0<span lang="en">1.3 · the implementation</span><span lang="zh-Hans">1.3 · 完整实现</span></p>
+    <div class="prose">
+      <h2 id="h-impl" class="bi"><span lang="en">Three pieces of code matter. The rest is bookkeeping.</span><span lang="zh-Hans">真正要紧的代码只有三处，其余都是簿记。</span></h2>
+      <p lang="en">The full script in the hands-on task is short enough to read top to bottom in a few minutes. Before you read it, find these three pieces. If the beam model changes and the geometry does not, only the first piece should change.</p>
+      <p lang="zh-Hans">动手任务里的完整脚本几分钟就能从头读到尾。读之前，先找到下面三处。如果束流模型变了而几何不变，只有第一处应该改动。</p>
+      <div class="code">
+        <div class="code-head"><span class="l"><b>Code microscope · <span lang="en">code microscope</span><span lang="zh-Hans">代码显微镜</span></b><span class="tag analysis">ANALYSIS</span></span></div>
+<pre><span class="c"># 1. beam model: sample_directions() — cos(theta) uniform = isotropic</span>
+cos_theta = rng.uniform(0.0, 1.0, N)
+
+<span class="c"># 2. geometry: straight-line propagation to the lower layer</span>
+x1 = x0 + d * np.tan(theta) * np.cos(phi)
+y1 = y0 + d * np.tan(theta) * np.sin(phi)
+
+<span class="c"># 3. observable: did the track land on the lower square?</span>
+hit = (np.abs(x1) &lt; L / 2) &amp; (np.abs(y1) &lt; L / 2)</pre>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Intuition</span><span lang="zh-Hans">直觉</span></p>
+        <p lang="en">A Monte Carlo simulation is an opinion poll. You cannot ask every voter, which here means enumerating every possible history. If you draw enough unbiased random samples, the sample fraction converges to the true fraction at a predictable rate, and that rate is the 1/√<i>N</i> law. From day one, this is the ruler for a simulation's credibility.</p>
+        <p lang="zh-Hans">蒙特卡罗模拟就像民意调查：你不可能问遍每一位选民（即枚举每一种可能的物理历史），但只要抽取足够多无偏的随机样本，样本比例就会以可预期的速度收敛到真实比例，这个速度就是 1/√<i>N</i> 规律。从第一天起，它就是衡量模拟可信度的标尺。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLAINER -->
+  <section class="run" aria-labelledby="h-toy">
+    <p class="cmd">/run/beamOn 1000<span lang="en">interactive toy model</span><span lang="zh-Hans">交互玩具模型</span></p>
+    <div>
+      <h2 id="h-toy" class="bi"><span lang="en">Fire the telescope, then watch the error bar shrink as 1/√N.</span><span lang="zh-Hans">发射径迹，看误差棒按 1/√N 缩小。</span></h2>
+      <p class="prose" style="color:var(--muted);max-width:64ch;margin-top:14px" lang="en">Each button adds events to one growing sample. Change the beam model, <i>L</i> or <i>d</i> to start a new sample. The lower panels repeat the whole experiment 400 times so you can see the spread that σ<sub>ε</sub> predicts.</p>
+      <p class="prose" style="color:var(--muted);max-width:64ch" lang="zh-Hans">每个按钮都往同一个样本里追加事例；改变束流模型、<i>L</i> 或 <i>d</i> 会开始一个新样本。下方的面板把整个实验重复 400 次，让你看到 σ<sub>ε</sub> 所预言的涨落。</p>
+
+      <div class="display" style="margin-top:20px">
+        <div class="display-head"><span class="toy">TOY MODEL · <span lang="en">not Geant4</span><span lang="zh-Hans">非 Geant4</span></span><span id="w1-runlabel">Run 0</span></div>
+        <canvas id="tele" class="tele" aria-label="Toy telescope event display: side view and top view of the lower layer"></canvas>
+        <div class="legend">
+          <span><i style="background:#FF6369"></i>μ⁻</span>
+          <span><i style="background:#7393FF"></i>μ⁺</span>
+          <span><i class="dash" style="color:#8FA0AC"></i><span lang="en">missed lower layer</span><span lang="zh-Hans">未击中下层</span></span>
+          <span><i class="dot" style="background:#F2D06B"></i><span lang="en">hit</span><span lang="zh-Hans">击中点</span></span>
+          <span>/random/setSeeds 20261018</span>
+        </div>
+      </div>
+      <div class="controls">
+        <label class="ctl" for="w1-model"><span class="ctl-row"><span lang="en">beam model</span><span lang="zh-Hans">束流模型</span></span><select id="w1-model"></select></label>
+        <label class="ctl" for="w1-L"><span class="ctl-row"><span lang="en">layer side L</span><span lang="zh-Hans">边长 L</span><output id="w1-L-out" for="w1-L">0.30 m</output></span><input id="w1-L" type="range" min="0.05" max="1" step="0.05" value="0.3"></label>
+        <label class="ctl" for="w1-d"><span class="ctl-row"><span lang="en">separation d</span><span lang="zh-Hans">间距 d</span><output id="w1-d-out" for="w1-d">0.50 m</output></span><input id="w1-d" type="range" min="0.05" max="2" step="0.05" value="0.5"></label>
+      </div>
+      <div class="btns">
+        <button type="button" class="primary" id="b-1k">/run/beamOn 1000</button>
+        <button type="button" id="b-10k">/run/beamOn 10000</button>
+        <button type="button" id="b-100k">/run/beamOn 100000</button>
+        <button type="button" id="b-reset"><span lang="en">Reset (same seed)</span><span lang="zh-Hans">重置（同一种子）</span></button>
+      </div>
+      <div class="panels">
+        <div>
+          <p class="panel-title"><span lang="en">this sample</span><span lang="zh-Hans">当前样本</span></p>
+          <div class="statbox" role="table" aria-label="Transmission estimate">
+            <div role="row"><span role="cell">transmission</span></div>
+            <div role="row"><span role="cell">Entries N</span><span role="cell" id="r-N">0</span></div>
+            <div role="row"><span role="cell"><span lang="en">transmitted k</span><span lang="zh-Hans">透射数 k</span></span><span role="cell" id="r-k">0</span></div>
+            <div role="row"><span role="cell">ε̂ = k/N</span><span role="cell" id="r-e">—</span></div>
+            <div role="row"><span role="cell">σ<sub>ε</sub></span><span role="cell" id="r-s">—</span></div>
+            <div role="row"><span role="cell">σ<sub>ε</sub>/ε̂</span><span role="cell" id="r-rel">—</span></div>
+            <div role="row"><span role="cell"><span lang="en">ε reference</span><span lang="zh-Hans">ε 参考值</span></span><span role="cell" id="r-ref">—</span></div>
+            <div role="row"><span role="cell">(ε̂ − ε<sub>ref</sub>)/σ</span><span role="cell" id="r-pull">—</span></div>
+          </div>
+          <p class="cap"><span lang="en">Reference: numerical integral of the same beam model and geometry (900 × 240 midpoints), independent of the random numbers.</span><span lang="zh-Hans">参考值：对同一束流模型与几何的数值积分（900 × 240 个中点），与随机数无关。</span></p>
+        </div>
+        <div>
+          <p class="panel-title"><span lang="en">relative uncertainty vs N</span><span lang="zh-Hans">相对不确定度随 N 的变化</span></p>
+          <canvas id="conv" style="aspect-ratio:16/10" aria-label="Relative uncertainty versus number of events on log-log axes"></canvas>
+          <p class="cap"><span lang="en">One point per click. Each tenfold step in N moves the point down by √10 ≈ 3.16.</span><span lang="zh-Hans">每点击一次增加一个点。N 每增大 10 倍，点下移 √10 ≈ 3.16 倍。</span></p>
+        </div>
+      </div>
+      <div class="panels" style="border-top:1px solid var(--rule);margin-top:16px;border-radius:4px">
+        <div>
+          <p class="panel-title"><span lang="en">400 pseudo-experiments</span><span lang="zh-Hans">400 次伪实验</span></p>
+          <label class="ctl" for="w1-npe"><span lang="en">events per pseudo-experiment</span><span lang="zh-Hans">每次伪实验的事例数</span>
+            <select id="w1-npe"><option value="100">N = 100</option><option value="1000" selected>N = 1,000</option><option value="10000">N = 10,000</option></select>
+          </label>
+          <p class="cap" id="pe-note" style="margin-top:12px"></p>
+          <p class="cap"><span lang="en">A <dfn>pseudo-experiment</dfn> is one complete repeat of the run with fresh random numbers. The spread of their results is what σ<sub>ε</sub> claims to predict.</span><span lang="zh-Hans"><dfn>伪实验</dfn>是用新的随机数把整个运行完整重复一次。它们结果的离散程度，正是 σ<sub>ε</sub> 声称要预言的东西。</span></p>
+        </div>
+        <div>
+          <canvas id="pe-hist" style="aspect-ratio:16/10" aria-label="Histogram of transmission estimates from 400 pseudo-experiments"></canvas>
+        </div>
+      </div>
+      <div class="toybox">
+        <p><b>TOY MODEL · <span lang="en">approximations</span><span lang="zh-Hans">近似</span></b></p>
+        <p lang="en">Straight lines in vacuum: no energy loss, scattering or decay. Both layers are zero-thickness squares that detect every crossing. Impact points are uniform on the upper layer. Directions come from the selected beam model. The reference value integrates the same model, so agreement checks the sampling and the statistics, not the physics of real muons. The cos²θ shape is the PDG approximation for sea-level muons of a few GeV; it ignores the energy dependence of the angular distribution. Charges are drawn with μ⁺/μ⁻ ≈ 1.27 only for colour.</p>
+        <p lang="zh-Hans">真空中的直线：没有能量损失、散射或衰变。两层都是零厚度的正方形，对每次穿越都 100% 响应。入射点在上层均匀分布，方向来自所选的束流模型。参考值对同一模型积分，因此两者一致只检验抽样和统计，并不检验真实缪子的物理。cos²θ 形状是 PDG 对几 GeV 海平面缪子的近似，忽略了角分布对能量的依赖。电荷按 μ⁺/μ⁻ ≈ 1.27 抽取，仅用于着色。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HANDS-ON -->
+  <section class="run" aria-labelledby="h-task">
+    <p class="cmd">/control/shell python3 telescope_transmission.py<span lang="en">hands-on · Mission 0</span><span lang="zh-Hans">动手任务 · 任务 0</span></p>
+    <div class="prose">
+      <h2 id="h-task" class="bi"><span lang="en">Run it, validate it, break it, then give it a real sky.</span><span lang="zh-Hans">运行、验证、破坏，再换上真实的天空。</span></h2>
+      <p lang="en">Work in your own terminal. Every expected output below was produced with NumPy 2.5.3 and the fixed seed in the script; any NumPy with <code>default_rng</code> should print the same digits. Tick each step when you have matched it.</p>
+      <p lang="zh-Hans">在你自己的终端里完成。下面每个预期输出都是用 NumPy 2.5.3 和脚本中的固定种子得到的；任何带 <code>default_rng</code> 的 NumPy 版本都应输出相同的数字。对上结果后勾选该步。</p>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Set up a clean Python environment</span><span lang="zh-Hans">建立干净的 Python 环境</span></h3><label class="done" for="w01-s1"><input type="checkbox" id="w01-s1" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c-s1">copy</button></div>
+<pre id="c-s1">python3 -m venv ~/g4c &amp;&amp; source ~/g4c/bin/activate
+pip install numpy
+python3 -c "import numpy; print(numpy.__version__)"</pre></div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Save and run the textbook script</span><span lang="zh-Hans">保存并运行教材脚本</span></h3><label class="done" for="w01-s2"><input type="checkbox" id="w01-s2" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>telescope_transmission.py</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c-py">copy</button></div>
+<pre id="c-py"><span class="k">import</span> numpy <span class="k">as</span> np
+
+
+<span class="k">def</span> sample_directions(N, rng):
+    <span class="c">"""Sample N directions uniformly in solid angle over the downward hemisphere.
+
+    This is a toy directional model. It is not the cosine-weighted
+    crossing distribution of an isotropic flux through a plane, and it is
+    not a sea-level cosmic-ray muon spectrum.
+    """</span>
+    <span class="c"># Isotropic direction sampling over a hemisphere: cos(theta) is uniform.</span>
+<mark>    cos_theta = rng.uniform(0.0, 1.0, N)
+    theta = np.arccos(cos_theta)</mark>
+    phi = rng.uniform(0.0, 2 * np.pi, N)
+    <span class="k">return</span> theta, phi
+
+
+<span class="k">def</span> transmission_probability(N, L, d, seed=0):
+    <span class="c">"""Monte Carlo estimate of a two-layer telescope's conditional transmission
+    probability.
+
+    L : side length of each square layer [m]
+    d : vertical separation between the two layers [m]
+    The upper-layer impact point is sampled uniformly in the square.
+    """</span>
+    rng = np.random.default_rng(seed)
+    theta, phi = sample_directions(N, rng)
+
+    <span class="c"># Sample the impact point uniformly across the upper square.</span>
+    x0 = rng.uniform(-L / 2, L / 2, N)
+    y0 = rng.uniform(-L / 2, L / 2, N)
+
+    <span class="c"># Straight-line propagation to the lower layer.</span>
+<mark>    x1 = x0 + d * np.tan(theta) * np.cos(phi)
+    y1 = y0 + d * np.tan(theta) * np.sin(phi)</mark>
+
+<mark>    hit = (np.abs(x1) &lt; L / 2) &amp; (np.abs(y1) &lt; L / 2)</mark>
+    k = hit.sum()
+    eps = k / N
+    sigma = np.sqrt(eps * (1 - eps) / N)
+    <span class="k">return</span> eps, sigma
+
+
+<span class="k">if</span> __name__ == <span class="ok">"__main__"</span>:
+    <span class="k">for</span> N <span class="k">in</span> [1_000, 10_000, 100_000]:
+        eps, sigma = transmission_probability(N, L=0.3, d=0.5)
+        print(f<span class="ok">"N={N:&gt;7d} eps={eps:.4f} sigma={sigma:.4f} "</span>
+              f<span class="ok">"rel.unc.={sigma/eps:.2%}"</span>)</pre></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c-s2">copy</button></div>
+<pre id="c-s2">python3 telescope_transmission.py</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected output</span><span lang="zh-Hans">预期输出</span></b></span></div>
+<pre>N=   1000 eps=0.0570 sigma=0.0073 rel.unc.=12.86%
+N=  10000 eps=0.0485 sigma=0.0021 rel.unc.=4.43%
+N= 100000 eps=0.0482 sigma=0.0007 rel.unc.=1.40%</pre></div>
+          <p lang="en">Read the last column. It falls by 2.9 and then by 3.2 for each tenfold step in <i>N</i>, close to √10 ≈ 3.16 and nowhere near 10. The ratios are not exactly √10 because each line uses its own estimate ε̂ in the denominator.</p>
+          <p lang="zh-Hans">看最后一列：<i>N</i> 每增大 10 倍，它分别缩小 2.9 倍和 3.2 倍，接近 √10 ≈ 3.16，远不是 10 倍。比值不严格等于 √10，是因为每一行分母里用的是各自的估计值 ε̂。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Validate against an independent number</span><span lang="zh-Hans">与独立数值比较</span></h3><label class="done" for="w01-s3"><input type="checkbox" id="w01-s3" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">For <i>L</i> = 0.3 m and <i>d</i> = 0.5 m, a numerical integral of the same isotropic model gives ε = 0.04901 (SciPy <code>dblquad</code>; this page's explainer computes it the same way). Run one million events and express the difference in units of σ.</p>
+          <p lang="zh-Hans">对 <i>L</i> = 0.3 m、<i>d</i> = 0.5 m，同一各向同性模型的数值积分给出 ε = 0.04901（SciPy <code>dblquad</code>；本页演示用同样的方法计算）。运行一百万个事例，并以 σ 为单位给出差异。</p>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c-s3">copy</button></div>
+<pre id="c-s3">python3 -c "from telescope_transmission import transmission_probability as t; e, s = t(1_000_000, L=0.3, d=0.5); print(f'eps = {e:.5f} +/- {s:.5f}   pull vs 0.04901: {(e-0.04901)/s:+.2f} sigma')"</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected output</span><span lang="zh-Hans">预期输出</span></b></span></div>
+<pre>eps = 0.04920 +/- 0.00022   pull vs 0.04901: +0.88 sigma</pre></div>
+          <p lang="en">A pull of +0.88σ means agreement. This compares the Monte Carlo with the model it samples. It says nothing yet about real muons.</p>
+          <p lang="zh-Hans">+0.88σ 的偏差说明两者一致。这只是把蒙特卡罗与它所抽样的模型相比，还不能说明真实缪子的情况。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Break it on purpose: sample θ uniformly</span><span lang="zh-Hans">故意破坏：让 θ 均匀分布</span></h3><label class="done" for="w01-s4"><input type="checkbox" id="w01-s4" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">In <code>sample_directions()</code>, replace the two highlighted lines with the one below and rerun. This is the biased sampling the textbook asks you to try before you touch Geant4.</p>
+          <p lang="zh-Hans">在 <code>sample_directions()</code> 中，把高亮的两行换成下面这一行，然后重新运行。这就是教材要求你在接触 Geant4 之前先尝试的有偏抽样。</p>
+          <div class="code"><div class="code-head"><span class="l"><b>sample_directions()</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c-s4">copy</button></div>
+<pre id="c-s4">    theta = rng.uniform(0.0, np.pi / 2, N)   <span class="bad"># BROKEN: uniform in theta</span></pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected output</span><span lang="zh-Hans">预期输出</span></b></span></div>
+<pre>N=   1000 eps=0.1500 sigma=0.0113 rel.unc.=7.53%
+N=  10000 eps=0.1660 sigma=0.0037 rel.unc.=2.24%
+N= 100000 eps=0.1699 sigma=0.0012 rel.unc.=0.70%</pre></div>
+          <p lang="en">ε jumps from 0.049 to 0.170, with small error bars. Uniform θ ignores the sinθ in dΩ = sinθ dθ dφ and over-weights near-vertical tracks. Note the trap: 0.170 is almost exactly the value of a different, physical model (step 5). A wrong sampler can land on a plausible number, which is why you check against the model you meant.</p>
+          <p lang="zh-Hans">ε 从 0.049 跳到 0.170，误差棒还很小。θ 均匀忽略了 dΩ = sinθ dθ dφ 中的 sinθ，使接近竖直的径迹权重过大。注意这个陷阱：0.170 几乎正好等于另一个合理物理模型的值（第 5 步）。错误的抽样也可能给出看似合理的数，所以必须与你本来想用的模型比较。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Give it a real sky: the cos²θ sea-level shape</span><span lang="zh-Hans">换上真实天空：海平面 cos²θ 分布</span></h3><label class="done" for="w01-s5"><input type="checkbox" id="w01-s5" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Restore the original lines. At sea level the muon intensity per solid angle is approximately <i>I</i>(θ) ∝ cos²θ (PDG, Cosmic rays review, for muons of a few GeV). The density of <i>c</i> = cosθ is then 3<i>c</i>² on [0, 1], its cumulative distribution is <i>c</i>³, and inverting it gives <i>c</i> = <i>u</i><sup>1/3</sup> for uniform <i>u</i>. Only the beam model changes.</p>
+          <p lang="zh-Hans">先恢复原来的两行。海平面上缪子的单位立体角强度近似为 <i>I</i>(θ) ∝ cos²θ（PDG 宇宙线综述，适用于几 GeV 的缪子）。于是 <i>c</i> = cosθ 在 [0, 1] 上的概率密度为 3<i>c</i>²，累积分布为 <i>c</i>³，反解得 <i>c</i> = <i>u</i><sup>1/3</sup>（<i>u</i> 均匀）。只改动束流模型。</p>
+          <div class="code"><div class="code-head"><span class="l"><b>sample_directions()</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c-s5">copy</button></div>
+<pre id="c-s5">    cos_theta = rng.uniform(0.0, 1.0, N) ** (1 / 3)   <span class="c"># pdf of cos(theta) ~ cos^2</span>
+    theta = np.arccos(cos_theta)</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected output</span><span lang="zh-Hans">预期输出</span></b></span></div>
+<pre>N=   1000 eps=0.1490 sigma=0.0113 rel.unc.=7.56%
+N=  10000 eps=0.1340 sigma=0.0034 rel.unc.=2.54%
+N= 100000 eps=0.1341 sigma=0.0011 rel.unc.=0.80%</pre></div>
+          <p lang="en">Reference integral: 0.1336. Muons crossing a horizontal layer carry one more factor of cosθ (the projected area), so the crossing distribution goes as cos³θ and <i>c</i> = <i>u</i><sup>1/4</sup>. Try it: you should get 0.1699 at <i>N</i> = 100,000 against a reference of 0.1702. The textbook's first-pass model, isotropic per solid angle, is neither of these, as its docstring warns.</p>
+          <p lang="zh-Hans">参考积分值为 0.1336。穿过水平探测层的缪子还要再乘一个 cosθ（投影面积），所以穿越分布为 cos³θ，<i>c</i> = <i>u</i><sup>1/4</sup>。试一试：<i>N</i> = 100,000 时应得到 0.1699，参考值为 0.1702。教材第一版的“单位立体角各向同性”模型两者都不是，正如它的文档字符串所提醒的。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Fill in the research notebook</span><span lang="zh-Hans">填写研究笔记</span></h3><label class="done" for="w01-s6"><input type="checkbox" id="w01-s6" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Write these five lines for Mission 0 before you start Week 2. If you can complete them, you already think like a simulation experimentalist.</p>
+          <p lang="zh-Hans">在开始第 2 周之前，为任务 0 写下这五行。如果你能写完，你已经在像模拟实验者一样思考了。</p>
+          <div class="scroll">
+            <table class="tbl">
+              <tbody>
+                <tr><td class="n">Question</td><td><span lang="en">What physical quantity am I trying to learn?</span><span lang="zh-Hans">问题：我想知道哪个物理量？</span></td></tr>
+                <tr><td class="n">Prediction</td><td><span lang="en">What should happen, and why?</span><span lang="zh-Hans">预测：应该发生什么？为什么？</span></td></tr>
+                <tr><td class="n">Observable</td><td><span lang="en">What number will the simulation actually produce?</span><span lang="zh-Hans">可观测量：模拟实际会输出哪个数？</span></td></tr>
+                <tr><td class="n">Validation</td><td><span lang="en">What independent expectation or data will I compare with?</span><span lang="zh-Hans">验证：我将与哪个独立预期或数据比较？</span></td></tr>
+                <tr><td class="n">Limitation</td><td><span lang="en">What important part of reality is still missing?</span><span lang="zh-Hans">局限：还缺少现实中的哪个重要部分？</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Prepare for Week 2: check your Geant4 install</span><span lang="zh-Hans">为第 2 周做准备：检查 Geant4 安装</span></h3><label class="done" for="w01-s7"><input type="checkbox" id="w01-s7" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Next week the same experiment moves into Geant4. The core chapters target Geant4 11.4 with C++17. Source your Geant4 and ROOT environment and run:</p>
+          <p lang="zh-Hans">下周同一个实验将搬进 Geant4。核心章节以 Geant4 11.4 和 C++17 为目标。加载 Geant4 与 ROOT 环境后运行：</p>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag geant4">GEANT4</span></span><button class="copy" type="button" data-copy="c-s7">copy</button></div>
+<pre id="c-s7">geant4-config --version
+geant4-config --check-datasets
+root-config --version</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
+<pre>11.4.x                  <span class="c"># any 11.4 patch release</span>
+<span class="c"># --check-datasets: every data library reported as installed, none missing</span>
+6.xx/yy                 <span class="c"># a ROOT 6 release</span></pre></div>
+          <p lang="en">There is no generic <code>geant4 --version</code> command. If <code>geant4-config</code> is not found, your Geant4 environment script has not been sourced.</p>
+          <p lang="zh-Hans">并不存在通用的 <code>geant4 --version</code> 命令。如果找不到 <code>geant4-config</code>，说明还没有加载 Geant4 的环境脚本。</p>
+        </li>
+      </ol>
+      <p class="progress" data-progress-out="w01"></p>
+    </div>
+  </section>
+
+  <!-- SELF-CHECK -->
+  <section class="run" aria-labelledby="h-quiz">
+    <p class="cmd">/control/verbose 2<span lang="en">self-check</span><span lang="zh-Hans">自测</span></p>
+    <div>
+      <h2 id="h-quiz" class="bi"><span lang="en">Six questions. Each answer explains itself.</span><span lang="zh-Hans">六道题，每个答案都附有解释。</span></h2>
+      <div id="quiz"></div>
+    </div>
+  </section>
+
+  <!-- COMMON ERRORS -->
+  <section class="run" aria-labelledby="h-err">
+    <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
+    <div>
+      <h2 id="h-err" class="bi"><span lang="en">Six mistakes that run without a single error message.</span><span lang="zh-Hans">六个不会报任何错的错误。</span></h2>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : MC0001
+      issued by : sample_directions()
+theta sampled uniformly in [0, pi/2].
+  Uniform theta drops the sin(theta) in dOmega and over-weights
+  near-vertical tracks: eps = 0.170 instead of 0.049 (L=0.3, d=0.5).
+  Isotropic means cos(theta) is uniform.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : MC0001
+      issued by : sample_directions()
+θ 在 [0, π/2] 内均匀抽样。
+  θ 均匀丢掉了 dΩ 中的 sinθ，使接近竖直的径迹权重过大：
+  ε = 0.170，而不是 0.049（L=0.3, d=0.5）。
+  各向同性意味着 cosθ 均匀。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : MC0002
+      issued by : your report
+Transmission quoted as a bare number ("eps = 0.0482").
+  A Monte Carlo estimate without sigma cannot agree or disagree
+  with anything. Quote eps = 0.0482 +/- 0.0007 (N = 100000).
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : MC0002
+      issued by : 你的报告
+透射概率只给了一个裸数（“eps = 0.0482”）。
+  没有 σ 的蒙特卡罗估计无法与任何东西比较是否一致。
+  应写作 eps = 0.0482 ± 0.0007（N = 100000）。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : MC0003
+      issued by : your report
+eps called "the acceptance" or "the efficiency".
+  eps is a conditional transmission probability. Acceptance A*Omega
+  [m^2 sr] needs a flux; efficiency needs a detector response.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : MC0003
+      issued by : 你的报告
+把 ε 称为“接受度”或“效率”。
+  ε 是条件透射概率。接受度 AΩ [m² sr] 需要通量，
+  效率需要探测器响应。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : MC0004
+      issued by : sigma = sqrt(eps*(1-eps)/N)
+k = 0 (or k = N) gives sigma = 0.
+  The binomial approximation fails at the boundary. For k = 0 quote
+  the 95% upper limit eps &lt; 3/N ("rule of three").
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : MC0004
+      issued by : sigma = sqrt(eps*(1-eps)/N)
+k = 0（或 k = N）时 σ = 0。
+  二项近似在边界处失效。k = 0 时应给出 95% 上限
+  ε &lt; 3/N（“三法则”）。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : MC0005
+      issued by : transmission_probability(..., seed=0)
+Runs sharing one seed merged as if independent.
+  With the same seed, the N=1000 and N=10000 runs reuse the same
+  first random numbers. Give every run you combine its own seed.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : MC0005
+      issued by : transmission_probability(..., seed=0)
+把共用同一种子的运行当作独立样本合并。
+  种子相同时，N=1000 与 N=10000 的运行用到相同的前若干个随机数。
+  要合并的每次运行都必须有自己的种子。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : MC0006
+      issued by : transmission_probability(N, L=30, d=0.5)
+Mixed units: L in cm, d in m.
+  The lever arm d/L shrinks 100x and eps comes out near 1.
+  Keep one unit system; the docstring says metres.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : MC0006
+      issued by : transmission_probability(N, L=30, d=0.5)
+单位混用：L 用 cm，d 用 m。
+  杠杆臂 d/L 缩小 100 倍，ε 接近 1。
+  统一使用一套单位；文档字符串规定为米。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+    </div>
+  </section>
+
+  <!-- REVIEW NOTES -->
+  <section class="run" aria-labelledby="h-review">
+    <p class="cmd">/control/saveHistory<span lang="en">review notes</span><span lang="zh-Hans">复习要点</span></p>
+    <div class="prose">
+      <h2 id="h-review" class="bi"><span lang="en">Before you close the run.</span><span lang="zh-Hans">结束运行之前。</span></h2>
+      <ul class="review">
+        <li><label for="w01-r1"><input type="checkbox" id="w01-r1" data-progress="w01r"><span lang="en">Does my transmission estimate come with a statistical uncertainty, rather than standing alone as a bare number?</span><span lang="zh-Hans">我的透射估计是否附带了统计不确定度，而不是一个孤零零的裸数？</span></label></li>
+        <li><label for="w01-r2"><input type="checkbox" id="w01-r2" data-progress="w01r"><span lang="en">When I increased N by a factor of 100, did the uncertainty shrink by roughly a factor of 10?</span><span lang="zh-Hans">当 N 增加 100 倍时，不确定度是否大约缩小了 10 倍？</span></label></li>
+        <li><label for="w01-r3"><input type="checkbox" id="w01-r3" data-progress="w01r"><span lang="en">Can I explain, in one sentence, the difference between conditional transmission, geometric acceptance and detector efficiency?</span><span lang="zh-Hans">我能否用一句话说清条件透射概率、几何接受度与探测效率的区别？</span></label></li>
+      </ul>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Remark · debt repaid, debt taken on</span><span lang="zh-Hans">小结 · 还清的债与新欠的债</span></p>
+        <p lang="en">Repaid: random sampling, conditional transmission probability and statistical uncertainty are now numbers you computed yourself. Taken on: all of it happened in a matter-free toy world where particles fly in straight lines and lose no energy. Next week the particle enters the Geant4 world, and Mission 4 will ask how much it loses when it crosses matter.</p>
+        <p lang="zh-Hans">还清的债：随机抽样、条件透射概率和统计不确定度，已经是你亲手算出的数字。新欠的债：这一切都发生在没有物质、没有能损、粒子走直线的“真空玩具世界”里。下周粒子将进入 Geant4 的世界，而任务 4 会追问：粒子穿过物质时究竟损失多少能量？</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHARE -->
+  <section class="run" aria-labelledby="h-share">
+    <p class="cmd">/vis/ogl/export week01.gif<span lang="en">share this week</span><span lang="zh-Hans">分享本周成果</span></p>
+    <div class="share">
+      <figure class="fig">
+        <img src="media/week01-telescope.gif" width="720" height="900" alt="Animated toy Monte Carlo: muon tracks through a two-layer telescope while the relative uncertainty falls along a 1/√N line" loading="lazy">
+        <figcaption><span lang="en">Toy model, isotropic beam, L = 0.3 m, d = 0.5 m. Long-press or right-click to save.</span><span lang="zh-Hans">玩具模型，各向同性束流，L = 0.3 m，d = 0.5 m。长按或右键即可保存。</span></figcaption>
+      </figure>
+      <div class="prose">
+        <h2 id="h-share" class="bi"><span lang="en">Ten times the data is not ten times the precision.</span><span lang="zh-Hans">十倍的数据，不等于十倍的精度。</span></h2>
+        <p lang="en">Post your three-line output with the GIF and one sentence on what surprised you. Then rerun step 3 with <code>seed=</code> your student number and share the pull in the course group. Across the class, about two thirds of the pulls should fall within ±1σ, and about one in twenty outside ±2σ.</p>
+        <p lang="zh-Hans">把你的三行输出、这张 GIF 和一句“最让我意外的是……”发出来。然后用 <code>seed=</code>你的学号重新运行第 3 步，把偏差发到课程群里。全班的偏差中，大约三分之二应落在 ±1σ 以内，约二十分之一落在 ±2σ 之外。</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" id="pager" aria-label="Week navigation"></nav>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 1 and appendix A.1 · PDG RPP 2024</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 1 章与附录 A.1 · PDG RPP 2024</span>
+  </footer>
+</div>
+<script src="assets/course.js"></script>
+<script src="assets/week01.js"></script>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 12 · Proposal and defence</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0, Week 12: propose your own virtual experiment, check it is feasible, make it reproducible from a clean checkout, and defend it.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+<style>
+#w12-kind{width:100%;font:400 .85rem var(--mono);padding:6px 8px;border:1px solid var(--rule);background:var(--panel);color:var(--fg);border-radius:3px}
+.principle{font:600 clamp(1.4rem,3.6vw,2.1rem)/1.25 var(--head);margin:28px 0 0;max-width:24ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Week 12 of 12</span><span lang="zh-Hans">第 12 / 12 周</span></span>
+    <span class="bar-r">
+      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">$ <span>git tag v1.0 &amp;&amp; bash repro_check.sh</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">Ask your own question, then defend the answer.</span><span lang="zh-Hans">提出你自己的问题，再为答案答辩。</span></h1>
+      <p class="lede" lang="en">Every question so far came from the instructor. This week you propose one, check that it can be answered in the time you have, build it on the skeleton you already know, and stand in front of peers who ask what a referee would. The grade puts validation above code.</p>
+      <p class="lede" lang="zh-Hans">到目前为止，每个问题都来自教师。本周由你提出一个问题，检查它能否在现有时间内得到回答，在你已熟悉的骨架上搭建它，再面对像审稿人一样提问的同学。评分把验证放在代码之上。</p>
+      <ul class="meta">
+        <li class="stage"><b>5 · Trust it</b><span lang="en">stage · 信任</span><span lang="zh-Hans">阶段 · 信任</span></li>
+        <li><b>Mission 11 → defence</b><span lang="en">textbook ch. 15–16</span><span lang="zh-Hans">教材第 15–16 章</span></li>
+        <li><b>10 min</b><span lang="en">talk + questions</span><span lang="zh-Hans">报告 + 提问</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="Defence weights">
+      <div role="row"><span role="cell">Definition 16.1</span></div>
+      <div role="row"><span role="cell"><span lang="en">validation</span><span lang="zh-Hans">验证</span></span><span role="cell"><b>25%</b></span></div>
+      <div role="row"><span role="cell"><span lang="en">problem · implementation</span><span lang="zh-Hans">问题 · 实现</span></span><span role="cell">20% · 20%</span></div>
+      <div role="row"><span role="cell"><span lang="en">analysis</span><span lang="zh-Hans">分析</span></span><span role="cell">15%</span></div>
+      <div role="row"><span role="cell"><span lang="en">communication · code</span><span lang="zh-Hans">表达 · 代码</span></span><span role="cell">10% · 10%</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-goals">
+    <p class="cmd">/run/initialize<span lang="en">learning goals</span><span lang="zh-Hans">学习目标</span></p>
+    <div class="prose">
+      <h2 id="h-goals" class="bi"><span lang="en">By the end of this week you own a question, a simulation and a defensible answer.</span><span lang="zh-Hans">本周结束时，你拥有一个问题、一个模拟和一个经得起答辩的答案。</span></h2>
+      <ol class="goals">
+        <li><span lang="en">Write a <dfn>minimal research proposal<span class="kt" lang="zh-Hans">最小研究提案</span></dfn>: one-sentence question, observable, prediction, validation criterion.</span><span lang="zh-Hans">写出<dfn>最小研究提案<span class="kt" lang="en">minimal research proposal</span></dfn>：一句话的问题、可观测量、预测、验证标准。</span></li>
+        <li><span lang="en">Estimate events, CPU time and the <dfn>systematic floor<span class="kt" lang="zh-Hans">系统误差下限</span></dfn> before you commit to a target precision.</span><span lang="zh-Hans">在定下目标精度之前，估算事例数、CPU 时间和<dfn>系统误差下限<span class="kt" lang="en">systematic floor</span></dfn>。</span></li>
+        <li><span lang="en">Make the headline number reproducible from a clean checkout, with a stated statistical tolerance.</span><span lang="zh-Hans">让核心数字能从干净的检出版本复现，并给出明确的统计容差。</span></li>
+        <li><span lang="en">Give a ten-minute <dfn>defence<span class="kt" lang="zh-Hans">答辩</span></dfn> with a boundary statement and a referee's question answered.</span><span lang="zh-Hans">做一场十分钟的<dfn>答辩<span class="kt" lang="en">defence</span></dfn>，包括边界声明，并回答一个审稿人式的问题。</span></li>
+        <li><span lang="en">Explain any macro command you used in terms of what it makes Geant4 do.</span><span lang="zh-Hans">用“它让 Geant4 做了什么”来解释你用过的任何宏命令。</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-prop">
+    <p class="cmd">/control/manual<span lang="en">15 · from exercise to research</span><span lang="zh-Hans">15 · 从练习到研究</span></p>
+    <div class="prose">
+      <h2 id="h-prop" class="bi"><span lang="en">A good question can be answered by simulation, uses three skills, and has one observable.</span><span lang="zh-Hans">好问题能用模拟回答，用到三项技能，并只有一个可观测量。</span></h2>
+      <div class="box">
+        <p class="box-label">Definition 15.1 · <span lang="en">The minimal research proposal</span><span lang="zh-Hans">最小研究提案</span></p>
+        <p lang="en">A one-sentence physics question; the detector geometry and physics processes involved; at least one observable whose direction you can guess in advance; and one explicit validation criterion, the level of result that counts as having answered the question. Each item concrete enough that an advisor can tell at a glance whether it fits in a week.</p>
+        <p lang="zh-Hans">一句话的物理问题；涉及的探测器几何和物理过程；至少一个能事先猜出变化方向的可观测量；以及一个明确的验证标准，即什么样的结果算回答了问题。每一项都要具体到导师一眼就能判断能否在一周内完成。</p>
+      </div>
+      <p lang="en">Candidate topics from the textbook, roughly in increasing difficulty. Several are open questions in our group:</p>
+      <p lang="zh-Hans">教材给出的候选课题，大致按难度递增排列。其中几个是我们课题组正在研究的开放问题：</p>
+      <ul>
+        <li lang="en">tracker spacing and field strength for the best momentum resolution under a budget (W7)</li><li lang="zh-Hans">在预算约束下，为获得最佳动量分辨率优化径迹探测器间距和磁场强度（第 7 周）</li>
+        <li lang="en">how much a muography density map depends on the assumed muon spectrum and angular distribution</li><li lang="zh-Hans">缪子成像密度图在多大程度上依赖于假定的缪子能谱和角分布</li>
+        <li lang="en">acceptance and efficiency of a real telescope geometry, including a 2 mm misalignment (W1, W3, W5)</li><li lang="zh-Hans">真实望远镜几何的接受度与效率，含 2 mm 错位（第 1、3、5 周）</li>
+        <li lang="en">a scintillating-fibre tracker: light yield, threshold and efficiency</li><li lang="zh-Hans">闪烁光纤径迹探测器：光产额、阈值与效率</li>
+        <li lang="en">the cosmic muon spectrum against altitude and zenith angle</li><li lang="zh-Hans">宇宙线缪子能谱随海拔和天顶角的变化</li>
+        <li lang="en">TF-μSR with a field gradient or partial polarization: which parameter moves (W10)</li><li lang="zh-Hans">带磁场梯度或部分极化的 TF-μSR：哪个参数会变（第 10 周）</li>
+        <li lang="en">muon yield of an electron-driven source such as SHINE</li><li lang="zh-Hans">SHINE 这类电子驱动缪子源的缪子产额</li>
+      </ul>
+      <p lang="en">Every project starts from the same skeleton: the CMakeLists.txt and main() you have used since Week 2. Week 10's app is a complete template, with a messenger for pre-initialisation parameters, an SD keyed by copy number, a t1-style ntuple and a scan script. A proposal that cannot say which of DetectorConstruction, PrimaryGeneratorAction, RunAction and EventAction change, and how, is not concrete yet.</p>
+      <p lang="zh-Hans">每个项目都从同一个骨架起步：你从第 2 周起一直在用的 CMakeLists.txt 和 main()。第 10 周的程序就是一个完整模板：有用于初始化前参数的 messenger、按复制号区分的灵敏探测器、t1 风格的 ntuple 和扫描脚本。如果一份提案说不出 DetectorConstruction、PrimaryGeneratorAction、RunAction、EventAction 中哪几个要改、怎么改，它就还不够具体。</p>
+      <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W12-a
+      issued by : proposal review
+A boundless topic ("study every aspect of muon detectors") can never
+  be judged done. First question in any proposal meeting: "If you
+  could use only one sentence to describe your result, what would it
+  be?" No sentence, no project yet.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W12-a
+      issued by : 提案评审
+没有边界的课题（“研究缪子探测器的方方面面”）永远无法判定完成。
+  任何提案讨论的第一个问题：“如果只能用一句话描述你的结果，你会
+  怎么说？”说不出这句话，就还不算项目。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-toy">
+    <p class="cmd">/run/beamOn ?<span lang="en">interactive · feasibility and weights</span><span lang="zh-Hans">交互 · 可行性与权重</span></p>
+    <div>
+      <h2 id="h-toy" class="bi"><span lang="en">Before you promise a precision, find out what it costs and whether it is reachable at all.</span><span lang="zh-Hans">承诺一个精度之前，先弄清它的代价，以及它到底能否达到。</span></h2>
+      <div class="controls" style="margin-top:20px">
+        <label class="ctl" for="w12-kind"><span class="ctl-row"><span lang="en">observable</span><span lang="zh-Hans">可观测量</span></span><select id="w12-kind"><option value="eff">efficiency ε = k/N</option><option value="mean">mean of a per-event quantity</option></select></label>
+        <label class="ctl" for="w12-prec"><span class="ctl-row"><span lang="en">target relative uncertainty</span><span lang="zh-Hans">目标相对不确定度</span><output id="w12-prec-out" for="w12-prec">1.0%</output></span><input id="w12-prec" type="range" min="0.1" max="10" step="0.1" value="1"></label>
+        <label class="ctl" for="w12-sys"><span class="ctl-row"><span lang="en">systematic (relative)</span><span lang="zh-Hans">系统误差（相对）</span><output id="w12-sys-out" for="w12-sys">0.5%</output></span><input id="w12-sys" type="range" min="0" max="10" step="0.1" value="0.5"></label>
+        <label class="ctl" for="w12-eps"><span class="ctl-row"><span lang="en">fraction of events that count (ε)</span><span lang="zh-Hans">有效事例比例（ε）</span><output id="w12-eps-out" for="w12-eps">1.3%</output></span><input id="w12-eps" type="range" min="0.1" max="100" step="0.1" value="1.3"></label>
+        <label class="ctl" for="w12-r" id="w12-r-row"><span class="ctl-row"><span lang="en">relative RMS per event</span><span lang="zh-Hans">每事例相对 RMS</span><output id="w12-r-out" for="w12-r">0.30</output></span><input id="w12-r" type="range" min="0.05" max="3" step="0.05" value="0.3"></label>
+        <label class="ctl" for="w12-ms"><span class="ctl-row"><span lang="en">CPU per generated event (pilot run)</span><span lang="zh-Hans">每个产生事例的 CPU 时间（试跑）</span><output id="w12-ms-out" for="w12-ms">0.34 ms</output></span><input id="w12-ms" type="range" min="0.01" max="20" step="0.01" value="0.34"></label>
+        <label class="ctl" for="w12-cores"><span class="ctl-row"><span lang="en">cores</span><span lang="zh-Hans">核数</span><output id="w12-cores-out" for="w12-cores">8</output></span><input id="w12-cores" type="range" min="1" max="256" step="1" value="8"></label>
+        <label class="ctl" for="w12-pts"><span class="ctl-row"><span lang="en">scan points</span><span lang="zh-Hans">扫描点数</span><output id="w12-pts-out" for="w12-pts">4</output></span><input id="w12-pts" type="range" min="1" max="40" step="1" value="4"></label>
+        <label class="ctl" for="w12-vars"><span class="ctl-row"><span lang="en">systematic variations per point</span><span lang="zh-Hans">每点的系统变化数</span><output id="w12-vars-out" for="w12-vars">2</output></span><input id="w12-vars" type="range" min="0" max="10" step="1" value="2"></label>
+        <label class="ctl" for="w12-days"><span class="ctl-row"><span lang="en">days until the defence</span><span lang="zh-Hans">距答辩天数</span><output id="w12-days-out" for="w12-days">7 d</output></span><input id="w12-days" type="range" min="1" max="60" step="1" value="7"></label>
+      </div>
+      <div class="panels one">
+        <div>
+          <canvas id="w12-plot" style="aspect-ratio:16/8" aria-label="Relative uncertainty against events per configuration, with target and systematic floor"></canvas>
+          <div class="verbose"><pre id="w12-out"></pre></div>
+        </div>
+      </div>
+      <h3 class="bi" style="margin-top:36px"><span lang="en">Defence weights (Definition 16.1)</span><span lang="zh-Hans">答辩权重（定义 16.1）</span></h3>
+      <div class="btns" style="border:1px solid var(--rule);border-radius:4px 4px 0 0">
+        <button type="button" id="w12-ex-a"><span lang="en">A: elegant code, never compared</span><span lang="zh-Hans">A：代码优雅，从未比较</span></button>
+        <button type="button" id="w12-ex-b"><span lang="en">B: rough code, honest validation</span><span lang="zh-Hans">B：代码粗糙，验证诚实</span></button>
+      </div>
+      <div class="controls" style="border-top:0">
+        <label class="ctl" for="w12-g1"><span class="ctl-row"><span lang="en">problem statement · 20%</span><span lang="zh-Hans">问题陈述 · 20%</span><output id="w12-g1-out" for="w12-g1">80</output></span><input id="w12-g1" type="range" min="0" max="100" value="80"></label>
+        <label class="ctl" for="w12-g2"><span class="ctl-row"><span lang="en">implementation · 20%</span><span lang="zh-Hans">模拟实现 · 20%</span><output id="w12-g2-out" for="w12-g2">80</output></span><input id="w12-g2" type="range" min="0" max="100" value="80"></label>
+        <label class="ctl" for="w12-g3"><span class="ctl-row"><span lang="en">validation · 25%</span><span lang="zh-Hans">验证 · 25%</span><output id="w12-g3-out" for="w12-g3">80</output></span><input id="w12-g3" type="range" min="0" max="100" value="80"></label>
+        <label class="ctl" for="w12-g4"><span class="ctl-row"><span lang="en">analysis · 15%</span><span lang="zh-Hans">分析 · 15%</span><output id="w12-g4-out" for="w12-g4">80</output></span><input id="w12-g4" type="range" min="0" max="100" value="80"></label>
+        <label class="ctl" for="w12-g5"><span class="ctl-row"><span lang="en">communication · 10%</span><span lang="zh-Hans">科学表达 · 10%</span><output id="w12-g5-out" for="w12-g5">80</output></span><input id="w12-g5" type="range" min="0" max="100" value="80"></label>
+        <label class="ctl" for="w12-g6"><span class="ctl-row"><span lang="en">code and reproducibility · 10%</span><span lang="zh-Hans">代码与可复现性 · 10%</span><output id="w12-g6-out" for="w12-g6">80</output></span><input id="w12-g6" type="range" min="0" max="100" value="80"></label>
+      </div>
+      <div class="panels one"><div><div class="verbose"><pre id="w12-grade"></pre></div></div></div>
+      <div class="toybox">
+        <p><b>TOY MODEL · <span lang="en">approximations</span><span lang="zh-Hans">近似</span></b></p>
+        <p lang="en">Statistical precision: σ/ε = √((1 − ε)/(εN)) for an efficiency, r/√(εN) for a mean. The total is √(stat² + sys²), so it never falls below the systematic. Cost: constant CPU per generated event, with a default of 0.34 ms from our Week 10 run (200 000 muons, about 68 CPU-seconds on two threads). It assumes perfect scaling over cores and no queue, failed jobs or analysis time. "Feasible" means production fits in half the days left. Measure your own ms per event with a pilot run; it changes by orders of magnitude with geometry, energy and optical photons.</p>
+        <p lang="zh-Hans">统计精度：效率为 σ/ε = √((1 − ε)/(εN))，均值为 r/√(εN)。总不确定度为 √(stat² + sys²)，所以永远不会低于系统误差。代价：每个产生事例的 CPU 时间恒定，默认 0.34 ms，取自我们第 10 周的运行（20 万个缪子，双线程约 68 CPU 秒）。假设多核完美扩展，不考虑排队、失败作业和分析时间。“可行”指生产只占剩余天数的一半。请用试跑测出你自己的每事例耗时；它会随几何、能量和光学光子相差几个数量级。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-def">
+    <p class="cmd">/control/saveHistory<span lang="en">16 · the last gate is a defence</span><span lang="zh-Hans">16 · 最后一关是答辩</span></p>
+    <div class="prose">
+      <h2 id="h-def" class="bi"><span lang="en">Treat your simulation as an instrument someone else could rebuild and challenge.</span><span lang="zh-Hans">把你的模拟当作一台别人能重建、能质疑的仪器。</span></h2>
+      <div class="box">
+        <p class="box-label">Example 16.1 · <span lang="en">A ten-minute defence</span><span lang="zh-Hans">十分钟答辩</span></p>
+        <p lang="en">1 min: the physics question, clear without slides. 3 min: simulation design and the key implementation choices. 3 min: validation, with uncertainties and the reference. 1 min: known limitations. The rest: questions, at least one of them a referee's question.</p>
+        <p lang="zh-Hans">1 分钟：物理问题，不看幻灯片也能听懂。3 分钟：模拟设计和关键实现选择。3 分钟：验证，含不确定度和参照。1 分钟：已知局限。其余时间：提问，其中至少一个是审稿人式的问题。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Required boundary statement</span><span lang="zh-Hans">必需的边界声明</span></p>
+        <p lang="en">Name at least one physically important effect your virtual experiment ignores, and its consequence. If you used musrSim, also name one application-specific behaviour (a magic volume name, a fork-dependent command, a parameterised response, the physics list) and how you verified it against the installed source. Course-W10-a is a model answer.</p>
+        <p lang="zh-Hans">至少说出一个被你的虚拟实验忽略的重要物理效应及其后果。如果用了 musrSim，还要说出一个应用特有的行为（特殊体积名、依赖分支的命令、参数化响应、物理列表），以及你如何对照已安装的源码核实它。Course-W10-a 就是一个范例答案。</p>
+      </div>
+      <p lang="en">The 10% for code and reproducibility is checked by doing it: an evaluator clones the repository, rebuilds from scratch, runs the macro and gets the headline number without asking you anything. Record the executable version, the Geant4/ROOT environment, macros, seed strategy, thread count and the analysis script.</p>
+      <p lang="zh-Hans">代码与可复现性这 10% 是靠实际操作来检查的：评审克隆仓库、从零编译、运行宏，不问你任何问题就得到核心数字。要记录可执行程序版本、Geant4/ROOT 环境、宏文件、种子策略、线程数和分析脚本。</p>
+      <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W12-b
+      issued by : our Week 10 reruns (Geant4 11.4.p01, 2 threads)
+The same tf.mac gave f = 1.3573, 1.3578 and 1.3572 MHz on three runs.
+  Muon decay times were identical; positron hits were not. Cause, in
+  the 11.4 source: G4DecayWithSpin writes the muon spin into
+  G4VDecayChannel::parent_polarization, a plain member of a decay
+  table that all threads share, then decays. Two threads can race.
+With /run/numberOfThreads 1 the output is identical run to run, and
+  A0 (0.2455 +/- 0.0088) agrees with the 2-thread value: no physics
+  effect visible at this precision, but bit-level reproducibility is
+  gone. Quote a headline with a statistical tolerance (2 sigma), and
+  make reference runs single-threaded.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W12-b
+      issued by : 我们重跑第 10 周的结果（Geant4 11.4.p01，双线程）
+同一个 tf.mac 三次运行给出 f = 1.3573、1.3578 和 1.3572 MHz。缪子衰变
+  时间完全相同，正电子击中却不同。11.4 源码中的原因：G4DecayWithSpin
+  把缪子自旋写进 G4VDecayChannel::parent_polarization，它是所有线程
+  共享的衰变表中的普通成员，写完再做衰变。两个线程可能发生竞争。
+用 /run/numberOfThreads 1 时，每次运行的输出完全一致，A0
+  （0.2455 +/- 0.0088）与双线程结果相符：在这个精度下看不出物理影响，
+  但比特级可复现性没有了。给核心数字附上统计容差（2 sigma），参考
+  运行用单线程。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-task">
+    <p class="cmd">git tag v1.0<span lang="en">hands-on · proposal to defence</span><span lang="zh-Hans">动手任务 · 从提案到答辩</span></p>
+    <div class="prose">
+      <h2 id="h-task" class="bi"><span lang="en">Five steps from a blank page to a reproduced number.</span><span lang="zh-Hans">从一张白纸到一个被复现的数字，五步。</span></h2>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Fill the proposal and get it signed off</span><span lang="zh-Hans">填写提案并获得认可</span></h3><label class="done" for="w12-s1"><input type="checkbox" id="w12-s1" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="files">
+            <details><summary><b>proposal.md</b><button class="copy" type="button" data-copy="f12-p">copy</button></summary><pre id="f12-p" data-src="code/week12/proposal.md"># Proposal: &lt;one-line title&gt;
+
+Author · date · repository URL · tag
+
+## 1. Question (one sentence)
+&lt;What physical quantity do you want to learn, and to what precision?&gt;
+
+## 2. Observable
+&lt;The one number the simulation will produce. Units. How it is computed from the ROOT file.&gt;
+
+## 3. Prediction
+&lt;Direction and rough size, BEFORE running, with the reasoning (chapter / formula).&gt;
+
+## 4. Virtual detector and physics
+- Geometry and materials: &lt;...&gt;
+- Primary particles (spectrum, angles, position): &lt;...&gt;
+- Physics list and any added constructor: &lt;...&gt;  (check with /process/list)
+- Detector response: &lt;truth Edep / digitised / optical&gt;  and why that fidelity is enough
+
+## 5. Skills used (at least three weeks)
+&lt;e.g. W6 trigger, W8 analysis chain, W10 spin physics&gt;
+
+## 6. Validation criterion
+&lt;Reference (analytic, table, published measurement), the rung you aim for (Definition 14.1),
+and the discrepancy in sigma that would count as agreement.&gt;
+
+## 7. Feasibility
+- Target precision: &lt;...&gt;   systematic floor: &lt;...&gt;
+- Events per configuration: &lt;...&gt;   configurations: &lt;...&gt;
+- CPU time per event from a pilot run: &lt;... ms&gt;   wall time on &lt;N&gt; cores: &lt;...&gt;
+
+## 8. Boundary statement
+&lt;At least one physically important effect deliberately ignored, and its consequence.
+If musrSim: one application-specific behaviour checked against the installed source.&gt;
+
+## 9. Reproducibility record
+- Geant4 version (geant4-config --version), ROOT / Python package versions
+- Commit and tag; macro(s); seed strategy and thread count
+- Analysis command that prints the headline number, and its statistical tolerance</pre></details>
+          </div>
+          <p lang="en">One page. If any section is empty or vague, the proposal is not ready. Section 3 (prediction) is written before any run, and section 6 names the rung you aim for and the σ that would count as agreement.</p>
+          <p lang="zh-Hans">一页纸。任何一节空着或含糊，提案就还没准备好。第 3 节（预测）要在任何运行之前写好，第 6 节要写明你瞄准的阶梯层级，以及多少 σ 算一致。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Pilot run: measure your cost per event</span><span lang="zh-Hans">试跑：测出每个事例的代价</span></h3><label class="done" for="w12-s2"><input type="checkbox" id="w12-s2" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c12-a">copy</button></div>
+<pre id="c12-a">sed "s|beamOn .*|beamOn 10000|" run.mac &gt; pilot.mac
+/usr/bin/time -v ./myExperiment pilot.mac 2&gt;&amp;1 | grep -E "User time|System time|Maximum resident"</pre></div>
+          <p lang="en">(User + system seconds) / 10 000 is your CPU per event. Put it in the planner above, with the efficiency and systematic you expect. For reference, our Week 10 run used 63 s user + 6 s system for 200 000 muons. If the planner says "impossible", narrow the question now rather than on the night before the defence.</p>
+          <p lang="zh-Hans">（用户秒数 + 系统秒数）/ 10 000 就是每个事例的 CPU 时间。把它和你预期的效率、系统误差一起填进上面的规划器。作为参照，我们第 10 周的运行处理 20 万个缪子用了 63 s 用户时间加 6 s 系统时间。如果规划器显示“不可能”，现在就收窄问题，别等到答辩前一晚。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Version everything and tag the result</span><span lang="zh-Hans">一切纳入版本管理并给结果打标签</span></h3><label class="done" for="w12-s3"><input type="checkbox" id="w12-s3" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c12-b">copy</button></div>
+<pre id="c12-b">git add CMakeLists.txt *.cc include src *.mac *.py proposal.md
+echo "data/" &gt;&gt; .gitignore            # results are regenerated, not committed
+git commit -m "headline: f = 1.3573 +/- 0.0020 MHz at 10 mT"
+git tag v1.0 &amp;&amp; git push --tags</pre></div>
+          <p lang="en">Develop on a laptop, version the exact source and macros, run large samples on a cluster, bring back analysis-ready files. The tag is what the defence refers to; the slides quote it.</p>
+          <p lang="zh-Hans">在笔记本上开发，对源码和宏做精确的版本管理，在集群上跑大样本，再取回可直接分析的文件。答辩引用的是这个标签，幻灯片里要写明它。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Let a stranger reproduce the headline</span><span lang="zh-Hans">让陌生人复现核心数字</span></h3><label class="done" for="w12-s4"><input type="checkbox" id="w12-s4" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="files">
+            <details><summary><b>repro_check.sh</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f12-r">copy</button></summary><pre id="f12-r" data-src="code/week12/repro_check.sh">#!/bin/bash
+# repro_check.sh -- what an evaluator does before your defence: clone, rebuild from scratch,
+# run your macro, and compare your headline number with the one in your slides.
+# Usage: bash repro_check.sh &lt;git-url&gt; &lt;tag&gt; &lt;app-dir&gt; &lt;macro&gt; "&lt;analysis command&gt;" &lt;expected&gt; &lt;tolerance&gt;
+# Example (Week 10 as a defence package):
+#   bash repro_check.sh https://github.com/you/tf-musr.git v1.0 week10 tf.mac \
+#        "python3 asymmetry.py data/tf_10mT.root" 1.3573 0.0040
+set -euo pipefail
+URL=$1; TAG=$2; APP=$3; MACRO=$4; ANALYSIS=$5; EXPECTED=$6; TOL=$7
+WORK=$(mktemp -d)
+echo "== environment"
+geant4-config --version
+root-config --version 2&gt;/dev/null || echo "ROOT: not installed (uproot analysis only)"
+python3 -c "import uproot, awkward, scipy; print('uproot', uproot.__version__, '| awkward', awkward.__version__, '| scipy', scipy.__version__)"
+
+echo "== clean checkout of $TAG"
+git clone -q --branch "$TAG" --depth 1 "$URL" "$WORK/src"
+git -C "$WORK/src" log -1 --format='commit %H  %ad'
+test -z "$(git -C "$WORK/src" status --porcelain)" || { echo "FAIL: tree not clean"; exit 1; }
+
+echo "== build from scratch"
+cmake -S "$WORK/src/$APP" -B "$WORK/build" -DCMAKE_BUILD_TYPE=Release &gt; "$WORK/cmake.log"
+cmake --build "$WORK/build" -j4 &gt; "$WORK/build.log"
+
+echo "== run"
+cd "$WORK/build" &amp;&amp; mkdir -p data
+EXE=$(find . -maxdepth 1 -type f -perm -u+x ! -name '*.sh' | head -1)
+"$EXE" "$MACRO" &gt; run.log 2&gt;&amp;1
+grep -E "seed|Run complete|Field at" run.log || true
+
+echo "== analysis"
+OUT=$($ANALYSIS)
+echo "$OUT"
+GOT=$(echo "$OUT" | grep -E "^f +=" | awk '{print $3}')
+python3 - "$GOT" "$EXPECTED" "$TOL" &lt;&lt;'EOF'
+import sys
+got, exp, tol = map(float, sys.argv[1:])
+ok = abs(got - exp) &lt;= tol
+print(f"headline: got {got}, slides say {exp}, tolerance {tol} -&gt; {'REPRODUCED' if ok else 'NOT REPRODUCED'}")
+sys.exit(0 if ok else 1)
+EOF</pre></details>
+          </div>
+          <div class="code"><div class="code-head"><span class="l"><b><span lang="en">terminal (a different account or machine)</span><span lang="zh-Hans">终端（换一个账号或机器）</span></b></span><button class="copy" type="button" data-copy="c12-c">copy</button></div>
+<pre id="c12-c">bash repro_check.sh https://github.com/you/tf-musr.git v1.0 week10 tf.mac \
+     "python3 asymmetry.py data/tf_10mT.root" 1.3573 0.0040</pre></div>
+          <p lang="en">The script prints the environment, clones the tag, refuses a dirty tree, rebuilds from scratch, runs the macro and compares the headline within your tolerance. We could not run it end to end here (the sandbox has no CMake-installed Geant4), but its three inputs are real. The three Week 10 runs above all fall within 1.3573 ± 0.0040, which is 2σ, while none is identical bit for bit (Course-W12-b). A tolerance of 0 would fail an honest result.</p>
+          <p lang="zh-Hans">脚本会打印环境、克隆标签、拒绝不干净的工作树、从零编译、运行宏，并按你的容差比较核心数字。我们无法在这里完整运行它（沙盒里没有用 CMake 安装的 Geant4），但它的三个输入都是真实的。上面三次第 10 周运行都落在 1.3573 ± 0.0040（即 2σ）之内，却没有一次比特级相同（Course-W12-b）。容差设为 0，会让一个诚实的结果不及格。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Rehearse the defence with a referee</span><span lang="zh-Hans">请一位“审稿人”预演答辩</span></h3><label class="done" for="w12-s5"><input type="checkbox" id="w12-s5" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Ten minutes on the clock. Your partner asks three questions from this list and grades with the weights above: What would falsify your result? Which effect you ignored would change it most, and in which direction? Why is this physics list enough for this observable? What does your main macro command make Geant4 do? Could I get your number from your repository tonight?</p>
+          <p lang="zh-Hans">计时十分钟。你的搭档从下列问题中挑三个来问，并按上面的权重打分：什么结果能证伪你的结论？你忽略的哪个效应对结果影响最大，朝哪个方向？为什么这个物理列表对这个可观测量够用？你主要的宏命令让 Geant4 做了什么？我今晚能从你的仓库得到你的数字吗？</p>
+        </li>
+      </ol>
+      <p class="progress" data-progress-out="w12"></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-quiz">
+    <p class="cmd">/control/verbose 2<span lang="en">self-check</span><span lang="zh-Hans">自测</span></p>
+    <div>
+      <h2 id="h-quiz" class="bi"><span lang="en">Five questions. Each answer explains itself.</span><span lang="zh-Hans">五道题，每个答案都附有解释。</span></h2>
+      <div id="quiz"></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-err">
+    <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
+    <div>
+      <h2 id="h-err" class="bi"><span lang="en">Three ways a good project fails at the defence.</span><span lang="zh-Hans">好项目在答辩中失败的三种方式。</span></h2>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W12-c
+      issued by : feasibility
+A precision target below the systematic floor. Total uncertainty is
+  sqrt(stat^2 + sys^2): with 1.5% systematic, no number of events
+  reaches 1%. Reduce the systematic or change the target.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W12-c
+      issued by : 可行性
+精度目标低于系统误差下限。总不确定度为 sqrt(stat^2 + sys^2)：系统误差
+  为 1.5% 时，多少事例都达不到 1%。降低系统误差或改变目标。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W12-d
+      issued by : validation slide
+Attractive plots without uncertainties, or "fully validated". Name the
+  rung (Definition 14.1), the reference and the discrepancy in sigma.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W12-d
+      issued by : 验证页幻灯片
+没有不确定度的漂亮图，或“已完全验证”。说出所在阶梯（定义 14.1）、
+  参照，以及以 sigma 表示的偏差。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
+*** G4Exception : Course-W12-e
+      issued by : repro_check.sh
+"Works on my machine": an untracked macro, a local edit, a data file
+  outside the repository. The clean checkout fails, and with it the
+  10% that is checked by doing.
+*** Fatal Exception ***
+<span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
+*** G4Exception : Course-W12-e
+      issued by : repro_check.sh
+“在我的机器上能跑”：未纳入版本管理的宏、本地改动、仓库之外的数据
+  文件。干净检出版本就会失败，靠实际操作来检查的那 10% 也随之丢掉。
+*** Fatal Exception ***
+<span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-review">
+    <p class="cmd">/run/terminate<span lang="en">review notes</span><span lang="zh-Hans">复习要点</span></p>
+    <div class="prose">
+      <h2 id="h-review" class="bi"><span lang="en">Before you close the course.</span><span lang="zh-Hans">结束课程之前。</span></h2>
+      <ul class="review">
+        <li><label for="w12-r1"><input type="checkbox" id="w12-r1"><span lang="en">Can I state my physics question in one sentence, within one minute?</span><span lang="zh-Hans">我能否在一分钟内用一句话说清我的物理问题？</span></label></li>
+        <li><label for="w12-r2"><input type="checkbox" id="w12-r2"><span lang="en">Did I report uncertainties in the validation, rather than only showing attractive plots?</span><span lang="zh-Hans">验证部分我是否报告了不确定度，而不只是展示漂亮的图？</span></label></li>
+        <li><label for="w12-r3"><input type="checkbox" id="w12-r3"><span lang="en">Did I name one important effect my simulation ignores, and its consequence?</span><span lang="zh-Hans">我是否说出了模拟忽略的一个重要效应及其后果？</span></label></li>
+        <li><label for="w12-r4"><input type="checkbox" id="w12-r4"><span lang="en">If I used musrSim, can I explain the relevant macro commands in Geant4 terms?</span><span lang="zh-Hans">如果用了 musrSim，我能否用 Geant4 的语言解释相关宏命令？</span></label></li>
+        <li><label for="w12-r5"><input type="checkbox" id="w12-r5"><span lang="en">Can another researcher reproduce the headline number from a clean checkout?</span><span lang="zh-Hans">别的研究者能否从干净的检出版本复现我的核心数字？</span></label></li>
+      </ul>
+      <p class="principle"><span lang="en">Don't "learn Geant4". Learn how to turn a physics question into a virtual experiment you can trust.</span><span lang="zh-Hans">不要“学 Geant4”。要学会把一个物理问题变成一个你能信任的虚拟实验。</span></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-share">
+    <p class="cmd">/vis/ogl/export week12.gif<span lang="en">share the course</span><span lang="zh-Hans">分享这门课</span></p>
+    <div class="share">
+      <figure class="fig">
+        <img src="media/week12-journey.gif" width="720" height="900" alt="The chain from a physics question to research builds up line by line, each step tagged with the week that taught it, ending with three reproduced runs" loading="lazy">
+        <figcaption><span lang="en">The chain is textbook section 16.2; the three runs are our Week 10 reruns. Long-press or right-click to save.</span><span lang="zh-Hans">这条链来自教材第 16.2 节；三次运行是我们重跑第 10 周的结果。长按或右键即可保存。</span></figcaption>
+      </figure>
+      <div class="prose">
+        <h2 id="h-share" class="bi"><span lang="en">From a Python toy to a defended experiment.</span><span lang="zh-Hans">从 Python 玩具到经过答辩的实验。</span></h2>
+        <p lang="en">Post your one-sentence question, your headline number with its uncertainty and rung, and the tag that reproduces it.</p>
+        <p lang="zh-Hans">发出你那一句话的问题、带不确定度和阶梯层级的核心数字，以及能复现它的标签。</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" id="pager" aria-label="Week navigation"></nav>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 15–16 · Geant4 11.4 source</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 15–16 章 · Geant4 11.4 源码</span>
+  </footer>
+</div>
+<script src="assets/course.js"></script>
+<script src="assets/week12.js"></script>
+</body>
+</html>

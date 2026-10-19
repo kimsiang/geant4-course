@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 10 · Transverse-field μSR</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0, Week 10: attach a field, keep the physics list honest, and measure a magnetic field from the precession of the muon spin.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Week 10 of 12</span><span lang="zh-Hans">第 10 / 12 周</span></span>
+    <span class="bar-r">
+      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">$ <span>./week10 tf.mac</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">Make the muon spin visible, then measure a field with it.</span><span lang="zh-Hans">让缪子自旋显形，再用它测量磁场。</span></h1>
+      <p class="lede" lang="en">A polarized μ⁺ stops in copper inside a 10 mT field. Its spin turns at 1.355 MHz, and the decay positron remembers which way it pointed. Two counters, one ratio and one fit turn that into the field value. That only works if the physics list knows the muon has a spin.</p>
+      <p class="lede" lang="zh-Hans">极化的 μ⁺ 停在 10 mT 磁场中的铜靶里。它的自旋以 1.355 MHz 转动，衰变正电子记住了自旋当时的指向。两个计数器、一个比值和一次拟合就能把它变成磁场的数值。前提是物理列表知道缪子有自旋。</p>
+      <ul class="meta">
+        <li class="stage"><b>4 · Build it</b><span lang="en">stage · 建造</span><span lang="zh-Hans">阶段 · 建造</span></li>
+        <li><b>Mission 12</b><span lang="en">textbook ch. 12 · capstone</span><span lang="zh-Hans">教材第 12 章 · 综合实验</span></li>
+        <li><b>≈ 3 h</b><span lang="en">incl. a field scan</span><span lang="zh-Hans">含磁场扫描</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="Week summary">
+      <div role="row"><span role="cell">week10</span></div>
+      <div role="row"><span role="cell">B</span><span role="cell">10 mT ∥ x</span></div>
+      <div role="row"><span role="cell">γμ/2π</span><span role="cell">135.5388 MHz/T</span></div>
+      <div role="row"><span role="cell"><span lang="en">expected f</span><span lang="zh-Hans">期望 f</span></span><span role="cell">1.3554 MHz</span></div>
+      <div role="row"><span role="cell"><span lang="en">our fit</span><span lang="zh-Hans">我们的拟合</span></span><span role="cell"><b>1.3573 ± 0.0020 MHz</b></span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-goals">
+    <p class="cmd">/run/initialize<span lang="en">learning goals</span><span lang="zh-Hans">学习目标</span></p>
+    <div class="prose">
+      <h2 id="h-goals" class="bi"><span lang="en">By the end of this week you can recover a magnetic field from a muon spin.</span><span lang="zh-Hans">本周结束时，你能从缪子自旋反推出磁场。</span></h2>
+      <ol class="goals">
+        <li><span lang="en">Attach a uniform or mapped field and <dfn>print it<span class="kt" lang="zh-Hans">打印核对</span></dfn> before interpreting anything that depends on it.</span><span lang="zh-Hans">加上均匀场或场图，并在解释任何依赖它的结果之前先<dfn>打印核对<span class="kt" lang="en">print it</span></dfn>。</span></li>
+        <li><span lang="en">Name the two pieces of physics a μSR study needs (spin precession and <dfn>spin-dependent decay<span class="kt" lang="zh-Hans">自旋相关衰变</span></dfn>) and check that your physics list provides both.</span><span lang="zh-Hans">说出 μSR 研究需要的两部分物理（自旋进动与<dfn>自旋相关衰变<span class="kt" lang="en">spin-dependent decay</span></dfn>），并检查物理列表是否都提供了。</span></li>
+        <li><span lang="en">Decide when <dfn>optical photons<span class="kt" lang="zh-Hans">光学光子</span></dfn> are worth their cost.</span><span lang="zh-Hans">判断何时值得付出<dfn>光学光子<span class="kt" lang="en">optical photons</span></dfn>的代价。</span></li>
+        <li><span lang="en">Build the <dfn>asymmetry<span class="kt" lang="zh-Hans">不对称度</span></dfn> A(t) from two counters and fit A0, f, φ, λ with honest errors.</span><span lang="zh-Hans">由两个计数器构造<dfn>不对称度<span class="kt" lang="en">asymmetry</span></dfn> A(t)，并带着可靠的误差拟合 A0、f、φ、λ。</span></li>
+        <li><span lang="en">Scan the field, fit f against B, and say which change moves f, which moves A0 and which damps the signal.</span><span lang="zh-Hans">扫描磁场，拟合 f 对 B 的关系，并说清哪种改变影响 f、哪种影响 A0、哪种使信号衰减。</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-field">
+    <p class="cmd">/musr/command globalfield<span lang="en">12.1 · attach a field</span><span lang="zh-Hans">12.1 · 加上磁场</span></p>
+    <div class="prose">
+      <h2 id="h-field" class="bi"><span lang="en">A field can be wrong while the simulation runs perfectly.</span><span lang="zh-Hans">磁场可能是错的，而模拟照样跑得好好的。</span></h2>
+<pre><span class="c"># uniform: name, HALF-lengths of the field box, uniform, centre, volume, Bx By Bz [T], Ex Ey Ez [kV/mm]</span>
+/musr/command globalfield TF 400 400 400 uniform 0 0 0 log_World 0.01 0 0 0 0 0
+/musr/command globalfield printFieldValueAtPoint 0 0 0
+<span class="c"># map: read a table, scale it to the wanted field</span>
+/musr/command globalfield centralSolenoidField 0 0 0 fromfile 2D GPD_coil_primitive.table log_target 0.03
+/musr/command globalfield printparameters</pre>
+      <p lang="en">The field box uses half-lengths too, so 400 400 400 is 800 mm on a side. In the musrsim-sms source the uniform field values are read in tesla (and kV/mm for E). After defining a map, print the field at several points you can check by hand: wrong axis order, centre offset or scale factor all give a trajectory that looks plausible. Integration controls (<code>SetLargestAcceptableStep</code>, <code>SetMinimumEpsilonStep</code>, <code>SetDeltaOneStep</code>) are numbers whose effect you test, as in Week 7.</p>
+      <p lang="zh-Hans">磁场盒也用半长，所以 400 400 400 是边长 800 mm。在 musrsim-sms 源码中，均匀场的数值以特斯拉读入（电场以 kV/mm 读入）。定义场图之后，在几个你能手算核对的点上打印磁场：坐标轴顺序、中心偏移或缩放因子出错时，径迹看起来都很合理。积分控制参数（<code>SetLargestAcceptableStep</code>、<code>SetMinimumEpsilonStep</code>、<code>SetDeltaOneStep</code>）是需要检验其效果的数值，和第 7 周一样。</p>
+      <div class="box">
+        <p class="box-label">Theorem 12.1 · <span lang="en">Muon spin precession</span><span lang="zh-Hans">缪子自旋进动</span></p>
+        <p lang="en">A stopped μ⁺ in a transverse field B precesses at f = (γμ/2π)·B, with γμ/2π = 135.5388 MHz/T. At 10 mT: f = 1.3554 MHz, period 0.738 µs, about three turns per lifetime (τμ = 2.1970 µs). Direction: dS/dt = γμ S × B with γμ &gt; 0, so a spin starting along −z in B ∥ +x turns towards −y first.</p>
+        <p lang="zh-Hans">横向磁场 B 中静止的 μ⁺ 以 f = (γμ/2π)·B 进动，γμ/2π = 135.5388 MHz/T。10 mT 时 f = 1.3554 MHz，周期 0.738 µs，每个寿命（τμ = 2.1970 µs）内约转三圈。方向：dS/dt = γμ S × B，γμ &gt; 0，所以在 B ∥ +x 中初始沿 −z 的自旋先转向 −y。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Definition 12.1 · <span lang="en">Decay asymmetry</span><span lang="zh-Hans">衰变不对称度</span></p>
+        <p lang="en">The positron from μ⁺ → e⁺ ν ν̄ is emitted preferentially along the muon spin: dN/dΩ ∝ 1 + a cos θ. Averaged over the whole positron energy spectrum a = 1/3; it rises to 1 for the most energetic positrons. With two opposite counters, N_U,D(t) ∝ e^(−t/τ)(1 ∓ A0 sin ωt) and A(t) = (N_D − N_U)/(N_D + N_U) = A0 sin(ωt + φ): the lifetime envelope cancels and the precession remains.</p>
+        <p lang="zh-Hans">μ⁺ → e⁺ ν ν̄ 的正电子倾向于沿缪子自旋方向发射：dN/dΩ ∝ 1 + a cos θ。对整个正电子能谱平均，a = 1/3；能量最高的正电子 a 升至 1。用两个相对的计数器，N_U,D(t) ∝ e^(−t/τ)(1 ∓ A0 sin ωt)，A(t) = (N_D − N_U)/(N_D + N_U) = A0 sin(ωt + φ)：寿命包络相消，进动留了下来。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-phys">
+    <p class="cmd">/process/list Decay<span lang="en">12.2 · keep the physics list honest</span><span lang="zh-Hans">12.2 · 让物理列表保持诚实</span></p>
+    <div class="prose">
+      <h2 id="h-phys" class="bi"><span lang="en">The macro configures the experiment. The physics list decides whether the spin exists.</span><span lang="zh-Hans">宏配置的是实验，物理列表决定自旋是否存在。</span></h2>
+      <p lang="en">In musrSim the physics list is chosen in C++, not assembled from macro lines. Old example macros may still contain <code>process addProcess</code> lines that do not configure the active list. If a process seems absent or present, read the source-level physics list before editing the macro.</p>
+      <p lang="zh-Hans">在 musrSim 中，物理列表是在 C++ 中选定的，而不是由宏命令拼出来的。旧示例宏里可能还留着 <code>process addProcess</code> 行，它们并不配置当前生效的列表。如果某个过程看起来缺失或多出，先读源码层面的物理列表，再去改宏。</p>
+      <div class="code">
+        <div class="code-head"><span class="l"><b>Code microscope · week10.cc</b><span class="tag geant4">GEANT4</span></span></div>
+<pre>auto* physics = new FTFP_BERT();
+<mark>physics-&gt;RegisterPhysics(new G4SpinDecayPhysics());</mark>   <span class="c">// after G4DecayPhysics: replaces "Decay"</span>
+<span class="c">// field: G4Mag_SpinEqRhs + G4ClassicalRK4(equation, 12)   -> spin turns in flight</span>
+<span class="c">// G4DecayWithSpin                                         -> spin turns at rest, decay uses it</span></pre>
+      </div>
+      <div class="g4ex" role="note" lang="en"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
+*** G4Exception : Course-W10-a
+      issued by : Geant4 10.7.2 and 11.4 source, musrsim-sms source (767208f)
+FTFP_BERT's G4DecayPhysics uses G4Decay with G4MuonDecayChannel, whose
+  source says "this version neglects muon polarization". The spin is
+  not turned at rest and the positron is emitted isotropically:
+  A(t) is flat. Our Geant4 11.4 control run without spin decay:
+  A0 = -0.004 +/- 0.004.
+musrSim.cc (musrsim-sms, commit 767208f) builds its own FTFP_BERT, which
+  registers G4DecayPhysics only; the class that installs spin decay
+  channels (musrPhysicsList) is commented out in main(). Read from
+  source, not run: check your build with /process/list before trusting
+  any asymmetry. Fix (one line, after creating the list):
+  physicsList-&gt;RegisterPhysics(new G4SpinDecayPhysics());
+*** Fatal for a muSR result, silent for the program ***
+<span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
+      <div class="g4ex" role="note" lang="zh-Hans"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
+*** G4Exception : Course-W10-a
+      issued by : Geant4 10.7.2 与 11.4 源码、musrsim-sms 源码（767208f）
+FTFP_BERT 中的 G4DecayPhysics 使用 G4Decay 和 G4MuonDecayChannel，
+  其源码写明“this version neglects muon polarization”。自旋在静止时
+  不进动，正电子各向同性发射：A(t) 是平的。我们不加自旋衰变的
+  Geant4 11.4 对照运行：A0 = -0.004 +/- 0.004。
+musrSim.cc（musrsim-sms，提交 767208f）自建的 FTFP_BERT 只注册了
+  G4DecayPhysics；安装自旋衰变道的类（musrPhysicsList）在 main() 中
+  被注释掉了。以上来自源码阅读，并未实际运行：在相信任何不对称度
+  之前，先用 /process/list 检查你的版本。修正（一行，在创建列表后）：
+  physicsList-&gt;RegisterPhysics(new G4SpinDecayPhysics());
+*** 对 μSR 结果是致命的，对程序却毫无声响 ***
+<span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
+      <h3 class="bi"><span lang="en">12.3 · Optical photons are a fidelity switch</span><span lang="zh-Hans">12.3 · 光学光子是一个保真度开关</span></h3>
+<pre>/musr/command G4OpticalPhotons true    <span class="c"># off by default: photon counts explode</span></pre>
+      <p lang="en">Optical transport means something only when the materials carry optical properties. It adds branches such as <code>nOptPhot</code> and <code>odet_nPhot</code>. Ask which observable needs information a parameterised response cannot keep: photon arrival times, surfaces, photocathode response. The muSR asymmetry needs only which counter fired and when, so it stays off this week (Week 5's parameterisation versus optical transport, again).</p>
+      <p lang="zh-Hans">只有材料带有光学属性时，光学输运才有意义。它会增加 <code>nOptPhot</code>、<code>odet_nPhot</code> 等分支。要问：哪个可观测量需要参数化响应保留不了的信息？光子到达时间、表面、光阴极响应。μSR 不对称度只需要哪个计数器何时响应，所以本周不打开它（又一次是第 5 周的参数化与光学输运之争）。</p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-toy">
+    <p class="cmd">/tf/B<span lang="en">interactive toy model</span><span lang="zh-Hans">交互玩具模型</span></p>
+    <div>
+      <h2 id="h-toy" class="bi"><span lang="en">Turn the field, the polarization and the counters, and watch what the fit can still tell you.</span><span lang="zh-Hans">调节磁场、极化和计数器，看拟合还能告诉你什么。</span></h2>
+      <p class="prose" style="color:var(--muted);max-width:64ch;margin-top:14px" lang="en">Press play to watch the spin and its emission lobe turn past the counters. Every slider reruns the whole experiment and refits it. Untick spin-aware decay to see what Course-W10-a does to the data.</p>
+      <p class="prose" style="color:var(--muted);max-width:64ch" lang="zh-Hans">按播放，看自旋和它的发射瓣扫过计数器。每拖动一个滑块，整个实验都会重新运行并重新拟合。取消勾选“自旋相关衰变”，看 Course-W10-a 对数据做了什么。</p>
+      <div class="display" style="margin-top:20px">
+        <div class="display-head"><span class="toy">TOY MODEL · <span lang="en">not Geant4</span><span lang="zh-Hans">非 Geant4</span></span><button type="button" id="w10-play" style="font:500 0.75rem var(--mono);color:#DCE3E8;background:transparent;border:1px solid rgba(220,227,232,0.45);border-radius:3px;padding:3px 10px;cursor:pointer">▶ play</button></div>
+        <canvas id="w10-display" class="tele" aria-label="Side view: target, two counters, the muon spin and its positron emission lobe"></canvas>
+      </div>
+      <div class="controls">
+        <label class="ctl" for="w10-t"><span class="ctl-row"><span lang="en">time after the muon stops</span><span lang="zh-Hans">缪子停下后的时间</span><output id="w10-t-out" for="w10-t">0</output></span><input id="w10-t" type="range" min="0" max="5" step="0.01" value="0"></label>
+        <label class="ctl" for="w10-B"><span class="ctl-row"><span>/tf/B</span><output id="w10-B-out" for="w10-B">10 mT</output></span><input id="w10-B" type="range" min="1" max="40" step="1" value="10"></label>
+        <label class="ctl" for="w10-P"><span class="ctl-row"><span>/gun/muonPolarizFraction</span><output id="w10-P-out" for="w10-P">100%</output></span><input id="w10-P" type="range" min="0" max="100" step="5" value="100"></label>
+        <label class="ctl" for="w10-a"><span class="ctl-row"><span lang="en">counter half-angle α</span><span lang="zh-Hans">计数器半张角 α</span><output id="w10-a-out" for="w10-a">44°</output></span><input id="w10-a" type="range" min="10" max="80" step="1" value="44"></label>
+        <label class="ctl" for="w10-g"><span class="ctl-row"><span lang="en">field spread σB/B</span><span lang="zh-Hans">磁场弥散 σB/B</span><output id="w10-g-out" for="w10-g">0%</output></span><input id="w10-g" type="range" min="0" max="5" step="0.1" value="0"></label>
+        <label class="ctl" for="w10-N"><span class="ctl-row"><span>/run/beamOn</span><output id="w10-N-out" for="w10-N">200,000</output></span><input id="w10-N" type="range" min="4" max="6" step="0.1" value="5.3"></label>
+        <label class="ctl" for="w10-spin"><span class="ctl-row"><code>RegisterPhysics(new G4SpinDecayPhysics())</code></span><input id="w10-spin" type="checkbox" checked></label>
+      </div>
+      <div class="panels one">
+        <div>
+          <canvas id="w10-counts" style="aspect-ratio:16/6" aria-label="Positron counts in the up and down counters versus decay time"></canvas>
+        </div>
+      </div>
+      <div class="panels one">
+        <div>
+          <canvas id="w10-asym" style="aspect-ratio:16/7" aria-label="Asymmetry versus time with the fitted oscillation"></canvas>
+          <div class="verbose"><pre id="w10-fit"></pre></div>
+          <p class="cap" id="w10-verdict"></p>
+        </div>
+      </div>
+      <div class="toybox">
+        <p><b>TOY MODEL · <span lang="en">approximations</span><span lang="zh-Hans">近似</span></b></p>
+        <p lang="en">Every muon stops at the target centre at t = 0 (in Geant4 it takes a few ns). Positron direction from 1 + a·S·n with a = 1/3, the energy-averaged Michel value, with no energy threshold and no copper or plastic in the way. Counters are cones of half-angle α around ±y; 44° matches the 80 mm wide slabs 42 mm from the target. The toy therefore expects A0 = a·P·(1 + cos α)/2 = 0.29. Our Geant4 run gives A0 = 0.241 ± 0.009, because positrons scatter and lose energy in the copper and the counters are square slabs, not cones. Field spread is Gaussian per muon. The frequency, its error and the fitted B behave as in the real analysis.</p>
+        <p lang="zh-Hans">每个缪子都在 t = 0 时停在靶中心（在 Geant4 中需要几 ns）。正电子方向按 1 + a·S·n 抽样，a = 1/3 为能谱平均的 Michel 值，没有能量阈，也没有铜或塑料挡路。计数器被近似为绕 ±y 轴、半张角为 α 的圆锥；44° 对应距靶 42 mm、宽 80 mm 的板。所以玩具模型预期 A0 = a·P·(1 + cos α)/2 = 0.29。我们的 Geant4 运行给出 A0 = 0.241 ± 0.009，因为正电子在铜中散射并损失能量，而且计数器是方形板而不是圆锥。磁场弥散按每个缪子的高斯分布处理。频率、其误差以及拟合出的 B 与真实分析的行为相同。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-task">
+    <p class="cmd">./week10 tf.mac<span lang="en">hands-on · Mission 12</span><span lang="zh-Hans">动手任务 · 任务 12</span></p>
+    <div class="prose">
+      <h2 id="h-task" class="bi"><span lang="en">Measure 10 mT with muons, prove the spin matters, then scan the field.</span><span lang="zh-Hans">用缪子测出 10 mT，证明自旋至关重要，再扫描磁场。</span></h2>
+      <p lang="en">The week10 app is tf_musr.mac rebuilt in Geant4 11.4: the same World, copper target (ID 5), counters (IDs 11 and 1), 10 mT field and polarized 29.8 MeV/c beam, writing a <code>t1</code> tree with musrSim's branch names. That way the textbook's analysis runs unchanged on it, and on real musrSim output.</p>
+      <p lang="zh-Hans">week10 程序是用 Geant4 11.4 重建的 tf_musr.mac：同样的 World、铜靶（ID 5）、计数器（ID 11 和 1）、10 mT 磁场和 29.8 MeV/c 极化束流，写出带 musrSim 分支名的 <code>t1</code> 树。这样，教材的分析程序不加修改就能在它上面运行，也能在真实的 musrSim 输出上运行。</p>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Build the app</span><span lang="zh-Hans">编译程序</span></h3><label class="done" for="w10-s1"><input type="checkbox" id="w10-s1" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="files">
+            <details><summary><b>week10.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f10-main">copy</button></summary><pre id="f10-main" data-src="code/week10/week10.cc">// Week 10: transverse-field muSR in plain Geant4 11.4, using the geometry of the textbook's tf_musr.mac.
+// Usage:  ./week10 tf.mac            spin-aware muon decay (the physics a muSR study needs)
+//         ./week10 tf.mac nospin     stock decay only: what an application gets if nobody adds spin
+#include "ActionInitialization.hh"
+#include "DetectorConstruction.hh"
+
+#include "FTFP_BERT.hh"
+#include "G4RunManagerFactory.hh"
+#include "G4SpinDecayPhysics.hh"
+#include "G4UIExecutive.hh"
+#include "G4UImanager.hh"
+#include "G4VisExecutive.hh"
+
+#include &lt;cstring&gt;
+
+int main(int argc, char** argv)
+{
+  auto* runManager =
+    G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+  runManager-&gt;SetNumberOfThreads(2);
+
+  runManager-&gt;SetUserInitialization(new DetectorConstruction());
+
+  auto* physics = new FTFP_BERT();
+  const bool withSpin = !(argc &gt; 2 &amp;&amp; std::strcmp(argv[2], "nospin") == 0);
+  if (withSpin) {
+    // THE line of this week. FTFP_BERT's G4DecayPhysics uses G4Decay + G4MuonDecayChannel,
+    // which "neglects muon polarization": no precession at rest, isotropic positrons, no asymmetry.
+    // G4SpinDecayPhysics swaps in G4DecayWithSpin and G4MuonDecayChannelWithSpin.
+    // Register it AFTER G4DecayPhysics (FTFP_BERT already contains it): it replaces "Decay".
+    physics-&gt;RegisterPhysics(new G4SpinDecayPhysics());
+  }
+  runManager-&gt;SetUserInitialization(physics);
+  runManager-&gt;SetUserInitialization(new ActionInitialization());
+  // No Initialize() here: the macro sets /tf/B first, then calls /run/initialize.
+
+  auto* uiManager = G4UImanager::GetUIpointer();
+  if (argc &gt; 1) {
+    uiManager-&gt;ApplyCommand("/control/execute " + G4String(argv[1]));
+  } else {
+    auto* ui = new G4UIExecutive(argc, argv);
+    auto* visManager = new G4VisExecutive();
+    visManager-&gt;Initialize();
+    uiManager-&gt;ApplyCommand("/control/execute vis.mac");
+    ui-&gt;SessionStart();
+    delete visManager;
+    delete ui;
+  }
+
+  delete runManager;
+  return 0;
+}</pre></details>
+            <details><summary><b>src/DetectorConstruction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f10-dc">copy</button></summary><pre id="f10-dc" data-src="code/week10/src/DetectorConstruction.cc">#include "DetectorConstruction.hh"
+
+#include "CounterSD.hh"
+
+#include "G4Box.hh"
+#include "G4ChordFinder.hh"
+#include "G4ClassicalRK4.hh"
+#include "G4FieldManager.hh"
+#include "G4GenericMessenger.hh"
+#include "G4LogicalVolume.hh"
+#include "G4Mag_SpinEqRhs.hh"
+#include "G4NistManager.hh"
+#include "G4PVPlacement.hh"
+#include "G4SDManager.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4TransportationManager.hh"
+#include "G4UniformMagField.hh"
+
+DetectorConstruction::DetectorConstruction() : fB(0.010 * tesla)
+{
+  fMessenger = new G4GenericMessenger(this, "/tf/", "Week 10 TF-muSR controls");
+  fMessenger-&gt;DeclarePropertyWithUnit("B", "tesla", fB,
+                                      "Transverse field along +x, e.g. /tf/B 0.010 T (before /run/initialize)");
+}
+
+DetectorConstruction::~DetectorConstruction() { delete fMessenger; }
+
+G4VPhysicalVolume* DetectorConstruction::Construct()
+{
+  auto* nist = G4NistManager::Instance();
+  auto* air = nist-&gt;FindOrBuildMaterial("G4_AIR");
+  auto* cu = nist-&gt;FindOrBuildMaterial("G4_Cu");
+  auto* scint = nist-&gt;FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
+
+  // construct box World 400 400 400 ... (half-lengths, mm)
+  auto* logicWorld = new G4LogicalVolume(new G4Box("World", 400 * mm, 400 * mm, 400 * mm), air, "World");
+  auto* physWorld = new G4PVPlacement(nullptr, {}, logicWorld, "World", nullptr, false, -1, true);
+
+  // construct box Target 15 15 3 G4_Cu 0 0 0 ... dead 5   -&gt; 30 x 30 x 6 mm copper
+  auto* logicTarget = new G4LogicalVolume(new G4Box("Target", 15 * mm, 15 * mm, 3 * mm), cu, "Target");
+  new G4PVPlacement(nullptr, {}, logicTarget, "Target", logicWorld, false, 5, true);
+
+  // construct box CounterU/CounterD 40 3 40 ... at y = +45 / -45 mm, IDs 11 / 1
+  fLogicCounter = new G4LogicalVolume(new G4Box("Counter", 40 * mm, 3 * mm, 40 * mm), scint, "Counter");
+  new G4PVPlacement(nullptr, {0, +45 * mm, 0}, fLogicCounter, "CounterU", logicWorld, false, 11, true);
+  new G4PVPlacement(nullptr, {0, -45 * mm, 0}, fLogicCounter, "CounterD", logicWorld, false, 1, true);
+
+  return physWorld;
+}
+
+void DetectorConstruction::ConstructSDandField()
+{
+  auto* sd = new CounterSD("TF/CounterSD");
+  G4SDManager::GetSDMpointer()-&gt;AddNewDetector(sd);
+  SetSensitiveDetector(fLogicCounter, sd);
+
+  // globalfield TF 400 400 400 uniform 0 0 0 log_World 0.01 0 0  -&gt;  Bx = 10 mT everywhere
+  auto* field = new G4UniformMagField(G4ThreeVector(fB, 0., 0.));
+  // Spin-aware equation of motion: 12 variables (x, p, t, ..., spin). Precession IN FLIGHT.
+  // (Precession AT REST is done by G4DecayWithSpin, which reads this same field.)
+  auto* equation = new G4Mag_SpinEqRhs(field);
+  auto* stepper = new G4ClassicalRK4(equation, 12);
+  auto* fieldManager = G4TransportationManager::GetTransportationManager()-&gt;GetFieldManager();
+  fieldManager-&gt;SetDetectorField(field);
+  fieldManager-&gt;SetChordFinder(new G4ChordFinder(field, 0.01 * mm, stepper));
+
+  G4cout &lt;&lt; "Field at (0,0,0): Bx = " &lt;&lt; fB / tesla * 1000. &lt;&lt; " mT  (printFieldValueAtPoint analogue)" &lt;&lt; G4endl;
+}</pre></details>
+            <details><summary><b>include/DetectorConstruction.hh</b><button class="copy" type="button" data-copy="f10-dch">copy</button></summary><pre id="f10-dch" data-src="code/week10/include/DetectorConstruction.hh">#ifndef DetectorConstruction_h
+#define DetectorConstruction_h 1
+
+#include "G4VUserDetectorConstruction.hh"
+#include "globals.hh"
+
+class G4GenericMessenger;
+class G4LogicalVolume;
+
+// Geometry of the textbook's tf_musr.mac, built in C++.
+// Copy numbers play the role of musrSim volume IDs: World -1, Target 5, CounterU 11, CounterD 1.
+class DetectorConstruction : public G4VUserDetectorConstruction
+{
+  public:
+    DetectorConstruction();
+    ~DetectorConstruction() override;
+    G4VPhysicalVolume* Construct() override;
+    void ConstructSDandField() override;
+
+  private:
+    G4double fB;                       // transverse field along +x, set with /tf/B before /run/initialize
+    G4LogicalVolume* fLogicCounter = nullptr;
+    G4GenericMessenger* fMessenger = nullptr;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/PrimaryGeneratorAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f10-pg">copy</button></summary><pre id="f10-pg" data-src="code/week10/src/PrimaryGeneratorAction.cc">#include "PrimaryGeneratorAction.hh"
+
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
+#include "G4SystemOfUnits.hh"
+#include "Randomize.hh"
+
+PrimaryGeneratorAction::PrimaryGeneratorAction() : fGun(new G4ParticleGun(1))
+{
+  fGun-&gt;SetParticleDefinition(G4ParticleTable::GetParticleTable()-&gt;FindParticle("mu+"));  // /gun/primaryparticle mu+
+  fGun-&gt;SetParticleMomentumDirection({0., 0., 1.});
+  fGun-&gt;SetParticleMomentum(29.8 * MeV);                // /gun/momentum 29.8 MeV  (|p| = 29.8 MeV/c)
+  fGun-&gt;SetParticlePolarization({0., 0., -1.});         // /gun/muonPolarizVector 0 0 -1, fraction 1
+}
+
+PrimaryGeneratorAction::~PrimaryGeneratorAction() { delete fGun; }
+
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
+{
+  // /gun/vertex 0 0 -80 mm   /gun/vertexsigma 3 3 0 mm (positive sigma = Gaussian)
+  fGun-&gt;SetParticlePosition({G4RandGauss::shoot(0., 3. * mm), G4RandGauss::shoot(0., 3. * mm), -80. * mm});
+  fGun-&gt;GeneratePrimaryVertex(event);
+}</pre></details>
+            <details><summary><b>include/PrimaryGeneratorAction.hh</b><button class="copy" type="button" data-copy="f10-pgh">copy</button></summary><pre id="f10-pgh" data-src="code/week10/include/PrimaryGeneratorAction.hh">#ifndef PrimaryGeneratorAction_h
+#define PrimaryGeneratorAction_h 1
+
+#include "G4VUserPrimaryGeneratorAction.hh"
+
+class G4ParticleGun;
+
+// The BEAM block of tf_musr.mac: surface mu+, 29.8 MeV/c, spin antiparallel to momentum.
+class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
+{
+  public:
+    PrimaryGeneratorAction();
+    ~PrimaryGeneratorAction() override;
+    void GeneratePrimaries(G4Event* event) override;
+
+  private:
+    G4ParticleGun* fGun;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/CounterSD.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f10-sd">copy</button></summary><pre id="f10-sd" data-src="code/week10/src/CounterSD.cc">#include "CounterSD.hh"
+
+#include "G4Step.hh"
+#include "G4TouchableHistory.hh"
+
+G4bool CounterSD::ProcessHits(G4Step* step, G4TouchableHistory*)
+{
+  const G4double edep = step-&gt;GetTotalEnergyDeposit();
+  if (edep &lt;= 0.) return false;
+  const auto* pre = step-&gt;GetPreStepPoint();
+  const G4int id = pre-&gt;GetTouchable()-&gt;GetCopyNumber();   // 11 = up, 1 = down
+  const G4double t = pre-&gt;GetGlobalTime();
+  fEdep[id] += edep;
+  auto it = fTime.find(id);
+  if (it == fTime.end() || t &lt; it-&gt;second) fTime[id] = t;
+  return true;
+}</pre></details>
+            <details><summary><b>include/CounterSD.hh</b><button class="copy" type="button" data-copy="f10-sdh">copy</button></summary><pre id="f10-sdh" data-src="code/week10/include/CounterSD.hh">#ifndef CounterSD_h
+#define CounterSD_h 1
+
+#include "G4VSensitiveDetector.hh"
+
+#include &lt;map&gt;
+
+// musr/ScintSD analogue: one "hit" per counter per event, keyed by the volume ID (copy number).
+class CounterSD : public G4VSensitiveDetector
+{
+  public:
+    explicit CounterSD(const G4String&amp; name) : G4VSensitiveDetector(name) {}
+    void Initialize(G4HCofThisEvent*) override { fEdep.clear(); fTime.clear(); }
+    G4bool ProcessHits(G4Step* step, G4TouchableHistory*) override;
+
+    const std::map&lt;G4int, G4double&gt;&amp; Edep() const { return fEdep; }   // MeV
+    const std::map&lt;G4int, G4double&gt;&amp; Time() const { return fTime; }   // first deposit, ns
+
+  private:
+    std::map&lt;G4int, G4double&gt; fEdep;
+    std::map&lt;G4int, G4double&gt; fTime;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/SteppingAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f10-sa">copy</button></summary><pre id="f10-sa" data-src="code/week10/src/SteppingAction.cc">#include "SteppingAction.hh"
+
+#include "EventAction.hh"
+
+#include "G4Step.hh"
+#include "G4VProcess.hh"
+
+void SteppingAction::UserSteppingAction(const G4Step* step)
+{
+  const auto* track = step-&gt;GetTrack();
+  if (track-&gt;GetParentID() != 0) return;                  // primary muon only
+  const auto* proc = step-&gt;GetPostStepPoint()-&gt;GetProcessDefinedStep();
+  if (!proc) return;
+  const G4String&amp; name = proc-&gt;GetProcessName();          // "DecayWithSpin" or plain "Decay"
+  if (name != "DecayWithSpin" &amp;&amp; name != "Decay") return;
+  const G4int id = step-&gt;GetPreStepPoint()-&gt;GetTouchable()-&gt;GetCopyNumber();
+  fEvent-&gt;SetDecay(step-&gt;GetPostStepPoint()-&gt;GetGlobalTime(), id,
+                   step-&gt;GetPostStepPoint()-&gt;GetPolarization());
+}</pre></details>
+            <details><summary><b>include/SteppingAction.hh</b><button class="copy" type="button" data-copy="f10-sah">copy</button></summary><pre id="f10-sah" data-src="code/week10/include/SteppingAction.hh">#ifndef SteppingAction_h
+#define SteppingAction_h 1
+
+#include "G4UserSteppingAction.hh"
+
+class EventAction;
+
+// Records where and when the primary muon decayed, and its spin at that moment.
+class SteppingAction : public G4UserSteppingAction
+{
+  public:
+    explicit SteppingAction(EventAction* ev) : fEvent(ev) {}
+    void UserSteppingAction(const G4Step* step) override;
+
+  private:
+    EventAction* fEvent;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/EventAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f10-ea">copy</button></summary><pre id="f10-ea" data-src="code/week10/src/EventAction.cc">#include "EventAction.hh"
+
+#include "CounterSD.hh"
+#include "RunAction.hh"
+
+#include "G4AnalysisManager.hh"
+#include "G4SDManager.hh"
+#include "G4SystemOfUnits.hh"
+
+void EventAction::BeginOfEventAction(const G4Event*)
+{
+  fDecayTime = -1000.;
+  fDecayDetID = -1000;
+  fSpin = G4ThreeVector();
+}
+
+void EventAction::EndOfEventAction(const G4Event*)
+{
+  auto* sd = static_cast&lt;CounterSD*&gt;(G4SDManager::GetSDMpointer()-&gt;FindSensitiveDetector("TF/CounterSD"));
+  fRun-&gt;detID.clear();
+  fRun-&gt;detEdep.clear();
+  fRun-&gt;detTimeStart.clear();
+  for (const auto&amp; [id, e] : sd-&gt;Edep()) {
+    fRun-&gt;detID.push_back(id);
+    fRun-&gt;detEdep.push_back(e / MeV);
+    fRun-&gt;detTimeStart.push_back(sd-&gt;Time().at(id) / microsecond);
+  }
+
+  auto* analysis = G4AnalysisManager::Instance();
+  analysis-&gt;FillNtupleDColumn(0, fDecayTime &gt; 0. ? fDecayTime / microsecond : -1000.);
+  analysis-&gt;FillNtupleIColumn(1, fDecayDetID);
+  analysis-&gt;FillNtupleDColumn(2, fSpin.y());
+  analysis-&gt;FillNtupleDColumn(3, fSpin.z());
+  analysis-&gt;FillNtupleIColumn(4, static_cast&lt;G4int&gt;(fRun-&gt;detID.size()));
+  analysis-&gt;AddNtupleRow();   // vector columns are read at this moment
+}</pre></details>
+            <details><summary><b>include/EventAction.hh</b><button class="copy" type="button" data-copy="f10-eah">copy</button></summary><pre id="f10-eah" data-src="code/week10/include/EventAction.hh">#ifndef EventAction_h
+#define EventAction_h 1
+
+#include "G4ThreeVector.hh"
+#include "G4UserEventAction.hh"
+#include "globals.hh"
+
+class RunAction;
+
+class EventAction : public G4UserEventAction
+{
+  public:
+    explicit EventAction(RunAction* run) : fRun(run) {}
+    void BeginOfEventAction(const G4Event*) override;
+    void EndOfEventAction(const G4Event*) override;
+
+    void SetDecay(G4double t, G4int volumeID, const G4ThreeVector&amp; spin)
+    {
+      fDecayTime = t; fDecayDetID = volumeID; fSpin = spin;
+    }
+
+  private:
+    RunAction* fRun;
+    G4double fDecayTime = -1000.;   // musrSim sentinel
+    G4int fDecayDetID = -1000;
+    G4ThreeVector fSpin;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/RunAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f10-ra">copy</button></summary><pre id="f10-ra" data-src="code/week10/src/RunAction.cc">#include "RunAction.hh"
+
+#include "G4AnalysisManager.hh"
+#include "G4Run.hh"
+
+RunAction::RunAction()
+{
+  auto* analysis = G4AnalysisManager::Instance();
+  analysis-&gt;SetDefaultFileType("root");
+  analysis-&gt;SetFileName("data/tf");            // override in the macro: /analysis/setFileName
+  analysis-&gt;SetNtupleMerging(true);
+
+  analysis-&gt;CreateNtuple("t1", "TF-muSR, musrSim branch names and units");
+  analysis-&gt;CreateNtupleDColumn("muDecayTime");      // us; -1000 if the muon did not decay
+  analysis-&gt;CreateNtupleIColumn("muDecayDetID");     // volume ID where it decayed; -1000 if none
+  analysis-&gt;CreateNtupleDColumn("muDecayPolY");      // TRUTH spin at decay (not observable)
+  analysis-&gt;CreateNtupleDColumn("muDecayPolZ");
+  analysis-&gt;CreateNtupleIColumn("det_n");
+  analysis-&gt;CreateNtupleIColumn("det_ID", detID);
+  analysis-&gt;CreateNtupleDColumn("det_edep", detEdep);
+  analysis-&gt;CreateNtupleDColumn("det_time_start", detTimeStart);
+  analysis-&gt;FinishNtuple();
+}
+
+void RunAction::BeginOfRunAction(const G4Run*)
+{
+  G4AnalysisManager::Instance()-&gt;OpenFile();
+}
+
+void RunAction::EndOfRunAction(const G4Run* run)
+{
+  if (IsMaster()) G4cout &lt;&lt; "Run complete: " &lt;&lt; run-&gt;GetNumberOfEvent() &lt;&lt; " muons" &lt;&lt; G4endl;
+  auto* analysis = G4AnalysisManager::Instance();
+  analysis-&gt;Write();
+  analysis-&gt;CloseFile();
+}</pre></details>
+            <details><summary><b>include/RunAction.hh</b><button class="copy" type="button" data-copy="f10-rah">copy</button></summary><pre id="f10-rah" data-src="code/week10/include/RunAction.hh">#ifndef RunAction_h
+#define RunAction_h 1
+
+#include "G4UserRunAction.hh"
+#include "globals.hh"
+
+#include &lt;vector&gt;
+
+// Books a "t1" ntuple with musrSim branch names, so the textbook's asymmetry.py reads it unchanged.
+class RunAction : public G4UserRunAction
+{
+  public:
+    RunAction();
+    void BeginOfRunAction(const G4Run*) override;
+    void EndOfRunAction(const G4Run*) override;
+
+    // jagged hit columns: one entry per counter that fired in this event
+    std::vector&lt;G4int&gt; detID;
+    std::vector&lt;G4double&gt; detEdep;        // MeV
+    std::vector&lt;G4double&gt; detTimeStart;   // us
+};
+
+#endif</pre></details>
+            <details><summary><b>src/ActionInitialization.cc</b><button class="copy" type="button" data-copy="f10-ai">copy</button></summary><pre id="f10-ai" data-src="code/week10/src/ActionInitialization.cc">#include "ActionInitialization.hh"
+
+#include "EventAction.hh"
+#include "PrimaryGeneratorAction.hh"
+#include "RunAction.hh"
+#include "SteppingAction.hh"
+
+void ActionInitialization::BuildForMaster() const
+{
+  SetUserAction(new RunAction());
+}
+
+void ActionInitialization::Build() const
+{
+  SetUserAction(new PrimaryGeneratorAction());
+  auto* run = new RunAction();
+  SetUserAction(run);
+  auto* event = new EventAction(run);
+  SetUserAction(event);
+  SetUserAction(new SteppingAction(event));
+}</pre></details>
+            <details><summary><b>include/ActionInitialization.hh</b><button class="copy" type="button" data-copy="f10-aih">copy</button></summary><pre id="f10-aih" data-src="code/week10/include/ActionInitialization.hh">#ifndef ActionInitialization_h
+#define ActionInitialization_h 1
+
+#include "G4VUserActionInitialization.hh"
+
+class ActionInitialization : public G4VUserActionInitialization
+{
+  public:
+    void BuildForMaster() const override;
+    void Build() const override;
+};
+
+#endif</pre></details>
+            <details><summary><b>CMakeLists.txt</b><button class="copy" type="button" data-copy="f10-cm">copy</button></summary><pre id="f10-cm" data-src="code/week10/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
+project(Week10 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Geant4 REQUIRED ui_all vis_all)
+include(${Geant4_USE_FILE})
+
+file(GLOB sources CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/include/*.hh)
+
+add_executable(week10 week10.cc ${sources} ${headers})
+target_include_directories(week10 PRIVATE include)
+target_link_libraries(week10 PRIVATE ${Geant4_LIBRARIES})
+
+foreach(_f tf.mac vis.mac run_scan.sh asymmetry.py field_scan.py)
+  configure_file(${PROJECT_SOURCE_DIR}/${_f} ${PROJECT_BINARY_DIR}/${_f} COPYONLY)
+endforeach()</pre></details>
+            <details><summary><b>tf.mac</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f10-mac">copy</button></summary><pre id="f10-mac" data-src="code/week10/tf.mac"># tf.mac -- run as:  mkdir -p data &amp;&amp; ./week10 tf.mac
+/control/verbose 1
+/run/verbose 1
+/tf/B 0.010 T          # 10 mT, as in tf_musr.mac (globalfield ... 0.01 0 0)
+/run/initialize
+/analysis/setFileName data/tf_10mT
+/run/printProgress 50000
+/run/beamOn 200000</pre></details>
+            <details><summary><b>vis.mac</b><button class="copy" type="button" data-copy="f10-vis">copy</button></summary><pre id="f10-vis" data-src="code/week10/vis.mac"># vis.mac -- diagnosis only: look at a few muons, never at statistics
+/run/initialize
+/vis/open TSG
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 90 0 deg
+/vis/viewer/set/upVector 0 1 0
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/scene/endOfEventAction accumulate 20
+/vis/scene/add/axes 0 0 0 50 mm
+/run/beamOn 20</pre></details>
+          </div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c10-b">copy</button></div>
+<pre id="c10-b">mkdir build &amp;&amp; cd build
+cmake .. &amp;&amp; make -j4
+mkdir -p data</pre></div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Run 200 000 muons and check the field first</span><span lang="zh-Hans">运行 20 万个缪子，先核对磁场</span></h3><label class="done" for="w10-s2"><input type="checkbox" id="w10-s2" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c10-r">copy</button></div>
+<pre id="c10-r">./week10 tf.mac | grep -E "Field at|Run complete"</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our Geant4 11.4.p01 run)</span><span lang="zh-Hans">预期（我们的 Geant4 11.4.p01 运行）</span></b></span></div>
+<pre>Field at (0,0,0): Bx = 10 mT  (printFieldValueAtPoint analogue)
+Run complete: 200000 muons</pre></div>
+          <p lang="en">The run takes about 35 s on two threads. Of 200 000 muons, 199 843 stopped and decayed in the target. In 6 mm of copper a 29.8 MeV/c μ⁺ (4.1 MeV kinetic energy) stops within a fraction of a millimetre of the front face.</p>
+          <p lang="zh-Hans">双线程下运行约需 35 s。20 万个缪子中有 199 843 个停在靶中并在靶中衰变。29.8 MeV/c 的 μ⁺（动能 4.1 MeV）在 6 mm 厚的铜中，停在离前表面不到一毫米的地方。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Recover the field</span><span lang="zh-Hans">反推磁场</span></h3><label class="done" for="w10-s3"><input type="checkbox" id="w10-s3" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="files">
+            <details><summary><b>asymmetry.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f10-asy">copy</button></summary><pre id="f10-asy" data-src="code/week10/asymmetry.py">"""asymmetry.py -- recover the field from the precession of the muon spin (textbook 12.5, annotated).
+
+Reads a t1 tree with musrSim branch names: the course app writes data/tf_10mT.root;
+musrSim writes data/musrSim_0_tf.root for tf_musr.mac (run number 0, output name "tf").
+Usage: python3 asymmetry.py [file.root] [--measured]
+  --measured  use the counter's det_time_start instead of the truth muDecayTime
+"""
+import sys
+
+import awkward as ak
+import numpy as np
+import uproot
+from scipy.optimize import curve_fit
+
+GAMMA_MU = 135.5388          # MHz/T, gamma_mu / 2pi (PDG / CODATA)
+
+args = [a for a in sys.argv[1:] if not a.startswith("--")]
+fname = args[0] if args else "data/musrSim_0_tf.root"
+measured = "--measured" in sys.argv
+
+D = uproot.open(fname)["t1"].arrays(
+    ["det_ID", "det_time_start", "muDecayTime", "muDecayDetID"], library="ak")
+sel = (D.muDecayDetID == 5) &amp; (D.muDecayTime &gt; 0)       # stopped AND decayed in the target; no sentinels
+D = D[sel]
+print(f"muons decayed in target: {len(D)}")
+
+hitU = np.asarray(ak.any(D.det_ID == 11, axis=1))       # positron reached the UP counter (y = +45 mm)
+hitD = np.asarray(ak.any(D.det_ID == 1, axis=1))        # ... the DOWN counter (y = -45 mm)
+if measured:
+    # what the electronics would see: the first time each counter fired
+    tU = np.asarray(ak.fill_none(ak.firsts(D.det_time_start[D.det_ID == 11]), -1.0))[hitU]
+    tD = np.asarray(ak.fill_none(ak.firsts(D.det_time_start[D.det_ID == 1]), -1.0))[hitD]
+else:
+    t = np.asarray(D.muDecayTime)                       # Monte Carlo truth (textbook choice)
+    tU, tD = t[hitU], t[hitD]
+print(f"positrons in U (ID 11): {len(tU)}   in D (ID 1): {len(tD)}")
+
+bins = np.linspace(0, 10, 201)                          # 200 bins of 50 ns; T = 0.74 us at 10 mT
+NU, _ = np.histogram(tU, bins=bins)
+ND, _ = np.histogram(tD, bins=bins)
+centre = 0.5 * (bins[:-1] + bins[1:])
+tot = NU + ND
+ok = tot &gt; 20
+A = (ND[ok] - NU[ok]) / tot[ok]                         # D first: mu+ spin turns from -z towards -y
+Aerr = np.sqrt((1.0 - A**2) / tot[ok])                  # binomial split of tot counts
+tg = centre[ok]
+
+
+def osc(t, A0, f, phi, lam):
+    return A0 * np.exp(-lam * t) * np.sin(2 * np.pi * f * t + phi)
+
+
+popt, pcov = curve_fit(osc, tg, A, p0=[0.25, 1.35, 0.0, 0.05], sigma=Aerr, absolute_sigma=True)
+perr = np.sqrt(np.diag(pcov))
+chi2 = np.sum(((A - osc(tg, *popt)) / Aerr) ** 2)
+ndf = len(A) - 4
+f, df = popt[1], perr[1]
+print(f"A0  = {popt[0]:.4f} +/- {perr[0]:.4f}")
+print(f"f   = {f:.4f} +/- {df:.4f} MHz")
+print(f"phi = {popt[2]:+.3f} +/- {perr[2]:.3f} rad    lambda = {popt[3]:.4f} +/- {perr[3]:.4f} /us")
+print(f"chi2/ndf = {chi2:.1f}/{ndf}")
+if abs(popt[0]) &lt; 3 * perr[0]:
+    # A fit always returns numbers. With no oscillation, f just stays near its starting value.
+    print("WARNING: A0 is consistent with zero: there is no oscillation, so f and B are meaningless")
+print(f"B   = {f / GAMMA_MU * 1000:.3f} +/- {df / GAMMA_MU * 1000:.3f} mT")</pre></details>
+          </div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c10-a">copy</button></div>
+<pre id="c10-a">python3 asymmetry.py data/tf_10mT.root
+python3 asymmetry.py data/tf_10mT.root --measured</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our run, truth decay time)</span><span lang="zh-Hans">预期（我们的运行，真值衰变时间）</span></b></span></div>
+<pre>muons decayed in target: 199843
+positrons in U (ID 11): 26461   in D (ID 1): 26526
+A0  = 0.2414 +/- 0.0089
+f   = 1.3573 +/- 0.0020 MHz
+phi = -0.048 +/- 0.037 rad    lambda = -0.0123 +/- 0.0128 /us
+chi2/ndf = 171.5/175
+B   = 10.014 +/- 0.015 mT</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (--measured: counter time det_time_start)</span><span lang="zh-Hans">预期（--measured：计数器时间 det_time_start）</span></b></span></div>
+<pre>muons decayed in target: 199843
+positrons in U (ID 11): 26461   in D (ID 1): 26526
+A0  = 0.2427 +/- 0.0089
+f   = 1.3556 +/- 0.0020 MHz
+phi = -0.006 +/- 0.037 rad    lambda = -0.0114 +/- 0.0128 /us
+chi2/ndf = 179.6/175
+B   = 10.002 +/- 0.015 mT</pre></div>
+          <p lang="en">The fitted field is 10.014 ± 0.015 mT against the 10 mT configured: 0.9σ. χ²/ndf = 172/175, and λ is consistent with zero because the field is perfectly uniform. Using the counter time instead of the truth decay time changes f by less than its error (the positron needs well under a nanosecond to reach the counter). Only the measured time exists in a real experiment, so prefer it. A0 = 0.24, not 1: see Course-W10-d. Your own two-thread run will not match these digits exactly, even with the same seeds: our reruns gave f = 1.3578 and 1.3572. The reason is a thread race inside G4DecayWithSpin, explained in Week 12 (Course-W12-b). Compare within the errors.</p>
+          <p lang="zh-Hans">拟合得到的磁场为 10.014 ± 0.015 mT，设定值为 10 mT，相差 0.9σ。χ²/ndf = 172/175，λ 与零相容，因为磁场完全均匀。用计数器时间代替真值衰变时间，f 的变化小于其误差（正电子飞到计数器远不到一纳秒）。真实实验中只有测量时间，所以优先用它。A0 = 0.24 而不是 1：见 Course-W10-d。即使种子相同，你自己的双线程运行也不会与这些数字逐位相同：我们重跑得到 f = 1.3578 和 1.3572。原因是 G4DecayWithSpin 内部的线程竞争，见第 12 周（Course-W12-b）。请在误差范围内比较。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Break it: remove the spin from the decay</span><span lang="zh-Hans">打破它：从衰变中去掉自旋</span></h3><label class="done" for="w10-s4"><input type="checkbox" id="w10-s4" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c10-n">copy</button></div>
+<pre id="c10-n">sed "s|data/tf_10mT|data/tf_10mT_nospin|" tf.mac &gt; tf_nospin.mac
+./week10 tf_nospin.mac nospin &gt; /dev/null
+python3 asymmetry.py data/tf_10mT_nospin.root</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our run, stock G4DecayPhysics)</span><span lang="zh-Hans">预期（我们的运行，默认 G4DecayPhysics）</span></b></span></div>
+<pre>muons decayed in target: 199843
+positrons in U (ID 11): 26871   in D (ID 1): 26625
+A0  = -0.0036 +/- 0.0038
+f   = 1.3864 +/- 0.0252 MHz
+phi = -1.836 +/- 1.076 rad    lambda = -0.3877 +/- 0.1532 /us
+chi2/ndf = 152.7/175
+WARNING: A0 is consistent with zero: there is no oscillation, so f and B are meaningless
+B   = 10.228 +/- 0.186 mT</pre></div>
+          <p lang="en">Same geometry, same beam, same number of positrons in each counter (26 871 and 26 625), and no oscillation: A0 is zero within 1σ. The fit still converges and prints a field, 10.2 ± 0.2 mT, because the frequency never leaves its starting value of 1.35 MHz. That is why the script now refuses to believe f when A0 is not significant. A confident number from a fit is not a measurement.</p>
+          <p lang="zh-Hans">几何相同，束流相同，每个计数器中的正电子数也几乎相同（26 871 和 26 625），却没有振荡：A0 在 1σ 内为零。拟合照样收敛，还打印出一个磁场 10.2 ± 0.2 mT，因为频率根本没有离开 1.35 MHz 的初值。所以脚本现在在 A0 不显著时拒绝相信 f。拟合给出的一个自信的数字并不是测量。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Mission 12: f against B</span><span lang="zh-Hans">任务 12：f 对 B 的关系</span></h3><label class="done" for="w10-s5"><input type="checkbox" id="w10-s5" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="files">
+            <details><summary><b>run_scan.sh</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f10-scan">copy</button></summary><pre id="f10-scan" data-src="code/week10/run_scan.sh">#!/bin/bash
+# run_scan.sh -- Mission 12: the same experiment at several fields, plus the "no spin" control.
+# Run from the build directory, next to ./week10 and tf.mac.
+set -e
+mkdir -p data
+for B in 0.005 0.010 0.020 0.030; do
+  mT=$(python3 -c "print(round($B*1000))")
+  sed "s|^/tf/B .*|/tf/B $B T|; s|data/tf_10mT|data/tf_${mT}mT|" tf.mac &gt; tf_${mT}mT.mac
+  ./week10 tf_${mT}mT.mac &gt; tf_${mT}mT.log
+  echo "B = ${mT} mT -&gt; data/tf_${mT}mT.root"
+done
+# Control: identical macro, stock decay physics (no G4SpinDecayPhysics).
+sed "s|data/tf_10mT|data/tf_10mT_nospin|" tf.mac &gt; tf_nospin.mac
+./week10 tf_nospin.mac nospin &gt; tf_nospin.log
+echo "no-spin control -&gt; data/tf_10mT_nospin.root"</pre></details>
+            <details><summary><b>field_scan.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f10-fs">copy</button></summary><pre id="f10-fs" data-src="code/week10/field_scan.py">"""field_scan.py -- Mission 12: fitted precession frequency versus configured field.
+Usage: python3 field_scan.py data/tf_5mT.root data/tf_10mT.root data/tf_20mT.root data/tf_30mT.root
+The configured field is read from the file name (tf_&lt;B&gt;mT.root).
+"""
+import re
+import subprocess
+import sys
+
+import numpy as np
+
+GAMMA_MU = 135.5388   # MHz/T
+
+B, F, dF = [], [], []
+for fn in sys.argv[1:]:
+    out = subprocess.run([sys.executable, "asymmetry.py", fn], capture_output=True, text=True, check=True).stdout
+    f, df = map(float, re.search(r"f   = ([\d.]+) \+/- ([\d.]+)", out).groups())
+    b = float(re.search(r"tf_(\d+)mT", fn).group(1)) / 1000.0
+    B.append(b); F.append(f); dF.append(df)
+    print(f"B = {b*1000:5.1f} mT   f = {f:.4f} +/- {df:.4f} MHz   expected {GAMMA_MU*b:.4f}   pull {(f-GAMMA_MU*b)/df:+.2f}")
+
+B, F, dF = map(np.asarray, (B, F, dF))
+w = 1 / dF**2
+# weighted straight line through the origin: f = k B
+k = np.sum(w * B * F) / np.sum(w * B * B)
+dk = 1 / np.sqrt(np.sum(w * B * B))
+chi2 = np.sum(w * (F - k * B) ** 2)
+print(f"slope k = {k:.3f} +/- {dk:.3f} MHz/T   (gamma_mu/2pi = {GAMMA_MU})   chi2/ndf = {chi2:.2f}/{len(B)-1}")</pre></details>
+          </div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c10-s">copy</button></div>
+<pre id="c10-s">bash run_scan.sh
+python3 field_scan.py data/tf_5mT.root data/tf_10mT.root data/tf_20mT.root data/tf_30mT.root</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our runs, 200 000 muons each)</span><span lang="zh-Hans">预期（我们的运行，每次 20 万个缪子）</span></b></span></div>
+<pre>B =   5.0 mT   f = 0.6769 +/- 0.0020 MHz   expected 0.6777   pull -0.40
+B =  10.0 mT   f = 1.3573 +/- 0.0020 MHz   expected 1.3554   pull +0.96
+B =  20.0 mT   f = 2.7069 +/- 0.0021 MHz   expected 2.7108   pull -1.85
+B =  30.0 mT   f = 4.0644 +/- 0.0022 MHz   expected 4.0662   pull -0.80
+slope k = 135.459 +/- 0.057 MHz/T   (gamma_mu/2pi = 135.5388)   chi2/ndf = 3.14/3</pre></div>
+          <p lang="en">Four fields, four fits: every frequency lies within 2σ of (γμ/2π)·B, and the slope through the origin is 135.46 ± 0.06 MHz/T against 135.5388, a 1.4σ difference with χ²/ndf = 3.1/3. With 200 000 muons per point the slope is good to 0.04%. More muons would show whether the 1.4σ is statistics or a small bias, for example the few nanoseconds each muon spends in flight before it stops. Then change one assumption at a time: lower <code>SetParticlePolarization</code> to (0, 0, −0.5), shrink the counters, or replace the uniform field with one that has a 1% gradient across the target. Predict whether A0, f or λ moves before you run, then check with the toy above.</p>
+          <p lang="zh-Hans">四个磁场，四次拟合：每个频率都在 (γμ/2π)·B 的 2σ 以内，过原点的斜率为 135.46 ± 0.06 MHz/T，对比 135.5388，相差 1.4σ，χ²/ndf = 3.1/3。每点 20 万个缪子，斜率精确到 0.04%。更多缪子才能说明这 1.4σ 是统计涨落，还是一个小偏差，例如每个缪子停下之前在飞行中度过的几纳秒。 然后每次只改一个假设：把 <code>SetParticlePolarization</code> 降到 (0, 0, −0.5)，缩小计数器，或把均匀场换成在靶上有 1% 梯度的磁场。运行之前先预测 A0、f、λ 中哪个会变，再用上面的玩具模型检验。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">The same experiment in musrSim</span><span lang="zh-Hans">在 musrSim 中做同一个实验</span></h3><label class="done" for="w10-s6"><input type="checkbox" id="w10-s6" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="files">
+            <details><summary><b>tf_musr.mac</b><span class="tag musrsim">MUSRSIM</span><button class="copy" type="button" data-copy="f10-tfm">copy</button></summary><pre id="f10-tfm" data-src="code/week10/tf_musr.mac"># tf_musr.mac -- the textbook's integrated TF-muSR experiment (section 12.4), for musrSim.
+# Run in build/run with data/ present:  ../musrSim tf_musr.mac   -&gt; data/musrSim_0_tf.root
+# CHECK FIRST (Course-W10-a): your musrSim build must use spin-aware muon decay, or A(t) is flat.
+# ---- GEOMETRY ----
+/musr/command construct box World 400 400 400 G4_AIR 0 0 0 no_logical_volume norot dead -1
+/musr/command construct box Target 15 15 3 G4_Cu 0 0 0 log_World norot dead 5
+/musr/command construct box CounterU 40 3 40 G4_PLASTIC_SC_VINYLTOLUENE 0 45 0 log_World norot musr/ScintSD 11
+/musr/command construct box CounterD 40 3 40 G4_PLASTIC_SC_VINYLTOLUENE 0 -45 0 log_World norot musr/ScintSD 1
+# ---- FIELD ----
+/musr/command globalfield TF 400 400 400 uniform 0 0 0 log_World 0.01 0 0 0 0 0
+/musr/command globalfield printFieldValueAtPoint 0 0 0
+# ---- OUTPUT ----
+/musr/command SetOutputFileName tf
+/musr/command storeOnlyEventsWithMuonsDecayedInDetID 5
+# ---- BEAM ----
+/gun/primaryparticle mu+
+/gun/vertex 0 0 -80 mm
+/gun/vertexsigma 3 3 0 mm
+/gun/momentum 29.8 MeV
+/gun/muonPolarizVector 0 0 -1
+/gun/muonPolarizFraction 1
+/gun/decaytimelimits -1 -1 2197.03 ns
+/run/beamOn 200000</pre></details>
+          </div>
+          <div class="code"><div class="code-head"><span class="l"><b><span lang="en">terminal (Geant4 10.7 environment, build/run)</span><span lang="zh-Hans">终端（Geant4 10.7 环境，build/run）</span></b><span class="tag musrsim">MUSRSIM</span></span><button class="copy" type="button" data-copy="c10-m">copy</button></div>
+<pre id="c10-m">../musrSim            # Idle&gt; /process/list Decay   -&gt; look for DecayWithSpin; then exit
+../musrSim tf_musr.mac
+python3 asymmetry.py data/musrSim_0_tf.root</pre></div>
+          <p lang="en">Not run here (musrSim needs Geant4 10.7 and ROOT). The output name follows the musrsim-sms source: run number <code>atoi("tf_musr.mac")</code> = 0, plus the name "tf". If <code>/process/list</code> shows only <code>Decay</code>, patch <code>musrSim.cc</code> as in Course-W10-a, rebuild, and compare A0 and f with the week10 numbers above.</p>
+          <p lang="zh-Hans">此处未运行（musrSim 需要 Geant4 10.7 和 ROOT）。输出文件名遵循 musrsim-sms 源码：运行号 <code>atoi("tf_musr.mac")</code> = 0，加上名称 “tf”。如果 <code>/process/list</code> 只显示 <code>Decay</code>，按 Course-W10-a 修改 <code>musrSim.cc</code>，重新编译，再把 A0 和 f 与上面 week10 的数值对比。</p>
+        </li>
+      </ol>
+      <p class="progress" data-progress-out="w10"></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-quiz">
+    <p class="cmd">/control/verbose 2<span lang="en">self-check</span><span lang="zh-Hans">自测</span></p>
+    <div>
+      <h2 id="h-quiz" class="bi"><span lang="en">Six questions. Each answer explains itself.</span><span lang="zh-Hans">六道题，每个答案都附有解释。</span></h2>
+      <div id="quiz"></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-err">
+    <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
+    <div>
+      <h2 id="h-err" class="bi"><span lang="en">Four ways to get a confident, wrong field.</span><span lang="zh-Hans">四种自信满满却测错磁场的方式。</span></h2>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W10-b
+      issued by : globalfield ... fromfile
+Field map read with the wrong axis order, centre or scale. Tracks look
+  fine and the fit converges, at the wrong frequency. Print the field
+  at three points you can check by hand before any physics.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W10-b
+      issued by : globalfield ... fromfile
+场图读入时坐标轴顺序、中心或缩放出错。径迹看起来正常，拟合也
+  收敛，频率却是错的。做任何物理之前，先在三个能手算的点上打印磁场。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W10-c
+      issued by : analysis
+Fit with no cut on muDecayDetID == 5: muons that decayed in air or in
+  the counters join the sample with other fields, other positron paths
+  and, in a real sample, other relaxation. Select the target, remove the
+  -1000 sentinels, then fit.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W10-c
+      issued by : 分析
+拟合时没有选 muDecayDetID == 5：在空气或计数器中衰变的缪子混入
+  样本，它们处在别的磁场、正电子路径不同，在真实样品中弛豫也不同。
+  先选靶，去掉 -1000 哨兵值，再拟合。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W10-d
+      issued by : analysis
+A0 read as "the polarization". A0 = a x P x (geometry) x (energy
+  selection): a perfectly polarized beam gives 0.241 ± 0.009 here. Compare
+  A0 between runs of the same detector, never with 1.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W10-d
+      issued by : 分析
+把 A0 当成“极化度”。A0 = a × P × (几何) × (能量选择)：完全极化的
+  束流在这里给出 0.241 ± 0.009。只在同一探测器的不同运行之间比较 A0，
+  永远不要拿它和 1 比。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <p class="cap"><span lang="en">Course-W10-a (no spin in the decay) is in section 12.2 above. It is the most expensive of the five, because nothing crashes.</span><span lang="zh-Hans">Course-W10-a（衰变中没有自旋）见上文第 12.2 节。它是五个错误中代价最大的，因为什么都不会崩溃。</span></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-review">
+    <p class="cmd">/control/saveHistory<span lang="en">review notes</span><span lang="zh-Hans">复习要点</span></p>
+    <div class="prose">
+      <h2 id="h-review" class="bi"><span lang="en">Before you close the run.</span><span lang="zh-Hans">结束运行之前。</span></h2>
+      <ul class="review">
+        <li><label for="w10-r1"><input type="checkbox" id="w10-r1"><span lang="en">Did I print and verify the configured field before interpreting a precession frequency?</span><span lang="zh-Hans">在解释进动频率之前，我是否打印并核对了设定的磁场？</span></label></li>
+        <li><label for="w10-r2"><input type="checkbox" id="w10-r2"><span lang="en">Did I confirm with /process/list that the muon decays through DecayWithSpin?</span><span lang="zh-Hans">我是否用 /process/list 确认了缪子通过 DecayWithSpin 衰变？</span></label></li>
+        <li><label for="w10-r3"><input type="checkbox" id="w10-r3"><span lang="en">Did I separate initial polarization, spin evolution, detector acceptance and asymmetry amplitude?</span><span lang="zh-Hans">我是否把初始极化、自旋演化、探测器接受度和不对称度幅度区分开了？</span></label></li>
+        <li><label for="w10-r4"><input type="checkbox" id="w10-r4"><span lang="en">Did I distinguish an optical-photon study from a muSR study that does not need photon tracking?</span><span lang="zh-Hans">我是否把光学光子研究与不需要追踪光子的 μSR 研究区分开了？</span></label></li>
+        <li><label for="w10-r5"><input type="checkbox" id="w10-r5"><span lang="en">Can I recover the field from the fitted frequency without opening the simulation source?</span><span lang="zh-Hans">我能否不打开模拟源码，就从拟合频率反推出磁场？</span></label></li>
+      </ul>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Remark · debt repaid, debt taken on</span><span lang="zh-Hans">小结 · 还清的债与新欠的债</span></p>
+        <p lang="en">Repaid: the chain truth → detector response → data → reconstruction → physical parameter now ends in a number you configured yourself, so you can check it. Here the truth is a spin vector that nobody measures directly. Taken on: every check so far was against our own configuration. Next week the reference is someone else's measurement, and a few deliberately broken programs.</p>
+        <p lang="zh-Hans">还清的债：真值 → 探测器响应 → 数据 → 重建 → 物理参数这条链，现在终点是一个你自己设定的数值，所以可以核对。这里的真值是一个没人能直接测量的自旋矢量。新欠的债：到目前为止的每次核对都是对照我们自己的设定。下周的参照将是别人的测量结果，外加几个故意弄坏的程序。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-share">
+    <p class="cmd">/vis/ogl/export week10.gif<span lang="en">share this week</span><span lang="zh-Hans">分享本周成果</span></p>
+    <div class="share">
+      <figure class="fig">
+        <img src="media/week10-musr.gif" width="720" height="900" alt="The muon spin precesses about the field while the asymmetry between the two counters emerges from noise into a 1.355 megahertz oscillation" loading="lazy">
+        <figcaption><span lang="en">The asymmetry and the fit are our Geant4 11.4 run at 10 mT; the spin drawing is the precession at the same frequency. Long-press or right-click to save.</span><span lang="zh-Hans">不对称度和拟合来自我们 10 mT 的 Geant4 11.4 运行；自旋示意图按同一频率进动。长按或右键即可保存。</span></figcaption>
+      </figure>
+      <div class="prose">
+        <h2 id="h-share" class="bi"><span lang="en">Read a magnet with a muon.</span><span lang="zh-Hans">用缪子读出一块磁铁。</span></h2>
+        <p lang="en">Post your f-against-B plot with the fitted slope next to 135.5388 MHz/T, and the flat asymmetry from your no-spin control beside it.</p>
+        <p lang="zh-Hans">发出你的 f–B 图，把拟合斜率与 135.5388 MHz/T 并列，再在旁边放上不加自旋的对照运行得到的平坦不对称度。</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" id="pager" aria-label="Week navigation"></nav>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 12 · Geant4 10.7.2 / 11.4 source · musrsim-sms source · PDG RPP 2024</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 12 章 · Geant4 10.7.2 / 11.4 源码 · musrsim-sms 源码 · PDG RPP 2024</span>
+  </footer>
+</div>
+<script src="assets/course.js"></script>
+<script src="assets/week10.js"></script>
+</body>
+</html>

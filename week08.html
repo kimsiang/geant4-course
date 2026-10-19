@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 08 · The Analysis Chain</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0, Week 08: turn simulated events into a DAQ-like ROOT dataset that someone else can analyse without Geant4, on two threads.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Week 08 of 12</span><span lang="zh-Hans">第 08 / 12 周</span></span>
+    <span class="bar-r">
+      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">Idle&gt; <span>/analysis/setFileName muons</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">From simulation to experimental data: the full analysis chain.</span><span lang="zh-Hans">从模拟到实验数据：完整的分析链。</span></h1>
+      <p class="lede" lang="en">A simulation that prints numbers to a terminal is not yet useful to a research group. You write a ROOT dataset in the same shape as the laboratory DAQ, on two threads, and analyse it without ever opening the Geant4 source again.</p>
+      <p class="lede" lang="zh-Hans">只把数字打印到终端的模拟，对研究组来说还没有用处。你将用两个线程写出一个与实验室 DAQ 格式相同的 ROOT 数据集，并在不再打开 Geant4 源码的情况下完成分析。</p>
+      <ul class="meta">
+        <li class="stage"><b>4 · Build it</b><span lang="en">stage · 建造</span><span lang="zh-Hans">阶段 · 建造</span></li>
+        <li><b>Missions 8, 8B</b><span lang="en">textbook ch. 9</span><span lang="zh-Hans">教材第 9 章</span></li>
+        <li><b>≈ 2 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="Week summary">
+      <div role="row"><span role="cell">week08</span></div>
+      <div role="row"><span role="cell">Detector</span><span role="cell"><span lang="en">Week 5 two-layer trigger</span><span lang="zh-Hans">第 5 周双层触发</span></span></div>
+      <div role="row"><span role="cell">Threads</span><span role="cell">2 · G4RunManagerType::Default</span></div>
+      <div role="row"><span role="cell">Output</span><span role="cell">muons.root: daq + truth</span></div>
+      <div role="row"><span role="cell">Analysis</span><span role="cell">Python + uproot</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-goals">
+    <p class="cmd">/run/initialize<span lang="en">learning goals</span><span lang="zh-Hans">学习目标</span></p>
+    <div class="prose">
+      <h2 id="h-goals" class="bi"><span lang="en">By the end of this week someone else can analyse your simulation.</span><span lang="zh-Hans">本周结束时，别人能够分析你的模拟。</span></h2>
+      <ol class="goals">
+        <li><span lang="en">Book and fill ntuples (a <dfn>tree<span class="kt" lang="zh-Hans">树</span></dfn> with one row per event) with <code>G4AnalysisManager</code>, and keep detector-facing data apart from truth.</span><span lang="zh-Hans">用 <code>G4AnalysisManager</code> 建立并填充 ntuple（每个事例一行的<dfn>树<span class="kt" lang="en">tree</span></dfn>），并把面向探测器的数据与真值分开。</span></li>
+        <li><span lang="en">Apply the DAQ-parity rule: same field names, units, channel numbering and trigger semantics as the hardware.</span><span lang="zh-Hans">应用 DAQ 一致性原则：字段名、单位、通道编号和触发语义都与硬件相同。</span></li>
+        <li><span lang="en">Run multithreaded: merge ntuples, merge counters with <code>G4Accumulable</code>, and check the final event count.</span><span lang="zh-Hans">多线程运行：合并 ntuple，用 <code>G4Accumulable</code> 合并计数器，并核对最终事例数。</span></li>
+        <li><span lang="en">Make an <dfn>event selection<span class="kt" lang="zh-Hans">事例选择</span></dfn> from the trigger word alone, in Python, without Geant4.</span><span lang="zh-Hans">只用触发字、在 Python 中、不依赖 Geant4 完成<dfn>事例选择<span class="kt" lang="en">event selection</span></dfn>。</span></li>
+        <li><span lang="en">Tell an end-to-end consistency check from a physics validation.</span><span lang="zh-Hans">区分端到端一致性检查与物理验证。</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-parity">
+    <p class="cmd">/control/manual<span lang="en">9.1 · DAQ parity</span><span lang="zh-Hans">9.1 · DAQ 一致性</span></p>
+    <div class="prose">
+      <h2 id="h-parity" class="bi"><span lang="en">Make the simulated event look like a real DAQ event.</span><span lang="zh-Hans">让模拟事例看起来像真实的 DAQ 事例。</span></h2>
+      <p lang="en">Keep the simulated output as close as possible to the laboratory DAQ format. The point is not to imitate every byte of a commercial digitizer. The point is that the same decoder and the same analysis can consume simulated and real data, so the simulation becomes a test bench for the analysis software rather than a separate universe. A deliberately simple raw packet carries run, event, timestamp, trigger word, number of channels, and per-channel records.</p>
+      <p lang="zh-Hans">让模拟输出尽可能接近实验室 DAQ 格式。目的不是模仿商用数字化器的每一个字节，而是让同一个解码器和同一个分析程序既能处理模拟数据、也能处理真实数据。这样模拟就成了分析软件的测试平台，而不是另一个平行宇宙。一个刻意简化的原始数据包包含：运行号、事例号、时间戳、触发字、通道数，以及每个通道的记录。</p>
+      <div class="flow" role="img" aria-label="The simulation-to-data chain"><b>Geant4</b> <span class="a">→</span> events <span class="a">→</span> detector response <span class="a">→</span> DAQ-like record <span class="a">→</span> ROOT <span class="a">→</span> <b>analysis</b></div>
+      <div class="box">
+        <p class="box-label">Definition 9.1 · <span lang="en">The full simulation-to-data chain</span><span lang="zh-Hans">完整的模拟—数据链</span></p>
+        <p lang="en">Geant4 generates events; detector response generates hits; DAQ-style formatting packs each event's key quantities into one record; the record is written to a ROOT tree; downstream analysis reads it. Every link should explain itself, with clear variable names and explicit units, so the analysis never needs the Geant4 source.</p>
+        <p lang="zh-Hans">Geant4 产生事例，探测器响应产生击中，DAQ 式格式化把每个事例的关键量打包成一条记录，记录写入 ROOT 树，下游分析读取它。每一环都应自我说明——变量名清楚、单位明确——这样分析时永远不需要 Geant4 源码。</p>
+      </div>
+      <div class="code">
+        <div class="code-head"><span class="l"><b>Code microscope · RunAction.cc (booking)</b><span class="tag geant4">GEANT4</span></span></div>
+<pre>analysis-&gt;<mark>SetNtupleMerging(true)</mark>;                       <span class="c">// MT: one muons.root, not one per thread</span>
+analysis-&gt;CreateNtuple("daq", "DAQ-like event record (triggered events only)");
+analysis-&gt;CreateNtupleIColumn("trigger_word");              <span class="c">// bit0 ch0, bit1 ch1, bit2 coincidence</span>
+analysis-&gt;CreateNtupleDColumn("ch0_adc");                   <span class="c">// detector-facing names and units</span>
+<span class="c">// …</span>
+analysis-&gt;CreateNtuple("truth", "Monte Carlo truth (all events)");   <span class="c">// kept OUT of "daq"</span>
+analysis-&gt;CreateNtupleDColumn("Edep0_MeV");</pre>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Researcher's notebook · parity test</span><span lang="zh-Hans">研究笔记 · 一致性测试</span></p>
+        <p lang="en">Write two decoders, one for the lab binary packet and one for the simulated record. Feed both into the same writer, then run the same selection on both. A branch with no hardware analogue, such as <code>Edep</code>, goes in a separate truth tree, never in the detector-facing one.</p>
+        <p lang="zh-Hans">写两个解码器：一个读实验室二进制包，一个读模拟记录。两者送入同一个写出函数，再对两者执行同一个选择。没有硬件对应量的分支（如 <code>Edep</code>）放进单独的真值树，绝不放进面向探测器的树。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Example 9.1 · <span lang="en">Mission 8B: one analysis script for simulation and hardware</span><span lang="zh-Hans">任务 8B：同一个脚本分析模拟与硬件数据</span></p>
+        <p lang="en">Make the two-layer trigger output DAQ-like: event number, trigger word, timestamp, per-channel ADC, hit time, channel identifier. The analysis must select events using the trigger word and must not inspect whether a file came from Geant4 or the laboratory.</p>
+        <p lang="zh-Hans">让双层触发的输出具备 DAQ 形式：事例号、触发字、时间戳、各通道 ADC、击中时间、通道标识。分析必须用触发字选择事例，且不得检查文件来自 Geant4 还是实验室。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-mt">
+    <p class="cmd">/run/numberOfThreads 2<span lang="en">9.2 · someone else's data</span><span lang="zh-Hans">9.2 · 给别人用的数据</span></p>
+    <div class="prose">
+      <h2 id="h-mt" class="bi"><span lang="en">A simulation's real endpoint is someone else being able to use your data.</span><span lang="zh-Hans">模拟的真正终点，是别人能够使用你的数据。</span></h2>
+      <p lang="en">In a research group one person produces simulated data and another analyses it, sometimes the same person months later. A structured file is the only interface. This week also returns to the textbook's <code>G4RunManagerType::Default</code>, which makes the run multithreaded. Two things change. Every worker thread has its own RunAction and its own analysis objects: histograms are merged automatically, but ntuples need <code>SetNtupleMerging(true)</code>. And plain counters in RunAction only count that worker's events, so the course switches them to <code>G4Accumulable</code>, which the master sums.</p>
+      <p lang="zh-Hans">在研究组里，一个人生产模拟数据，另一个人分析——有时是同一个人在几个月后。结构化文件是唯一的接口。本周也回到教材的 <code>G4RunManagerType::Default</code>，运行变为多线程。这带来两点变化：每个工作线程都有自己的 RunAction 和分析对象，直方图会自动合并，ntuple 则需要 <code>SetNtupleMerging(true)</code>；RunAction 里的普通计数器只统计本线程的事例，所以本课程改用 <code>G4Accumulable</code>，由主线程汇总。</p>
+      <div class="code">
+        <div class="code-head"><span class="l"><b>Code microscope · RunAction::EndOfRunAction</b><span class="tag geant4">GEANT4</span></span></div>
+<pre>G4AccumulableManager::Instance()-&gt;<mark>Merge()</mark>;   <span class="c">// on the master: the sum over workers</span>
+<span class="k">if</span> (IsMaster()) { <span class="c">/* print fTrig.GetValue() ... */</span> }
+analysis-&gt;Write();
+analysis-&gt;<mark>CloseFile()</mark>;                       <span class="c">// skip it: a file with no readable trees</span></pre>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Intuition · a translation pipeline</span><span lang="zh-Hans">直觉 · 翻译流水线</span></p>
+        <p lang="en">Geant4 speaks C++ objects, the ROOT tree speaks tables, the analysis speaks arrays and histograms. Every translation can introduce errors or lose information, so keep each one transparent and checkable.</p>
+        <p lang="zh-Hans">Geant4 说的是 C++ 对象，ROOT 树说的是表格，分析脚本说的是数组和直方图。每一次翻译都可能引入错误或丢失信息，所以要让每一步都透明、可检查。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Think about it</span><span lang="zh-Hans">想一想</span></p>
+        <p lang="en">An analysis script finds a variable that is entirely zero or entirely constant. Which link is most likely at fault: Geant4's physics, hit generation, or the tree-writing code? With the fewest steps, how would you find out? Hint: print the value in EndOfEventAction for three events.</p>
+        <p lang="zh-Hans">分析脚本发现某个变量全为零或全为常数。最可能出问题的是哪一环：Geant4 物理、击中产生，还是写树的代码？用最少的步骤怎样确定？提示：在 EndOfEventAction 中打印三个事例的值。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-toy">
+    <p class="cmd">/run/beamOn 20000<span lang="en">interactive toy model</span><span lang="zh-Hans">交互玩具模型</span></p>
+    <div>
+      <h2 id="h-toy" class="bi"><span lang="en">Break the chain one link at a time and watch what the analyst sees.</span><span lang="zh-Hans">一次断开链路的一环，看分析者看到什么。</span></h2>
+      <p class="prose" style="color:var(--muted);max-width:64ch;margin-top:14px" lang="en">Twenty thousand toy events are dealt to worker threads and written to files. Change the thread count or switch off one line of RunAction, and the right-hand column shows what <code>read_muons.py</code> would print.</p>
+      <p class="prose" style="color:var(--muted);max-width:64ch" lang="zh-Hans">两万个玩具事例被分配到各工作线程并写入文件。改变线程数，或关掉 RunAction 中的某一行，右侧一栏显示 <code>read_muons.py</code> 会打印什么。</p>
+      <div class="display" style="margin-top:20px">
+        <div class="display-head"><span class="toy">TOY MODEL · <span lang="en">not Geant4</span><span lang="zh-Hans">非 Geant4</span></span><span><span lang="en">yellow: triggered events</span><span lang="zh-Hans">黄色：触发事例</span></span></div>
+        <canvas id="w8-display" class="tele" aria-label="Events dealt to threads and written to output files"></canvas>
+      </div>
+      <div class="controls">
+        <label class="ctl" for="w8-thr"><span class="ctl-row"><span>/run/numberOfThreads</span><output id="w8-thr-out" for="w8-thr">2</output></span><input id="w8-thr" type="range" min="1" max="8" step="1" value="2"></label>
+        <label class="ctl" for="w8-merge"><span class="ctl-row"><code>SetNtupleMerging(true)</code></span><input id="w8-merge" type="checkbox" checked></label>
+        <label class="ctl" for="w8-close"><span class="ctl-row"><code>Write(); CloseFile();</code></span><input id="w8-close" type="checkbox" checked></label>
+        <label class="ctl" for="w8-truth"><span class="ctl-row"><span lang="en">put Edep0_MeV in the daq tree</span><span lang="zh-Hans">把 Edep0_MeV 放进 daq 树</span></span><input id="w8-truth" type="checkbox"></label>
+        <label class="ctl" for="w8-readone"><span class="ctl-row"><span lang="en">no muons.root? read muons_t0.root</span><span lang="zh-Hans">没有 muons.root？读 muons_t0.root</span></span><input id="w8-readone" type="checkbox"></label>
+      </div>
+      <div class="panels one">
+        <div>
+          <p class="panel-title">python3 read_muons.py</p>
+          <div class="verbose"><pre id="w8-out"></pre></div>
+        </div>
+      </div>
+      <div class="panels one">
+        <div>
+          <canvas id="w8-hist" style="aspect-ratio:16/7" aria-label="ADC spectrum of triggered events"></canvas>
+        </div>
+      </div>
+      <div class="toybox">
+        <p><b>TOY MODEL · <span lang="en">approximations</span><span lang="zh-Hans">近似</span></b></p>
+        <p lang="en">Event kinematics follow the week08 app (cos² crossing, 30 × 30 cm source, two 10 × 10 cm counters 20 cm apart). Energy deposit: Moyal approximation to Landau (MPV 1.75 MeV/cm); digitization as in Week 5. Events are dealt to threads at random. The file outcomes (per-thread files without merging; a file of normal size with zero readable trees without Write/CloseFile) reproduce what we observed with Geant4 11.4. The toy trigger efficiency is 1.4%, against 1.6 ± 0.1% in our Geant4 run; the toy has no multiple scattering or δ-rays.</p>
+        <p lang="zh-Hans">事例运动学与 week08 程序相同（cos² 穿越分布，30 × 30 cm 源平面，两块相距 20 cm 的 10 × 10 cm 计数器）。能量沉积用朗道分布的 Moyal 近似（最可几值 1.75 MeV/cm），数字化同第 5 周。事例随机分配给各线程。文件结果（不合并时每线程一个文件；缺少 Write/CloseFile 时文件大小正常但没有可读的树）重现了我们在 Geant4 11.4 中观察到的现象。玩具模型的触发效率为 1.4%，我们的 Geant4 运行为 1.6 ± 0.1%；玩具模型没有多次散射和 δ 电子。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-task">
+    <p class="cmd">/control/execute daq.mac<span lang="en">hands-on · Missions 8 and 8B</span><span lang="zh-Hans">动手任务 · 任务 8 与 8B</span></p>
+    <div class="prose">
+      <h2 id="h-task" class="bi"><span lang="en">Write one merged file, read it without Geant4, then push it through a second decoder.</span><span lang="zh-Hans">写出一个合并文件，不用 Geant4 读取它，再让它经过第二个解码器。</span></h2>
+      <p lang="en">Expected outputs are from Geant4 11.4.p01 runs of these files (course test physics list, two threads). The trigger counts depend on the random sequence; compare in units of σ.</p>
+      <p lang="zh-Hans">预期输出来自这些文件在 Geant4 11.4.p01 上的运行（课程测试物理列表，两个线程）。触发计数取决于随机序列，请以 σ 为单位比较。</p>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Create the project from Week 5</span><span lang="zh-Hans">在第 5 周基础上建立工程</span></h3><label class="done" for="w08-s1"><input type="checkbox" id="w08-s1" data-progress="w08"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Keep Week 5's DetectorConstruction, MuonHit, MuonSD, PrimaryGeneratorAction and ToyScintillatorDigitizer (the generator's commands are now under <code>/week08/gun/</code>). Replace the rest with these.</p>
+          <p lang="zh-Hans">保留第 5 周的 DetectorConstruction、MuonHit、MuonSD、PrimaryGeneratorAction 和 ToyScintillatorDigitizer（产生器命令改到 <code>/week08/gun/</code> 下），其余文件换成下列内容。</p>
+          <div class="files">
+            <details><summary><b>CMakeLists.txt</b><button class="copy" type="button" data-copy="f8-cm">copy</button></summary><pre id="f8-cm" data-src="code/week08/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
+project(Week08 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Geant4 REQUIRED ui_all vis_all)
+include(${Geant4_USE_FILE})
+
+file(GLOB sources CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/include/*.hh)
+
+add_executable(week08 week08.cc ${sources} ${headers})
+target_include_directories(week08 PRIVATE include)
+target_link_libraries(week08 PRIVATE ${Geant4_LIBRARIES})
+
+foreach(_f daq.mac vis.mac read_muons.py parity.py)
+  configure_file(${PROJECT_SOURCE_DIR}/${_f} ${PROJECT_BINARY_DIR}/${_f} COPYONLY)
+endforeach()</pre></details>
+            <details><summary><b>week08.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f8-main">copy</button></summary><pre id="f8-main" data-src="code/week08/week08.cc">#include "ActionInitialization.hh"
+#include "DetectorConstruction.hh"
+
+#include "FTFP_BERT.hh"
+#include "G4RunManagerFactory.hh"
+#include "G4UIExecutive.hh"
+#include "G4UImanager.hh"
+#include "G4VisExecutive.hh"
+
+int main(int argc, char** argv)
+{
+  // Back to the textbook's Default run manager: multithreaded (or task-based).
+  auto* runManager =
+    G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+  runManager-&gt;SetNumberOfThreads(2);   // must be set before Initialize()
+
+  runManager-&gt;SetUserInitialization(new DetectorConstruction());
+  runManager-&gt;SetUserInitialization(new FTFP_BERT());
+  runManager-&gt;SetUserInitialization(new ActionInitialization());
+  runManager-&gt;Initialize();
+
+  auto* uiManager = G4UImanager::GetUIpointer();
+  if (argc &gt; 1) {
+    // headless: ./week08 daq.mac
+    uiManager-&gt;ApplyCommand("/control/execute " + G4String(argv[1]));
+  } else {
+    // diagnosis only: ./week08 opens the viewer
+    auto* ui = new G4UIExecutive(argc, argv);
+    auto* visManager = new G4VisExecutive();
+    visManager-&gt;Initialize();
+    uiManager-&gt;ApplyCommand("/control/execute vis.mac");
+    ui-&gt;SessionStart();
+    delete visManager;
+    delete ui;
+  }
+
+  delete runManager;
+  return 0;
+}</pre></details>
+            <details><summary><b>include/ActionInitialization.hh</b><button class="copy" type="button" data-copy="f8-aih">copy</button></summary><pre id="f8-aih" data-src="code/week08/include/ActionInitialization.hh">#ifndef ActionInitialization_h
+#define ActionInitialization_h 1
+
+#include "G4VUserActionInitialization.hh"
+
+class ActionInitialization : public G4VUserActionInitialization
+{
+  public:
+    void BuildForMaster() const override;  // the master's RunAction merges the workers
+    void Build() const override;           // one set of actions per worker thread
+};
+
+#endif</pre></details>
+            <details><summary><b>src/ActionInitialization.cc</b><button class="copy" type="button" data-copy="f8-ai">copy</button></summary><pre id="f8-ai" data-src="code/week08/src/ActionInitialization.cc">#include "ActionInitialization.hh"
+
+#include "EventAction.hh"
+#include "PrimaryGeneratorAction.hh"
+#include "RunAction.hh"
+
+void ActionInitialization::BuildForMaster() const
+{
+  SetUserAction(new RunAction());
+}
+
+void ActionInitialization::Build() const
+{
+  SetUserAction(new PrimaryGeneratorAction());
+  auto* runAction = new RunAction();
+  SetUserAction(runAction);
+  SetUserAction(new EventAction(runAction));
+}</pre></details>
+            <details><summary><b>include/RunAction.hh</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f8-rah">copy</button></summary><pre id="f8-rah" data-src="code/week08/include/RunAction.hh">#ifndef RunAction_h
+#define RunAction_h 1
+
+#include "G4Accumulable.hh"
+#include "G4UserRunAction.hh"
+#include "globals.hh"
+
+class G4Run;
+
+// In a multithreaded run every worker has its own RunAction. Plain member counters
+// would only see that worker's events; G4Accumulable values are summed into the
+// master's copy by G4AccumulableManager::Merge().
+class RunAction : public G4UserRunAction
+{
+  public:
+    RunAction();
+    void BeginOfRunAction(const G4Run*) override;
+    void EndOfRunAction(const G4Run* run) override;
+
+    void Count(G4bool fired0, G4bool fired1, G4bool trigger)
+    {
+      fN0 += fired0 ? 1 : 0;
+      fN1 += fired1 ? 1 : 0;
+      fTrig += trigger ? 1 : 0;
+    }
+
+  private:
+    G4Accumulable&lt;G4int&gt; fN0{0};
+    G4Accumulable&lt;G4int&gt; fN1{0};
+    G4Accumulable&lt;G4int&gt; fTrig{0};
+};
+
+#endif</pre></details>
+            <details><summary><b>src/RunAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f8-ra">copy</button></summary><pre id="f8-ra" data-src="code/week08/src/RunAction.cc">#include "RunAction.hh"
+
+#include "G4AccumulableManager.hh"
+#include "G4AnalysisManager.hh"
+#include "G4Run.hh"
+#include "G4ios.hh"
+
+#include &lt;cmath&gt;
+
+RunAction::RunAction()
+{
+  G4AccumulableManager::Instance()-&gt;Register(fN0);
+  G4AccumulableManager::Instance()-&gt;Register(fN1);
+  G4AccumulableManager::Instance()-&gt;Register(fTrig);
+
+  auto* analysis = G4AnalysisManager::Instance();
+  analysis-&gt;SetDefaultFileType("root");
+  analysis-&gt;SetFileName("muons");
+  // In a multithreaded run, merge ROOT ntuples into one output file.
+  // Histograms are merged automatically; ntuples require this explicit opt-in.
+  analysis-&gt;SetNtupleMerging(true);
+
+  // Ntuple 0: what the DAQ would write. Detector-facing names, units in the names,
+  // and only TRIGGERED events, exactly like the hardware stream.
+  analysis-&gt;CreateNtuple("daq", "DAQ-like event record (triggered events only)");
+  analysis-&gt;CreateNtupleIColumn("run");
+  analysis-&gt;CreateNtupleIColumn("event");
+  analysis-&gt;CreateNtupleDColumn("timestamp_ns");   // synthetic 1 kHz clock: event x 1e6 ns
+  analysis-&gt;CreateNtupleIColumn("trigger_word");   // bit0 ch0 &gt; thr, bit1 ch1 &gt; thr, bit2 coincidence
+  analysis-&gt;CreateNtupleIColumn("n_channels");
+  analysis-&gt;CreateNtupleDColumn("ch0_adc");        // ADC counts
+  analysis-&gt;CreateNtupleDColumn("ch1_adc");
+  analysis-&gt;CreateNtupleDColumn("ch0_time_ns");
+  analysis-&gt;CreateNtupleDColumn("ch1_time_ns");
+  analysis-&gt;FinishNtuple();
+
+  // Ntuple 1: simulation truth, kept OUT of the detector-facing record. Every event.
+  analysis-&gt;CreateNtuple("truth", "Monte Carlo truth (all events)");
+  analysis-&gt;CreateNtupleIColumn("event");
+  analysis-&gt;CreateNtupleDColumn("E0_MeV");
+  analysis-&gt;CreateNtupleDColumn("cos_theta");
+  analysis-&gt;CreateNtupleDColumn("Edep0_MeV");
+  analysis-&gt;CreateNtupleDColumn("Edep1_MeV");
+  analysis-&gt;CreateNtupleIColumn("triggered");
+  analysis-&gt;FinishNtuple();
+}
+
+void RunAction::BeginOfRunAction(const G4Run*)
+{
+  G4AccumulableManager::Instance()-&gt;Reset();
+  G4AnalysisManager::Instance()-&gt;OpenFile();
+}
+
+void RunAction::EndOfRunAction(const G4Run* run)
+{
+  auto* accumulables = G4AccumulableManager::Instance();
+  accumulables-&gt;Merge();   // on the master: sum of all workers
+
+  if (IsMaster()) {
+    const G4int n = run-&gt;GetNumberOfEvent();
+    if (n &gt; 0) {
+      const G4double e = static_cast&lt;G4double&gt;(fTrig.GetValue()) / n;
+      G4cout &lt;&lt; "Run " &lt;&lt; run-&gt;GetRunID() &lt;&lt; " complete: " &lt;&lt; n &lt;&lt; " events (all threads)" &lt;&lt; G4endl
+             &lt;&lt; "  top fired " &lt;&lt; fN0.GetValue() &lt;&lt; ", bottom fired " &lt;&lt; fN1.GetValue()
+             &lt;&lt; ", triggered " &lt;&lt; fTrig.GetValue() &lt;&lt; G4endl
+             &lt;&lt; "  trigger efficiency = " &lt;&lt; e &lt;&lt; " +/- " &lt;&lt; std::sqrt(e * (1 - e) / n) &lt;&lt; G4endl;
+    }
+  }
+  auto* analysis = G4AnalysisManager::Instance();
+  analysis-&gt;Write();
+  analysis-&gt;CloseFile();
+}</pre></details>
+            <details><summary><b>include/EventAction.hh</b><button class="copy" type="button" data-copy="f8-eah">copy</button></summary><pre id="f8-eah" data-src="code/week08/include/EventAction.hh">#ifndef EventAction_h
+#define EventAction_h 1
+
+#include "ToyScintillatorDigitizer.hh"
+
+#include "G4UserEventAction.hh"
+#include "globals.hh"
+
+class RunAction;
+
+class EventAction : public G4UserEventAction
+{
+  public:
+    explicit EventAction(RunAction* runAction) : fRunAction(runAction) {}
+    void EndOfEventAction(const G4Event* event) override;
+
+  private:
+    RunAction* fRunAction = nullptr;
+    G4int fHitsCollectionID = -1;
+    ToyScintillatorDigitizer fDigitizer;
+    G4double fEdepThreshold = 0.1;     // MeV, event level (Week 5)
+    G4double fAdcThreshold = 70.;      // ADC counts
+    G4double fCoincidenceWindow = 20.; // ns
+};
+
+#endif</pre></details>
+            <details><summary><b>src/EventAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f8-ea">copy</button></summary><pre id="f8-ea" data-src="code/week08/src/EventAction.cc">#include "EventAction.hh"
+
+#include "MuonHit.hh"
+#include "RunAction.hh"
+
+#include "G4AnalysisManager.hh"
+#include "G4Event.hh"
+#include "G4HCofThisEvent.hh"
+#include "G4PrimaryParticle.hh"
+#include "G4PrimaryVertex.hh"
+#include "G4Run.hh"
+#include "G4RunManager.hh"
+#include "G4SDManager.hh"
+#include "G4SystemOfUnits.hh"
+
+#include &lt;cmath&gt;
+
+void EventAction::EndOfEventAction(const G4Event* event)
+{
+  if (fHitsCollectionID &lt; 0)
+    fHitsCollectionID = G4SDManager::GetSDMpointer()-&gt;GetCollectionID("MuonHitsCollection");
+  auto* hce = event-&gt;GetHCofThisEvent();
+  if (!hce) return;
+  auto* hits = static_cast&lt;MuonHitsCollection*&gt;(hce-&gt;GetHC(fHitsCollectionID));
+  if (!hits || hits-&gt;entries() &lt; 2) return;
+
+  // truth
+  const G4double edep[2] = {(*hits)[0]-&gt;GetEdep(), (*hits)[1]-&gt;GetEdep()};
+  const G4PrimaryParticle* primary = event-&gt;GetPrimaryVertex()-&gt;GetPrimary();
+  const G4double e0 = primary-&gt;GetKineticEnergy();
+  const G4double cosTheta = primary-&gt;GetMomentumDirection().z();
+
+  // detector response -&gt; digitization -&gt; trigger (Week 5 chain)
+  Signal sig[2];
+  for (G4int i = 0; i &lt; 2; ++i) sig[i] = fDigitizer.Digitize((*hits)[i]-&gt;GetEvis(), (*hits)[i]-&gt;GetTime());
+  const G4bool above0 = sig[0].adc &gt; fAdcThreshold, above1 = sig[1].adc &gt; fAdcThreshold;
+  const G4bool coinc = above0 &amp;&amp; above1 &amp;&amp; std::abs(sig[0].time - sig[1].time) &lt; fCoincidenceWindow;
+  const G4int triggerWord = (above0 ? 1 : 0) | (above1 ? 2 : 0) | (coinc ? 4 : 0);
+
+  fRunAction-&gt;Count(edep[0] &gt;= fEdepThreshold * MeV, edep[1] &gt;= fEdepThreshold * MeV, coinc);
+
+  auto* analysis = G4AnalysisManager::Instance();
+  const G4int evt = event-&gt;GetEventID();
+  if (coinc) {   // the DAQ only writes what the trigger accepts
+    const G4int run = G4RunManager::GetRunManager()-&gt;GetCurrentRun()-&gt;GetRunID();
+    analysis-&gt;FillNtupleIColumn(0, 0, run);
+    analysis-&gt;FillNtupleIColumn(0, 1, evt);
+    analysis-&gt;FillNtupleDColumn(0, 2, evt * 1.0e6);
+    analysis-&gt;FillNtupleIColumn(0, 3, triggerWord);
+    analysis-&gt;FillNtupleIColumn(0, 4, 2);
+    analysis-&gt;FillNtupleDColumn(0, 5, sig[0].adc);
+    analysis-&gt;FillNtupleDColumn(0, 6, sig[1].adc);
+    analysis-&gt;FillNtupleDColumn(0, 7, sig[0].time);
+    analysis-&gt;FillNtupleDColumn(0, 8, sig[1].time);
+    analysis-&gt;AddNtupleRow(0);
+  }
+  analysis-&gt;FillNtupleIColumn(1, 0, evt);
+  analysis-&gt;FillNtupleDColumn(1, 1, e0 / MeV);
+  analysis-&gt;FillNtupleDColumn(1, 2, cosTheta);
+  analysis-&gt;FillNtupleDColumn(1, 3, edep[0] / MeV);
+  analysis-&gt;FillNtupleDColumn(1, 4, edep[1] / MeV);
+  analysis-&gt;FillNtupleIColumn(1, 5, coinc ? 1 : 0);
+  analysis-&gt;AddNtupleRow(1);
+}</pre></details>
+            <details><summary><b>daq.mac</b><button class="copy" type="button" data-copy="f8-mac">copy</button></summary><pre id="f8-mac" data-src="code/week08/daq.mac"># Mission 8: one merged ROOT file, two ntuples, 20 000 cos^2 muons on 2 threads
+/control/verbose 1
+/run/verbose 1
+/week08/gun/model cos2
+/analysis/setFileName muons
+/run/beamOn 20000</pre></details>
+            <details><summary><b>read_muons.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f8-rd">copy</button></summary><pre id="f8-rd" data-src="code/week08/read_muons.py">"""Mission 8: read the merged ROOT file without Geant4 and redo the Week 5 numbers.
+
+The file holds two trees: 'daq' (detector-facing, triggered events only) and
+'truth' (Monte Carlo truth, every event). Only column names connect this script
+to the simulation.      pip install uproot numpy;  python3 read_muons.py
+"""
+import numpy as np
+import uproot
+
+with uproot.open("muons.root") as f:
+    daq = f["daq"].arrays(library="np")
+    truth = f["truth"].arrays(library="np")
+
+n_gen = len(truth["event"])
+n_trig = len(daq["event"])
+eff = n_trig / n_gen
+print(f"events generated (truth rows)   {n_gen}")
+print(f"events recorded  (daq rows)     {n_trig}")
+print(f"trigger efficiency              {eff:.4f} +/- {np.sqrt(eff * (1 - eff) / n_gen):.4f}")
+
+# The DAQ selection uses ONLY the trigger word, as the analysis of real data must.
+coinc = (daq["trigger_word"] &amp; 4) != 0
+print(f"daq rows with coincidence bit   {coinc.sum()} of {n_trig}")
+
+# Cross-check: the truth flag must agree event by event (a test of the CHAIN, not of physics).
+trig_truth = set(truth["event"][truth["triggered"] == 1].tolist())
+trig_daq = set(daq["event"].tolist())
+print(f"truth/daq event lists identical {trig_truth == trig_daq}")
+print(f"mean ADC, top / bottom          {daq['ch0_adc'].mean():.1f} / {daq['ch1_adc'].mean():.1f}")
+print(f"mean Edep top, triggered [MeV]  {truth['Edep0_MeV'][truth['triggered'] == 1].mean():.3f}")</pre></details>
+            <details><summary><b>parity.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f8-par">copy</button></summary><pre id="f8-par" data-src="code/week08/parity.py">"""Mission 8B: one analysis for simulation and hardware.
+
+A deliberately simple 'laboratory' binary format (one header + two channel records per
+event, little-endian) stands in for a real digitizer. The simulated ROOT 'daq' tree is
+written into that format, decoded again, and both streams go through the SAME analysis
+function, which never asks where the events came from.
+
+    python3 parity.py
+"""
+import struct
+
+import numpy as np
+import uproot
+
+HEADER = struct.Struct("&lt;IQQIH")   # run, event, timestamp_ns, trigger_word, n_channels
+CHANNEL = struct.Struct("&lt;Hff")    # channel id, adc, time_ns
+
+
+def canonical_from_root(path):
+    """Decoder 1: the simulation's ROOT tree -&gt; canonical arrays."""
+    with uproot.open(path) as f:
+        d = f["daq"].arrays(library="np")
+    return {"run": d["run"], "event": d["event"], "timestamp_ns": d["timestamp_ns"].astype(np.uint64),
+            "trigger_word": d["trigger_word"], "adc": np.stack([d["ch0_adc"], d["ch1_adc"]], axis=1),
+            "time_ns": np.stack([d["ch0_time_ns"], d["ch1_time_ns"]], axis=1)}
+
+
+def write_binary(ev, path):
+    """Pack canonical events into the lab-style binary stream (what the digitizer would write)."""
+    with open(path, "wb") as out:
+        for i in range(len(ev["event"])):
+            out.write(HEADER.pack(int(ev["run"][i]), int(ev["event"][i]), int(ev["timestamp_ns"][i]),
+                                  int(ev["trigger_word"][i]), 2))
+            for ch in range(2):
+                out.write(CHANNEL.pack(ch, float(ev["adc"][i, ch]), float(ev["time_ns"][i, ch])))
+
+
+def canonical_from_binary(path):
+    """Decoder 2: the lab binary stream -&gt; the same canonical arrays."""
+    rows = {k: [] for k in ("run", "event", "timestamp_ns", "trigger_word", "adc", "time_ns")}
+    with open(path, "rb") as f:
+        while (head := f.read(HEADER.size)):
+            run, evt, ts, tw, nch = HEADER.unpack(head)
+            adc, tim = [0.0, 0.0], [0.0, 0.0]
+            for _ in range(nch):
+                ch, a, t = CHANNEL.unpack(f.read(CHANNEL.size))
+                adc[ch], tim[ch] = a, t
+            for k, v in (("run", run), ("event", evt), ("timestamp_ns", ts), ("trigger_word", tw), ("adc", adc), ("time_ns", tim)):
+                rows[k].append(v)
+    return {k: np.array(v) for k, v in rows.items()}
+
+
+def analysis(ev):
+    """The ONE analysis. Selects with the trigger word only."""
+    sel = (ev["trigger_word"] &amp; 4) != 0
+    adc = ev["adc"][sel]
+    dt = ev["time_ns"][sel, 0] - ev["time_ns"][sel, 1]
+    return {"n": int(sel.sum()), "mean_adc_top": round(float(adc[:, 0].mean()), 3),
+            "mean_adc_bottom": round(float(adc[:, 1].mean()), 3), "rms_dt_ns": round(float(dt.std()), 3)}
+
+
+sim = canonical_from_root("muons.root")
+write_binary(sim, "lab_stream.bin")
+lab = canonical_from_binary("lab_stream.bin")
+a, b = analysis(sim), analysis(lab)
+print("from ROOT  :", a)
+print("from binary:", b)
+print("identical  :", a == b)</pre></details>
+          </div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Run on two threads</span><span lang="zh-Hans">用两个线程运行</span></h3><label class="done" for="w08-s2"><input type="checkbox" id="w08-s2" data-progress="w08"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c8-r">copy</button></div>
+<pre id="c8-r">mkdir -p build &amp;&amp; cd build &amp;&amp; cmake .. &amp;&amp; make -j4
+./week08 daq.mac | grep -E "Multi-threaded|events processed|complete|fired|efficiency"
+ls -l *.root</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01)</span><span lang="zh-Hans">预期（Geant4 11.4.p01）</span></b></span></div>
+<pre>  &lt;&lt; in Multi-threaded mode &gt;&gt;
+G4WT0 &gt; [thread 0]   Number of events processed : 10152
+G4WT1 &gt; [thread 1]   Number of events processed : 9848
+Run 0 complete: 20000 events (all threads)
+  top fired 2201, bottom fired 973, triggered 322
+  trigger efficiency = 0.0161 +/- 0.000889966
+-rw-r--r-- 1 … 438447 … muons.root</pre></div>
+          <p lang="en">The split between threads changes from run to run; the total must be exactly 20,000. In our build <code>Default</code> became <code>G4TaskRunManager</code> (Geant4 built with tasking); without tasking it is <code>G4MTRunManager</code>. Either way the code is the same.</p>
+          <p lang="zh-Hans">线程之间的分配每次运行都不同，但总数必须正好是 20,000。在我们的构建中 <code>Default</code> 变成了 <code>G4TaskRunManager</code>（Geant4 以 tasking 方式编译）；不带 tasking 时为 <code>G4MTRunManager</code>。两种情况代码都相同。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Mission 8: read it with Python only</span><span lang="zh-Hans">任务 8：只用 Python 读取</span></h3><label class="done" for="w08-s3"><input type="checkbox" id="w08-s3" data-progress="w08"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c8-py">copy</button></div>
+<pre id="c8-py">pip install uproot numpy
+python3 read_muons.py</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
+<pre>events generated (truth rows)   20000
+events recorded  (daq rows)     322
+trigger efficiency              0.0161 +/- 0.0009
+daq rows with coincidence bit   322 of 322
+truth/daq event lists identical True
+mean ADC, top / bottom          242.0 / 240.7
+mean Edep top, triggered [MeV]  1.979</pre></div>
+          <p lang="en">The efficiency matches the RunAction printout and the event lists agree one by one. That is an end-to-end check of the Geant4 → ROOT → Python translation. It does not validate the physics or the detector model; Week 11 does that against independent data.</p>
+          <p lang="zh-Hans">效率与 RunAction 打印值一致，事例列表逐一对应。这是对 Geant4 → ROOT → Python 翻译的端到端检查，并不验证物理或探测器模型；那要到第 11 周用独立数据来完成。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Mission 8B: the same analysis through a second decoder</span><span lang="zh-Hans">任务 8B：同一分析经过第二个解码器</span></h3><label class="done" for="w08-s4"><input type="checkbox" id="w08-s4" data-progress="w08"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en"><code>parity.py</code> writes the daq tree into a simple lab-style binary stream (header + two channel records per event), decodes it with a separate decoder, and runs one <code>analysis()</code> on both. Replace <code>write_binary</code> with your digitizer's real format document when you have it.</p>
+          <p lang="zh-Hans"><code>parity.py</code> 把 daq 树写成一个简单的实验室式二进制流（每个事例一个包头加两条通道记录），用另一个解码器解码，再对两者运行同一个 <code>analysis()</code>。拿到你的数字化器的真实格式文档后，用它替换 <code>write_binary</code>。</p>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
+<pre>from ROOT  : {'n': 322, 'mean_adc_top': 241.973, 'mean_adc_bottom': 240.716, 'rms_dt_ns': 0.722}
+from binary: {'n': 322, 'mean_adc_top': 241.973, 'mean_adc_bottom': 240.716, 'rms_dt_ns': 0.722}
+identical  : True</pre></div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Break it twice, on purpose</span><span lang="zh-Hans">故意弄坏两次</span></h3><label class="done" for="w08-s5"><input type="checkbox" id="w08-s5" data-progress="w08"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Comment out <code>SetNtupleMerging(true)</code>, rebuild, rerun. Then restore it and comment out <code>CloseFile()</code>. Our results:</p>
+          <p lang="zh-Hans">注释掉 <code>SetNtupleMerging(true)</code>，重新编译并运行。然后恢复它，再注释掉 <code>CloseFile()</code>。我们的结果：</p>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">observed (Geant4 11.4.p01)</span><span lang="zh-Hans">观察到的结果（Geant4 11.4.p01）</span></b></span></div>
+<pre><span class="c"># no merging</span>
+muons_t0.root   daq 150   truth 10130
+muons_t1.root   daq 172   truth  9870
+read_muons.py → <span class="bad">FileNotFoundError: muons.root</span>
+
+<span class="c"># no CloseFile (same with no Write)</span>
+muons.root      404395 bytes
+uproot keys     <span class="bad">{}</span>     <span class="c"># no readable trees, and no warning from Geant4</span></pre></div>
+          <p lang="en">Neither mistake produces an error message during the run. That is why the review notes ask you to inspect the final event count.</p>
+          <p lang="zh-Hans">这两种错误在运行时都不会给出错误信息。这就是复习要点要求你检查最终事例数的原因。</p>
+        </li>
+      </ol>
+      <p class="progress" data-progress-out="w08"></p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-quiz">
+    <p class="cmd">/control/verbose 2<span lang="en">self-check</span><span lang="zh-Hans">自测</span></p>
+    <div>
+      <h2 id="h-quiz" class="bi"><span lang="en">Five questions. Each answer explains itself.</span><span lang="zh-Hans">五道题，每个答案都附有解释。</span></h2>
+      <div id="quiz"></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-err">
+    <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
+    <div>
+      <h2 id="h-err" class="bi"><span lang="en">Five silent failures between Geant4 and your plot.</span><span lang="zh-Hans">Geant4 与你的图之间的五种无声失败。</span></h2>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W08-a
+      issued by : RunAction::EndOfRunAction
+CloseFile() (or Write()) missing.
+  muons.root exists at normal size but holds no readable trees.
+  Geant4 prints nothing. Observed in our 11.4 run: 404 kB, 0 keys.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W08-a
+      issued by : RunAction::EndOfRunAction
+缺少 CloseFile()（或 Write()）。
+  muons.root 大小正常，但其中没有可读的树。
+  Geant4 不打印任何信息。我们在 11.4 中观察到：404 kB，0 个键。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W08-b
+      issued by : RunAction constructor, multithreaded run
+No SetNtupleMerging(true): one file per worker (muons_t0.root, …).
+  Reading only one of them gives part of the events with no warning.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W08-b
+      issued by : RunAction 构造函数，多线程运行
+未调用 SetNtupleMerging(true)：每个工作线程一个文件（muons_t0.root……）。
+  只读其中一个，就只得到一部分事例，而且没有任何警告。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W08-c
+      issued by : RunAction, multithreaded run
+Plain G4int counters in RunAction: the master's copy sees no events
+  and prints 0. Use G4Accumulable + G4AccumulableManager::Merge().
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W08-c
+      issued by : RunAction，多线程运行
+在 RunAction 中用普通 G4int 计数器：主线程那份不处理事例，
+  打印出 0。请用 G4Accumulable + G4AccumulableManager::Merge()。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W08-d
+      issued by : ntuple design
+Truth (Edep) stored in the detector-facing tree and used in a cut.
+  The same cut cannot be made on real data, so simulation and data
+  disagree by construction. Keep truth in its own tree.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W08-d
+      issued by : ntuple 设计
+把真值（Edep）存进面向探测器的树，并用于选择。
+  真实数据无法做同样的选择，模拟与数据在构造上就不一致。
+  真值请单独放在一棵树里。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W08-e
+      issued by : FillNtupleDColumn(…, edep)
+Filling in internal units (MeV for energy, mm for length, ns for time)
+  under a column named "_cm" or "_keV". Divide by the unit when you
+  fill, and put the unit in the column name.
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W08-e
+      issued by : FillNtupleDColumn(…, edep)
+以内部单位（能量 MeV、长度 mm、时间 ns）填入名为“_cm”或“_keV”
+  的列。填充时除以相应单位，并把单位写进列名。
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-review">
+    <p class="cmd">/control/saveHistory<span lang="en">review notes</span><span lang="zh-Hans">复习要点</span></p>
+    <div class="prose">
+      <h2 id="h-review" class="bi"><span lang="en">Before you close the run.</span><span lang="zh-Hans">结束运行之前。</span></h2>
+      <ul class="review">
+        <li><label for="w08-r1"><input type="checkbox" id="w08-r1"><span lang="en">Can my ROOT file be opened and analysed without rerunning Geant4?</span><span lang="zh-Hans">我的 ROOT 文件能否在不重新运行 Geant4 的情况下打开并分析？</span></label></li>
+        <li><label for="w08-r2"><input type="checkbox" id="w08-r2"><span lang="en">Was the file correctly closed before the program ended?</span><span lang="zh-Hans">程序结束前文件是否正确关闭？</span></label></li>
+        <li><label for="w08-r3"><input type="checkbox" id="w08-r3"><span lang="en">For a multithreaded run, did I confirm the merging behaviour and inspect the final event count?</span><span lang="zh-Hans">对多线程运行，我是否确认了合并行为并核对了最终事例数？</span></label></li>
+      </ul>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">Remark · debt repaid, debt taken on</span><span lang="zh-Hans">小结 · 还清的债与新欠的债</span></p>
+        <p lang="en">Repaid: for the first time the simulation produces a dataset usable without Geant4. That is the line between "a simulation" and "a research tool a team can use". Taken on: you have written every class by hand. Next week, musrSim moves the whole experiment into a text macro.</p>
+        <p lang="zh-Hans">还清的债：模拟第一次产生了不依赖 Geant4 就能使用的数据集——这是“一个模拟”与“团队能用的研究工具”之间的分水岭。新欠的债：每个类都是你手写的。下周，musrSim 会把整个实验搬进一个文本宏。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-share">
+    <p class="cmd">/vis/ogl/export week08.gif<span lang="en">share this week</span><span lang="zh-Hans">分享本周成果</span></p>
+    <div class="share">
+      <figure class="fig">
+        <img src="media/week08-daq.gif" width="720" height="900" alt="The daq tree of a real Geant4 run scrolling like a DAQ terminal while the ADC spectrum of triggered events fills" loading="lazy">
+        <figcaption><span lang="en">Real Geant4 11.4 output: the merged <code>daq</code> tree from <code>daq.mac</code>, two threads. Long-press or right-click to save.</span><span lang="zh-Hans">真实 Geant4 11.4 输出：<code>daq.mac</code> 双线程运行合并后的 <code>daq</code> 树。长按或右键即可保存。</span></figcaption>
+      </figure>
+      <div class="prose">
+        <h2 id="h-share" class="bi"><span lang="en">If someone else can read it, it is data.</span><span lang="zh-Hans">别人能读懂的，才是数据。</span></h2>
+        <p lang="en">Hand your muons.root and read_muons.py to a classmate who has not seen your code. Post whether they reproduced your efficiency, and how long it took.</p>
+        <p lang="zh-Hans">把你的 muons.root 和 read_muons.py 交给一位没看过你代码的同学。发帖说明他们是否复现了你的效率，用了多长时间。</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="pager" id="pager" aria-label="Week navigation"></nav>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Source: <i>The Geant4 Laboratory</i>, ch. 9 · Geant4 11.4.p01</span><span lang="zh-Hans">来源：《The Geant4 Laboratory》第 9 章 · Geant4 11.4.p01</span>
+  </footer>
+</div>
+<script src="assets/course.js"></script>
+<script src="assets/week08.js"></script>
+</body>
+</html>
