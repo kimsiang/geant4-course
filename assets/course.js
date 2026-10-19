@@ -201,6 +201,19 @@
      qs: [{prompt:{en,zh}, opts:[{en,zh}], a: index, why:{en,zh}}] */
   G.quiz = function (root, key, qs) {
     var saved = G.load('quiz.' + key, {});
+    /* options are shown in a fixed shuffled order per question (seeded by page and question),
+       so the right answer is not always in the same place; answers are stored by original index */
+    var h = 2166136261; key.split('').forEach(function (c) { h = Math.imul(h ^ c.charCodeAt(0), 16777619); });
+    var r = G.rng(h >>> 0);
+    function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+    /* spread the correct answers evenly over the letters, then shuffle the distractors around them */
+    var off = (h >>> 0) % 4, slots = shuffle(qs.map(function (_, i) { return (i + off) % 4; }));
+    qs.forEach(function (q, qi) {
+      var n = q.opts.length, target = slots[qi] % n;
+      var rest = shuffle(q.opts.map(function (_, i) { return i; }).filter(function (i) { return i !== q.a; }));
+      rest.splice(target, 0, q.a);
+      q.order = rest;
+    });
     var scoreEl = document.createElement('div'); scoreEl.className = 'score';
     function render() {
       root.innerHTML = '';
@@ -210,9 +223,10 @@
         d.innerHTML = '<p class="q-head">Q' + (qi + 1) + ' / ' + qs.length + '</p><p class="q-prompt">' + G.bi(q.prompt) + '</p>';
         var ops = document.createElement('div'); ops.className = 'q-opts'; ops.setAttribute('role', 'group');
         var fb = document.createElement('div'); fb.className = 'q-fb'; fb.setAttribute('aria-live', 'polite');
-        q.opts.forEach(function (op, oi) {
+        q.order.forEach(function (oi, pos) {
+          var op = q.opts[oi];
           var b = document.createElement('button'); b.type = 'button'; b.id = 'q-' + key + '-' + qi + '-' + oi;
-          b.innerHTML = '<span class="o">' + 'abcdef'[oi] + '</span>' + G.bi(op);
+          b.innerHTML = '<span class="o">' + 'abcdef'[pos] + '</span>' + G.bi(op);
           b.addEventListener('click', function () { saved[qi] = oi; G.save('quiz.' + key, saved); show(qi, ops, fb); tally(); });
           ops.appendChild(b);
         });
@@ -223,11 +237,12 @@
     }
     function show(qi, ops, fb) {
       var q = qs[qi], pick = saved[qi], ok = pick === q.a;
-      Array.prototype.forEach.call(ops.children, function (b, oi) {
+      Array.prototype.forEach.call(ops.children, function (b, pos) {
+        var oi = q.order[pos];
         b.disabled = true; b.classList.toggle('right', oi === q.a); b.classList.toggle('wrong', oi === pick && !ok);
         b.setAttribute('aria-pressed', String(oi === pick));
       });
-      fb.innerHTML = '<b class="' + (ok ? 'right' : 'wrong') + '">' + (ok ? G.bi({ en: 'Correct.', zh: '正确。' }) : G.bi({ en: 'Not quite. The answer is (' + 'abcdef'[q.a] + ').', zh: '不对。正确答案是 (' + 'abcdef'[q.a] + ')。' })) + '</b>' +
+      fb.innerHTML = '<b class="' + (ok ? 'right' : 'wrong') + '">' + (ok ? G.bi({ en: 'Correct.', zh: '正确。' }) : G.bi({ en: 'Not quite. The answer is (' + 'abcdef'[q.order.indexOf(q.a)] + ').', zh: '不对。正确答案是 (' + 'abcdef'[q.order.indexOf(q.a)] + ')。' })) + '</b>' +
         '<p lang="en">' + q.why.en + '</p><p lang="zh-Hans">' + q.why.zh + '</p>';
     }
     function tally() {
