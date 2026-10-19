@@ -89,7 +89,7 @@
     this.btnNext = el.querySelector('.evd-next');
     this.btnRot = el.querySelector('.evd-rot');
     el.querySelector('.evd-tag').innerHTML = this.def ? this.def.tag : '';
-    if (el.getAttribute('data-label')) { this.stage.setAttribute('role', 'img'); this.stage.setAttribute('aria-label', el.getAttribute('data-label')); }
+    if (el.getAttribute('data-label')) { this.stage.setAttribute('role', 'group'); this.stage.setAttribute('aria-label', el.getAttribute('data-label')); this.canvas.setAttribute('role', 'img'); this.canvas.setAttribute('aria-label', el.getAttribute('data-label')); }
     this.setPlayLabel();
     this.rotOn = !coarse;
     this.setRotLabel();

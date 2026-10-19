@@ -99,7 +99,7 @@ def svg_figure(name):
 
 # page -> list of (block name, html, where); where = ("after", regex) | ("before", regex)
 PLAN = {
-    "index.html": [("evd-muography", evd_section("muography"), ("before", r'  <section class="run" aria-labelledby="h-start">'))],
+    "index.html": [("evd-muography", evd_section("muography"), ("before", r'  <section class="h-sec" aria-labelledby="h-learn">'))],
     "primer.html": [
         ("svg-shower", svg_figure("shower"), ("before", r'      <div class="box">\n        <p class="box-label"><span lang="en">Why muons reach')),
         ("evd-shower", evd_figure("shower"), ("before", r'      <p lang="en">What arrives at sea level')),
@@ -122,9 +122,9 @@ BLOCK = re.compile(r'<!-- fig:(?P<n>[\w-]+) -->.*?<!-- /fig:(?P=n) -->\n?', re.S
 def first_lesson_anchor(s):
     """Insert lesson figures before the first G4Exception, box or code block of the first lesson section after the background."""
     start = s.index('id="background"')
-    sec = s.index('<section class="run"', s.index('</section>', start))
-    while 'aria-labelledby="h-evd"' in s[sec:sec + 80]:
-        sec = s.index('<section class="run"', s.index('</section>', sec))
+    sec = s.index('<section class="run', s.index('</section>', start))
+    while 'aria-labelledby="h-evd"' in s[sec:sec + 200]:
+        sec = s.index('<section class="run', s.index('</section>', sec))
     m = re.compile(r'\n\s*<(div class="(?:g4ex|code|box|aside)"|pre>|h3 )').search(s, sec)
     return m.start() + 1
 
@@ -155,7 +155,7 @@ def main():
         page = f"week{n:02d}.html"
         items = []
         if n in WEEK_EVD:
-            items.append((f"evd-w{n:02d}", evd_section(WEEK_EVD[n]), ("after", r'(?s)<section class="run" id="background".*?</section>\n')))
+            items.append((f"evd-w{n:02d}", evd_section(WEEK_EVD[n]), ("after", r'(?s)<section class="run[^"]*" id="background".*?</section>\n')))
         for name, fig, where in WEEK_SVG.get(n, []):
             items.append((name, svg_figure(fig), where))
         plan[page] = items

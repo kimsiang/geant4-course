@@ -243,8 +243,9 @@ def section(n):
     return "\n".join(parts) + "\n"
 
 
-OLD = re.compile(r'  <section class="run" id="background".*?</section>\n\n?', re.S)
-GOALS = re.compile(r'(<section class="run" aria-labelledby="h-goals">.*?</section>\n)', re.S)
+OLD = re.compile(r'  <section class="run[^"]*" id="background".*?</section>\n\n?', re.S)
+GOALS = re.compile(r'(<section class="run[^"]*"[^>]*aria-labelledby="h-goals">.*?</section>\n)', re.S)
+# afterwards run tools/figures.py (the Week 1-10 displays sit after this section) and tools/shell.py
 
 if __name__ == "__main__":
     for n in range(1, 13):

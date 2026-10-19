@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="has-player">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -13,21 +13,15 @@
 <link rel="stylesheet" href="assets/course.css">
 </head>
 <body>
-<div class="wrap">
-
-  <div class="bar">
-    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Week 01 of 12</span><span lang="zh-Hans">第 01 / 12 周</span></span>
-    <span class="bar-r">
-      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
-      <span class="lang" role="group" aria-label="Language / 语言">
-        <button type="button" data-setlang="en" id="lang-en">EN</button>
-        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
-        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
-      </span>
-    </span>
-  </div>
-
+<!--shell:sprite--><svg class="sprite" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden"><symbol id="i-overview" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.9" fill="currentColor"/></symbol><symbol id="i-reading" viewBox="0 0 24 24"><path d="M3 5.6C5.6 4.2 8.6 4.3 12 6.3c3.4-2 6.4-2.1 9-.7v13.2c-2.6-1.4-5.6-1.3-9 .7-3.4-2-6.4-2.1-9-.7z"/><path d="M12 6.3v13.2"/></symbol><symbol id="i-display" viewBox="0 0 24 24"><path d="M12 2.8 20 7.3v9.4l-8 4.5-8-4.5V7.3z"/><path d="m4 7.3 8 4.5 8-4.5M12 11.8v9.4"/></symbol><symbol id="i-interactive" viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol><symbol id="i-lab" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="m7.5 9.5 3 2.5-3 2.5M12.5 15h4"/></symbol><symbol id="i-quiz" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.6 2.3c-.8.4-1.2 1-1.2 1.8v.4M12 16.8v.1"/></symbol><symbol id="i-errors" viewBox="0 0 24 24"><path d="M12 3.8 21 19.5H3z"/><path d="M12 10v4.4M12 17v.1"/></symbol><symbol id="i-review" viewBox="0 0 24 24"><path d="M10.5 6.5H20M10.5 12H20M10.5 17.5H20"/><path d="m4 6.5 1.4 1.4L8 5.3M4 12l1.4 1.4L8 10.8M4 17.5l1.4 1.4L8 16.3"/></symbol><symbol id="i-share" viewBox="0 0 24 24"><circle cx="17.5" cy="5.5" r="2.5"/><circle cx="6.5" cy="12" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/><path d="m8.7 10.7 6.6-3.9M8.7 13.3l6.6 3.9"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol><symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol><symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol><symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol><symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7"/><path d="M6 9.5V20h12V9.5"/></symbol><symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.8 2.6 14.2 0 17M12 3.5c-2.6 2.8-2.6 14.2 0 17"/></symbol><symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20c1.3-3.8 4.2-5.5 7.5-5.5s6.2 1.7 7.5 5.5"/></symbol><symbol id="i-flag" viewBox="0 0 24 24"><path d="M5.5 21V4M5.5 4.5h11l-2.2 4 2.2 4h-11"/></symbol><symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3.5 21 8.5l-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol><symbol id="i-code" viewBox="0 0 24 24"><path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5"/></symbol><symbol id="i-cap" viewBox="0 0 24 24"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.3c3.3 2.3 7.7 2.3 11 0v-4.3M21.5 9.5v5"/></symbol><symbol id="i-lang" viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2c0 4-2 7-5 8.5M6 9c1.2 2 3.3 3.6 6 4.4"/><path d="m12.5 21 4-9 4 9M14 17.8h5"/></symbol></svg><!--/shell:sprite-->
+<!--shell:top--><a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="zh-Hans">跳到正文</span></a>
+<header class="topbar"><div class="tb-in"><button type="button" class="nav-toggle" aria-controls="nav" aria-expanded="false"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg><span class="sr"><span lang="en">Open the item list</span><span lang="zh-Hans">打开目录</span></span></button><a class="brand" href="index.html"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="logo-bg"/><path d="M5 25 15.5 15" class="logo-mu"/><path d="M15.5 15c3.5-3 7-5.6 11.5-6.5" class="logo-pos"/><path d="M15.5 15c1.8 3.6 4.6 6.5 9 8.5" class="logo-neu"/><circle cx="15.5" cy="15" r="2.2" class="logo-v"/></svg><b>Geant4 2.0</b></a><span class="tb-week"><span lang="en">Week 1 of 12</span><span lang="zh-Hans">第 1 / 12 周</span><span class="tb-title"><span lang="en">A Monte Carlo primer</span><span lang="zh-Hans">蒙特卡罗入门</span></span></span><span class="tb-prog" data-prog="w01" aria-hidden="true"><span class="pbar"><i></i></span><span class="pn"></span></span><span class="lang" role="group" aria-label="Language / 语言"><button type="button" data-setlang="en" id="lang-en">EN</button><button type="button" data-setlang="zh" id="lang-zh">中文</button><button type="button" data-setlang="both" id="lang-both">EN+中</button></span></div></header><!--/shell:top-->
+<div class="player">
+<!--shell:nav--><nav class="nav" id="nav" aria-label="Items on this page / 本页目录"><div class="nav-in"><a class="nav-home" href="index.html"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg><span lang="en">Course home</span><span lang="zh-Hans">课程主页</span></a><p class="nav-week"><span lang="en">Week 1 · See it</span><span lang="zh-Hans">第 1 周 · 观测</span></p><p class="nav-title"><span lang="en">A Monte Carlo primer</span><span lang="zh-Hans">蒙特卡罗入门</span></p><div class="nav-prog" data-prog="w01"><span class="pbar"><i></i></span><span class="pn"></span></div><ol class="nav-items"><li><a href="#s-goals" data-item="s-goals"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-overview"/></svg><span class="t"><span lang="en">Overview and goals</span><span lang="zh-Hans">概览与目标</span><small><span lang="en">Overview · 3 min</span><span lang="zh-Hans">概览 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#background" data-item="background"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Background</span><span lang="zh-Hans">背景知识</span><small><span lang="en">Reading · 9 min</span><span lang="zh-Hans">阅读 · 9 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-evd" data-item="s-evd"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-display"/></svg><span class="t"><span lang="en">3D event display</span><span lang="zh-Hans">三维事例显示</span><small><span lang="en">Event display · 3 min</span><span lang="zh-Hans">事例显示 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-why" data-item="s-why"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">1.1 Why Python first</span><span lang="zh-Hans">1.1 为什么先用 Python</span><small><span lang="en">Reading · 9 min</span><span lang="zh-Hans">阅读 · 9 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-exp" data-item="s-exp"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">1.2 The minimal experiment</span><span lang="zh-Hans">1.2 最小实验</span><small><span lang="en">Reading · 9 min</span><span lang="zh-Hans">阅读 · 9 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-impl" data-item="s-impl"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">1.3 The implementation</span><span lang="zh-Hans">1.3 完整实现</span><small><span lang="en">Reading · 3 min</span><span lang="zh-Hans">阅读 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-toy" data-item="s-toy"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-interactive"/></svg><span class="t"><span lang="en">Interactive toy model</span><span lang="zh-Hans">交互玩具模型</span><small><span lang="en">Interactive · 10 min</span><span lang="zh-Hans">交互 · 10 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-task" data-item="s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: Lab 1</span><span lang="zh-Hans">动手：实验 1</span><small><span lang="en">Hands-on lab · 45 min</span><span lang="zh-Hans">动手实验 · 45 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-quiz" data-item="s-quiz"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-quiz"/></svg><span class="t"><span lang="en">Practice quiz</span><span lang="zh-Hans">练习测验</span><small><span lang="en">Practice quiz · 9 min</span><span lang="zh-Hans">练习测验 · 9 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-err" data-item="s-err"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Common errors</span><span lang="zh-Hans">常见错误</span><small><span lang="en">Reading · 12 min</span><span lang="zh-Hans">阅读 · 12 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-review" data-item="s-review"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-review"/></svg><span class="t"><span lang="en">Review notes</span><span lang="zh-Hans">复习要点</span><small><span lang="en">Checklist · 5 min</span><span lang="zh-Hans">清单 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-share" data-item="s-share"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span class="t"><span lang="en">Share this week</span><span lang="zh-Hans">分享本周成果</span><small><span lang="en">Share · 5 min</span><span lang="zh-Hans">分享 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li></ol><p class="nav-total"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">About 2 h in total</span><span lang="zh-Hans">共约 2 小时</span></p></div></nav><div class="nav-scrim" hidden></div>
+<main id="main" tabindex="-1">
+<!--/shell:nav-->
   <!-- HERO -->
+  <!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb / 路径"><a href="index.html"><span lang="en">Geant4 2.0</span><span lang="zh-Hans">Geant4 2.0</span></a><span aria-hidden="true">›</span><span><span lang="en">Stage 1 · See it</span><span lang="zh-Hans">第 1 阶段 · 观测</span></span><span aria-hidden="true">›</span><span aria-current="page"><span lang="en">Week 1</span><span lang="zh-Hans">第 1 周</span></span></nav><!--/shell:crumbs-->
   <section class="hero" aria-labelledby="h-hero">
     <div>
       <p class="prompt">Idle&gt; <span>/control/execute week01.mac</span></p>
@@ -35,11 +29,12 @@
       <p class="lede" lang="en">You build a small Monte Carlo in pure Python: sample muon directions, send them through a two-layer telescope, count what arrives, and attach an uncertainty to the count. Every later Geant4 measurement in this course pays the same statistical tax you meet here.</p>
       <p class="lede" lang="zh-Hans">先用纯 Python 写一个小型蒙特卡罗：抽样缪子方向，让它们穿过双层望远镜，统计到达的数目，并给结果配上不确定度。本课程之后每一个 Geant4 测量都要缴纳你在这里第一次遇到的“统计税”。</p>
       <ul class="meta">
-        <li class="stage"><b>1 · See it</b><span lang="en">stage · 观测</span><span lang="zh-Hans">阶段 · 观测</span></li>
+        <li class="stage"><b>1 · <span lang="en">See it</span><span lang="zh-Hans">观测</span></b><span lang="en">stage</span><span lang="zh-Hans">阶段</span></li>
         <li><b>Lab 1</b><span lang="en">hands-on lab</span><span lang="zh-Hans">动手实验</span></li>
         <li><b>≈ 2 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
       </ul>
-    </div>
+      <!--shell:cta--><div class="hero-cta"><a class="btn-p" href="#s-goals" data-resume="w01"><span lang="en">Start</span><span lang="zh-Hans">开始</span><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-r"/></svg></a><a class="btn-s" href="#s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span lang="en">Go to the lab</span><span lang="zh-Hans">直接去实验</span></a><span class="hero-sum"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">12 items · about 2 h</span><span lang="zh-Hans">12 项 · 约 2 小时</span></span></div><!--/shell:cta-->
+      </div>
     <div class="statbox" role="table" aria-label="Week summary">
       <div role="row"><span role="cell">week01</span></div>
       <div role="row"><span role="cell">Language</span><span role="cell">Python 3 + NumPy</span></div>
@@ -50,7 +45,8 @@
   </section>
 
   <!-- GOALS -->
-  <section class="run" aria-labelledby="h-goals">
+  <section class="run item" id="s-goals" data-type="overview" data-min="3" aria-labelledby="h-goals">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-overview"/></svg><span class="t"><span lang="en">Overview</span><span lang="zh-Hans">概览</span></span><span class="d"><span lang="en">3 min</span><span lang="zh-Hans">3 分钟</span></span></p>
     <p class="cmd">/run/initialize<span lang="en">learning goals</span><span lang="zh-Hans">学习目标</span></p>
     <div class="prose">
       <h2 id="h-goals" class="bi"><span lang="en">By the end of this week you can put an error bar on a simulation.</span><span lang="zh-Hans">本周结束时，你能给模拟结果配上误差棒。</span></h2>
@@ -64,7 +60,8 @@
     </div>
   </section>
 
-  <section class="run" id="background" aria-labelledby="h-bg">
+  <section class="run item" id="background" data-type="reading" data-min="9" aria-labelledby="h-bg">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">9 min</span><span lang="zh-Hans">9 分钟</span></span></p>
     <p class="cmd">/control/echo background<span lang="en">background · for non-physicists</span><span lang="zh-Hans">背景知识 · 写给非物理专业</span></p>
     <div class="prose">
       <h2 id="h-bg" class="bi"><span lang="en">A Monte Carlo is a way to get an answer by rolling dice many times.</span><span lang="zh-Hans">蒙特卡罗方法：用“掷很多次骰子”得到答案。</span></h2>
@@ -92,7 +89,8 @@
     </div>
   </section>
 <!-- fig:evd-w01 -->
-  <section class="run" aria-labelledby="h-evd">
+  <section class="run item" id="s-evd" data-type="display" data-min="3" aria-labelledby="h-evd">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-display"/></svg><span class="t"><span lang="en">Event display</span><span lang="zh-Hans">事例显示</span></span><span class="d"><span lang="en">3 min</span><span lang="zh-Hans">3 分钟</span></span></p>
     <p class="cmd">/vis/open TSG<span lang="en">event display</span><span lang="zh-Hans">事例显示</span></p>
     <div>
       <h2 id="h-evd" class="bi"><span lang="en">Your Monte Carlo, drawn ray by ray.</span><span lang="zh-Hans">把你的蒙特卡罗一条一条画出来。</span></h2>
@@ -103,7 +101,8 @@
 <!-- /fig:evd-w01 -->
 
   <!-- LESSON 1: why python -->
-  <section class="run" aria-labelledby="h-why">
+  <section class="run item" id="s-why" data-type="reading" data-min="9" aria-labelledby="h-why">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">9 min</span><span lang="zh-Hans">9 分钟</span></span></p>
     <p class="cmd">/control/manual<span lang="en">1.1 · why Python first</span><span lang="zh-Hans">1.1 · 为什么先用 Python</span></p>
     <div class="prose">
       <h2 id="h-why" class="bi"><span lang="en">Ten new ideas on one screen is a problem of order, not of difficulty.</span><span lang="zh-Hans">一屏十个新概念，问题在于顺序，而不在于难度。</span></h2>
@@ -139,7 +138,8 @@
   </section>
 
   <!-- LESSON 2: the experiment -->
-  <section class="run" aria-labelledby="h-exp">
+  <section class="run item" id="s-exp" data-type="reading" data-min="9" aria-labelledby="h-exp">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">9 min</span><span lang="zh-Hans">9 分钟</span></span></p>
     <p class="cmd">/gun/particle mu-<span lang="en">1.2 · the minimal experiment</span><span lang="zh-Hans">1.2 · 最小实验</span></p>
     <div class="prose">
       <h2 id="h-exp" class="bi"><span lang="en">Two square layers, one question: how many tracks make it through both?</span><span lang="zh-Hans">两块方形探测层，一个问题：有多少径迹能同时穿过两层？</span></h2>
@@ -180,7 +180,8 @@
   </section>
 
   <!-- LESSON 3: implementation map -->
-  <section class="run" aria-labelledby="h-impl">
+  <section class="run item" id="s-impl" data-type="reading" data-min="3" aria-labelledby="h-impl">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">3 min</span><span lang="zh-Hans">3 分钟</span></span></p>
     <p class="cmd">/random/setSeeds 0 0<span lang="en">1.3 · the implementation</span><span lang="zh-Hans">1.3 · 完整实现</span></p>
     <div class="prose">
       <h2 id="h-impl" class="bi"><span lang="en">Three pieces of code matter. The rest is bookkeeping.</span><span lang="zh-Hans">真正要紧的代码只有三处，其余都是簿记。</span></h2>
@@ -207,7 +208,8 @@ hit = (np.abs(x1) &lt; L / 2) &amp; (np.abs(y1) &lt; L / 2)</pre>
   </section>
 
   <!-- EXPLAINER -->
-  <section class="run" aria-labelledby="h-toy">
+  <section class="run item" id="s-toy" data-type="interactive" data-min="10" aria-labelledby="h-toy">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-interactive"/></svg><span class="t"><span lang="en">Interactive</span><span lang="zh-Hans">交互</span></span><span class="d"><span lang="en">10 min</span><span lang="zh-Hans">10 分钟</span></span></p>
     <p class="cmd">/run/beamOn 1000<span lang="en">interactive toy model</span><span lang="zh-Hans">交互玩具模型</span></p>
     <div>
       <h2 id="h-toy" class="bi"><span lang="en">Fire the telescope, then watch the error bar shrink as 1/√N.</span><span lang="zh-Hans">发射径迹，看误差棒按 1/√N 缩小。</span></h2>
@@ -279,7 +281,8 @@ hit = (np.abs(x1) &lt; L / 2) &amp; (np.abs(y1) &lt; L / 2)</pre>
   </section>
 
   <!-- HANDS-ON -->
-  <section class="run" aria-labelledby="h-task">
+  <section class="run item" id="s-task" data-type="lab" data-min="45" aria-labelledby="h-task">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on lab</span><span lang="zh-Hans">动手实验</span></span><span class="d"><span lang="en">45 min</span><span lang="zh-Hans">45 分钟</span></span></p>
     <p class="cmd">/control/shell python3 telescope_transmission.py<span lang="en">hands-on · Lab 1</span><span lang="zh-Hans">动手任务 · 实验 1</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Run it, validate it, break it, then give it a real sky.</span><span lang="zh-Hans">运行、验证、破坏，再换上真实的天空。</span></h2>
@@ -428,7 +431,8 @@ root-config --version</pre></div>
   </section>
 
   <!-- SELF-CHECK -->
-  <section class="run" aria-labelledby="h-quiz">
+  <section class="run item" id="s-quiz" data-type="quiz" data-min="9" aria-labelledby="h-quiz">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-quiz"/></svg><span class="t"><span lang="en">Practice quiz</span><span lang="zh-Hans">练习测验</span></span><span class="d"><span lang="en">9 min</span><span lang="zh-Hans">9 分钟</span></span></p>
     <p class="cmd">/control/verbose 2<span lang="en">self-check</span><span lang="zh-Hans">自测</span></p>
     <div>
       <h2 id="h-quiz" class="bi"><span lang="en">Six questions. Each answer explains itself.</span><span lang="zh-Hans">六道题，每个答案都附有解释。</span></h2>
@@ -437,7 +441,8 @@ root-config --version</pre></div>
   </section>
 
   <!-- COMMON ERRORS -->
-  <section class="run" aria-labelledby="h-err">
+  <section class="run item" id="s-err" data-type="errors" data-min="12" aria-labelledby="h-err">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">12 min</span><span lang="zh-Hans">12 分钟</span></span></p>
     <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
     <div>
       <h2 id="h-err" class="bi"><span lang="en">Six mistakes that run without a single error message.</span><span lang="zh-Hans">六个不会报任何错的错误。</span></h2>
@@ -548,7 +553,8 @@ Mixed units: L in cm, d in m.
   </section>
 
   <!-- REVIEW NOTES -->
-  <section class="run" aria-labelledby="h-review">
+  <section class="run item" id="s-review" data-type="review" data-min="5" aria-labelledby="h-review">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-review"/></svg><span class="t"><span lang="en">Checklist</span><span lang="zh-Hans">清单</span></span><span class="d"><span lang="en">5 min</span><span lang="zh-Hans">5 分钟</span></span></p>
     <p class="cmd">/control/saveHistory<span lang="en">review notes</span><span lang="zh-Hans">复习要点</span></p>
     <div class="prose">
       <h2 id="h-review" class="bi"><span lang="en">Before you close the run.</span><span lang="zh-Hans">结束运行之前。</span></h2>
@@ -566,7 +572,8 @@ Mixed units: L in cm, d in m.
   </section>
 
   <!-- SHARE -->
-  <section class="run" aria-labelledby="h-share">
+  <section class="run item" id="s-share" data-type="share" data-min="5" aria-labelledby="h-share">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span class="t"><span lang="en">Share</span><span lang="zh-Hans">分享</span></span><span class="d"><span lang="en">5 min</span><span lang="zh-Hans">5 分钟</span></span></p>
     <p class="cmd">/vis/ogl/export week01.gif<span lang="en">share this week</span><span lang="zh-Hans">分享本周成果</span></p>
     <div class="share">
       <figure class="fig">
@@ -581,13 +588,16 @@ Mixed units: L in cm, d in m.
     </div>
   </section>
 
+  <!--shell:done--><section class="wk-done" id="s-complete" data-key="w01" data-week="1" aria-labelledby="h-complete"><h2 id="h-complete" class="bi"><span lang="en">Your progress on this page</span><span lang="zh-Hans">本页学习进度</span></h2><div class="wk-done-body"></div></section><!--/shell:done-->
+
   <nav class="pager" id="pager" aria-label="Week navigation"></nav>
 
   <footer>
     <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
     <span lang="en">Source: PDG RPP 2024, sec. 30 (cosmic rays) · our own runs of the scripts on this page</span><span lang="zh-Hans">来源：PDG RPP 2024 第 30 节（宇宙线）· 本页脚本的实际运行结果</span>
   </footer>
-</div>
+</main>
+</div><!--shell:end-->
 <script src="assets/course.js"></script>
 <script src="assets/evdisplay.js"></script>
 <script src="assets/evd-scenes.js"></script>
