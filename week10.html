@@ -754,8 +754,8 @@ f   = 1.3556 +/- 0.0020 MHz
 phi = -0.006 +/- 0.037 rad    lambda = -0.0114 +/- 0.0128 /us
 chi2/ndf = 179.6/175
 B   = 10.002 +/- 0.015 mT</pre></div>
-          <p lang="en">The fitted field is 10.014 ± 0.015 mT against the 10 mT configured: 0.9σ. χ²/ndf = 172/175, and λ is consistent with zero because the field is perfectly uniform. Using the counter time instead of the truth decay time changes f by less than its error (the positron needs well under a nanosecond to reach the counter). Only the measured time exists in a real experiment, so prefer it. A0 = 0.24, not 1: see Course-W10-d.</p>
-          <p lang="zh-Hans">拟合得到的磁场为 10.014 ± 0.015 mT，设定值为 10 mT，相差 0.9σ。χ²/ndf = 172/175，λ 与零相容，因为磁场完全均匀。用计数器时间代替真值衰变时间，f 的变化小于其误差（正电子飞到计数器远不到一纳秒）。真实实验中只有测量时间，所以优先用它。A0 = 0.24 而不是 1：见 Course-W10-d。</p>
+          <p lang="en">The fitted field is 10.014 ± 0.015 mT against the 10 mT configured: 0.9σ. χ²/ndf = 172/175, and λ is consistent with zero because the field is perfectly uniform. Using the counter time instead of the truth decay time changes f by less than its error (the positron needs well under a nanosecond to reach the counter). Only the measured time exists in a real experiment, so prefer it. A0 = 0.24, not 1: see Course-W10-d. Your own two-thread run will not match these digits exactly, even with the same seeds: our reruns gave f = 1.3578 and 1.3572. The reason is a thread race inside G4DecayWithSpin, explained in Week 12 (Course-W12-b). Compare within the errors.</p>
+          <p lang="zh-Hans">拟合得到的磁场为 10.014 ± 0.015 mT，设定值为 10 mT，相差 0.9σ。χ²/ndf = 172/175，λ 与零相容，因为磁场完全均匀。用计数器时间代替真值衰变时间，f 的变化小于其误差（正电子飞到计数器远不到一纳秒）。真实实验中只有测量时间，所以优先用它。A0 = 0.24 而不是 1：见 Course-W10-d。即使种子相同，你自己的双线程运行也不会与这些数字逐位相同：我们重跑得到 f = 1.3578 和 1.3572。原因是 G4DecayWithSpin 内部的线程竞争，见第 12 周（Course-W12-b）。请在误差范围内比较。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Break it: remove the spin from the decay</span><span lang="zh-Hans">打破它：从衰变中去掉自旋</span></h3><label class="done" for="w10-s4"><input type="checkbox" id="w10-s4" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>

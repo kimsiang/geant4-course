@@ -29,7 +29,7 @@
     { n: 9,  stage: 4, ch: '10–11', file: 'week09.html', live: true , en: 'musrSim and the t1 tree', zh: 'musrSim 与 t1 树' },
     { n: 10, stage: 4, ch: '12',    file: 'week10.html', live: true , en: 'Transverse-field μSR capstone', zh: '横场 μSR 综合实验' },
     { n: 11, stage: 5, ch: '13–14', file: 'week11.html', live: true , en: 'Debug and validate', zh: '调试与验证' },
-    { n: 12, stage: 5, ch: '15–16', file: 'week12.html', live: false, en: 'Proposal and defence', zh: '选题与答辩' }
+    { n: 12, stage: 5, ch: '15–16', file: 'week12.html', live: true , en: 'Proposal and defence', zh: '选题与答辩' }
   ];
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   G.pad = pad;
