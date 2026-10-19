@@ -62,11 +62,52 @@
     </div>
   </section>
 
+  <section class="run" id="background" aria-labelledby="h-bg">
+    <p class="cmd">/control/echo background<span lang="en">background · for non-physicists</span><span lang="zh-Hans">背景知识 · 写给非物理专业</span></p>
+    <div class="prose">
+      <h2 id="h-bg" class="bi"><span lang="en">How a detector turns a passing muon into a number.</span><span lang="zh-Hans">探测器如何把一个穿过的缪子变成一个数字。</span></h2>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Scintillator and photosensor</span><span lang="zh-Hans">闪烁体与光电器件</span></p>
+        <p lang="en">A plastic scintillator emits a faint flash of light when a charged particle deposits energy in it, about 2 MeV per centimetre for a muon. A photomultiplier tube (PMT) or silicon photomultiplier (SiPM) turns the flash into an electrical pulse that electronics digitise into an ADC number.</p>
+        <p lang="zh-Hans">带电粒子在塑料闪烁体中沉积能量时会发出微弱的闪光，缪子约每厘米 2 MeV。光电倍增管（PMT）或硅光电倍增器（SiPM）把闪光转换成电脉冲，电子学再把它数字化为一个 ADC 数值。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Threshold, efficiency, noise</span><span lang="zh-Hans">阈值、效率、噪声</span></p>
+        <p lang="en">A signal counts only if it exceeds a threshold. Set it too high and real muons are missed (lower efficiency); too low and electronic noise or natural radioactivity fire it (more fake hits). Efficiency is the fraction of real muons recorded, and it always needs an uncertainty.</p>
+        <p lang="zh-Hans">信号只有超过阈值才被计入。阈值太高会漏掉真实缪子（效率降低）；太低则电子学噪声或天然放射性也会触发（假击中增多）。效率是被记录下来的真实缪子比例，它必须附带不确定度。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Coincidence</span><span lang="zh-Hans">符合</span></p>
+        <p lang="en">Requiring two or more planes to fire within a short window, say 20 ns, rejects most noise, because random pulses rarely line up in time. It also defines a direction: a muon telescope is two or more planes in coincidence.</p>
+        <p lang="zh-Hans">要求两层或更多探测平面在短时间窗（比如 20 ns）内同时响应，可以去掉大部分噪声，因为随机脉冲很少在时间上对齐。这同时也定义了方向：缪子望远镜就是两层或多层处于符合状态的探测平面。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">For muography projects</span><span lang="zh-Hans">用于缪子成像工程</span></p>
+        <p lang="en">Field muography telescopes are stacks of scintillator strips, resistive plate chambers or nuclear emulsion. Outdoors and underground, temperature, humidity and radon change noise and efficiency. Simulate the detector response, not just the muons, so that efficiency changes are not mistaken for density changes.</p>
+        <p lang="zh-Hans">野外缪子成像望远镜由闪烁体条、阻性板室或核乳胶叠成。在室外和地下，温度、湿度和氡会改变噪声和效率。要模拟探测器响应而不仅是缪子，这样效率的变化才不会被误认为密度的变化。</p>
+      </div>
+      <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
+    </div>
+  </section>
+<!-- fig:evd-w05 -->
+  <section class="run" aria-labelledby="h-evd">
+    <p class="cmd">/vis/open TSG<span lang="en">event display</span><span lang="zh-Hans">事例显示</span></p>
+    <div>
+      <h2 id="h-evd" class="bi"><span lang="en">From a passing muon to a trigger decision.</span><span lang="zh-Hans">从一个穿过的缪子到一次触发判定。</span></h2>
+      <figure class="evd-fig"><div data-scene="w05" data-poster="media/evd-w05.gif" data-label="3D animation: a muon crosses two scintillator counters, light travels to a SiPM, pulses appear and the coincidence decides the trigger"></div><figcaption class="evd-cap"><span lang="en"><b>TOY MODEL.</b> The Week 5 geometry: two 10 × 10 × 1 cm counters 20 cm apart, cos²θ muons from a 30 × 30 cm plane. Light paths are schematic (real photons reflect many times before reaching the SiPM); pulse shapes, amplitudes and the noise rate are illustrative. A counter fires when its pulse crosses the dashed threshold; the trigger needs both counters within a 15 ns window.</span><span lang="zh-Hans"><b>玩具模型。</b>第 5 周的几何：两块 10 × 10 × 1 cm 的计数器相距 20 cm，cos²θ 缪子从 30 × 30 cm 平面射入。光路只作示意（真实光子到达 SiPM 前会反射多次）；脉冲形状、幅度和噪声率均为示意值。脉冲越过虚线阈值时计数器响应；触发要求两个计数器在 15 ns 窗口内同时响应。</span></figcaption></figure>
+    </div>
+  </section>
+
+<!-- /fig:evd-w05 -->
+
   <section class="run" aria-labelledby="h-sd">
     <p class="cmd">/control/manual<span lang="en">6.1 · deposited is not detected</span><span lang="zh-Hans">6.1 · 沉积不等于探测到</span></p>
     <div class="prose">
       <h2 id="h-sd" class="bi"><span lang="en">"Energy was deposited" and "the detector saw it" are not the same thing.</span><span lang="zh-Hans">“能量沉积了”与“探测器看到了”不是一回事。</span></h2>
       <div class="flow" role="img" aria-label="The detector response chain"><b>muon</b> <span class="a">→</span> energy deposit <span class="a">→</span> scintillation light <span class="a">→</span> photoelectrons <span class="a">→</span> PMT pulse <span class="a">→</span> <b>ADC / scope</b><br><span class="a">Geant4 truth&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;light yield&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gain + noise&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;measurement</span></div>
+<!-- fig:svg-w05 -->
+<figure class="fig-svg"><svg viewBox="0 0 820 170" role="img" aria-label="Readout chain from a muon to an ADC number, grouped into truth, detector response and measurement"><defs><marker id="ah-chain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="14" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="73" y="78" text-anchor="middle" class="pos" font-size="12" lang="en">muon</text><text x="73" y="78" text-anchor="middle" class="pos" font-size="12" lang="zh-Hans">缪子</text><text x="73" y="98" text-anchor="middle" class="m" font-size="10"></text><line x1="134" y1="82" x2="146" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="148" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="207" y="78" text-anchor="middle" font-size="12" lang="en">energy deposit</text><text x="207" y="78" text-anchor="middle" font-size="12" lang="zh-Hans">能量沉积</text><text x="207" y="98" text-anchor="middle" class="m" font-size="10">Edep (MeV)</text><line x1="268" y1="82" x2="280" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="282" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="341" y="78" text-anchor="middle" class="neu" font-size="12" lang="en">light</text><text x="341" y="78" text-anchor="middle" class="neu" font-size="12" lang="zh-Hans">光</text><text x="341" y="98" text-anchor="middle" class="m" font-size="10">~10⁴ γ / MeV</text><line x1="402" y1="82" x2="414" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="416" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="475" y="78" text-anchor="middle" font-size="12" lang="en">photoelectrons</text><text x="475" y="78" text-anchor="middle" font-size="12" lang="zh-Hans">光电子</text><text x="475" y="98" text-anchor="middle" class="m" font-size="10">Poisson</text><line x1="536" y1="82" x2="548" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="550" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="609" y="78" text-anchor="middle" font-size="12" lang="en">pulse</text><text x="609" y="78" text-anchor="middle" font-size="12" lang="zh-Hans">脉冲</text><text x="609" y="98" text-anchor="middle" class="m" font-size="10">gain + noise</text><line x1="670" y1="82" x2="682" y2="82" class="s-m" stroke-width="1.2" marker-end="url(#ah-chain)" fill="none"/><rect x="684" y="50" width="118" height="64" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="743" y="78" text-anchor="middle" font-size="12" lang="en">ADC number</text><text x="743" y="78" text-anchor="middle" font-size="12" lang="zh-Hans">ADC 数值</text><text x="743" y="98" text-anchor="middle" class="m" font-size="10">threshold</text><line x1="14" y1="136" x2="266" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="14" y1="130" x2="14" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="266" y1="130" x2="266" y2="136" class="s-m" stroke-width="1" fill="none"/><text x="140.0" y="154" text-anchor="middle" class="m" font-size="11" lang="en">Geant4 truth</text><text x="140.0" y="154" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">Geant4 真值</text><line x1="282" y1="136" x2="534" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="282" y1="130" x2="282" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="534" y1="130" x2="534" y2="136" class="s-m" stroke-width="1" fill="none"/><text x="408.0" y="154" text-anchor="middle" class="m" font-size="11" lang="en">detector response</text><text x="408.0" y="154" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">探测器响应</text><line x1="550" y1="136" x2="804" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="550" y1="130" x2="550" y2="136" class="s-m" stroke-width="1" fill="none"/><line x1="804" y1="130" x2="804" y2="136" class="s-m" stroke-width="1" fill="none"/><text x="677.0" y="154" text-anchor="middle" class="m" font-size="11" lang="en">measurement</text><text x="677.0" y="154" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">测量</text></svg><figcaption><span lang="en">The chain Chapter 6 builds. Plastic scintillators emit of order 10⁴ photons per MeV deposited; only a fraction becomes photoelectrons, which is why Poisson fluctuations matter.</span><span lang="zh-Hans">第 6 章搭建的链条。塑料闪烁体每沉积 1 MeV 发出约 10⁴ 个光子；其中只有一部分变成光电子，所以泊松涨落很重要。</span></figcaption></figure>
+<!-- /fig:svg-w05 -->
       <div class="box">
         <p class="box-label">Definition 6.1 · <span lang="en">Sensitive detector and hit</span><span lang="zh-Hans">灵敏探测器与击中</span></p>
         <p lang="en">A <dfn>sensitive detector</dfn> (<code>G4VSensitiveDetector</code>) is callback code bound to a logical volume. Each step in that volume gives it a chance to accumulate the detector response. A <dfn>hit</dfn> (<code>G4VHit</code>) is a record of an interaction or an accumulated response; it is not a hardware trigger. A realistic chain is step → hit accumulation → digit → trigger/readout.</p>
@@ -1047,6 +1088,8 @@ Treated as a coincidence without a timing condition.
   </footer>
 </div>
 <script src="assets/course.js"></script>
+<script src="assets/evdisplay.js"></script>
+<script src="assets/evd-scenes.js"></script>
 <script src="assets/week05.js"></script>
 </body>
 </html>

@@ -62,10 +62,46 @@
     </div>
   </section>
 
+  <section class="run" id="background" aria-labelledby="h-bg">
+    <p class="cmd">/control/echo background<span lang="en">background · for non-physicists</span><span lang="zh-Hans">背景知识 · 写给非物理专业</span></p>
+    <div class="prose">
+      <h2 id="h-bg" class="bi"><span lang="en">Spin: the muon is a tiny compass needle that wobbles in a magnetic field.</span><span lang="zh-Hans">自旋：缪子是一根在磁场中摆动的小磁针。</span></h2>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Spin and precession</span><span lang="zh-Hans">自旋与进动</span></p>
+        <p lang="en">Besides charge and mass, a muon has spin, which makes it a tiny magnet. In a magnetic field its spin axis turns around the field direction, like a tilted spinning top, at a frequency proportional to the field: 135.5 MHz per tesla. Measure the frequency and you have measured the field inside the material.</p>
+        <p lang="zh-Hans">除了电荷和质量，缪子还有自旋，这让它成为一个微小的磁体。在磁场中，它的自旋轴绕磁场方向转动，就像一个倾斜旋转的陀螺，频率正比于磁场：每特斯拉 135.5 MHz。测出频率，就测出了材料内部的磁场。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">How the spin is seen</span><span lang="zh-Hans">怎样看到自旋</span></p>
+        <p lang="en">When a positive muon decays, its positron is more likely to fly out along the spin direction. Two counters on opposite sides therefore see their rates rise and fall in turn as the spin rotates. Their normalised difference, the asymmetry, oscillates at the precession frequency.</p>
+        <p lang="zh-Hans">正缪子衰变时，正电子更倾向于沿自旋方向飞出。所以随着自旋转动，两侧相对的计数器计数率此起彼伏。两者归一化后的差值，即不对称度，以进动频率振荡。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">For muography projects</span><span lang="zh-Hans">用于缪子成像工程</span></p>
+        <p lang="en">μSR is not muography: it uses accelerator muons stopped in small samples to study magnetism and superconductivity. On the muography track this week is optional. Worth keeping: field maps must be printed and checked before use, and a fit that converges can still be meaningless (the no-spin control).</p>
+        <p lang="zh-Hans">μSR 不是缪子成像：它把加速器缪子停在小样品中，研究磁性和超导。对缪子成像方向来说，本周为选修。值得记住的有两点：场图在使用前必须打印出来核对；拟合收敛不代表结果有意义（不加自旋的对照运行就是例子）。</p>
+      </div>
+      <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
+    </div>
+  </section>
+<!-- fig:evd-w10 -->
+  <section class="run" aria-labelledby="h-evd">
+    <p class="cmd">/vis/open TSG<span lang="en">event display</span><span lang="zh-Hans">事例显示</span></p>
+    <div>
+      <h2 id="h-evd" class="bi"><span lang="en">Watch the spin turn, then see where the positron goes.</span><span lang="zh-Hans">看自旋转动，再看正电子飞向哪里。</span></h2>
+      <figure class="evd-fig"><div data-scene="w10" data-poster="media/evd-w10.gif" data-label="3D animation of transverse-field muon spin rotation: a positive muon stops in a copper target, its spin arrow precesses, it decays and the positron hits the upper or lower counter; an asymmetry histogram builds up"></div><figcaption class="evd-cap"><span lang="en"><b>TOY MODEL.</b> The tf_musr.mac geometry: copper target, counters 45 mm above and below, B = 10 mT along x. Time is slowed: one microsecond of muon time lasts 1.1 s; decay times are cut at about 6 µs to keep the loop short. The positron direction is drawn from 1 + (1/3) S·n with no energy threshold and no material, on a straight path (in 10 mT a 30 MeV positron curves with a radius of about 10 m). The bars collect A(t) = (D − U)/(D + U); the dashed curve is the oscillation at 1.355 MHz. Real numbers: Week 10's Geant4 run.</span><span lang="zh-Hans"><b>玩具模型。</b>tf_musr.mac 的几何：铜靶，上下 45 mm 处各一块计数器，B = 10 mT 沿 x 方向。时间被放慢：缪子时间的 1 微秒在动画中持续 1.1 秒；为让循环不太长，衰变时间截断在约 6 µs。正电子方向按 1 + (1/3) S·n 抽样，无能量阈、无材料，沿直线飞行（10 mT 中 30 MeV 正电子的曲率半径约 10 m）。柱状图累计 A(t) = (D − U)/(D + U)；虚线是 1.355 MHz 的振荡。真实数值见第 10 周的 Geant4 运行。</span></figcaption></figure>
+    </div>
+  </section>
+
+<!-- /fig:evd-w10 -->
+
   <section class="run" aria-labelledby="h-field">
     <p class="cmd">/musr/command globalfield<span lang="en">12.1 · attach a field</span><span lang="zh-Hans">12.1 · 加上磁场</span></p>
     <div class="prose">
       <h2 id="h-field" class="bi"><span lang="en">A field can be wrong while the simulation runs perfectly.</span><span lang="zh-Hans">磁场可能是错的，而模拟照样跑得好好的。</span></h2>
+<!-- fig:svg-w10 -->
+<figure class="fig-svg"><svg viewBox="0 0 820 300" role="img" aria-label="Side view: the muon stops in the target, its spin rotates about the field, counters above and below"><defs><marker id="ah-spin" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="270" y="120" width="60" height="60" rx="3" class="s-fg f-soft" stroke-width="1.3"/><rect x="160" y="20" width="280" height="22" rx="3" class="s-pos" fill="none" stroke-width="1.6"/><text x="450" y="36" class="pos" font-size="12">U (+y)</text><rect x="160" y="258" width="280" height="22" rx="3" class="s-neg" fill="none" stroke-width="1.6"/><text x="450" y="274" class="neg" font-size="12">D (−y)</text><line x1="40" y1="150" x2="266" y2="150" class="s-pos" stroke-width="2" marker-end="url(#ah-spin)" fill="none"/><text x="40" y="140" class="pos" font-size="11" lang="en">μ⁺, spin ← (−z)</text><text x="40" y="140" class="pos" font-size="11" lang="zh-Hans">μ⁺，自旋 ←（−z）</text><circle cx="560" cy="80" r="14" class="s-m" fill="none" stroke-width="1.3"/><line x1="550" y1="70" x2="570" y2="90" class="s-m" stroke-width="1.3" fill="none"/><line x1="570" y1="70" x2="550" y2="90" class="s-m" stroke-width="1.3" fill="none"/><text x="582" y="78" class="m" font-size="11" lang="en">B along +x, into the page</text><text x="582" y="78" class="m" font-size="11" lang="zh-Hans">B 沿 +x，垂直纸面向里</text><text x="582" y="96" class="m" font-size="11" lang="en">axes: z →, y ↑</text><text x="582" y="96" class="m" font-size="11" lang="zh-Hans">坐标：z →，y ↑</text><path d="M240 150 A60 60 0 0 0 300 210" class="s-m" fill="none" stroke-width="1.2" marker-end="url(#ah-spin)" stroke-dasharray="4 3"/><line x1="300" y1="150" x2="258" y2="192" class="s-fg" stroke-width="2.2" marker-end="url(#ah-spin)" fill="none"/><text x="208" y="212" font-size="12">S(t)</text><text x="520" y="150" font-size="14">f = (γμ/2π) B</text><text x="520" y="172" class="m" font-size="12">= 135.5 MHz/T × B</text><text x="520" y="194" class="m" font-size="12">10 mT → 1.355 MHz</text><text x="520" y="228" class="m" font-size="11" lang="en">e⁺ prefers the spin direction:</text><text x="520" y="228" class="m" font-size="11" lang="zh-Hans">e⁺ 倾向沿自旋方向发射：</text><text x="520" y="246" class="m" font-size="11">dN/dΩ ∝ 1 + a cos θ, ⟨a⟩ = 1/3</text></svg><figcaption><span lang="en">Spin starting along −z in B ∥ +x turns towards −y first, so counter D sees the excess first. a = 1/3 is the asymmetry averaged over the whole positron spectrum.</span><span lang="zh-Hans">在 B ∥ +x 中初始沿 −z 的自旋先转向 −y，所以计数器 D 先看到多出的正电子。a = 1/3 是对整个正电子能谱平均的不对称参数。</span></figcaption></figure>
+<!-- /fig:svg-w10 -->
 <pre><span class="c"># uniform: name, HALF-lengths of the field box, uniform, centre, volume, Bx By Bz [T], Ex Ey Ez [kV/mm]</span>
 /musr/command globalfield TF 400 400 400 uniform 0 0 0 log_World 0.01 0 0 0 0 0
 /musr/command globalfield printFieldValueAtPoint 0 0 0
@@ -978,6 +1014,8 @@ A0 read as "the polarization". A0 = a x P x (geometry) x (energy
   </footer>
 </div>
 <script src="assets/course.js"></script>
+<script src="assets/evdisplay.js"></script>
+<script src="assets/evd-scenes.js"></script>
 <script src="assets/week10.js"></script>
 </body>
 </html>

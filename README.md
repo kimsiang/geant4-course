@@ -13,6 +13,7 @@ Built from the textbook *The Geant4 Laboratory* (musrSim-integrated edition) by 
 ## Contents
 
 - [What a week looks like](#what-a-week-looks-like)
+- [Event displays and figures](#event-displays-and-figures)
 - [Course map](#course-map)
 - [Repository layout](#repository-layout)
 - [For students: running the code](#for-students-running-the-code)
@@ -26,12 +27,21 @@ Built from the textbook *The Geant4 Laboratory* (musrSim-integrated edition) by 
 
 ---
 
+## New to particle physics?
+
+Students from civil engineering, geology and other fields should start with the **[background primer](primer.html)** (about an hour). It explains what a muon is, where cosmic muons come from, the units (GeV, g/cm², m.w.e.), how muons lose energy in rock, how absorption and scattering muography work, and how a muography project maps onto the weeks of the course, with a bilingual glossary. Every week page also opens with a plain-language **background** section and a note on how that week is used in muography projects.
+
+Suggested path for muography students: core Weeks 1–8, 11 and 12; skim Week 9; Week 10 (muon spin, μSR) is optional.
+
 ## What a week looks like
 
 Every page has the same structure, so students always know where they are.
 
 | Section | What it contains |
 |---|---|
+| **Background** | Plain-language explainers for non-physicists, and a "for muography projects" note |
+| **Event display** | A 3D animated event display (Weeks 1, 2, 3, 5, 7, 10), labelled **GEANT4 11.4 DATA** or **TOY** |
+| **Figures** | One or two bilingual diagrams per page (detector layouts, flowcharts, a real Bethe–Bloch curve) |
 | **Goals and stage** | 3–5 learning goals, and the course stage: See → Measure → Understand → Build → Trust |
 | **Lesson** | The textbook chapter condensed, with its definitions, theorems, examples and pitfalls kept and key terms in both languages |
 | **Interactive toy** | A small in-browser model of the week's idea, labelled as a toy, with its approximations stated |
@@ -42,6 +52,25 @@ Every page has the same structure, so students always know where they are.
 | **Share** | A GIF of the week's result, sized for social media |
 
 The language toggle (EN · 中文 · EN+中) and students' progress ticks are kept in their own browser. Nothing is sent anywhere.
+
+## Event displays and figures
+
+Eight animated 3D event displays, in the style of a live detector monitor: glowing tracks drawn along a timeline, detector elements that flash when hit, a live readout in the corner, slow auto-rotation, and **Play / Next event / Rotate** buttons. Each display has a corner badge saying where its tracks come from.
+
+| Page | Display | Source |
+|---|---|---|
+| index, primer | Muography of a hill with a hidden cavity: muons through rock, more of them through the void | TOY (PDG standard-rock range, E⁻²·⁷ spectrum, cos²θ) |
+| primer | Cosmic-ray air shower from ~15 km down to sea level | TOY (schematic) |
+| Week 1 | Two-layer scintillator telescope; hit times from path length | TOY |
+| Week 2 | 100 MeV π⁻: π → μ ν decays and through-going pions | **Geant4 11.4 data** from `pion.mac` |
+| Week 3 | Muon steps through lead, with δ-rays and the process name of each step | **Geant4 11.4 data** (2D x–z steps) |
+| Week 5 | Coincidence trigger: two counters, noise pulses, a 15 ns window | TOY |
+| Week 7 | Tracker–magnet–tracker spectrometer at 1–20 GeV/c, with the two-line momentum fit | **Geant4 11.4 data** (plane crossings) |
+| Week 10 | Muon spin precessing in a transverse field, positrons emitted preferentially along the spin | TOY (uses γμ/2π = 135.5388 MHz/T and the a = 1/3 averaged asymmetry) |
+
+The displays start only when scrolled into view and pause when off-screen or when the tab is hidden. With *reduced motion* set in the operating system, a still frame is shown and nothing plays until the student presses Play. Without WebGL, or if three.js fails to load, the matching GIF in `media/evd-*.gif` is shown instead. On touch screens rotation is off by default so the page scrolls normally.
+
+The fifteen static figures are inline SVG, drawn from `tools/svgfigs.py`, and follow the page colours, the light/dark theme and the language toggle. On phones a figure scrolls sideways inside its frame, not the page.
 
 ## Course map
 
@@ -65,20 +94,27 @@ The language toggle (EN · 中文 · EN+中) and students' progress ticks are ke
 ```
 .
 ├── index.html            course index (links to all twelve weeks)
+├── primer.html           background primer for engineers and geoscientists
 ├── landing.html          course landing / sign-up page
 ├── week01.html … week12.html
 ├── assets/
 │   ├── course.css        shared style: colours, typography, light/dark themes
 │   ├── course.js         language toggle, week manifest + navigation, ROOT-style plots,
 │   │                     quiz engine, copy buttons, progress ticks
-│   └── week01.js …       each week's toy model and self-check
-├── media/                share GIFs and figures (one or two per week)
+│   ├── week01.js …       each week's toy model and self-check
+│   ├── evdisplay.js      3D event-display engine (three.js + bloom, timeline, HUD, controls)
+│   ├── evd-scenes.js     the eight scenes (index, primer, Weeks 1, 2, 3, 5, 7, 10)
+│   └── evd-data.js       real Geant4 tracks for Weeks 2, 3 and 7 (≈ 38 KB)
+├── media/                share GIFs; evd-*.gif are the event-display fallbacks
 ├── code/weekNN/          everything students compile and run that week
 │   ├── CMakeLists.txt, weekNN.cc, include/, src/    Geant4 application (Weeks 2–8, 10)
 │   ├── *.mac                                       macros
 │   └── *.py, *.sh                                  analysis and driver scripts
 └── tools/
     ├── fill_code.py      copies code/ files into the <pre data-src="…"> blocks of a page
+    ├── background.py     writes the "background" section of every week page (edit the text here)
+    ├── svgfigs.py        the fifteen static SVG figures and their bilingual captions
+    ├── figures.py        inserts figures and event displays into the pages (re-runnable)
     └── make_weekNN_gif.py  regenerates that week's share GIF
 ```
 
@@ -159,6 +195,10 @@ python3 -m http.server 8000
    ```
 3. If the expected output changed, paste the new output into the page's `<div class="code out">` block.
 
+### Edit the background sections
+
+The per-week background text lives in `tools/background.py`. Edit it there, then run `python3 tools/background.py`; it replaces each page's section in place and can be run any number of times.
+
 ### Regenerate a GIF
 
 ```bash
@@ -168,6 +208,12 @@ python3 tools/make_week10_gif.py <run directory with data/tf_10mT.root>
 
 Each script's docstring says which run output it reads. Weeks 1, 11 and 12 need no simulation output.
 
+### Edit a figure or an event display
+
+- **SVG figures:** edit `tools/svgfigs.py`, then run `python3 tools/figures.py`. It replaces everything between the `<!-- fig:NAME -->` markers on each page and can be run any number of times. Where each figure goes is set by `PLAN` in `figures.py`.
+- **Event displays:** each scene is one `EVD.scene('name', {...})` block in `assets/evd-scenes.js`. A scene has a `build()` that draws the detector and an `event(i)` that returns tracks (point lists with start and end times) and hits (position and time). The engine in `assets/evdisplay.js` handles the timeline, bloom, HUD, controls and fallbacks. Captions, with each scene's stated approximations, live in the `EVD` dictionary in `tools/figures.py`.
+- **Fallback GIFs** (`media/evd-*.gif`) were recorded from the live displays in headless Chromium, 60 frames per scene. Record them again after changing a scene.
+
 ### Add, rename or hide a week
 
 The week list lives in the manifest at the top of `assets/course.js` (`G.weeks`). Set `live: false` to show a week as "in preparation" on the index and in the prev/next navigation.
@@ -175,7 +221,7 @@ The week list lives in the manifest at the top of `assets/course.js` (`G.weeks`)
 ### Conventions
 
 - Bilingual text uses paired elements: `<span lang="en">…</span><span lang="zh-Hans">…</span>`. Every visible sentence needs both.
-- Anything approximated is labelled: toy models carry a **TOY MODEL** banner and an approximations box.
+- Anything approximated is labelled: toy models carry a **TOY MODEL** banner and an approximations box; event displays carry a **TOY** or **GEANT4 11.4 DATA** badge.
 - Code tags: `GEANT4` (toolkit API and UI commands), `MUSRSIM` (application-specific), `ANALYSIS` (ROOT/Python).
 - Keep pages self-contained static files: no build step and no tracking.
 
@@ -193,6 +239,7 @@ All links are relative, so the site also works from any sub-path or another stat
 ## Access from mainland China
 
 - **Fonts:** The pages load IBM Plex and Noto Sans SC from Google Fonts, which is blocked in mainland China. Pages still work with system fonts, but the first load can stall. To fix this, download the font files into `assets/fonts/` and replace the Google `<link>` tags with local `@font-face` rules. Both families are under the SIL Open Font Licence, so this is allowed.
+- **three.js:** The event displays load three.js r128 from cdnjs and its add-ons (OrbitControls, bloom) from jsDelivr. Both are often slow in mainland China. If the CDNs do not load, students see the GIF fallback instead of the live display. To remove the dependency, download `three.min.js` and the seven `examples/js` files from `three@0.128.0` into `assets/vendor/` and point the eight URLs at the top of `assets/evdisplay.js` to them.
 - **Hosting:** `github.io` can be slow or unreachable. Because the site is plain static files, a mirror on a university web server or a domestic object-storage bucket needs no changes.
 
 ## Design
@@ -201,7 +248,7 @@ The pages match the course landing page (`landing.html`). Each page reads like a
 
 - **Type:** IBM Plex Sans Condensed (headings), IBM Plex Sans (body), IBM Plex Mono (code), Noto Sans SC (Chinese).
 - **Colour:** Geant4 visualisation convention (red = negative, green = neutral, blue = positive) on ROOT-canvas paper `#F6F7F5`. Event displays stay dark in both themes.
-- **Motifs:** ROOT-style histograms with stat boxes, `G4Exception` banners, hairline tables.
+- **Motifs:** ROOT-style histograms with stat boxes, `G4Exception` banners, hairline tables, and dark glowing event displays.
 - **Theme:** light/dark follows the reader's system setting.
 
 ## Credits and licence

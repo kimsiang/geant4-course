@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8">
 <title>Geant4 2.0 Training</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Geant4 2.0 course pages: twelve weekly labs from a Python Monte Carlo to a defended virtual experiment.">
@@ -43,6 +43,35 @@
     </div>
   </section>
 
+<!-- fig:evd-muography -->
+  <section class="run" aria-labelledby="h-evd">
+    <p class="cmd">/vis/open TSG<span lang="en">event display</span><span lang="zh-Hans">事例显示</span></p>
+    <div>
+      <h2 id="h-evd" class="bi"><span lang="en">Watch a hill filter the sky.</span><span lang="zh-Hans">看一座山如何“过滤”天空。</span></h2>
+      <figure class="evd-fig"><div data-scene="muography" data-poster="media/evd-muography.gif" data-label="3D animation: cosmic muons fall on a hill with a tunnel and a hidden void; most stop in the rock, a few reach a telescope in the tunnel"></div><figcaption class="evd-cap"><span lang="en"><b>TOY MODEL.</b> A hill of standard rock (2.65 g/cm³) with a tunnel and a 14 m void. Muons aimed at the telescope have a toy spectrum dN/dE ∝ E<sup>−2.7</sup> above 1 GeV and a cos²θ angular distribution (real sea-level spectra are flatter below about 10 GeV); directions are kept close to the drawing plane. A muon reaches the tunnel only if its range, from the PDG standard-rock table, exceeds the rock along its path; otherwise it stops where the range runs out. The telescope is drawn larger than life. Lines of sight through the void cross less rock, so slightly more muons arrive from there: that excess is the muography signal.</span><span lang="zh-Hans"><b>玩具模型。</b>一座标准岩石（2.65 g/cm³）山体，内有隧道和一个 14 m 的空洞。射向望远镜的缪子取玩具能谱 dN/dE ∝ E<sup>−2.7</sup>（1 GeV 以上）和 cos²θ 角分布（真实海平面能谱在 10 GeV 以下更平缓）；方向限制在绘图平面附近。只有当缪子的射程（取自 PDG 标准岩石表）大于路径上的岩石厚度时，它才能到达隧道；否则在射程耗尽处停下。望远镜画得比实际大。穿过空洞的视线所经岩石更少，从那里来的缪子会略多一些：这个超出就是缪子成像的信号。</span></figcaption></figure>
+    </div>
+  </section>
+
+<!-- /fig:evd-muography -->
+  <section class="run" aria-labelledby="h-start">
+    <p class="cmd">/control/echo start<span lang="en">start here</span><span lang="zh-Hans">从这里开始</span></p>
+    <div class="prose">
+      <h2 id="h-start" class="bi"><span lang="en">No particle physics needed: civil engineers and geologists are welcome.</span><span lang="zh-Hans">不需要粒子物理基础：欢迎土木工程和地质学的同学。</span></h2>
+      <p lang="en">Cosmic-ray muons rain down at about one per square centimetre per minute and cross hundreds of metres of rock. Counting how many get through a hillside, a dam or the ground above a tunnel reveals how much mass lies along each direction. This is muography, and Geant4 is the standard tool for simulating it before a detector goes into the field.</p>
+      <p lang="zh-Hans">宇宙线缪子以每平方厘米每分钟约一个的速率落下，能穿过几百米的岩石。统计有多少缪子穿过了山坡、大坝或隧道上方的地层，就能知道每个方向上有多少质量。这就是缪子成像。在探测器进入现场之前，Geant4 是模拟它的标准工具。</p>
+      <p lang="en">If you come from civil engineering, geology or another field, read the <a href="primer.html"><b>background primer</b></a> first (about an hour). It explains what a muon is, the units (GeV, g/cm², m.w.e.), how muons lose energy in rock, and how a muography project maps onto the weeks of this course. Every week also opens with its own background section in plain language.</p>
+      <p lang="zh-Hans">如果你来自土木工程、地质学或其他专业，请先读<a href="primer.html"><b>入门背景</b></a>（约一小时）。它解释了缪子是什么、相关单位（GeV、g/cm²、米水当量）、缪子在岩石中如何损失能量，以及一个缪子成像项目如何对应到本课程的各周。每一周的开头也有一节通俗的背景知识。</p>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th><span lang="en">track</span><span lang="zh-Hans">方向</span></th><th><span lang="en">core weeks</span><span lang="zh-Hans">核心周次</span></th><th><span lang="en">skim or optional</span><span lang="zh-Hans">略读或选修</span></th><th><span lang="en">final project</span><span lang="zh-Hans">结课项目</span></th></tr></thead>
+        <tbody>
+          <tr><td><span lang="en">physics</span><span lang="zh-Hans">物理</span></td><td>1–12</td><td>—</td><td><span lang="en">any virtual experiment, including μSR</span><span lang="zh-Hans">任何虚拟实验，包括 μSR</span></td></tr>
+          <tr><td><span lang="en">muography (civil engineering, geology)</span><span lang="zh-Hans">缪子成像（土木、地质）</span></td><td>1–8, 11, 12</td><td><span lang="en">9 skim · 10 optional (muon spin, materials science)</span><span lang="zh-Hans">第 9 周略读 · 第 10 周选修（缪子自旋，属材料科学）</span></td><td><span lang="en">a void above a tunnel, an overburden, a dam density</span><span lang="zh-Hans">隧道上方空洞、覆盖层厚度、大坝密度</span></td></tr>
+        </tbody>
+      </table></div>
+      <p><a href="primer.html"><span lang="en">Read the background primer →</span><span lang="zh-Hans">阅读入门背景 →</span></a></p>
+    </div>
+  </section>
+
   <section class="run" aria-labelledby="h-weeks">
     <p class="cmd">/control/execute<span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></p>
     <div>
@@ -80,6 +109,6 @@
   </footer>
 </div>
 <script src="assets/course.js"></script>
+<script src="assets/evdisplay.js"></script>
+<script src="assets/evd-scenes.js"></script>
 <script>G4C.weekList(document.getElementById('weeks'));</script>
-
-</body></html>
