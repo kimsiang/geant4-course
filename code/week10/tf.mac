@@ -1,0 +1,8 @@
+# tf.mac -- run as:  mkdir -p data && ./week10 tf.mac
+/control/verbose 1
+/run/verbose 1
+/tf/B 0.010 T          # 10 mT, as in tf_musr.mac (globalfield ... 0.01 0 0)
+/run/initialize
+/analysis/setFileName data/tf_10mT
+/run/printProgress 50000
+/run/beamOn 200000

@@ -1,0 +1,11 @@
+# vis.mac -- diagnosis only: look at a few muons, never at statistics
+/run/initialize
+/vis/open TSG
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 90 0 deg
+/vis/viewer/set/upVector 0 1 0
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/scene/endOfEventAction accumulate 20
+/vis/scene/add/axes 0 0 0 50 mm
+/run/beamOn 20

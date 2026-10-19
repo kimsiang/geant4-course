@@ -1,0 +1,23 @@
+# tf_musr.mac -- the textbook's integrated TF-muSR experiment (section 12.4), for musrSim.
+# Run in build/run with data/ present:  ../musrSim tf_musr.mac   -> data/musrSim_0_tf.root
+# CHECK FIRST (Course-W10-a): your musrSim build must use spin-aware muon decay, or A(t) is flat.
+# ---- GEOMETRY ----
+/musr/command construct box World 400 400 400 G4_AIR 0 0 0 no_logical_volume norot dead -1
+/musr/command construct box Target 15 15 3 G4_Cu 0 0 0 log_World norot dead 5
+/musr/command construct box CounterU 40 3 40 G4_PLASTIC_SC_VINYLTOLUENE 0 45 0 log_World norot musr/ScintSD 11
+/musr/command construct box CounterD 40 3 40 G4_PLASTIC_SC_VINYLTOLUENE 0 -45 0 log_World norot musr/ScintSD 1
+# ---- FIELD ----
+/musr/command globalfield TF 400 400 400 uniform 0 0 0 log_World 0.01 0 0 0 0 0
+/musr/command globalfield printFieldValueAtPoint 0 0 0
+# ---- OUTPUT ----
+/musr/command SetOutputFileName tf
+/musr/command storeOnlyEventsWithMuonsDecayedInDetID 5
+# ---- BEAM ----
+/gun/primaryparticle mu+
+/gun/vertex 0 0 -80 mm
+/gun/vertexsigma 3 3 0 mm
+/gun/momentum 29.8 MeV
+/gun/muonPolarizVector 0 0 -1
+/gun/muonPolarizFraction 1
+/gun/decaytimelimits -1 -1 2197.03 ns
+/run/beamOn 200000
