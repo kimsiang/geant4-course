@@ -61,14 +61,14 @@ sub, sup { line-height: 0; }
 
 /* ---------- language toggle: html[data-lang] = en | zh | both ---------- */
 [lang="zh-Hans"] { font-family: var(--zh); }
-html[data-lang="en"] [lang="zh-Hans"]:not(.kt) { display: none !important; }
+html[data-lang="en"] [lang="zh-Hans"] { display: none !important; }
 html[data-lang="zh"] [lang="en"]:not(.kt):not(html) { display: none !important; }
 html[data-lang="both"] p[lang="zh-Hans"], html[data-lang="both"] li > span[lang="zh-Hans"],
 html[data-lang="both"] div[lang="zh-Hans"] { color: var(--muted); }
 html[data-lang="both"] p[lang="en"] + p[lang="zh-Hans"] { margin-top: -6px; }
 html[data-lang="both"] .bi > [lang="zh-Hans"] { display: block; font-size: 0.92em; color: var(--muted); }
 html[data-lang="both"] h1.bi > [lang="zh-Hans"], html[data-lang="both"] h2.bi > [lang="zh-Hans"] { font-size: 0.62em; font-weight: 600; margin-top: 8px; color: var(--muted); }
-/* key terms: the other language is always shown next to the term */
+/* key terms: in Chinese mode the English term is shown next to the Chinese one; English mode shows English only */
 .kt { font: 400 0.82em var(--zh); color: var(--muted); margin-left: 0.3em; white-space: nowrap; }
 .kt[lang="en"] { font-family: var(--mono); font-size: 0.78em; }
 html[data-lang="both"] .kt { display: none; }
