@@ -1,1 +1,3 @@
 code/week09/data/
+__pycache__/
+*.pyc
