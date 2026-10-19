@@ -84,11 +84,24 @@
       <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
     </div>
   </section>
+<!-- fig:evd-w07 -->
+  <section class="run" aria-labelledby="h-evd">
+    <p class="cmd">/vis/open TSG<span lang="en">event display</span><span lang="zh-Hans">事例显示</span></p>
+    <div>
+      <h2 id="h-evd" class="bi"><span lang="en">Six points, one bend, one momentum.</span><span lang="zh-Hans">六个点、一次弯折、一个动量。</span></h2>
+      <figure class="evd-fig"><div data-scene="w07" data-poster="media/evd-w07.gif" data-label="3D replay of Geant4 spectrometer events: a muon crosses three silicon planes, bends in a 1.5 tesla magnet, crosses three more planes; the momentum is reconstructed from the six crossing points"></div><figcaption class="evd-cap"><span lang="en"><b>GEANT4 11.4 DATA.</b> μ⁻ from our spectrometer runs at 1, 2, 5, 10 and 20 GeV/c. The six yellow points are the plane crossings Geant4 recorded; the path between them, and inside the magnet, is interpolated for drawing. The display reconstructs p from the six points with the two-line method of Eq. (8.1). At 20 GeV/c the deflection is only 22 mrad, which is why the resolution degrades with momentum.</span><span lang="zh-Hans"><b>GEANT4 11.4 数据。</b>取自我们 1、2、5、10、20 GeV/c 的谱仪运行的 μ⁻。六个黄点是 Geant4 记录的平面穿越点；它们之间以及磁铁内部的路径为绘图插值。显示屏用式 (8.1) 的两直线法由六个点重建 p。20 GeV/c 时偏转角只有 22 mrad，这就是分辨率随动量变差的原因。</span></figcaption></figure>
+    </div>
+  </section>
+
+<!-- /fig:evd-w07 -->
 
   <section class="run" aria-labelledby="h-theory">
     <p class="cmd">/control/manual<span lang="en">8.1 · curvature to momentum</span><span lang="zh-Hans">8.1 · 由曲率到动量</span></p>
     <div class="prose">
       <h2 id="h-theory" class="bi"><span lang="en">From "it passed through" to "it passed through carrying this much momentum".</span><span lang="zh-Hans">从“它穿过了”到“它带着这么多动量穿过了”。</span></h2>
+<!-- fig:svg-w07 -->
+<figure class="fig-svg"><svg viewBox="0 0 820 296" role="img" aria-label="Top view of the tracker magnet tracker spectrometer with a bending track and six hits"><defs><marker id="ah-spectro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><line x1="60" y1="40" x2="60" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="110" y1="40" x2="110" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="160" y1="40" x2="160" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="520" y1="40" x2="520" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="570" y1="40" x2="570" y2="240" class="s-fg" stroke-width="2" fill="none"/><line x1="620" y1="40" x2="620" y2="240" class="s-fg" stroke-width="2" fill="none"/><rect x="250" y="50" width="180" height="180" rx="3" class="s-pos" fill="none" stroke-width="1.4"/><circle cx="290" cy="90" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="290" cy="90" r="1.8" class="f-pos"/><circle cx="290" cy="140" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="290" cy="140" r="1.8" class="f-pos"/><circle cx="290" cy="190" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="290" cy="190" r="1.8" class="f-pos"/><circle cx="340" cy="90" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="340" cy="90" r="1.8" class="f-pos"/><circle cx="340" cy="140" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="340" cy="140" r="1.8" class="f-pos"/><circle cx="340" cy="190" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="340" cy="190" r="1.8" class="f-pos"/><circle cx="390" cy="90" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="390" cy="90" r="1.8" class="f-pos"/><circle cx="390" cy="140" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="390" cy="140" r="1.8" class="f-pos"/><circle cx="390" cy="190" r="7" class="s-pos" fill="none" stroke-width="1"/><circle cx="390" cy="190" r="1.8" class="f-pos"/><text x="340" y="44" text-anchor="middle" class="pos" font-size="11" lang="en">B ⊥ page, length L</text><text x="340" y="44" text-anchor="middle" class="pos" font-size="11" lang="zh-Hans">B 垂直于纸面，长度 L</text><path d="M20 140 L250 140 Q340 140 430 115 L700 40" class="s-neg" fill="none" stroke-width="2" marker-end="url(#ah-spectro)"/><circle cx="60" cy="140" r="4.5" class="f-hit"/><circle cx="110" cy="140" r="4.5" class="f-hit"/><circle cx="160" cy="140" r="4.5" class="f-hit"/><circle cx="520" cy="90" r="4.5" class="f-hit"/><circle cx="570" cy="76" r="4.5" class="f-hit"/><circle cx="620" cy="62" r="4.5" class="f-hit"/><text x="110" y="260" text-anchor="middle" class="m" font-size="11" lang="en">tracker 1: line in</text><text x="110" y="260" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">径迹室 1：入射直线</text><text x="570" y="260" text-anchor="middle" class="m" font-size="11" lang="en">tracker 2: line out</text><text x="570" y="260" text-anchor="middle" class="m" font-size="11" lang="zh-Hans">径迹室 2：出射直线</text><text x="340" y="284" text-anchor="middle" font-size="12">sin θout − sin θin = 0.3 B[T] L[m] / p[GeV/c]</text></svg><figcaption><span lang="en">Fit one straight line in each tracker; the change in angle across a known field gives p (Eq. 8.1). For 10 GeV/c in 1.5 T × 1 m the deflection is 45 mrad.</span><span lang="zh-Hans">在每组径迹室中各拟合一条直线；穿过已知磁场的角度变化给出 p（式 8.1）。10 GeV/c 在 1.5 T × 1 m 中偏转 45 mrad。</span></figcaption></figure>
+<!-- /fig:svg-w07 -->
       <div class="box">
         <p class="box-label">Theorem 8.1 · <span lang="en">The momentum–curvature relation</span><span lang="zh-Hans">动量—曲率关系</span></p>
         <p lang="en">A particle of charge q and transverse momentum p<sub>T</sub> in a uniform field B follows a circle of radius R with p<sub>T</sub> = |q| B R, or p<sub>T</sub> [GeV/c] = 0.299792458 |q/e| B [T] R [m]. p<sub>T</sub> equals p only when the motion is perpendicular to the field; otherwise p<sub>T</sub> = p sin α. A stronger field and a longer lever arm improve resolution, at the cost of a bigger magnet.</p>
@@ -847,6 +860,9 @@ Quoting one event's difference as "the resolution".
   </footer>
 </div>
 <script src="assets/course.js"></script>
+<script src="assets/evd-data.js"></script>
+<script src="assets/evdisplay.js"></script>
+<script src="assets/evd-scenes.js"></script>
 <script src="assets/week07.js"></script>
 </body>
 </html>

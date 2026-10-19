@@ -43,6 +43,16 @@
     </div>
   </section>
 
+<!-- fig:evd-muography -->
+  <section class="run" aria-labelledby="h-evd">
+    <p class="cmd">/vis/open TSG<span lang="en">event display</span><span lang="zh-Hans">事例显示</span></p>
+    <div>
+      <h2 id="h-evd" class="bi"><span lang="en">Watch a hill filter the sky.</span><span lang="zh-Hans">看一座山如何“过滤”天空。</span></h2>
+      <figure class="evd-fig"><div data-scene="muography" data-poster="media/evd-muography.gif" data-label="3D animation: cosmic muons fall on a hill with a tunnel and a hidden void; most stop in the rock, a few reach a telescope in the tunnel"></div><figcaption class="evd-cap"><span lang="en"><b>TOY MODEL.</b> A hill of standard rock (2.65 g/cm³) with a tunnel and a 14 m void. Muons aimed at the telescope have a toy spectrum dN/dE ∝ E<sup>−2.7</sup> above 1 GeV and a cos²θ angular distribution (real sea-level spectra are flatter below about 10 GeV); directions are kept close to the drawing plane. A muon reaches the tunnel only if its range, from the PDG standard-rock table, exceeds the rock along its path; otherwise it stops where the range runs out. The telescope is drawn larger than life. Lines of sight through the void cross less rock, so slightly more muons arrive from there: that excess is the muography signal.</span><span lang="zh-Hans"><b>玩具模型。</b>一座标准岩石（2.65 g/cm³）山体，内有隧道和一个 14 m 的空洞。射向望远镜的缪子取玩具能谱 dN/dE ∝ E<sup>−2.7</sup>（1 GeV 以上）和 cos²θ 角分布（真实海平面能谱在 10 GeV 以下更平缓）；方向限制在绘图平面附近。只有当缪子的射程（取自 PDG 标准岩石表）大于路径上的岩石厚度时，它才能到达隧道；否则在射程耗尽处停下。望远镜画得比实际大。穿过空洞的视线所经岩石更少，从那里来的缪子会略多一些：这个超出就是缪子成像的信号。</span></figcaption></figure>
+    </div>
+  </section>
+
+<!-- /fig:evd-muography -->
   <section class="run" aria-labelledby="h-start">
     <p class="cmd">/control/echo start<span lang="en">start here</span><span lang="zh-Hans">从这里开始</span></p>
     <div class="prose">
@@ -99,4 +109,6 @@
   </footer>
 </div>
 <script src="assets/course.js"></script>
+<script src="assets/evdisplay.js"></script>
+<script src="assets/evd-scenes.js"></script>
 <script>G4C.weekList(document.getElementById('weeks'));</script>

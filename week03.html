@@ -89,11 +89,24 @@
       <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
     </div>
   </section>
+<!-- fig:evd-w03 -->
+  <section class="run" aria-labelledby="h-evd">
+    <p class="cmd">/vis/open TSG<span lang="en">event display</span><span lang="zh-Hans">事例显示</span></p>
+    <div>
+      <h2 id="h-evd" class="bi"><span lang="en">Every dot is a step Geant4 took.</span><span lang="zh-Hans">每个点都是 Geant4 走的一步。</span></h2>
+      <figure class="evd-fig"><div data-scene="w03" data-poster="media/evd-w03.gif" data-label="3D replay of Geant4 steps: a 1 GeV negative muon crosses a 10 cm lead block; step points coloured by the process that ended each step, with short delta-electron tracks"></div><figcaption class="evd-cap"><span lang="en"><b>GEANT4 11.4 DATA.</b> 1 GeV μ⁻ through 10 cm of lead: the first 20 events of our run1000.mac. Each dot is the end of a step, coloured by the process that ended it (blue muIoni, white Transportation at a boundary, red eIoni for δ-electrons). The printout is 2D (x–z), so everything sits in one plane; δ-electrons are drawn from the muon step nearest their first recorded point, because their starting point was not printed.</span><span lang="zh-Hans"><b>GEANT4 11.4 数据。</b>1 GeV μ⁻ 穿过 10 cm 铅：我们运行 run1000.mac 的前 20 个事例。每个点是一步的终点，按结束它的过程着色（蓝色 muIoni，白色 Transportation 表示到达边界，红色 eIoni 表示 δ 电子）。打印输出是二维的（x–z），所以所有点都在同一平面内；δ 电子的起点没有打印，因此从离其第一个记录点最近的缪子步画起。</span></figcaption></figure>
+    </div>
+  </section>
+
+<!-- /fig:evd-w03 -->
 
   <section class="run" aria-labelledby="h-geo">
     <p class="cmd">/control/manual<span lang="en">3.1 · three decisions</span><span lang="zh-Hans">3.1 · 三个决定</span></p>
     <div class="prose">
       <h2 id="h-geo" class="bi"><span lang="en">What shape, what material, and where: three questions, three classes.</span><span lang="zh-Hans">什么形状、什么材料、放在哪里：三个问题，三个类。</span></h2>
+<!-- fig:svg-w03 -->
+<figure class="fig-svg"><svg viewBox="0 0 820 210" role="img" aria-label="Three boxes: solid, logical volume with material, physical placement in a mother volume"><defs><marker id="ah-geomlayers" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="20" y="40" width="230" height="120" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="34" y="66" font-size="13">G4VSolid</text><text x="34" y="90" class="m" font-size="11" lang="en">shape only</text><text x="34" y="90" class="m" font-size="11" lang="zh-Hans">只有形状</text><text x="34" y="140" class="pos" font-size="11">G4Box("Block", 5, 5, 5 cm)</text><line x1="252" y1="100" x2="288" y2="100" class="s-m" stroke-width="1.2" marker-end="url(#ah-geomlayers)" fill="none"/><rect x="290" y="40" width="230" height="120" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="304" y="66" font-size="13">G4LogicalVolume</text><text x="304" y="90" class="m" font-size="11" lang="en">+ material (+ SD, field)</text><text x="304" y="90" class="m" font-size="11" lang="zh-Hans">+ 材料（+ 灵敏探测器、场）</text><text x="304" y="140" class="pos" font-size="11">G4_CONCRETE</text><line x1="522" y1="100" x2="558" y2="100" class="s-m" stroke-width="1.2" marker-end="url(#ah-geomlayers)" fill="none"/><rect x="560" y="40" width="230" height="120" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="574" y="66" font-size="13">G4PVPlacement</text><text x="574" y="90" class="m" font-size="11" lang="en">+ position in a mother</text><text x="574" y="90" class="m" font-size="11" lang="zh-Hans">+ 在母体中的位置</text><text x="574" y="140" class="pos" font-size="11">in World at (0, 0, 0)</text><text x="20" y="196" class="m" font-size="11" lang="en">pattern → fabric → where it hangs: change one without touching the other two</text><text x="20" y="196" class="m" font-size="11" lang="zh-Hans">版型 → 布料 → 挂在哪里：改其中一个，不必动另外两个</text></svg><figcaption><span lang="en">The three geometry layers of Definition 3.1, with this week's concrete block as the example.</span><span lang="zh-Hans">定义 3.1 中的三层几何，以本周的混凝土块为例。</span></figcaption></figure>
+<!-- /fig:svg-w03 -->
       <div class="box">
         <p class="box-label">Definition 3.1 · <span lang="en">The three-layer geometry abstraction</span><span lang="zh-Hans">三层几何抽象</span></p>
         <p lang="en"><code>G4VSolid</code> describes pure geometric shape and carries no material or position. <code>G4LogicalVolume</code> binds a solid to a material (and later to a sensitive detector, a field and other properties). <code>G4PVPlacement</code> places a logical volume at a position and orientation inside a mother volume. The same logical volume can be placed many times without redefining its shape or material.</p>
@@ -696,6 +709,9 @@ Unknown NIST name: the call returns nullptr, and building the
   </footer>
 </div>
 <script src="assets/course.js"></script>
+<script src="assets/evd-data.js"></script>
+<script src="assets/evdisplay.js"></script>
+<script src="assets/evd-scenes.js"></script>
 <script src="assets/week03.js"></script>
 </body>
 </html>

@@ -91,6 +91,16 @@
       <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
     </div>
   </section>
+<!-- fig:evd-w01 -->
+  <section class="run" aria-labelledby="h-evd">
+    <p class="cmd">/vis/open TSG<span lang="en">event display</span><span lang="zh-Hans">事例显示</span></p>
+    <div>
+      <h2 id="h-evd" class="bi"><span lang="en">Your Monte Carlo, drawn ray by ray.</span><span lang="zh-Hans">把你的蒙特卡罗一条一条画出来。</span></h2>
+      <figure class="evd-fig"><div data-scene="w01" data-poster="media/evd-w01.gif" data-label="3D animation: rays enter a two-layer telescope; some cross both layers and light them, the running efficiency is shown"></div><figcaption class="evd-cap"><span lang="en"><b>TOY MODEL: the Week 1 Monte Carlo, drawn.</b> Two 30 × 30 cm layers 50 cm apart; directions uniform in cos θ over the downward hemisphere and entry points uniform on the upper layer, exactly as in telescope_transmission.py. Yellow: a layer crossed. The display keeps a running ε = k/N with its binomial uncertainty. Track colour (more μ⁺ than μ⁻) is decoration.</span><span lang="zh-Hans"><b>玩具模型：把第 1 周的蒙特卡罗画出来。</b>两层 30 × 30 cm 的探测层相距 50 cm；方向在向下半球内按 cos θ 均匀抽样，入射点在上层均匀分布，与 telescope_transmission.py 完全相同。黄色：穿过了该层。显示屏实时给出 ε = k/N 及其二项分布不确定度。径迹颜色（μ⁺ 多于 μ⁻）仅作装饰。</span></figcaption></figure>
+    </div>
+  </section>
+
+<!-- /fig:evd-w01 -->
 
   <!-- LESSON 1: why python -->
   <section class="run" aria-labelledby="h-why">
@@ -101,6 +111,9 @@
       <p lang="zh-Hans">打开一个官方 Geant4 示例，同一屏上会出现 C++ 语法、CMake 构建、探测器构建、物理列表、初级粒子产生器、用户动作、灵敏探测器、可视化宏和随机数管理。单独看每一项都不难，难的是顺序不对：没有一个实验问题告诉你为什么需要某个类。</p>
       <p lang="en">Geant4 2.0 reverses the order. You first finish a Monte Carlo experiment in Python, then move the same experiment into Geant4. When you meet <code>G4ParticleGun</code> next week you already know what "firing a particle" means. Only the language changes.</p>
       <p lang="zh-Hans">Geant4 2.0 把顺序倒过来：先用 Python 完成一个蒙特卡罗实验，再把同一个实验搬进 Geant4。下周遇到 <code>G4ParticleGun</code> 时，你已经知道“发射一个粒子”是什么意思，变的只是语言。</p>
+<!-- fig:svg-w01 -->
+<figure class="fig-svg"><svg viewBox="0 0 820 280" role="img" aria-label="Side view of a two-layer telescope with a transmitted and a missed ray"><defs><marker id="ah-telescope" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="260" y="60" width="300" height="10" rx="1" class="s-fg f-soft" stroke-width="1.4"/><rect x="260" y="230" width="300" height="10" rx="1" class="s-fg f-soft" stroke-width="1.4"/><text x="570" y="69" lang="en">upper layer, side L</text><text x="570" y="69" lang="zh-Hans">上层，边长 L</text><text x="570" y="239" lang="en">lower layer</text><text x="570" y="239" lang="zh-Hans">下层</text><line x1="240" y1="65" x2="240" y2="235" class="s-m" stroke-width="1" marker-end="url(#ah-telescope)" fill="none"/><text x="230" y="155" text-anchor="end">d</text><line x1="340" y1="20" x2="380" y2="65" class="s-pos" stroke-width="1.8" fill="none"/><line x1="380" y1="65" x2="470" y2="235" class="s-pos" stroke-width="1.8" marker-end="url(#ah-telescope)" fill="none"/><text x="472" y="200" class="pos" font-size="11" lang="en">transmitted</text><text x="472" y="200" class="pos" font-size="11" lang="zh-Hans">穿过两层</text><line x1="470" y1="20" x2="520" y2="65" class="s-neg" stroke-width="1.6" fill="none"/><line x1="520" y1="65" x2="700" y2="260" class="s-neg" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#ah-telescope)" fill="none"/><text x="640" y="210" class="neg" font-size="11" lang="en">misses</text><text x="640" y="210" class="neg" font-size="11" lang="zh-Hans">未击中</text><line x1="380" y1="65" x2="380" y2="140" class="s-m" stroke-width="0.8" stroke-dasharray="2 3" fill="none"/><path d="M380 100 A35 35 0 0 0 398 96" class="s-m" fill="none" stroke-width="1"/><text x="386" y="122" class="m">θ</text><text x="20" y="120" font-size="15">ε ≈ k / N</text><text x="20" y="145" class="m" font-size="13">σε ≈ √(ε(1−ε)/N)</text><text x="20" y="170" class="m" font-size="11" lang="en">×100 events → ÷10 error</text><text x="20" y="170" class="m" font-size="11" lang="zh-Hans">事例 ×100 → 误差 ÷10</text></svg><figcaption><span lang="en">The Week 1 experiment: of N rays entering the upper layer, k also cross the lower one. The estimate k/N carries a binomial uncertainty that shrinks only as 1/√N.</span><span lang="zh-Hans">第 1 周的实验：进入上层的 N 条径迹中有 k 条也穿过下层。估计值 k/N 带有二项分布不确定度，只按 1/√N 缩小。</span></figcaption></figure>
+<!-- /fig:svg-w01 -->
 
       <div class="box">
         <p class="box-label">Example 1.1 · <span lang="en">Today's laboratory question</span><span lang="zh-Hans">今天的实验问题</span></p>
@@ -576,6 +589,8 @@ Mixed units: L in cm, d in m.
   </footer>
 </div>
 <script src="assets/course.js"></script>
+<script src="assets/evdisplay.js"></script>
+<script src="assets/evd-scenes.js"></script>
 <script src="assets/week01.js"></script>
 </body>
 </html>

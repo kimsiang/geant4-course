@@ -91,6 +91,16 @@
       <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
     </div>
   </section>
+<!-- fig:evd-w02 -->
+  <section class="run" aria-labelledby="h-evd">
+    <p class="cmd">/vis/open TSG<span lang="en">event display</span><span lang="zh-Hans">事例显示</span></p>
+    <div>
+      <h2 id="h-evd" class="bi"><span lang="en">Replay your own Geant4 events.</span><span lang="zh-Hans">回放你自己的 Geant4 事例。</span></h2>
+      <figure class="evd-fig"><div data-scene="w02" data-poster="media/evd-w02.gif" data-label="3D replay of Geant4 events: 100 MeV negative pions from a gun at z equals minus 1 metre, some decaying into a muon and a neutrino"></div><figcaption class="evd-cap"><span lang="en"><b>GEANT4 11.4 DATA.</b> Sixteen events from our run of pion.mac (100 MeV π⁻, gun at z = −1 m, empty 3 m world): only the track end points Geant4 printed are drawn. Red: negative; green dashed: the neutrino, which no detector would see. We picked 12 decays and 4 pions that leave the world. In the full run of 1000, 198 pions decayed (19.8%), close to the 20.5% expected from a mean decay length of 10.9 m over 2.5 m.</span><span lang="zh-Hans"><b>GEANT4 11.4 数据。</b>取自我们运行 pion.mac（100 MeV π⁻，粒子枪位于 z = −1 m，3 m 空 world）的 16 个事例：只画出 Geant4 打印的径迹端点。红色：负电荷；绿色虚线：中微子，任何探测器都看不到它。我们挑了 12 个衰变事例和 4 个飞出 world 的事例。在完整的 1000 个事例中，有 198 个 π 介子衰变（19.8%），与平均衰变长度 10.9 m、飞行 2.5 m 时预期的 20.5% 接近。</span></figcaption></figure>
+    </div>
+  </section>
+
+<!-- /fig:evd-w02 -->
 
   <!-- LESSON 1 -->
   <section class="run" aria-labelledby="h-run">
@@ -99,6 +109,9 @@
       <h2 id="h-run" class="bi"><span lang="en">Change a number, watch the output change, then learn the class behind it.</span><span lang="zh-Hans">先改一个数、看输出变化，再学背后的类。</span></h2>
       <p lang="en">The challenge is direct: fire a 1 GeV muon into an empty world and watch it move. You get a minimal application that already works. You change four parameters of the primary generator: particle species, energy, position and direction. Then you rebuild, run and compare the output. A class whose output you have never seen costs twice as much to learn.</p>
       <p lang="zh-Hans">挑战很直接：向一个空世界发射一个 1 GeV 的缪子，看它运动。你拿到的是一个已经能运行的最小程序，只需改动初级粒子产生器的四个参数——粒子种类、能量、位置、方向——然后重新编译、运行、比较输出。一个从没见过输出的抽象类，学起来要多花一倍的力气。</p>
+<!-- fig:svg-w02 -->
+<figure class="fig-svg"><svg viewBox="0 0 820 280" role="img" aria-label="Nested boxes: a run contains events, an event contains tracks, a track contains steps, with the matching Geant4 classes and user hooks"><defs><marker id="ah-hierarchy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker></defs><rect x="20" y="20" width="780" height="250" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="32" y="40" font-size="13" lang="en">Run</text><text x="32" y="40" font-size="13" lang="zh-Hans">运行</text><text x="32" y="56" class="m" font-size="10">G4Run · BeginOfRunAction / EndOfRunAction</text><rect x="45" y="60" width="560" height="190" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="57" y="80" font-size="13" lang="en">Event</text><text x="57" y="80" font-size="13" lang="zh-Hans">事例</text><text x="57" y="96" class="m" font-size="10">G4Event · BeginOfEventAction / EndOfEventAction</text><rect x="70" y="100" width="400" height="130" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="82" y="120" font-size="13" lang="en">Track</text><text x="82" y="120" font-size="13" lang="zh-Hans">径迹</text><text x="82" y="136" class="m" font-size="10">G4Track · PreUserTrackingAction</text><rect x="95" y="140" width="240" height="70" rx="3" class="s-fg" fill="none" stroke-width="1.3"/><text x="107" y="160" font-size="13" lang="en">Step</text><text x="107" y="160" font-size="13" lang="zh-Hans">步</text><text x="107" y="176" class="m" font-size="10">G4Step · UserSteppingAction</text><text x="630" y="100" class="m" font-size="11" lang="en">same geometry and</text><text x="630" y="100" class="m" font-size="11" lang="zh-Hans">同一几何与</text><text x="630" y="116" class="m" font-size="11" lang="en">physics for the run</text><text x="630" y="116" class="m" font-size="11" lang="zh-Hans">物理设置</text><text x="490" y="140" class="m" font-size="11" lang="en">one particle,</text><text x="490" y="140" class="m" font-size="11" lang="zh-Hans">一个粒子，</text><text x="490" y="156" class="m" font-size="11" lang="en">creation to end</text><text x="490" y="156" class="m" font-size="11" lang="zh-Hans">从产生到终止</text><text x="350" y="180" class="m" font-size="11" lang="en">ends at a boundary</text><text x="350" y="180" class="m" font-size="11" lang="zh-Hans">在边界或</text><text x="350" y="196" class="m" font-size="11" lang="en">or a process</text><text x="350" y="196" class="m" font-size="11" lang="zh-Hans">某个过程处结束</text></svg><figcaption><span lang="en">Run → Event → Track → Step, with the Geant4 class for each level and the user-action method Geant4 calls there.</span><span lang="zh-Hans">运行 → 事例 → 径迹 → 步，每一层对应的 Geant4 类，以及 Geant4 在该层调用的用户动作方法。</span></figcaption></figure>
+<!-- /fig:svg-w02 -->
 
       <div class="aside">
         <p class="aside-label"><span lang="en">What Geant4 is doing</span><span lang="zh-Hans">Geant4 在做什么</span></p>
@@ -761,6 +774,9 @@ Gun randomised in the constructor, expecting new values each event.
   </footer>
 </div>
 <script src="assets/course.js"></script>
+<script src="assets/evd-data.js"></script>
+<script src="assets/evdisplay.js"></script>
+<script src="assets/evd-scenes.js"></script>
 <script src="assets/week02.js"></script>
 </body>
 </html>
