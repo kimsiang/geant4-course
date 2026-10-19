@@ -338,3 +338,6 @@ footer { border-top: 1px solid var(--rule); padding-top: 20px; margin-top: 8px; 
 
 /* long identifiers in running text must wrap on phones */
 p code, li code, td code, .cap code { overflow-wrap: anywhere; }
+/* bilingual inline labels and table cells (both mode): separator for labels, stacked lines in cells */
+html[data-lang="both"] :is(.box-label, .aside-label, .cap, .panel-title, a) > span[lang="en"] + span[lang="zh-Hans"]::before { content: " · "; }
+html[data-lang="both"] :is(td, th) > span[lang="zh-Hans"] { display: block; color: var(--muted); }

@@ -62,6 +62,29 @@
     </div>
   </section>
 
+  <section class="run" id="background" aria-labelledby="h-bg">
+    <p class="cmd">/control/echo background<span lang="en">background · for non-physicists</span><span lang="zh-Hans">背景知识 · 写给非物理专业</span></p>
+    <div class="prose">
+      <h2 id="h-bg" class="bi"><span lang="en">Data are tables: one row per event, one column per measured quantity.</span><span lang="zh-Hans">数据就是表格：一行一个事例，一列一个测量量。</span></h2>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">ROOT files and ntuples</span><span lang="zh-Hans">ROOT 文件与 ntuple</span></p>
+        <p lang="en">An ntuple is a table, like a spreadsheet or a CSV file, where each row is an event and each column a quantity: time, energy deposited, which channel fired. ROOT is the particle-physics file format and toolkit for such tables. With the Python package uproot you can read it into NumPy without installing ROOT.</p>
+        <p lang="zh-Hans">ntuple 就是一张表，像电子表格或 CSV 文件：每一行是一个事例，每一列是一个量，比如时间、沉积能量、哪个通道响应。ROOT 是粒子物理处理这类表格的文件格式和工具包。用 Python 包 uproot 可以直接读入 NumPy，无需安装 ROOT。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Truth versus measurement</span><span lang="zh-Hans">真值与测量值</span></p>
+        <p lang="en">A simulation knows everything: the muon's true energy and path. A real detector only knows hit times, positions and pulse heights. Keep the two in separate tables, and make the measured one look exactly like the real data acquisition (DAQ) output. Then the same analysis program runs on both.</p>
+        <p lang="zh-Hans">模拟知道一切：缪子的真实能量和路径。真实探测器只知道击中时间、位置和脉冲幅度。把两者放在不同的表里，并让测量表与真实数据采集（DAQ）的输出完全一致。这样同一个分析程序可以在两者上运行。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">For muography projects</span><span lang="zh-Hans">用于缪子成像工程</span></p>
+        <p lang="en">A muography result is usually a ratio: the measured count along each direction divided by the simulated count for a reference model (or by an open-sky measurement). That only works if field data and simulation pass through the same reconstruction code, which is this week's DAQ-parity rule.</p>
+        <p lang="zh-Hans">缪子成像的结果通常是一个比值：每个方向上的实测计数除以参考模型的模拟计数（或除以开阔天空的测量）。只有当野外数据和模拟经过同一套重建代码时，这才行得通，也就是本周的 DAQ 一致性原则。</p>
+      </div>
+      <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
+    </div>
+  </section>
+
   <section class="run" aria-labelledby="h-parity">
     <p class="cmd">/control/manual<span lang="en">9.1 · DAQ parity</span><span lang="zh-Hans">9.1 · DAQ 一致性</span></p>
     <div class="prose">

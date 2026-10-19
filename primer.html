@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Background primer · muons and muography</title>
+<meta name="description" content="Geant4 2.0 background primer for engineers and geoscientists: what a muon is, where cosmic muons come from, how they lose energy in rock, how muography works, and how a muography project maps onto a Geant4 simulation.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/course.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <span><a href="index.html"><b>Geant4 2.0</b></a> · <span lang="en">Background primer</span><span lang="zh-Hans">入门背景</span></span>
+    <span class="bar-r">
+      <a href="index.html"><span lang="en">Course index</span><span lang="zh-Hans">课程目录</span></a>
+      <span class="lang" role="group" aria-label="Language / 语言">
+        <button type="button" data-setlang="en" id="lang-en">EN</button>
+        <button type="button" data-setlang="zh" id="lang-zh">中文</button>
+        <button type="button" data-setlang="both" id="lang-both">EN+中</button>
+      </span>
+    </span>
+  </div>
+
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">$ <span>cat primer.txt</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">The physics you need before Week 1, if you come from civil engineering or geology.</span><span lang="zh-Hans">如果你来自土木工程或地质学，这是第 1 周之前你需要的物理。</span></h1>
+      <p class="lede" lang="en">You do not need a particle-physics degree to simulate muography. You need about a dozen ideas: what a muon is, where it comes from, how much rock it can cross, what it does when it crosses, and how a detector notices. This page explains each in engineering language, with the numbers you will use, and shows where every week of the course fits into a real muography project.</p>
+      <p class="lede" lang="zh-Hans">做缪子成像模拟不需要粒子物理学位，只需要十来个概念：缪子是什么、从哪里来、能穿透多厚的岩石、穿过时发生了什么、探测器怎样察觉到它。本页用工程语言逐一解释，并给出你会用到的数字，再说明课程每一周在一个真实的缪子成像项目中处于什么位置。</p>
+      <ul class="meta">
+        <li><b>≈ 1 h</b><span lang="en">reading time</span><span lang="zh-Hans">阅读时间</span></li>
+        <li><b>0</b><span lang="en">equations you must derive</span><span lang="zh-Hans">需要推导的公式</span></li>
+        <li><b>PDG</b><span lang="en">source of every number</span><span lang="zh-Hans">所有数字的来源</span></li>
+      </ul>
+    </div>
+    <div class="statbox" role="table" aria-label="The muon at a glance">
+      <div role="row"><span role="cell"><span lang="en">the muon</span><span lang="zh-Hans">缪子速览</span></span></div>
+      <div role="row"><span role="cell"><span lang="en">mass</span><span lang="zh-Hans">质量</span></span><span role="cell">105.7 MeV/c² ≈ 207 mₑ</span></div>
+      <div role="row"><span role="cell"><span lang="en">charge</span><span lang="zh-Hans">电荷</span></span><span role="cell">μ⁻: −e · μ⁺: +e</span></div>
+      <div role="row"><span role="cell"><span lang="en">mean life</span><span lang="zh-Hans">平均寿命</span></span><span role="cell">2.197 µs</span></div>
+      <div role="row"><span role="cell"><span lang="en">sea-level flux</span><span lang="zh-Hans">海平面通量</span></span><span role="cell">≈ 1 cm⁻² min⁻¹</span></div>
+      <div role="row"><span role="cell"><span lang="en">mean energy at ground</span><span lang="zh-Hans">地面平均能量</span></span><span role="cell">≈ 4 GeV</span></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-muon">
+    <p class="cmd">/particle/select mu-<span lang="en">1 · what a muon is</span><span lang="zh-Hans">1 · 缪子是什么</span></p>
+    <div class="prose">
+      <h2 id="h-muon" class="bi"><span lang="en">A heavy, short-lived cousin of the electron.</span><span lang="zh-Hans">电子的一个又重又短命的“表亲”。</span></h2>
+      <p lang="en">Ordinary matter is made of atoms: a small, heavy nucleus surrounded by light electrons. The muon is an elementary particle with the same electric charge as the electron (μ⁻) or its opposite (μ⁺), but about 207 times heavier. It is not part of ordinary atoms, because it is unstable: on average it lives 2.197 microseconds and then decays into an electron (or positron) and two neutrinos, which escape unseen.</p>
+      <p lang="zh-Hans">普通物质由原子构成：一个又小又重的原子核，外面围着轻的电子。缪子是一种基本粒子，电荷与电子相同（μ⁻）或相反（μ⁺），但质量约为电子的 207 倍。它不是普通原子的组成部分，因为它不稳定：平均寿命 2.197 微秒，之后衰变为一个电子（或正电子）和两个中微子，中微子会悄无声息地逃走。</p>
+      <p lang="en">Two properties make the muon useful to engineers. Because it is heavy, it is not easily deflected or stopped: it ploughs through hundreds of metres of rock in nearly a straight line. Because it is charged, it leaves a trail of ionised atoms that a detector can record. A muon is therefore a natural, free, and penetrating probe, rather like an X-ray that can see through a mountain.</p>
+      <p lang="zh-Hans">有两个性质让缪子对工程师有用。因为重，它不容易被偏转或挡住：能以近乎直线的路径穿过几百米岩石。因为带电，它沿途会留下一串电离的原子，探测器可以记录下来。所以缪子是一种天然、免费、穿透力极强的探针，有点像能穿透一座山的 X 射线。</p>
+      <div class="box">
+        <p class="box-label"><span lang="en">Energy units without fear</span><span lang="zh-Hans">别怕能量单位</span></p>
+        <p lang="en">Particle physicists measure energy in electron-volts: 1 eV is the energy an electron gains across 1 volt, 1.6 × 10⁻¹⁹ J. Then 1 MeV = 10⁶ eV and 1 GeV = 10⁹ eV. Mass and momentum are quoted in the same units (MeV/c², MeV/c), so you can add and compare them directly. Rule of thumb: a cosmic muon of a few GeV carries the energy of a few ten-billionths of a joule. It is tiny for a person and enormous for a single atom.</p>
+        <p lang="zh-Hans">粒子物理用电子伏特计量能量：1 eV 是一个电子经过 1 伏电压获得的能量，即 1.6 × 10⁻¹⁹ J。1 MeV = 10⁶ eV，1 GeV = 10⁹ eV。质量和动量也用同样的单位表示（MeV/c²、MeV/c），可以直接相加和比较。经验法则：几个 GeV 的宇宙线缪子所带能量只有几十亿分之一焦耳，对人来说微不足道，对单个原子来说却巨大无比。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-sky">
+    <p class="cmd">/gun/particle mu-<span lang="en">2 · where cosmic muons come from</span><span lang="zh-Hans">2 · 宇宙线缪子从哪里来</span></p>
+    <div class="prose">
+      <h2 id="h-sky" class="bi"><span lang="en">A steady rain from 15 km up, about one per square centimetre per minute.</span><span lang="zh-Hans">从 15 公里高空落下的稳定“雨”，每平方厘米每分钟约一个。</span></h2>
+      <p lang="en">The Earth is constantly hit by cosmic rays, mostly protons from outside the solar system. When one strikes a nucleus of the upper atmosphere it produces a shower of new particles, among them pions, which quickly decay into muons. Most muons are produced high in the atmosphere, typically around 15 km.</p>
+      <p lang="zh-Hans">地球一直受到宇宙线的轰击，主要是来自太阳系外的质子。它撞上高层大气的原子核时，会产生一簇新粒子，其中有 π 介子，π 介子很快衰变成缪子。大多数缪子产生于大气高层，典型高度约 15 公里。</p>
+      <div class="box">
+        <p class="box-label"><span lang="en">Why muons reach the ground at all</span><span lang="zh-Hans">缪子为什么能到达地面</span></p>
+        <p lang="en">In 2.2 µs light travels only 660 m, so a muon "should" decay long before falling 15 km. It doesn't, because it moves at nearly the speed of light and special relativity slows its clock. A muon with 4 GeV of energy has a time-dilation factor γ ≈ 38, so its average decay length grows to about 25 km. Cosmic muons are an everyday proof of relativity.</p>
+        <p lang="zh-Hans">2.2 µs 内光只能走 660 m，所以缪子“本该”在落下 15 公里之前就衰变掉。但它没有，因为它以接近光速运动，狭义相对论让它的时钟变慢。能量 4 GeV 的缪子时间膨胀因子 γ ≈ 38，平均衰变长度因此增加到约 25 公里。宇宙线缪子是相对论的日常证据。</p>
+      </div>
+      <p lang="en">What arrives at sea level (PDG Review of Particle Physics):</p>
+      <p lang="zh-Hans">到达海平面的情况（PDG《粒子物理评论》）：</p>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th><span lang="en">quantity</span><span lang="zh-Hans">物理量</span></th><th><span lang="en">value</span><span lang="zh-Hans">数值</span></th></tr></thead>
+        <tbody>
+          <tr><td><span lang="en">flux through a horizontal detector</span><span lang="zh-Hans">水平探测器接收的通量</span></td><td><span lang="en">≈ 1 cm⁻² min⁻¹, so ≈ 170 per second on 1 m²</span><span lang="zh-Hans">≈ 1 cm⁻² min⁻¹，即 1 m² 上每秒约 170 个</span></td></tr>
+          <tr><td><span lang="en">vertical intensity above 1 GeV/c</span><span lang="zh-Hans">1 GeV/c 以上的竖直强度</span></td><td><span lang="en">≈ 70 m⁻² s⁻¹ sr⁻¹ (recent data 10–15% lower)</span><span lang="zh-Hans">≈ 70 m⁻² s⁻¹ sr⁻¹（近期测量低 10–15%）</span></td></tr>
+          <tr><td><span lang="en">mean energy</span><span lang="zh-Hans">平均能量</span></td><td>≈ 4 GeV</td></tr>
+          <tr><td><span lang="en">angular distribution</span><span lang="zh-Hans">角分布</span></td><td><span lang="en">∝ cos²θ (θ = zenith angle) around 3 GeV; more horizontal muons are rarer but more energetic</span><span lang="zh-Hans">约 3 GeV 时 ∝ cos²θ（θ 为天顶角）；越接近水平越稀少，但能量更高</span></td></tr>
+          <tr><td><span lang="en">charge ratio</span><span lang="zh-Hans">电荷比</span></td><td><span lang="en">slightly more μ⁺ than μ⁻</span><span lang="zh-Hans">μ⁺ 略多于 μ⁻</span></td></tr>
+        </tbody>
+      </table></div>
+      <p lang="en">"sr" is the steradian, the unit of solid angle: how big a patch of sky a detector looks at. A full sky hemisphere is 2π ≈ 6.28 sr. Rates in muography always come as intensity × area × solid angle × time.</p>
+      <p lang="zh-Hans">“sr”是球面度，立体角的单位：表示探测器看到的那片天空有多大。整个半边天空是 2π ≈ 6.28 sr。缪子成像中的计数率总是“强度 × 面积 × 立体角 × 时间”。</p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-rock">
+    <p class="cmd">/run/beamOn<span lang="en">3 · muons in rock</span><span lang="zh-Hans">3 · 缪子在岩石中</span></p>
+    <div class="prose">
+      <h2 id="h-rock" class="bi"><span lang="en">What matters is mass per area, not thickness.</span><span lang="zh-Hans">关键是单位面积的质量，而不是厚度。</span></h2>
+      <p lang="en">A muon crossing matter loses energy mainly by knocking electrons off atoms along its path (ionisation, Week 4). The loss is steady, like friction, and depends almost only on how much mass it crosses. Physicists therefore measure thickness as <b>areal density</b>, density × length, in g/cm². One metre of standard rock (2.65 g/cm³) is 265 g/cm². The same quantity expressed in metres of water is the <b>metre water equivalent (m.w.e.)</b>: 1 m.w.e. = 100 g/cm².</p>
+      <p lang="zh-Hans">缪子穿过物质时，主要靠沿途把原子的电子打出来而损失能量（电离，第 4 周）。这种损失像摩擦一样稳定，几乎只取决于穿过了多少质量。所以物理学家用<b>面密度</b>（密度 × 长度，单位 g/cm²）来衡量厚度。1 米标准岩石（2.65 g/cm³）就是 265 g/cm²。同一个量用水的米数表示，就是<b>米水当量（m.w.e.）</b>：1 m.w.e. = 100 g/cm²。</p>
+      <p lang="en">In rock a muon loses roughly 2 MeV per g/cm², about 0.5 GeV per metre of rock. Above a few hundred GeV, radiative losses (bremsstrahlung, pair production) add a term that grows with energy; in standard rock the two are equal near 500 GeV. The PDG table for standard rock gives how far a muon of each kinetic energy can go before it stops:</p>
+      <p lang="zh-Hans">在岩石中，缪子每 g/cm² 约损失 2 MeV，相当于每米岩石约 0.5 GeV。几百 GeV 以上，辐射损失（轫致辐射、对产生）会增加一个随能量增长的项；在标准岩石中，两者大约在 500 GeV 处相等。PDG 标准岩石表给出了不同动能的缪子在停下前能走多远：</p>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th><span lang="en">kinetic energy</span><span lang="zh-Hans">动能</span></th><th><span lang="en">range [g/cm²]</span><span lang="zh-Hans">射程 [g/cm²]</span></th><th><span lang="en">standard rock</span><span lang="zh-Hans">标准岩石</span></th><th>m.w.e.</th></tr></thead>
+        <tbody>
+          <tr><td>1 GeV</td><td>553</td><td>2.1 m</td><td>5.5</td></tr>
+          <tr><td>3 GeV</td><td>1 599</td><td>6.0 m</td><td>16</td></tr>
+          <tr><td>10 GeV</td><td>4 920</td><td>19 m</td><td>49</td></tr>
+          <tr><td>100 GeV</td><td>40 840</td><td>154 m</td><td>408</td></tr>
+          <tr><td>1 TeV</td><td>245 300</td><td>926 m</td><td>2 450</td></tr>
+        </tbody>
+      </table></div>
+      <p class="cap"><span lang="en">PDG 2024, muE_standard_rock (ρ = 2.65 g/cm³, continuous-slowing-down range). Real rock differs in density and composition: always use your site's measured density.</span><span lang="zh-Hans">PDG 2024，muE_standard_rock（ρ = 2.65 g/cm³，连续慢化近似射程）。真实岩石的密度和成分不同：一定要用现场实测的密度。</span></p>
+      <p lang="en">Read the table backwards and it becomes the core of absorption muography: under 19 m of rock only muons that arrived with more than about 10 GeV survive. Because the sky's energy spectrum falls steeply, every extra metre of rock removes a predictable fraction of muons. Count fewer muons than expected along one direction, and there is more mass along that line; count more, and there is a void.</p>
+      <p lang="zh-Hans">把这张表倒过来读，就是吸收式缪子成像的核心：在 19 m 岩石下，只有到达时能量高于约 10 GeV 的缪子能活下来。天空的能谱下降很陡，所以每多一米岩石，就会按可预测的比例去掉一部分缪子。某个方向上测到的缪子比预期少，说明那条线上质量更多；测到的更多，说明有空洞。</p>
+      <div class="box">
+        <p class="box-label"><span lang="en">Scattering: the second effect</span><span lang="zh-Hans">散射：第二种效应</span></p>
+        <p lang="en">Each muon also zig-zags slightly as it passes many nuclei (multiple Coulomb scattering, Week 4). The typical angle grows with the square root of thickness, shrinks with momentum, and is larger in heavy elements such as iron or lead. A 3 GeV muon crossing 1 m of standard rock is deflected by about 0.9° (PDG formula with radiation length 26.5 g/cm²). This blurs absorption images, but it is also a signal in its own right: scattering muography detects dense, high-Z objects such as steel or uranium inside containers.</p>
+        <p lang="zh-Hans">缪子经过大量原子核时还会轻微地“之”字形偏折（多次库仑散射，第 4 周）。典型偏转角随厚度的平方根增大，随动量增大而减小，在铁、铅这类重元素中更大。3 GeV 的缪子穿过 1 m 标准岩石，偏转约 0.9°（按 PDG 公式，辐射长度取 26.5 g/cm²）。这会让吸收成像变模糊，但它本身也是一种信号：散射式缪子成像能探测集装箱里的钢材或铀这类高密度、高原子序数物体。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-mug">
+    <p class="cmd">/vis/drawVolume<span lang="en">4 · muography</span><span lang="zh-Hans">4 · 缪子成像</span></p>
+    <div class="prose">
+      <h2 id="h-mug" class="bi"><span lang="en">Muography began as a civil-engineering measurement.</span><span lang="zh-Hans">缪子成像最早就是一次土木工程测量。</span></h2>
+      <p lang="en">In 1955 E. P. George used cosmic-ray muons to measure the rock overburden above a tunnel of the Snowy Mountains hydro-electric scheme in Australia. In the late 1960s Luis Alvarez searched the Chephren pyramid for hidden chambers. In 2017 the ScanPyramids team reported a large previously unknown void in Khufu's pyramid (Nature 552, 386). Today muography is used on volcanoes, mines, tunnels, dams, historical buildings and nuclear reactors.</p>
+      <p lang="zh-Hans">1955 年，E. P. George 用宇宙线缪子测量了澳大利亚雪山水电工程一条隧道上方的岩石覆盖厚度。1960 年代末，Luis Alvarez 在哈夫拉金字塔中寻找隐藏的墓室。2017 年，ScanPyramids 团队报告在胡夫金字塔中发现一个此前未知的大空腔（Nature 552, 386）。如今缪子成像被用于火山、矿山、隧道、大坝、历史建筑和核反应堆。</p>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th><span lang="en">mode</span><span lang="zh-Hans">方式</span></th><th><span lang="en">measures</span><span lang="zh-Hans">测量什么</span></th><th><span lang="en">typical targets</span><span lang="zh-Hans">典型对象</span></th></tr></thead>
+        <tbody>
+          <tr><td><span lang="en">absorption (transmission)</span><span lang="zh-Hans">吸收式（透射）</span></td><td><span lang="en">how many muons survive along each direction → mass along that line</span><span lang="zh-Hans">每个方向上存活的缪子数 → 那条线上的质量</span></td><td><span lang="en">mountains, overburden, voids above tunnels, dams, pyramids</span><span lang="zh-Hans">山体、覆盖层、隧道上方空洞、大坝、金字塔</span></td></tr>
+          <tr><td><span lang="en">scattering</span><span lang="zh-Hans">散射式</span></td><td><span lang="en">how much each muon is deflected between detectors on both sides → density and atomic number</span><span lang="zh-Hans">两侧探测器之间每个缪子的偏转 → 密度和原子序数</span></td><td><span lang="en">containers, reinforced concrete, waste drums, reactor cores</span><span lang="zh-Hans">集装箱、钢筋混凝土、废物桶、反应堆堆芯</span></td></tr>
+        </tbody>
+      </table></div>
+      <p lang="en">The price of a free probe is time. Muons cannot be switched on, focused or made brighter, so a survey collects them for days to months, and the question is always: how long until the feature I am looking for stands out from statistical noise? That is exactly the question a simulation answers before anyone carries a detector into a tunnel.</p>
+      <p lang="zh-Hans">免费探针的代价是时间。缪子不能打开、聚焦或调亮，所以一次勘测要收集几天到几个月，而问题永远是：要多久，我要找的特征才能从统计涨落中显现出来？这正是在任何人把探测器搬进隧道之前，模拟要回答的问题。</p>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-g4">
+    <p class="cmd">/control/manual<span lang="en">5 · what Geant4 does for a muography project</span><span lang="zh-Hans">5 · Geant4 为缪子成像项目做什么</span></p>
+    <div class="prose">
+      <h2 id="h-g4" class="bi"><span lang="en">A virtual site survey you can run before the real one.</span><span lang="zh-Hans">一次可以先于真实勘测进行的虚拟勘测。</span></h2>
+      <p lang="en">Geant4 is a free C++ toolkit, developed at CERN and used from the LHC to radiotherapy and spacecraft design, that moves particles through a geometry you describe and applies the physics of how they interact. For a muography project it plays the role that a finite-element model plays in structural engineering: you build the model, run the load case (here, a sky full of muons), and read off the response. The course teaches each link of this chain:</p>
+      <p lang="zh-Hans">Geant4 是一个免费的 C++ 工具包，由 CERN 开发，应用范围从大型强子对撞机到放射治疗和航天器设计。它让粒子在你描述的几何中运动，并施加它们相互作用的物理规律。对缪子成像项目来说，它的角色相当于结构工程中的有限元模型：建好模型，施加工况（这里是满天的缪子），读出响应。课程教的就是这条链上的每一环：</p>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th><span lang="en">project step</span><span lang="zh-Hans">项目步骤</span></th><th><span lang="en">in Geant4</span><span lang="zh-Hans">在 Geant4 中</span></th><th><span lang="en">week</span><span lang="zh-Hans">周次</span></th></tr></thead>
+        <tbody>
+          <tr><td><span lang="en">site model: terrain, tunnel, layers, densities</span><span lang="zh-Hans">场地模型：地形、隧道、地层、密度</span></td><td>G4Box/G4Tubs, G4Material, GDML/CAD</td><td>3</td></tr>
+          <tr><td><span lang="en">the sky: muon energy and angle spectrum</span><span lang="zh-Hans">天空：缪子能量和角度谱</span></td><td><span lang="en">primary generator (cos²θ toy; CRY, EcoMug or a parameterisation in practice)</span><span lang="zh-Hans">初级粒子产生器（cos²θ 玩具模型；实际中用 CRY、EcoMug 或参数化谱）</span></td><td>1, 2, 5</td></tr>
+          <tr><td><span lang="en">rock physics: energy loss and scattering</span><span lang="zh-Hans">岩石中的物理：能量损失与散射</span></td><td><span lang="en">physics list, production cuts</span><span lang="zh-Hans">物理列表、产生阈</span></td><td>4, 6</td></tr>
+          <tr><td><span lang="en">detector: planes, efficiency, noise, trigger</span><span lang="zh-Hans">探测器：探测平面、效率、噪声、触发</span></td><td><span lang="en">sensitive detector, digitisation</span><span lang="zh-Hans">灵敏探测器、数字化</span></td><td>5</td></tr>
+          <tr><td><span lang="en">track direction (and momentum, if a magnet or absorber is used)</span><span lang="zh-Hans">径迹方向（若有磁铁或吸收体，还有动量）</span></td><td><span lang="en">hits in several planes, reconstruction</span><span lang="zh-Hans">多层平面的击中、重建</span></td><td>7</td></tr>
+          <tr><td><span lang="en">data like the field DAQ, analysis in Python</span><span lang="zh-Hans">与野外 DAQ 一致的数据，用 Python 分析</span></td><td><span lang="en">ROOT ntuples, uproot</span><span lang="zh-Hans">ROOT ntuple、uproot</span></td><td>8, 9</td></tr>
+          <tr><td><span lang="en">is the model right? how long must we measure?</span><span lang="zh-Hans">模型对吗？要测多久？</span></td><td><span lang="en">validation against open-sky data; feasibility and significance</span><span lang="zh-Hans">与开阔天空数据对比验证；可行性与显著性</span></td><td>11, 12</td></tr>
+        </tbody>
+      </table></div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">A suggested path for civil-engineering and geology students</span><span lang="zh-Hans">给土木和地质专业学生的建议路线</span></p>
+        <p lang="en"><b>Core:</b> Weeks 1–8, 11 and 12. <b>Skim:</b> Week 9 for the idea of a macro-driven application and the jagged-array analysis. <b>Optional:</b> Week 10 is about muon spin in magnetic materials (μSR), a technique for materials science rather than muography. Its fitting and validation habits still transfer. For the Week 12 project, choose a muography question: a void above a tunnel, the overburden of a planned shaft, or the density of a dam.</p>
+        <p lang="zh-Hans"><b>核心：</b>第 1–8、11、12 周。<b>略读：</b>第 9 周，了解由宏驱动的应用程序和锯齿数组分析的思路。<b>选修：</b>第 10 周讲的是磁性材料中的缪子自旋（μSR），属于材料科学技术，与缪子成像关系不大，但其中的拟合与验证习惯同样适用。第 12 周的项目请选一个缪子成像问题：隧道上方的空洞、拟建竖井的覆盖层，或大坝的密度。</p>
+      </div>
+      <div class="box">
+        <p class="box-label"><span lang="en">The computing you need</span><span lang="zh-Hans">你需要的计算技能</span></p>
+        <p lang="en">A Linux or macOS terminal (cd, ls, editing a text file); enough C++ to change a number in a class and recompile (the course shows you which line); Python with NumPy for analysis. If C++ is new to you, spend an evening on a basic tutorial covering variables, functions and classes before Week 2. You do not need to write a Geant4 application from scratch: every week starts from working code.</p>
+        <p lang="zh-Hans">会用 Linux 或 macOS 终端（cd、ls、编辑文本文件）；掌握足以修改类中的一个数值并重新编译的 C++（课程会告诉你改哪一行）；会用 Python 和 NumPy 做分析。如果你没接触过 C++，在第 2 周之前花一个晚上看一个入门教程，了解变量、函数和类即可。你不需要从零写 Geant4 程序：每周都从能运行的代码开始。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-gloss">
+    <p class="cmd">/control/manual /glossary<span lang="en">6 · glossary</span><span lang="zh-Hans">6 · 术语表</span></p>
+    <div>
+      <h2 id="h-gloss" class="bi"><span lang="en">The words you will meet, in both languages.</span><span lang="zh-Hans">你会遇到的术语，中英对照。</span></h2>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th>English</th><th>中文</th><th><span lang="en">plain meaning</span><span lang="zh-Hans">通俗解释</span></th></tr></thead>
+        <tbody>
+          <tr><td>muon (μ⁻, μ⁺)</td><td>缪子 / μ 子</td><td><span lang="en">heavy charged elementary particle, mean life 2.2 µs</span><span lang="zh-Hans">重的带电基本粒子，平均寿命 2.2 µs</span></td></tr>
+          <tr><td>cosmic ray</td><td>宇宙线</td><td><span lang="en">high-energy particles from space; their air showers produce the muons we detect</span><span lang="zh-Hans">来自太空的高能粒子；它们的大气簇射产生我们探测到的缪子</span></td></tr>
+          <tr><td>flux / intensity</td><td>通量 / 强度</td><td><span lang="en">particles per area per time (per solid angle for intensity)</span><span lang="zh-Hans">单位面积、单位时间的粒子数（强度还要除以立体角）</span></td></tr>
+          <tr><td>zenith angle θ</td><td>天顶角 θ</td><td><span lang="en">angle from vertical; 0° straight down, 90° horizontal</span><span lang="zh-Hans">与竖直方向的夹角；0° 竖直向下，90° 水平</span></td></tr>
+          <tr><td>solid angle (sr)</td><td>立体角（球面度）</td><td><span lang="en">the size of a patch of sky; hemisphere = 2π sr</span><span lang="zh-Hans">一片天空的大小；半球 = 2π sr</span></td></tr>
+          <tr><td>eV, MeV, GeV</td><td>电子伏特等</td><td><span lang="en">energy units; 1 GeV = 10⁹ eV ≈ 1.6 × 10⁻¹⁰ J</span><span lang="zh-Hans">能量单位；1 GeV = 10⁹ eV ≈ 1.6 × 10⁻¹⁰ J</span></td></tr>
+          <tr><td>kinetic energy / momentum</td><td>动能 / 动量</td><td><span lang="en">energy of motion / mass × velocity (relativistic); for GeV muons nearly equal in GeV units</span><span lang="zh-Hans">运动的能量 / 质量 × 速度（相对论形式）；GeV 级缪子两者用 GeV 表示时几乎相等</span></td></tr>
+          <tr><td>areal density, g/cm²</td><td>面密度</td><td><span lang="en">density × thickness; what a muon "feels"</span><span lang="zh-Hans">密度 × 厚度；缪子“感受到”的量</span></td></tr>
+          <tr><td>m.w.e.</td><td>米水当量</td><td><span lang="en">thickness expressed as metres of water; 1 m.w.e. = 100 g/cm²</span><span lang="zh-Hans">用水的米数表示的厚度；1 m.w.e. = 100 g/cm²</span></td></tr>
+          <tr><td>ionisation, dE/dx</td><td>电离，能量损失率</td><td><span lang="en">energy lost per path length by knocking out electrons</span><span lang="zh-Hans">打出电子造成的单位路程能量损失</span></td></tr>
+          <tr><td>MIP</td><td>最小电离粒子</td><td><span lang="en">a particle at the minimum of dE/dx; cosmic muons are close to it</span><span lang="zh-Hans">dE/dx 处于最小值的粒子；宇宙线缪子接近这一状态</span></td></tr>
+          <tr><td>multiple scattering</td><td>多次散射</td><td><span lang="en">small random deflections adding up along the path</span><span lang="zh-Hans">沿途许多小的随机偏折累积起来</span></td></tr>
+          <tr><td>radiation length X₀</td><td>辐射长度</td><td><span lang="en">material constant that sets scattering and showering; 26.5 g/cm² for standard rock</span><span lang="zh-Hans">决定散射和簇射的材料常数；标准岩石为 26.5 g/cm²</span></td></tr>
+          <tr><td>scintillator</td><td>闪烁体</td><td><span lang="en">plastic or crystal that emits light when a charged particle crosses it</span><span lang="zh-Hans">带电粒子穿过时会发光的塑料或晶体</span></td></tr>
+          <tr><td>PMT / SiPM</td><td>光电倍增管 / 硅光电倍增器</td><td><span lang="en">sensors that turn that light into an electrical pulse</span><span lang="zh-Hans">把光转换为电脉冲的传感器</span></td></tr>
+          <tr><td>hit, track</td><td>击中，径迹</td><td><span lang="en">one recorded crossing of a detector plane; a line fitted through hits</span><span lang="zh-Hans">一次被记录的穿越探测平面；穿过多个击中拟合出的直线</span></td></tr>
+          <tr><td>trigger, coincidence</td><td>触发，符合</td><td><span lang="en">rule deciding which events are recorded, e.g. two planes fire within 20 ns</span><span lang="zh-Hans">决定记录哪些事例的规则，例如两个平面在 20 ns 内同时响应</span></td></tr>
+          <tr><td>efficiency, acceptance</td><td>效率，接受度</td><td><span lang="en">fraction of muons the detector records; the range of directions it can see</span><span lang="zh-Hans">探测器记录到的缪子比例；它能看到的方向范围</span></td></tr>
+          <tr><td>Monte Carlo</td><td>蒙特卡罗</td><td><span lang="en">estimating a result by simulating many random histories</span><span lang="zh-Hans">通过模拟大量随机过程来估计结果</span></td></tr>
+          <tr><td>event, track, step</td><td>事例，径迹，步</td><td><span lang="en">one muon and everything it causes; one particle's path; one segment of that path</span><span lang="zh-Hans">一个缪子及其引起的一切；一个粒子的路径；路径中的一段</span></td></tr>
+          <tr><td>physics list</td><td>物理列表</td><td><span lang="en">the set of interactions switched on in a simulation</span><span lang="zh-Hans">模拟中开启的相互作用集合</span></td></tr>
+          <tr><td>statistical uncertainty, σ</td><td>统计不确定度，σ</td><td><span lang="en">spread from counting random events; for N counts about √N</span><span lang="zh-Hans">随机事例计数带来的涨落；N 个计数约为 √N</span></td></tr>
+          <tr><td>systematic uncertainty</td><td>系统不确定度</td><td><span lang="en">error from imperfect knowledge (density, spectrum, geometry) that more data cannot reduce</span><span lang="zh-Hans">来自认识不完善（密度、能谱、几何）的误差，增加数据也无法减小</span></td></tr>
+          <tr><td>validation</td><td>验证</td><td><span lang="en">showing the simulation agrees with independent measurements, within uncertainties</span><span lang="zh-Hans">在不确定度范围内证明模拟与独立测量一致</span></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="run" aria-labelledby="h-next">
+    <p class="cmd">/control/execute week01.mac<span lang="en">next</span><span lang="zh-Hans">下一步</span></p>
+    <div class="prose">
+      <h2 id="h-next" class="bi"><span lang="en">Now start Week 1: a muon telescope in under fifty lines of Python.</span><span lang="zh-Hans">现在开始第 1 周：用不到五十行 Python 搭一台缪子望远镜。</span></h2>
+      <p lang="en">Each week also opens with its own short background section and a note on how it is used in muography projects. Come back to this page whenever a word or a number is unfamiliar.</p>
+      <p lang="zh-Hans">每一周的开头也有一小节背景知识，以及它在缪子成像项目中用途的说明。遇到不熟悉的词或数字时，随时回到本页查阅。</p>
+      <p><a href="week01.html"><span lang="en">Go to Week 1 →</span><span lang="zh-Hans">进入第 1 周 →</span></a></p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Sources: PDG Review of Particle Physics (cosmic rays; passage of particles through matter; muon tables for standard rock) · Morishima et al., Nature 552, 386 (2017)</span><span lang="zh-Hans">来源：PDG《粒子物理评论》（宇宙线；粒子穿过物质；标准岩石缪子表）· Morishima et al., Nature 552, 386 (2017)</span>
+  </footer>
+</div>
+<script src="assets/course.js"></script>
+</body>
+</html>

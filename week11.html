@@ -79,6 +79,29 @@
     </div>
   </section>
 
+  <section class="run" id="background" aria-labelledby="h-bg">
+    <p class="cmd">/control/echo background<span lang="en">background · for non-physicists</span><span lang="zh-Hans">背景知识 · 写给非物理专业</span></p>
+    <div class="prose">
+      <h2 id="h-bg" class="bi"><span lang="en">Verification asks "did I build it right?" Validation asks "did I build the right thing?"</span><span lang="zh-Hans">检验问“我搭对了吗？”，验证问“我搭的是对的东西吗？”</span></h2>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">V&amp;V, as in engineering</span><span lang="zh-Hans">工程中的 V&amp;V</span></p>
+        <p lang="en">Engineers already know verification and validation from computational mechanics: first check that the code solves its equations correctly, then compare it with experiments. Geant4 work follows the same order. Debugging is verification; comparing with the PDG tables or a field measurement is validation.</p>
+        <p lang="zh-Hans">工程师在计算力学中已经熟悉“检验与验证”：先确认代码正确地求解了方程，再与实验比较。Geant4 工作遵循同样的顺序。调试属于检验；与 PDG 表或野外测量比较属于验证。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">What "σ" means</span><span lang="zh-Hans">“σ”是什么意思</span></p>
+        <p lang="en">σ is a standard deviation, the typical size of random scatter. For a Gaussian error, 68% of repeated measurements fall within 1σ and 95% within 2σ. A difference of 0.7σ is ordinary noise; 3σ or more deserves an explanation. Always state which uncertainties went into σ.</p>
+        <p lang="zh-Hans">σ 是标准差，即随机涨落的典型大小。对于高斯误差，重复测量有 68% 落在 1σ 以内，95% 落在 2σ 以内。0.7σ 的差别是普通涨落；3σ 以上就需要解释。一定要说明 σ 包含了哪些不确定度。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">For muography projects</span><span lang="zh-Hans">用于缪子成像工程</span></p>
+        <p lang="en">Before trusting a density map, validate the simulation where the answer is known: the open-sky rate and its zenith-angle dependence at the site, and a calibration run through a known thickness such as a building or a tunnel section with surveyed overburden.</p>
+        <p lang="zh-Hans">在相信一张密度图之前，先在答案已知的地方验证模拟：现场开阔天空的计数率及其随天顶角的变化，以及穿过已知厚度的标定测量，比如一栋建筑或覆盖层已测绘的一段隧道。</p>
+      </div>
+      <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
+    </div>
+  </section>
+
   <section class="run" aria-labelledby="h-tree">
     <p class="cmd">/tracking/verbose 1<span lang="en">13 · debugging is a tree</span><span lang="zh-Hans">13 · 调试是一棵树</span></p>
     <div class="prose">
@@ -91,14 +114,14 @@
       <p lang="en">We add a layer 0 in front, taken from the textbook's last pitfall: is the deviation beyond 2–3σ at all? It costs one line of arithmetic and, in our fault lab, it would have saved one of the six investigations. Each layer has a cheap test:</p>
       <p lang="zh-Hans">我们在最前面加了第 0 层，取自教材的最后一个陷阱：偏差到底有没有超过 2–3σ？只需一行算术，在我们的故障实验里它能省掉六次排查中的一次。每一层都有一个低成本的检查：</p>
       <div class="scroll"><table class="tbl">
-        <thead><tr><th>layer</th><th lang="en">cheap test</th><th lang="zh-Hans">低成本检查</th><th lang="en">what it looked like in our runs</th><th lang="zh-Hans">在我们的运行中是什么样</th></tr></thead>
+        <thead><tr><th>layer</th><th><span lang="en">cheap test</span><span lang="zh-Hans">低成本检查</span></th><th><span lang="en">what it looked like in our runs</span><span lang="zh-Hans">在我们的运行中是什么样</span></th></tr></thead>
         <tbody>
-          <tr><td>L0</td><td>(x − x_ref)/σ</td><td lang="en">fault-6: 0.125 ± 0.023 vs 0.1095 → 0.7σ, nothing broken</td><td lang="zh-Hans">fault-6：0.125 ± 0.023 对 0.1095 → 0.7σ，什么都没坏</td></tr>
-          <tr><td>L1</td><td>/tracking/verbose 1</td><td lang="en">fault-1: Step 0 at z = −800 mm in a world of half-length 500 mm</td><td lang="zh-Hans">fault-1：第 0 步在 z = −800 mm，world 半长 500 mm</td></tr>
-          <tr><td>L2</td><td>checkOverlaps = true</td><td lang="en">fault-5: G4Exception GeomVol1002, just a warning; the run went on</td><td lang="zh-Hans">fault-5：G4Exception GeomVol1002，只是警告；运行照常继续</td></tr>
-          <tr><td>L3–L4</td><td>trace + /process/list</td><td lang="en">fault-4: crosses the counter with dE = 0; list shows Transportation, Decay</td><td lang="zh-Hans">fault-4：穿过计数器但 dE = 0；列表只有 Transportation、Decay</td></tr>
-          <tr><td>L5</td><td lang="en">read the init log</td><td lang="en">fault-3: fatal G4Exception Run0053, the only crash of the six</td><td lang="zh-Hans">fault-3：致命 G4Exception Run0053，六个中唯一的崩溃</td></tr>
-          <tr><td>L6</td><td lang="en">print Edep and fired</td><td lang="en">fault-2: Edep = 0 → fired = 1; Edep = 1.59 MeV → fired = 0</td><td lang="zh-Hans">fault-2：Edep = 0 → fired = 1；Edep = 1.59 MeV → fired = 0</td></tr>
+          <tr><td>L0</td><td>(x − x_ref)/σ</td><td><span lang="en">fault-6: 0.125 ± 0.023 vs 0.1095 → 0.7σ, nothing broken</span><span lang="zh-Hans">fault-6：0.125 ± 0.023 对 0.1095 → 0.7σ，什么都没坏</span></td></tr>
+          <tr><td>L1</td><td>/tracking/verbose 1</td><td><span lang="en">fault-1: Step 0 at z = −800 mm in a world of half-length 500 mm</span><span lang="zh-Hans">fault-1：第 0 步在 z = −800 mm，world 半长 500 mm</span></td></tr>
+          <tr><td>L2</td><td>checkOverlaps = true</td><td><span lang="en">fault-5: G4Exception GeomVol1002, just a warning; the run went on</span><span lang="zh-Hans">fault-5：G4Exception GeomVol1002，只是警告；运行照常继续</span></td></tr>
+          <tr><td>L3–L4</td><td>trace + /process/list</td><td><span lang="en">fault-4: crosses the counter with dE = 0; list shows Transportation, Decay</span><span lang="zh-Hans">fault-4：穿过计数器但 dE = 0；列表只有 Transportation、Decay</span></td></tr>
+          <tr><td>L5</td><td><span lang="en">read the init log</td><td lang="en">fault-3: fatal G4Exception Run0053, the only crash of the six</span><span lang="zh-Hans">fault-3：致命 G4Exception Run0053，六个中唯一的崩溃</span></td></tr>
+          <tr><td>L6</td><td><span lang="en">print Edep and fired</td><td lang="en">fault-2: Edep = 0 → fired = 1; Edep = 1.59 MeV → fired = 0</span><span lang="zh-Hans">fault-2：Edep = 0 → fired = 1；Edep = 1.59 MeV → fired = 0</span></td></tr>
         </tbody>
       </table></div>
       <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>

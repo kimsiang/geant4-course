@@ -64,6 +64,34 @@
     </div>
   </section>
 
+  <section class="run" id="background" aria-labelledby="h-bg">
+    <p class="cmd">/control/echo background<span lang="en">background · for non-physicists</span><span lang="zh-Hans">背景知识 · 写给非物理专业</span></p>
+    <div class="prose">
+      <h2 id="h-bg" class="bi"><span lang="en">A Monte Carlo is a way to get an answer by rolling dice many times.</span><span lang="zh-Hans">蒙特卡罗方法：用“掷很多次骰子”得到答案。</span></h2>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Monte Carlo in engineering terms</span><span lang="zh-Hans">工程语言里的蒙特卡罗</span></p>
+        <p lang="en">If you have estimated a failure probability by sampling random loads and strengths, you have already done Monte Carlo. Here the random inputs are a muon's direction and entry point, the model is a straight line, and the output is a yes/no: did it cross both detector layers? The fraction of yes answers estimates the probability.</p>
+        <p lang="zh-Hans">如果你曾通过随机抽取荷载和强度来估计结构的失效概率，你就已经做过蒙特卡罗了。这里的随机输入是缪子的方向和入射点，模型是一条直线，输出是“是/否”：它穿过两层探测器了吗？回答“是”的比例就是概率的估计值。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Why the error shrinks only as 1/√N</span><span lang="zh-Hans">为什么误差只按 1/√N 缩小</span></p>
+        <p lang="en">Each trial is a coin flip with probability ε. Counting k successes in N trials has a spread of √(Nε(1−ε)), so the estimate k/N has an uncertainty of √(ε(1−ε)/N). Ten times more trials buy only √10 ≈ 3.2 times more precision. Real muon counting obeys the same rule, which is why muography surveys take days.</p>
+        <p lang="zh-Hans">每次试验都像一次概率为 ε 的抛硬币。N 次试验中成功 k 次，其涨落为 √(Nε(1−ε))，所以估计值 k/N 的不确定度是 √(ε(1−ε)/N)。试验次数增加十倍，精度只提高 √10 ≈ 3.2 倍。真实的缪子计数遵循同样的规律，这就是缪子成像勘测要持续好几天的原因。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">cos²θ: why most muons come from overhead</span><span lang="zh-Hans">cos²θ：为什么大多数缪子来自头顶</span></p>
+        <p lang="en">θ is the zenith angle, measured from straight down. Muons arriving at a slant cross much more air, so fewer survive and they are more energetic. Near 3 GeV the result is an intensity roughly proportional to cos²θ: at 60° it is a quarter of the vertical value.</p>
+        <p lang="zh-Hans">θ 是天顶角，从竖直向下方向量起。斜着来的缪子要穿过多得多的空气，存活下来的更少，能量也更高。在 3 GeV 附近，强度大致正比于 cos²θ：60° 时只有竖直方向的四分之一。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">For muography projects</span><span lang="zh-Hans">用于缪子成像工程</span></p>
+        <p lang="en">The quantity you compute this week is a telescope's acceptance: which directions it sees and how often. In a muography survey, acceptance × sky intensity × time gives the number of muons expected along each line of sight. It is the first number in any feasibility study for a tunnel or slope.</p>
+        <p lang="zh-Hans">本周计算的是望远镜的接受度：它能看到哪些方向、看到的频率如何。在缪子成像勘测中，接受度 × 天空强度 × 时间，给出每条视线上预期的缪子数。这是隧道或边坡可行性研究中要算的第一个数。</p>
+      </div>
+      <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
+    </div>
+  </section>
+
   <!-- LESSON 1: why python -->
   <section class="run" aria-labelledby="h-why">
     <p class="cmd">/control/manual<span lang="en">1.1 · why Python first</span><span lang="zh-Hans">1.1 · 为什么先用 Python</span></p>

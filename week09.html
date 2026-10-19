@@ -63,6 +63,29 @@
     </div>
   </section>
 
+  <section class="run" id="background" aria-labelledby="h-bg">
+    <p class="cmd">/control/echo background<span lang="en">background · for non-physicists</span><span lang="zh-Hans">背景知识 · 写给非物理专业</span></p>
+    <div class="prose">
+      <h2 id="h-bg" class="bi"><span lang="en">An application layer: running Geant4 from a text file.</span><span lang="zh-Hans">应用层：用一个文本文件驱动 Geant4。</span></h2>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">What musrSim is</span><span lang="zh-Hans">musrSim 是什么</span></p>
+        <p lang="en">musrSim is a Geant4 application written for μSR, a materials-science technique that implants muons from an accelerator into a sample. Its geometry, beam and output are set in a text macro instead of C++. The idea transfers: many groups build such an application once and then run many configurations from macros.</p>
+        <p lang="zh-Hans">musrSim 是为 μSR 编写的 Geant4 应用程序。μSR 是一种材料科学技术，把加速器产生的缪子注入样品。它的几何、束流和输出都在文本宏中设置，而不是写在 C++ 里。这种思路是通用的：许多课题组把应用程序写一次，然后用宏运行各种配置。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Jagged arrays</span><span lang="zh-Hans">锯齿数组</span></p>
+        <p lang="en">One muon may fire one detector plane, or five. A table column such as "detector IDs hit" then holds a list of different length in each row: a jagged array. Select the plane you want before flattening the lists, or rows from different events get mixed up.</p>
+        <p lang="zh-Hans">一个缪子可能只触发一个探测平面，也可能触发五个。于是像“被击中的探测器编号”这样的列，每一行是一个长度不同的列表：锯齿数组。先选出你要的平面，再把列表展平，否则不同事例的行会被混在一起。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">For muography projects</span><span lang="zh-Hans">用于缪子成像工程</span></p>
+        <p lang="en">If you are on the muography track, skim this week for the macro-driven workflow and the jagged-array analysis. Both appear in every multi-plane telescope analysis. The μSR beam details can be skipped.</p>
+        <p lang="zh-Hans">如果你走缪子成像方向，本周略读即可，重点看由宏驱动的工作流程和锯齿数组分析，这两者在每一个多层望远镜的分析中都会出现。μSR 束流的细节可以跳过。</p>
+      </div>
+      <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
+    </div>
+  </section>
+
   <section class="run" aria-labelledby="h-layer">
     <p class="cmd">/control/manual /musr<span lang="en">10 · the application layer</span><span lang="zh-Hans">10 · 应用层</span></p>
     <div class="prose">

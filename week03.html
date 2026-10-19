@@ -62,6 +62,34 @@
     </div>
   </section>
 
+  <section class="run" id="background" aria-labelledby="h-bg">
+    <p class="cmd">/control/echo background<span lang="en">background · for non-physicists</span><span lang="zh-Hans">背景知识 · 写给非物理专业</span></p>
+    <div class="prose">
+      <h2 id="h-bg" class="bi"><span lang="en">A muon does not see shapes, it sees grams per square centimetre.</span><span lang="zh-Hans">缪子看不见形状，它“看见”的是每平方厘米多少克。</span></h2>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Shape, material, placement</span><span lang="zh-Hans">形状、材料、放置</span></p>
+        <p lang="en">Geant4 separates three decisions an engineer makes anyway: the geometry of a part (solid), what it is made of (logical volume with a material), and where it sits (physical placement). A tunnel lining, a rock layer and a detector plane are each built the same way.</p>
+        <p lang="zh-Hans">Geant4 把工程师本来就要做的三个决定分开：部件的几何（实体）、它由什么做成（带材料的逻辑体）、它放在哪里（物理放置）。隧道衬砌、岩层和探测平面都是这样搭建的。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Materials for engineers</span><span lang="zh-Hans">给工程师的材料说明</span></p>
+        <p lang="en">Geant4 ships a NIST database: G4_CONCRETE (2.3 g/cm³), G4_WATER, G4_Fe, G4_Pb, G4_SILICON_DIOXIDE and many more. Rock is usually defined by hand from its measured density and its main oxides or elements. For muon absorption the density matters most; the composition shifts the energy loss by a few percent.</p>
+        <p lang="zh-Hans">Geant4 自带 NIST 材料库：G4_CONCRETE（2.3 g/cm³）、G4_WATER、G4_Fe、G4_Pb、G4_SILICON_DIOXIDE 等。岩石通常要根据实测密度和主要氧化物或元素手工定义。对缪子吸收来说，密度最重要；成分只会让能量损失改变几个百分点。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Areal density: the number that matters</span><span lang="zh-Hans">面密度：真正重要的数</span></p>
+        <p lang="en">Density × thickness, in g/cm². Ten metres of concrete (2.3 g/cm³) is 2 300 g/cm², the same as 23 m of water or about 8.7 m of standard rock (2.65 g/cm³). Muography measures this quantity along each direction, not density or thickness alone.</p>
+        <p lang="zh-Hans">密度 × 厚度，单位 g/cm²。10 米混凝土（2.3 g/cm³）是 2 300 g/cm²，等于 23 米水，或约 8.7 米标准岩石（2.65 g/cm³）。缪子成像测量的是沿每个方向的这个量，而不是单独的密度或厚度。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">For muography projects</span><span lang="zh-Hans">用于缪子成像工程</span></p>
+        <p lang="en">A site model is this week's skill at scale: terrain from a digital elevation model, layers from boreholes, a tunnel from the design drawings, often imported through CAD/GDML. Run the overlap check after every change; an overlap between rock layers silently doubles or loses mass along some lines of sight.</p>
+        <p lang="zh-Hans">场地模型就是本周技能的放大版：地形来自数字高程模型，地层来自钻孔，隧道来自设计图纸，常通过 CAD/GDML 导入。每次修改后都要做重叠检查；岩层之间的重叠会在某些视线上悄悄多算或漏算质量。</p>
+      </div>
+      <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
+    </div>
+  </section>
+
   <section class="run" aria-labelledby="h-geo">
     <p class="cmd">/control/manual<span lang="en">3.1 · three decisions</span><span lang="zh-Hans">3.1 · 三个决定</span></p>
     <div class="prose">

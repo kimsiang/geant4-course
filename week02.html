@@ -64,6 +64,34 @@
     </div>
   </section>
 
+  <section class="run" id="background" aria-labelledby="h-bg">
+    <p class="cmd">/control/echo background<span lang="en">background · for non-physicists</span><span lang="zh-Hans">背景知识 · 写给非物理专业</span></p>
+    <div class="prose">
+      <h2 id="h-bg" class="bi"><span lang="en">Before Geant4: particles, energy and why a muon lives long enough to reach you.</span><span lang="zh-Hans">进入 Geant4 之前：粒子、能量，以及缪子为什么能活着到达你身边。</span></h2>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Kinetic energy, momentum, mass</span><span lang="zh-Hans">动能、动量、质量</span></p>
+        <p lang="en">Geant4's particle gun sets kinetic energy, the energy of motion. Momentum p and kinetic energy T are linked by p = √(T² + 2Tm) in units where c = 1; the muon mass is m = 105.7 MeV. For a 1 GeV muon, p = 1.10 GeV/c. Above a few GeV, p and T are nearly equal, so muography papers often quote either.</p>
+        <p lang="zh-Hans">Geant4 的粒子枪设定的是动能，即运动的能量。在 c = 1 的单位制中，动量 p 与动能 T 的关系是 p = √(T² + 2Tm)；缪子质量 m = 105.7 MeV。1 GeV 的缪子 p = 1.10 GeV/c。几个 GeV 以上时，p 和 T 几乎相等，所以缪子成像文献两种说法都有。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Decay and time dilation</span><span lang="zh-Hans">衰变与时间膨胀</span></p>
+        <p lang="en">A muon at rest lives 2.197 µs on average and then decays into an electron and two neutrinos. A moving muon's clock runs slow by the factor γ = E/m. A 1 GeV muon (γ ≈ 10.5) travels about 7 km on average before decaying, so in any detector-sized world you will almost never see it decay in flight. Stopped muons, as in Week 10, do decay in front of you.</p>
+        <p lang="zh-Hans">静止的缪子平均寿命 2.197 µs，之后衰变为一个电子和两个中微子。运动缪子的时钟按因子 γ = E/m 变慢。1 GeV 的缪子（γ ≈ 10.5）平均要飞约 7 km 才衰变，所以在探测器尺度的模拟世界里几乎看不到它在飞行中衰变。停下来的缪子（如第 10 周）才会在你面前衰变。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Run, event, track, step in plain words</span><span lang="zh-Hans">用大白话说运行、事例、径迹、步</span></p>
+        <p lang="en">A run is one experiment with fixed settings, like one load case. An event is one muon arriving, plus everything it causes. A track is the path of one particle, including the electrons it knocks out. A step is one short segment of a track, ending at a material boundary or where something happens. Geant4 computes physics step by step, much as a time-stepping solver advances a structure.</p>
+        <p lang="zh-Hans">一次运行是设置固定的一次实验，类似一个工况。一个事例是一个缪子到来及其引起的一切。一条径迹是一个粒子的路径，包括被它打出来的电子。一步是径迹中的一小段，在材料边界或发生某种过程时结束。Geant4 一步一步地计算物理，就像时间步进求解器一步步推进结构响应。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">For muography projects</span><span lang="zh-Hans">用于缪子成像工程</span></p>
+        <p lang="en">A muography data set is millions of events, each one cosmic muon. Changing particle, energy, position and direction is exactly how you will later aim a simulated sky at a model of a hillside.</p>
+        <p lang="zh-Hans">缪子成像的数据集由数百万个事例组成，每个事例是一个宇宙线缪子。改变粒子种类、能量、位置和方向，正是你以后把模拟天空“对准”山坡模型的方法。</p>
+      </div>
+      <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
+    </div>
+  </section>
+
   <!-- LESSON 1 -->
   <section class="run" aria-labelledby="h-run">
     <p class="cmd">/control/manual<span lang="en">2.1 · run it first</span><span lang="zh-Hans">2.1 · 先运行，再追问</span></p>

@@ -26,12 +26,19 @@ Built from the textbook *The Geant4 Laboratory* (musrSim-integrated edition) by 
 
 ---
 
+## New to particle physics?
+
+Students from civil engineering, geology and other fields should start with the **[background primer](primer.html)** (about an hour). It explains what a muon is, where cosmic muons come from, the units (GeV, g/cm², m.w.e.), how muons lose energy in rock, how absorption and scattering muography work, and how a muography project maps onto the weeks of the course, with a bilingual glossary. Every week page also opens with a plain-language **background** section and a note on how that week is used in muography projects.
+
+Suggested path for muography students: core Weeks 1–8, 11 and 12; skim Week 9; Week 10 (muon spin, μSR) is optional.
+
 ## What a week looks like
 
 Every page has the same structure, so students always know where they are.
 
 | Section | What it contains |
 |---|---|
+| **Background** | Plain-language explainers for non-physicists, and a "for muography projects" note |
 | **Goals and stage** | 3–5 learning goals, and the course stage: See → Measure → Understand → Build → Trust |
 | **Lesson** | The textbook chapter condensed, with its definitions, theorems, examples and pitfalls kept and key terms in both languages |
 | **Interactive toy** | A small in-browser model of the week's idea, labelled as a toy, with its approximations stated |
@@ -65,6 +72,7 @@ The language toggle (EN · 中文 · EN+中) and students' progress ticks are ke
 ```
 .
 ├── index.html            course index (links to all twelve weeks)
+├── primer.html           background primer for engineers and geoscientists
 ├── landing.html          course landing / sign-up page
 ├── week01.html … week12.html
 ├── assets/
@@ -79,6 +87,7 @@ The language toggle (EN · 中文 · EN+中) and students' progress ticks are ke
 │   └── *.py, *.sh                                  analysis and driver scripts
 └── tools/
     ├── fill_code.py      copies code/ files into the <pre data-src="…"> blocks of a page
+    ├── background.py     writes the "background" section of every week page (edit the text here)
     └── make_weekNN_gif.py  regenerates that week's share GIF
 ```
 
@@ -158,6 +167,10 @@ python3 -m http.server 8000
    python3 tools/fill_code.py weekNN.html
    ```
 3. If the expected output changed, paste the new output into the page's `<div class="code out">` block.
+
+### Edit the background sections
+
+The per-week background text lives in `tools/background.py`. Edit it there, then run `python3 tools/background.py`; it replaces each page's section in place and can be run any number of times.
 
 ### Regenerate a GIF
 

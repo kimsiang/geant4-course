@@ -62,6 +62,29 @@
     </div>
   </section>
 
+  <section class="run" id="background" aria-labelledby="h-bg">
+    <p class="cmd">/control/echo background<span lang="en">background · for non-physicists</span><span lang="zh-Hans">背景知识 · 写给非物理专业</span></p>
+    <div class="prose">
+      <h2 id="h-bg" class="bi"><span lang="en">A physics list is the material model of a particle simulation.</span><span lang="zh-Hans">物理列表就是粒子模拟中的“本构模型”。</span></h2>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">What a physics list is</span><span lang="zh-Hans">物理列表是什么</span></p>
+        <p lang="en">In finite-element work you choose a constitutive model, linear elastic or plastic, and the answer depends on it. A Geant4 physics list plays the same role: it decides which interactions exist, such as ionisation, scattering, photon processes, nuclear reactions and decay. A missing process gives no error message, only a wrong answer.</p>
+        <p lang="zh-Hans">在有限元分析中，你要选本构模型（线弹性还是塑性），答案依赖于它。Geant4 的物理列表起同样的作用：它决定存在哪些相互作用，例如电离、散射、光子过程、核反应和衰变。缺少某个过程不会报错，只会给出错误的答案。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Production cuts</span><span lang="zh-Hans">产生阈</span></p>
+        <p lang="en">Following every tiny electron knocked out by a muon would be very slow. A production cut tells Geant4 not to create secondaries that would travel less than a set distance (0.7 mm by default) and to deposit their energy locally instead. It is like choosing a mesh size: too coarse loses detail, too fine wastes time.</p>
+        <p lang="zh-Hans">追踪缪子打出的每个微小电子会非常慢。产生阈告诉 Geant4：射程短于设定距离（默认 0.7 mm）的次级粒子不再单独产生，其能量就地沉积。这就像选网格尺寸：太粗丢细节，太细浪费时间。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">For muography projects</span><span lang="zh-Hans">用于缪子成像工程</span></p>
+        <p lang="en">For muon transport through rock, standard electromagnetic physics with muon processes and decay carries most of the result; a reference list such as FTFP_BERT includes them. Hadronic physics matters for backgrounds (neutrons, showers) and for very deep sites. For scattering muography, compare multiple-scattering models, because the scattering angle is the signal.</p>
+        <p lang="zh-Hans">对于缪子穿过岩石的输运，标准电磁物理加上缪子过程和衰变决定了大部分结果，FTFP_BERT 这样的参考列表包含了它们。强子物理对本底（中子、簇射）和很深的场地才重要。做散射式缪子成像时，要比较不同的多次散射模型，因为散射角本身就是信号。</p>
+      </div>
+      <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
+    </div>
+  </section>
+
   <section class="run" aria-labelledby="h-list">
     <p class="cmd">/process/list<span lang="en">7.1 · many possible fates</span><span lang="zh-Hans">7.1 · 许多可能的命运</span></p>
     <div class="prose">

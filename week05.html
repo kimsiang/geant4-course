@@ -62,6 +62,34 @@
     </div>
   </section>
 
+  <section class="run" id="background" aria-labelledby="h-bg">
+    <p class="cmd">/control/echo background<span lang="en">background · for non-physicists</span><span lang="zh-Hans">背景知识 · 写给非物理专业</span></p>
+    <div class="prose">
+      <h2 id="h-bg" class="bi"><span lang="en">How a detector turns a passing muon into a number.</span><span lang="zh-Hans">探测器如何把一个穿过的缪子变成一个数字。</span></h2>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Scintillator and photosensor</span><span lang="zh-Hans">闪烁体与光电器件</span></p>
+        <p lang="en">A plastic scintillator emits a faint flash of light when a charged particle deposits energy in it, about 2 MeV per centimetre for a muon. A photomultiplier tube (PMT) or silicon photomultiplier (SiPM) turns the flash into an electrical pulse that electronics digitise into an ADC number.</p>
+        <p lang="zh-Hans">带电粒子在塑料闪烁体中沉积能量时会发出微弱的闪光，缪子约每厘米 2 MeV。光电倍增管（PMT）或硅光电倍增器（SiPM）把闪光转换成电脉冲，电子学再把它数字化为一个 ADC 数值。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Threshold, efficiency, noise</span><span lang="zh-Hans">阈值、效率、噪声</span></p>
+        <p lang="en">A signal counts only if it exceeds a threshold. Set it too high and real muons are missed (lower efficiency); too low and electronic noise or natural radioactivity fire it (more fake hits). Efficiency is the fraction of real muons recorded, and it always needs an uncertainty.</p>
+        <p lang="zh-Hans">信号只有超过阈值才被计入。阈值太高会漏掉真实缪子（效率降低）；太低则电子学噪声或天然放射性也会触发（假击中增多）。效率是被记录下来的真实缪子比例，它必须附带不确定度。</p>
+      </div>
+      <div class="box">
+        <p class="box-label">Background · <span lang="en">Coincidence</span><span lang="zh-Hans">符合</span></p>
+        <p lang="en">Requiring two or more planes to fire within a short window, say 20 ns, rejects most noise, because random pulses rarely line up in time. It also defines a direction: a muon telescope is two or more planes in coincidence.</p>
+        <p lang="zh-Hans">要求两层或更多探测平面在短时间窗（比如 20 ns）内同时响应，可以去掉大部分噪声，因为随机脉冲很少在时间上对齐。这同时也定义了方向：缪子望远镜就是两层或多层处于符合状态的探测平面。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">For muography projects</span><span lang="zh-Hans">用于缪子成像工程</span></p>
+        <p lang="en">Field muography telescopes are stacks of scintillator strips, resistive plate chambers or nuclear emulsion. Outdoors and underground, temperature, humidity and radon change noise and efficiency. Simulate the detector response, not just the muons, so that efficiency changes are not mistaken for density changes.</p>
+        <p lang="zh-Hans">野外缪子成像望远镜由闪烁体条、阻性板室或核乳胶叠成。在室外和地下，温度、湿度和氡会改变噪声和效率。要模拟探测器响应而不仅是缪子，这样效率的变化才不会被误认为密度的变化。</p>
+      </div>
+      <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
+    </div>
+  </section>
+
   <section class="run" aria-labelledby="h-sd">
     <p class="cmd">/control/manual<span lang="en">6.1 · deposited is not detected</span><span lang="zh-Hans">6.1 · 沉积不等于探测到</span></p>
     <div class="prose">
