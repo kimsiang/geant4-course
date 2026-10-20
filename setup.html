@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en" class="has-player">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Week 0 · Set up your computer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Geant4 2.0, Week 0: install Geant4 11.4 with its datasets and the Python analysis stack on Linux, macOS or Windows (WSL2), with conda-forge, a container, or from source; mirrors for mainland China.">
+<script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="assets/course.css">
+</head>
+<body>
+<!--shell:sprite--><svg class="sprite" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden"><symbol id="i-overview" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.9" fill="currentColor"/></symbol><symbol id="i-reading" viewBox="0 0 24 24"><path d="M3 5.6C5.6 4.2 8.6 4.3 12 6.3c3.4-2 6.4-2.1 9-.7v13.2c-2.6-1.4-5.6-1.3-9 .7-3.4-2-6.4-2.1-9-.7z"/><path d="M12 6.3v13.2"/></symbol><symbol id="i-display" viewBox="0 0 24 24"><path d="M12 2.8 20 7.3v9.4l-8 4.5-8-4.5V7.3z"/><path d="m4 7.3 8 4.5 8-4.5M12 11.8v9.4"/></symbol><symbol id="i-interactive" viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol><symbol id="i-lab" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="m7.5 9.5 3 2.5-3 2.5M12.5 15h4"/></symbol><symbol id="i-quiz" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.6 2.3c-.8.4-1.2 1-1.2 1.8v.4M12 16.8v.1"/></symbol><symbol id="i-errors" viewBox="0 0 24 24"><path d="M12 3.8 21 19.5H3z"/><path d="M12 10v4.4M12 17v.1"/></symbol><symbol id="i-review" viewBox="0 0 24 24"><path d="M10.5 6.5H20M10.5 12H20M10.5 17.5H20"/><path d="m4 6.5 1.4 1.4L8 5.3M4 12l1.4 1.4L8 10.8M4 17.5l1.4 1.4L8 16.3"/></symbol><symbol id="i-share" viewBox="0 0 24 24"><circle cx="17.5" cy="5.5" r="2.5"/><circle cx="6.5" cy="12" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/><path d="m8.7 10.7 6.6-3.9M8.7 13.3l6.6 3.9"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol><symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol><symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol><symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol><symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7"/><path d="M6 9.5V20h12V9.5"/></symbol><symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.8 2.6 14.2 0 17M12 3.5c-2.6 2.8-2.6 14.2 0 17"/></symbol><symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20c1.3-3.8 4.2-5.5 7.5-5.5s6.2 1.7 7.5 5.5"/></symbol><symbol id="i-flag" viewBox="0 0 24 24"><path d="M5.5 21V4M5.5 4.5h11l-2.2 4 2.2 4h-11"/></symbol><symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3.5 21 8.5l-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol><symbol id="i-code" viewBox="0 0 24 24"><path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5"/></symbol><symbol id="i-cap" viewBox="0 0 24 24"><path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.3c3.3 2.3 7.7 2.3 11 0v-4.3M21.5 9.5v5"/></symbol><symbol id="i-lang" viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2c0 4-2 7-5 8.5M6 9c1.2 2 3.3 3.6 6 4.4"/><path d="m12.5 21 4-9 4 9M14 17.8h5"/></symbol></svg><!--/shell:sprite-->
+<!--shell:top--><a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="zh-Hans">跳到正文</span></a>
+<header class="topbar"><div class="tb-in"><button type="button" class="nav-toggle" aria-controls="nav" aria-expanded="false"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg><span class="sr"><span lang="en">Open the item list</span><span lang="zh-Hans">打开目录</span></span></button><a class="brand" href="index.html"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="logo-bg"/><path d="M5 25 15.5 15" class="logo-mu"/><path d="M15.5 15c3.5-3 7-5.6 11.5-6.5" class="logo-pos"/><path d="M15.5 15c1.8 3.6 4.6 6.5 9 8.5" class="logo-neu"/><circle cx="15.5" cy="15" r="2.2" class="logo-v"/></svg><b>Geant4 2.0</b></a><span class="tb-week"><span lang="en">Start here</span><span lang="zh-Hans">从这里开始</span><span class="tb-title"><span lang="en">Week 0 · Set up your computer</span><span lang="zh-Hans">第 0 周 · 配置你的电脑</span></span></span><span class="tb-prog" data-prog="setup" aria-hidden="true"><span class="pbar"><i></i></span><span class="pn"></span></span><span class="lang" role="group" aria-label="Language / 语言"><button type="button" data-setlang="en" id="lang-en">EN</button><button type="button" data-setlang="zh" id="lang-zh">中文</button><button type="button" data-setlang="both" id="lang-both">EN+中</button></span></div></header><!--/shell:top-->
+<div class="player">
+<!--shell:nav--><nav class="nav" id="nav" aria-label="Items on this page / 本页目录"><div class="nav-in"><a class="nav-home" href="index.html"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg><span lang="en">Course home</span><span lang="zh-Hans">课程主页</span></a><p class="nav-week"><span lang="en">Start here</span><span lang="zh-Hans">从这里开始</span></p><p class="nav-title"><span lang="en">Week 0 · Set up your computer</span><span lang="zh-Hans">第 0 周 · 配置你的电脑</span></p><div class="nav-prog" data-prog="setup"><span class="pbar"><i></i></span><span class="pn"></span></div><ol class="nav-items"><li><a href="#s-route" data-item="s-route"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">0.1 Choose your route</span><span lang="zh-Hans">0.1 选择路线</span><small><span lang="en">Reading · 3 min</span><span lang="zh-Hans">阅读 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-conda" data-item="s-conda"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Route A: conda-forge</span><span lang="zh-Hans">路线 A：conda-forge</span><small><span lang="en">Hands-on lab · 45 min</span><span lang="zh-Hans">动手实验 · 45 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-container" data-item="s-container"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Alternative · route B: container</span><span lang="zh-Hans">备选 · 路线 B：容器</span><small><span lang="en">Reading · 3 min</span><span lang="zh-Hans">阅读 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-wsl" data-item="s-wsl"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Windows · route C: WSL2</span><span lang="zh-Hans">Windows · 路线 C：WSL2</span><small><span lang="en">Reading · 3 min</span><span lang="zh-Hans">阅读 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-check" data-item="s-check"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Check your install</span><span lang="zh-Hans">检查安装</span><small><span lang="en">Hands-on lab · 45 min</span><span lang="zh-Hans">动手实验 · 45 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-err" data-item="s-err"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Common errors</span><span lang="zh-Hans">常见错误</span><small><span lang="en">Reading · 12 min</span><span lang="zh-Hans">阅读 · 12 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-musr" data-item="s-musr"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Optional · musrSim for Weeks 9–10</span><span lang="zh-Hans">选修 · 第 9–10 周的 musrSim</span><small><span lang="en">Reading · 3 min</span><span lang="zh-Hans">阅读 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-next" data-item="s-next"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Next</span><span lang="zh-Hans">下一步</span><small><span lang="en">Reading · 3 min</span><span lang="zh-Hans">阅读 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li></ol><p class="nav-total"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">About 1 h 55 min in total</span><span lang="zh-Hans">共约 1 小时 55 分钟</span></p></div></nav><div class="nav-scrim" hidden></div>
+<main id="main" tabindex="-1">
+<!--/shell:nav-->
+  <!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb / 路径"><a href="index.html"><span lang="en">Geant4 2.0</span><span lang="zh-Hans">Geant4 2.0</span></a><span aria-hidden="true">›</span><span><span lang="en">Start here</span><span lang="zh-Hans">从这里开始</span></span><span aria-hidden="true">›</span><span aria-current="page"><span lang="en">Week 0 · Set up your computer</span><span lang="zh-Hans">第 0 周 · 配置你的电脑</span></span></nav><!--/shell:crumbs-->
+  <section class="hero" aria-labelledby="h-hero">
+    <div>
+      <p class="prompt">$ <span>geant4-config --check-datasets</span></p>
+      <h1 id="h-hero" class="bi"><span lang="en">Set up your computer once, before Week 2.</span><span lang="zh-Hans">在第 2 周之前，一次性配置好你的电脑。</span></h1>
+      <p class="lede" lang="en">Week 1 needs only Python. From Week 2 on you need Geant4 11.4 with its physics datasets, a C++17 compiler, CMake and a few Python packages. This page gives three routes: conda-forge (no administrator rights), a container, and Windows through WSL2. Pick one, follow it, then run the check at the end.</p>
+      <p class="lede" lang="zh-Hans">第 1 周只需要 Python。从第 2 周起，你需要带物理数据集的 Geant4 11.4、C++17 编译器、CMake 和几个 Python 包。本页给出三条路线：conda-forge（不需要管理员权限）、容器，以及通过 WSL2 的 Windows。选一条照着做，最后运行页面末尾的检查。</p>
+      <ul class="meta">
+        <li><b>≈ 2 h</b><span lang="en">first-time setup</span><span lang="zh-Hans">首次配置</span></li>
+        <li><b>≈ 3 GB</b><span lang="en">Geant4 + datasets</span><span lang="zh-Hans">Geant4 与数据集</span></li>
+        <li><b>3</b><span lang="en">routes: conda · container · WSL2</span><span lang="zh-Hans">条路线：conda · 容器 · WSL2</span></li>
+      </ul>
+      <!--shell:cta--><div class="hero-cta"><a class="btn-p" href="#s-route" data-resume="setup"><span lang="en">Start</span><span lang="zh-Hans">开始</span><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-r"/></svg></a><a class="btn-s" href="#s-conda"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span lang="en">Go to the lab</span><span lang="zh-Hans">直接去实验</span></a><span class="hero-sum"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">8 items · about 1 h 55 min</span><span lang="zh-Hans">8 项 · 约 1 小时 55 分钟</span></span></div><!--/shell:cta-->
+      </div>
+    <div class="statbox" role="table" aria-label="What you install">
+      <div role="row"><span role="cell"><span lang="en">you install</span><span lang="zh-Hans">你要安装</span></span></div>
+      <div role="row"><span role="cell">Geant4</span><span role="cell">11.4 + <span lang="en">datasets</span><span lang="zh-Hans">数据集</span></span></div>
+      <div role="row"><span role="cell"><span lang="en">compiler</span><span lang="zh-Hans">编译器</span></span><span role="cell">C++17 · CMake ≥ 3.16</span></div>
+      <div role="row"><span role="cell">Python</span><span role="cell">numpy · scipy · matplotlib · uproot · awkward</span></div>
+      <div role="row"><span role="cell"><span lang="en">Weeks 9–10 only</span><span lang="zh-Hans">仅第 9–10 周</span></span><span role="cell">Geant4 10.7 + ROOT 6</span></div>
+    </div>
+  </section>
+
+  <section class="run item" id="s-route" data-type="reading" data-min="3" aria-labelledby="h-route">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">3 min</span><span lang="zh-Hans">3 分钟</span></span></p>
+    <p class="cmd">/control/getEnv OS<span lang="en">0.1 · choose your route</span><span lang="zh-Hans">0.1 · 选择路线</span></p>
+    <div class="prose">
+      <h2 id="h-route" class="bi"><span lang="en">Pick the route that matches your computer, not the one that sounds cleverest.</span><span lang="zh-Hans">按你的电脑选路线，而不是按哪条听起来更高级。</span></h2>
+      <div class="scroll"><table class="tbl">
+        <thead><tr><th><span lang="en">your situation</span><span lang="zh-Hans">你的情况</span></th><th><span lang="en">route</span><span lang="zh-Hans">路线</span></th><th><span lang="en">needs admin rights?</span><span lang="zh-Hans">需要管理员权限？</span></th></tr></thead>
+        <tbody>
+          <tr><td><span lang="en">Linux or macOS laptop, or a shared lab PC / server</span><span lang="zh-Hans">Linux 或 macOS 笔记本，或共用的实验室电脑/服务器</span></td><td><a href="#s-conda">A · conda-forge</a></td><td><span lang="en">no</span><span lang="zh-Hans">不需要</span></td></tr>
+          <tr><td><span lang="en">Docker or VS Code already installed; want the same environment as everyone else</span><span lang="zh-Hans">已装好 Docker 或 VS Code，希望和所有人环境完全一致</span></td><td><a href="#s-container">B · <span lang="en">container</span><span lang="zh-Hans">容器</span></a></td><td><span lang="en">Docker itself does</span><span lang="zh-Hans">安装 Docker 本身需要</span></td></tr>
+          <tr><td><span lang="en">Windows 10/11 laptop</span><span lang="zh-Hans">Windows 10/11 笔记本</span></td><td><a href="#s-wsl">C · WSL2</a> <span lang="en">then A or B inside it</span><span lang="zh-Hans">然后在其中走 A 或 B</span></td><td><span lang="en">once, to enable WSL</span><span lang="zh-Hans">需要一次，用于启用 WSL</span></td></tr>
+          <tr><td><span lang="en">Windows PC without admin rights</span><span lang="zh-Hans">没有管理员权限的 Windows 电脑</span></td><td><span lang="en">ask IT to enable WSL2, or use route A on a university Linux server over SSH</span><span lang="zh-Hans">请 IT 启用 WSL2，或通过 SSH 在学校的 Linux 服务器上走路线 A</span></td><td>—</td></tr>
+        </tbody>
+      </table></div>
+      <p lang="en">Geant4 itself does not run natively on Windows for this course: every lab uses a Linux-style terminal. Plan about two hours for the first install, mostly downloading. The recipes below follow the standard conda-forge packaging and the official Geant4 install guide. The course team has not tested every route on every operating system, so if a step fails, note the exact message and bring it to the course help channel.</p>
+      <p lang="zh-Hans">本课程不在原生 Windows 上运行 Geant4：所有实验都使用 Linux 风格的终端。首次安装预留约两小时，主要花在下载上。下面的步骤遵循 conda-forge 的标准打包和 Geant4 官方安装指南。课程团队并没有在每种操作系统上测试每条路线，所以如果某一步失败，请记下完整的报错信息，带到课程答疑渠道。</p>
+    </div>
+  </section>
+
+  <section class="run item" id="s-conda" data-type="lab" data-min="45" aria-labelledby="h-conda">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on lab</span><span lang="zh-Hans">动手实验</span></span><span class="d"><span lang="en">45 min</span><span lang="zh-Hans">45 分钟</span></span></p>
+    <p class="cmd">conda activate g4c<span lang="en">hands-on · route A: conda-forge</span><span lang="zh-Hans">动手实验 · 路线 A：conda-forge</span></p>
+    <div class="prose">
+      <h2 id="h-conda" class="bi"><span lang="en">Route A: Geant4 from conda-forge, in your home directory, no administrator rights.</span><span lang="zh-Hans">路线 A：从 conda-forge 安装 Geant4，装在你的用户目录下，不需要管理员权限。</span></h2>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Install Miniforge (conda + mamba)</span><span lang="zh-Hans">安装 Miniforge（conda + mamba）</span></h3><label class="done" for="w00-a1"><input type="checkbox" id="w00-a1" data-progress="setup"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+      <p lang="en">Download the installer for your system from the Miniforge releases page (github.com/conda-forge/miniforge). In mainland China use the TUNA mirror of the same releases (mirrors.tuna.tsinghua.edu.cn/github-release/conda-forge/miniforge/).</p>
+      <p lang="zh-Hans">从 Miniforge 发布页（github.com/conda-forge/miniforge）下载与你系统对应的安装包。在中国大陆可以使用同一发布的清华 TUNA 镜像（mirrors.tuna.tsinghua.edu.cn/github-release/conda-forge/miniforge/）。</p>
+      <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c-a1">copy</button></div>
+<pre id="c-a1">bash Miniforge3-$(uname)-$(uname -m).sh -b -p "$HOME/miniforge3"
+source "$HOME/miniforge3/bin/activate"
+conda --version</pre></div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Mainland China: point conda and pip at a mirror</span><span lang="zh-Hans">中国大陆：把 conda 和 pip 指向镜像</span></h3><label class="done" for="w00-a2"><input type="checkbox" id="w00-a2" data-progress="setup"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+      <p lang="en">Put these lines in <code>~/.condarc</code> (the USTC mirror <code>https://mirrors.ustc.edu.cn/anaconda/cloud</code> works the same way). Outside China, skip this step.</p>
+      <p lang="zh-Hans">把下面几行写进 <code>~/.condarc</code>（中科大镜像 <code>https://mirrors.ustc.edu.cn/anaconda/cloud</code> 用法相同）。在中国大陆以外可跳过本步。</p>
+      <div class="code"><div class="code-head"><span class="l"><b>~/.condarc</b></span><button class="copy" type="button" data-copy="c-a2">copy</button></div>
+<pre id="c-a2">channels:
+  - conda-forge
+show_channel_urls: true
+custom_channels:
+  conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud</pre></div>
+      <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c-a2b">copy</button></div>
+<pre id="c-a2b">pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple</pre></div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Create the course environment</span><span lang="zh-Hans">创建课程环境</span></h3><label class="done" for="w00-a3"><input type="checkbox" id="w00-a3" data-progress="setup"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+      <p lang="en">First see which Geant4 versions conda-forge offers for your platform. The course targets 11.4; if 11.4 is not listed yet, 11.3 works for Weeks 1–8 and 11–12 (expected outputs may differ in the last digits).</p>
+      <p lang="zh-Hans">先查看 conda-forge 为你的平台提供了哪些 Geant4 版本。课程以 11.4 为目标；如果还没有 11.4，用 11.3 也能完成第 1–8 周和第 11–12 周（预期输出的末几位可能不同）。</p>
+      <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag geant4">GEANT4</span></span><button class="copy" type="button" data-copy="c-a3">copy</button></div>
+<pre id="c-a3">conda search -c conda-forge geant4
+mamba create -n g4c -c conda-forge geant4=11.4 cmake make cxx-compiler \
+    python=3.12 numpy scipy matplotlib uproot awkward
+conda activate g4c</pre></div>
+      <p lang="en">The conda-forge <code>geant4</code> package pulls in the physics datasets as dependencies and sets their environment variables each time you run <code>conda activate g4c</code>. Activate the environment in every new terminal before you build or run a lab.</p>
+      <p lang="zh-Hans">conda-forge 的 <code>geant4</code> 包会把物理数据集作为依赖一并安装，并在每次运行 <code>conda activate g4c</code> 时设置相应的环境变量。每打开一个新终端，编译或运行实验之前都要先激活环境。</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="run item" id="s-container" data-type="reading" data-min="3" aria-labelledby="h-container">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">3 min</span><span lang="zh-Hans">3 分钟</span></span></p>
+    <p class="cmd">docker run g4c:11.4<span lang="en">alternative · route B: container</span><span lang="zh-Hans">备选 · 路线 B：容器</span></p>
+    <div class="prose">
+      <h2 id="h-container" class="bi"><span lang="en">Route B: the course container, the same environment for every student.</span><span lang="zh-Hans">路线 B：课程容器，每位同学的环境完全相同。</span></h2>
+      <p lang="en">The course repository contains a <code>Dockerfile</code> that builds Geant4 11.4 from the official source release with multithreading and all datasets, plus the pinned Python packages in <code>requirements.txt</code>. Building it takes 30–60 minutes once and needs about 6 GB of disk. In mainland China, configure a Docker registry mirror from your university or cloud provider first; the build itself downloads from gitlab.cern.ch and PyPI (use the pip mirror above if PyPI is slow).</p>
+      <p lang="zh-Hans">课程仓库里有一个 <code>Dockerfile</code>：它从官方源码发布版构建带多线程和全部数据集的 Geant4 11.4，并安装 <code>requirements.txt</code> 中固定版本的 Python 包。只需构建一次，用时 30–60 分钟，约占 6 GB 磁盘。在中国大陆，请先配置学校或云服务商提供的 Docker 镜像加速；构建过程本身会从 gitlab.cern.ch 和 PyPI 下载（PyPI 慢时使用上面的 pip 镜像）。</p>
+      <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c-b1">copy</button></div>
+<pre id="c-b1">git clone https://github.com/kimsiang/geant4-course.git
+cd geant4-course
+docker build -t g4c:11.4 .
+docker run --rm -it -v "$PWD":/work g4c:11.4</pre></div>
+      <p lang="en">Inside the container Geant4 and the Python environment are already active; your files in <code>/work</code> are the repository on your own disk, so edits survive when the container stops. With VS Code, open the repository and choose <b>Reopen in Container</b>: the <code>.devcontainer</code> folder uses the same Dockerfile. The container has no graphical viewer; use the VRML or PNG outputs that the labs write.</p>
+      <p lang="zh-Hans">容器内 Geant4 和 Python 环境已经激活；<code>/work</code> 中的文件就是你硬盘上的仓库，容器停止后修改依然保留。使用 VS Code 时，打开仓库并选择 <b>Reopen in Container</b>：<code>.devcontainer</code> 目录使用同一个 Dockerfile。容器内没有图形界面可视化，请使用实验输出的 VRML 或 PNG 文件。</p>
+    </div>
+  </section>
+
+  <section class="run item" id="s-wsl" data-type="reading" data-min="3" aria-labelledby="h-wsl">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">3 min</span><span lang="zh-Hans">3 分钟</span></span></p>
+    <p class="cmd">wsl --install<span lang="en">Windows · route C: WSL2</span><span lang="zh-Hans">Windows · 路线 C：WSL2</span></p>
+    <div class="prose">
+      <h2 id="h-wsl" class="bi"><span lang="en">Route C: on Windows, run a real Ubuntu inside WSL2, then follow route A or B in it.</span><span lang="zh-Hans">路线 C：在 Windows 上用 WSL2 运行一个真正的 Ubuntu，再在其中走路线 A 或 B。</span></h2>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Turn on WSL2 and install Ubuntu</span><span lang="zh-Hans">启用 WSL2 并安装 Ubuntu</span></h3><label class="done" for="w00-c1"><input type="checkbox" id="w00-c1" data-progress="setup"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+      <p lang="en">Open PowerShell <b>as administrator</b> (this is the only step that needs admin rights), run the command, restart, then open <b>Ubuntu</b> from the Start menu and create a Linux user name and password.</p>
+      <p lang="zh-Hans"><b>以管理员身份</b>打开 PowerShell（这是唯一需要管理员权限的一步），运行下面的命令，重启电脑，然后从开始菜单打开 <b>Ubuntu</b>，创建 Linux 用户名和密码。</p>
+      <div class="code"><div class="code-head"><span class="l"><b>Windows PowerShell (admin)</b></span><button class="copy" type="button" data-copy="c-c1">copy</button></div>
+<pre id="c-c1">wsl --install -d Ubuntu-24.04</pre></div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Install Geant4 inside Ubuntu</span><span lang="zh-Hans">在 Ubuntu 中安装 Geant4</span></h3><label class="done" for="w00-c2"><input type="checkbox" id="w00-c2" data-progress="setup"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+      <p lang="en">In the Ubuntu window, follow route A (conda-forge) exactly as on Linux. Docker Desktop with its WSL2 back end also lets you use route B.</p>
+      <p lang="zh-Hans">在 Ubuntu 窗口中，按 Linux 的方式完整执行路线 A（conda-forge）。安装带 WSL2 后端的 Docker Desktop 后，也可以走路线 B。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Keep course files on the Linux side</span><span lang="zh-Hans">把课程文件放在 Linux 一侧</span></h3><label class="done" for="w00-c3"><input type="checkbox" id="w00-c3" data-progress="setup"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+      <p lang="en">Work in your Linux home directory (<code>~/geant4-course</code>), not under <code>/mnt/c</code>: builds there are many times slower and Windows editors can add CRLF line endings that break macros. To look at output files with Windows programs, run <code>explorer.exe .</code> in the folder. VS Code with the WSL extension edits the Linux files directly. On Windows 11, graphical viewers work through WSLg; on Windows 10 use the VRML and PNG outputs instead.</p>
+      <p lang="zh-Hans">在 Linux 用户目录（<code>~/geant4-course</code>）中工作，不要放在 <code>/mnt/c</code> 下：那里编译要慢很多倍，Windows 编辑器还可能加入 CRLF 换行，导致宏文件出错。想用 Windows 程序查看输出文件，在该目录下运行 <code>explorer.exe .</code>。装了 WSL 扩展的 VS Code 可以直接编辑 Linux 一侧的文件。Windows 11 通过 WSLg 可以显示图形可视化；Windows 10 请改用 VRML 和 PNG 输出。</p>
+      <div class="code"><div class="code-head"><span class="l"><b>Ubuntu (WSL2)</b></span><button class="copy" type="button" data-copy="c-c3">copy</button></div>
+<pre id="c-c3">mkdir -p ~/geant4-course &amp;&amp; cd ~/geant4-course
+explorer.exe .</pre></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="run item" id="s-check" data-type="lab" data-min="45" aria-labelledby="h-check">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on lab</span><span lang="zh-Hans">动手实验</span></span><span class="d"><span lang="en">45 min</span><span lang="zh-Hans">45 分钟</span></span></p>
+    <p class="cmd">/control/shell geant4-config<span lang="en">hands-on · check your install</span><span lang="zh-Hans">动手实验 · 检查安装</span></p>
+    <div class="prose">
+      <h2 id="h-check" class="bi"><span lang="en">Prove it works: versions, datasets, and a first build of Week 2.</span><span lang="zh-Hans">证明它能用：版本、数据集，以及第 2 周的首次编译。</span></h2>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Versions and datasets</span><span lang="zh-Hans">版本与数据集</span></h3><label class="done" for="w00-k1"><input type="checkbox" id="w00-k1" data-progress="setup"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+      <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag geant4">GEANT4</span></span><button class="copy" type="button" data-copy="c-k1">copy</button></div>
+<pre id="c-k1">geant4-config --version
+geant4-config --check-datasets
+cmake --version
+python -c "import numpy, uproot, awkward; print('python ok')"</pre></div>
+      <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
+<pre>11.4.x                  <span class="c"># 11.3.x is acceptable for Weeks 1–8 and 11–12</span>
+<span class="c"># --check-datasets: every data library reported as installed, none missing</span>
+cmake version 3.16 or newer
+python ok</pre></div>
+      <p lang="en">If a dataset is reported missing, run <code>geant4-config --install-datasets</code> (it downloads from cern.ch; allow time on slow networks), then check again.</p>
+      <p lang="zh-Hans">如果报告缺少某个数据集，运行 <code>geant4-config --install-datasets</code>（从 cern.ch 下载，网速慢时请留足时间），然后再次检查。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Build and run Week 2</span><span lang="zh-Hans">编译并运行第 2 周</span></h3><label class="done" for="w00-k2"><input type="checkbox" id="w00-k2" data-progress="setup"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+      <p lang="en">Download <a href="downloads/week02-code.zip">week02-code.zip</a>, unzip it, and build. The last line of the build should read <code>[100%] Built target week02</code>; the run prints one step table that you will compare with Week 2, step 3.</p>
+      <p lang="zh-Hans">下载 <a href="downloads/week02-code.zip">week02-code.zip</a>，解压后编译。编译最后一行应为 <code>[100%] Built target week02</code>；运行会打印一张步表，你将在第 2 周第 3 步中逐行对照。</p>
+      <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag geant4">GEANT4</span></span><button class="copy" type="button" data-copy="c-k2">copy</button></div>
+<pre id="c-k2">unzip week02-code.zip &amp;&amp; cd week02
+cmake -S . -B build
+cmake --build build -j4
+cd build &amp;&amp; ./week02 run1.mac</pre></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="run item" id="s-err" data-type="errors" data-min="12" aria-labelledby="h-err">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">12 min</span><span lang="zh-Hans">12 分钟</span></span></p>
+    <p class="cmd">G4Exception<span lang="en">common errors</span><span lang="zh-Hans">常见错误</span></p>
+    <div class="prose">
+      <h2 id="h-err" class="bi"><span lang="en">Four messages that mean the setup, not your code, is wrong.</span><span lang="zh-Hans">四条说明出错的是配置、而不是你代码的信息。</span></h2>
+<div class="g4ex" role="note" lang="en"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
+*** G4Exception : PART70000
+      issued by : G4NuclideTable
+G4ENSDFSTATEDATA environment variable must be set
+<span class="d">  Course note: datasets are missing or the environment is not active.</span>
+<span class="d">  Activate the environment in this terminal, then run</span>
+<span class="d">  geant4-config --check-datasets.</span>
+*** Fatal Exception *** core dump ***
+<span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
+*** G4Exception : PART70000
+      issued by : G4NuclideTable
+G4ENSDFSTATEDATA environment variable must be set
+<span class="d">  课程说明：数据集缺失，或当前终端未激活环境。</span>
+<span class="d">  先在本终端激活环境，再运行</span>
+<span class="d">  geant4-config --check-datasets。</span>
+*** Fatal Exception *** core dump ***
+<span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W00-a
+      issued by : the shell
+geant4-config: command not found
+<span class="d">  The environment is not active in this terminal:</span>
+<span class="d">  conda activate g4c, or source &lt;install&gt;/bin/geant4.sh.</span>
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W00-a
+      issued by : the shell
+geant4-config: command not found
+<span class="d">  当前终端未激活环境：</span>
+<span class="d">  conda activate g4c，或 source &lt;安装目录&gt;/bin/geant4.sh。</span>
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W00-b
+      issued by : cmake
+Could not find a package configuration file provided by "Geant4"
+<span class="d">  Same cause, or pass -DGeant4_DIR=&lt;install&gt;/lib/cmake/Geant4.</span>
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W00-b
+      issued by : cmake
+Could not find a package configuration file provided by "Geant4"
+<span class="d">  原因相同；或传入 -DGeant4_DIR=&lt;安装目录&gt;/lib/cmake/Geant4。</span>
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W00-c
+      issued by : bash (WSL2)
+run1.mac: line 1: $'\r': command not found
+<span class="d">  The file was saved with Windows line endings. Edit it on the</span>
+<span class="d">  Linux side, or run: sed -i 's/\r$//' run1.mac</span>
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+<div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
+*** G4Exception : Course-W00-c
+      issued by : bash (WSL2)
+run1.mac: line 1: $'\r': command not found
+<span class="d">  文件以 Windows 换行保存。请在 Linux 一侧编辑，</span>
+<span class="d">  或运行：sed -i 's/\r$//' run1.mac</span>
+*** This is just a warning message. ***
+<span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
+      <p class="cap"><span lang="en">PART70000 is a Geant4 11.4 message (G4NuclideTable.cc). Codes starting with Course- are this course's notes in the same format.</span><span lang="zh-Hans">PART70000 是 Geant4 11.4 的真实信息（G4NuclideTable.cc）。以 Course- 开头的编号是本课程以同样格式写的提示。</span></p>
+    </div>
+  </section>
+
+  <section class="run item" id="s-musr" data-type="reading" data-min="3" aria-labelledby="h-musr">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">3 min</span><span lang="zh-Hans">3 分钟</span></span></p>
+    <p class="cmd">/musr/command<span lang="en">optional · musrSim for Weeks 9–10</span><span lang="zh-Hans">选修 · 第 9–10 周的 musrSim</span></p>
+    <div class="prose">
+      <h2 id="h-musr" class="bi"><span lang="en">Optional: a second environment with Geant4 10.7 and ROOT for musrSim.</span><span lang="zh-Hans">选修：为 musrSim 准备第二个环境，含 Geant4 10.7 与 ROOT。</span></h2>
+      <p lang="en">Only the musrSim parts of Weeks 9 and 10 need this; the muography track can skip it. musrSim needs Geant4 10.7 and ROOT 6, kept separate from the 11.4 environment. Without CERN's CVMFS, try a second conda environment; check first that conda-forge has Geant4 10.7 builds for your platform. If it does not, build Geant4 10.7.p04 from source following its own install guide, or use a Linux machine with CVMFS as described in Week 9.</p>
+      <p lang="zh-Hans">只有第 9、10 周的 musrSim 部分需要它；缪子成像方向可以跳过。musrSim 需要 Geant4 10.7 和 ROOT 6，并且要与 11.4 环境分开。没有 CERN 的 CVMFS 时，可以尝试第二个 conda 环境；先确认 conda-forge 为你的平台提供了 Geant4 10.7 的构建。如果没有，请按 Geant4 10.7.p04 自己的安装指南从源码编译，或使用第 9 周介绍的带 CVMFS 的 Linux 机器。</p>
+      <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag musrsim">MUSRSIM</span></span><button class="copy" type="button" data-copy="c-m1">copy</button></div>
+<pre id="c-m1">conda search -c conda-forge "geant4=10.7"
+mamba create -n musr -c conda-forge geant4=10.7 root cmake make cxx-compiler
+conda activate musr
+geant4-config --version &amp;&amp; root-config --version</pre></div>
+      <p lang="en">The course team has not yet built musrSim in this environment: treat this route as a starting point and report what works.</p>
+      <p lang="zh-Hans">课程团队尚未在这个环境中编译过 musrSim：请把这条路线当作起点，并反馈实际效果。</p>
+    </div>
+  </section>
+
+  <section class="run item" id="s-next" data-type="reading" data-min="3" aria-labelledby="h-next">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">3 min</span><span lang="zh-Hans">3 分钟</span></span></p>
+    <p class="cmd">/control/execute week02.mac<span lang="en">next</span><span lang="zh-Hans">下一步</span></p>
+    <div class="prose">
+      <h2 id="h-next" class="bi"><span lang="en">Installed and checked? Go back to Week 1, or straight on to Week 2.</span><span lang="zh-Hans">安装并检查完毕？回到第 1 周，或直接进入第 2 周。</span></h2>
+      <p><a href="week01.html"><span lang="en">Week 1 · A Monte Carlo primer →</span><span lang="zh-Hans">第 1 周 · 蒙特卡罗入门 →</span></a> · <a href="week02.html"><span lang="en">Week 2 · Run, Event, Track, Step →</span><span lang="zh-Hans">第 2 周 · 运行、事例、径迹、步 →</span></a></p>
+    </div>
+  </section>
+
+  <!--shell:done--><section class="wk-done" id="s-complete" data-key="setup" data-week="0" aria-labelledby="h-complete"><h2 id="h-complete" class="bi"><span lang="en">Your progress on this page</span><span lang="zh-Hans">本页学习进度</span></h2><div class="wk-done-body"></div></section><!--/shell:done-->
+
+  <footer>
+    <span>Geant4 2.0 · Muon Physics Group, TDLI · Shanghai</span>
+    <span lang="en">Sources: Geant4 11.4 Installation Guide · conda-forge geant4 feedstock · Microsoft WSL documentation</span><span lang="zh-Hans">来源：Geant4 11.4 安装指南 · conda-forge geant4 打包仓库 · Microsoft WSL 文档</span>
+  </footer>
+</main>
+</div><!--shell:end-->
+<script src="assets/course.js"></script>
+<script>G4C.progress('setup');</script>
+</body>
+</html>

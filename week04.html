@@ -7,9 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Geant4 2.0, Week 04: predict, simulate and compare muon energy loss in plastic scintillator against the Bethe formula, in headless batch mode.">
 <script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/course.css">
 </head>
 <body>
@@ -226,6 +224,7 @@ fEventAction-&gt;AddEdep(step-&gt;<mark>GetTotalEnergyDeposit()</mark>);        
     <p class="cmd">/control/shell ./week04 run_bethe_bloch.mac<span lang="en">hands-on · Lab 4</span><span lang="zh-Hans">动手实验 · 实验 4</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Five energies, fifty thousand events, one plot against the formula.</span><span lang="zh-Hans">五个能量、五万个事例、一张与公式对照的图。</span></h2>
+      <!--shell:dl--><p class="dl"><a class="btn-s" href="downloads/week04-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download all files for this lab (zip)</span><span lang="zh-Hans">下载本实验的全部文件（zip）</span></a><a class="dl-all" href="downloads/geant4-course-code.zip" download><span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></a></p><!--/shell:dl-->
       <p lang="en">Outputs are real Geant4 11.4.p01 runs of these files with the course test physics list. Its muon ionisation, bremsstrahlung and pair production are the same models as <code>FTFP_BERT</code>, so the primary −dE/dx should agree with yours within errors; Edep can differ by about 1% because of the simpler electron models.</p>
       <p lang="zh-Hans">下面的输出来自这些文件在 Geant4 11.4.p01 上的真实运行，使用课程测试物理列表。它的缪子电离、轫致辐射和电子对产生与 <code>FTFP_BERT</code> 是同一组模型，所以主粒子 −dE/dx 应在误差内与你的结果一致；由于电子模型较简化，Edep 可能相差约 1%。</p>
       <ol class="steps">
@@ -460,7 +459,7 @@ RunAction::RunAction()
   analysisManager-&gt;SetDefaultFileType("root");
   analysisManager-&gt;SetFileName("edep_scan");  // override per run: /analysis/setFileName
   // Ranges chosen so the whole Landau peak AND its tail fit (10 cm of plastic
-  // gives ~20 MeV at the minimum and ~28 MeV at 100 MeV kinetic energy).
+  // gives ~20 MeV at the minimum and ~24 MeV at 100 MeV kinetic energy).
   analysisManager-&gt;CreateH1("Edep", "Energy deposit per event [MeV]", 200, 0., 80.);
   analysisManager-&gt;CreateH1("PrimarydEdx",
                             "Primary muon energy loss per path length [MeV/cm]",
@@ -666,8 +665,8 @@ python3 plot_bethe.py</pre></div>
     1000   10.42    2.046    2.119    2.129      0.996
    10000   95.64    2.121    2.234    2.487      0.898
 wrote bethe_scan.png</pre></div>
-          <p lang="en">The three middle points agree with the formula to 0.5%. The prediction holds: the 100 MeV muon loses 13% more per cm than the 1 GeV one. The two ends disagree, and each has a physical reason, which is the point of the exercise:</p>
-          <p lang="zh-Hans">中间三个点与公式的差别在 0.5% 以内。预测得到验证：100 MeV 缪子每厘米的损失比 1 GeV 缪子多 13%。两端不一致，各有物理原因，这正是本练习的要点：</p>
+          <p lang="en">The three middle points agree with the formula to 0.5%. In units of the statistical error alone that is not agreement: at 200 MeV, 2.065 against 2.055 is several σ of a 10⁴-event mean. The formula itself is only good to about 1–2% here (no shell, Bloch or Mott corrections), so the honest comparison is at that level, and you should say so when you quote it. The prediction holds: the 100 MeV muon loses 13% more per cm than the 1 GeV one. The two ends disagree, and each has a physical reason, which is the point of the exercise:</p>
+          <p lang="zh-Hans">中间三个点与公式的差别在 0.5% 以内。若只用统计误差衡量，这并不算一致：200 MeV 处 2.065 对 2.055，相对 10⁴ 个事例的均值误差已有好几个 σ。公式本身在这里只精确到约 1–2%（没有壳修正、Bloch 和 Mott 项），所以诚实的比较只能到这个水平，引用时要说明。预测得到验证：100 MeV 缪子每厘米的损失比 1 GeV 缪子多 13%。两端不一致，各有物理原因，这正是本练习的要点：</p>
           <ul>
             <li><span lang="en"><strong>100 MeV, +3.7%:</strong> the muon loses 24 MeV in the slab, slows to about 76 MeV (βγ ≈ 1.40) and its dE/dx climbs on the way. The formula is evaluated at the entrance energy only.</span><span lang="zh-Hans"><strong>100 MeV，+3.7%：</strong>缪子在板内损失 24 MeV，减速到约 76 MeV（βγ ≈ 1.40），dE/dx 一路上升；而公式只在入射能量处计算。</span></li>
             <li><span lang="en"><strong>10 GeV, −10%:</strong> the Bethe <em>mean</em> includes rare collisions up to <i>T</i><sub>max</sub> ≈ 4.8 GeV. In our run 99 of 10⁴ events lost more than 100 MeV and landed in the histogram's overflow, which the histogram mean ignores. A mean dominated by a 1/T² tail converges slowly; that is why detectors quote the most probable value.</span><span lang="zh-Hans"><strong>10 GeV，−10%：</strong>Bethe 的<em>平均值</em>包含了能量转移高达 <i>T</i><sub>max</sub> ≈ 4.8 GeV 的罕见碰撞。我们的运行中，10⁴ 个事例里有 99 个损失超过 100 MeV，落进了直方图的溢出区，而直方图均值不计溢出。被 1/T² 尾巴主导的平均值收敛很慢，这就是探测器通常报告最可几值的原因。</span></li>

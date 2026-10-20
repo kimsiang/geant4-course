@@ -1,9 +1,9 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Geant4 2.0 Course</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="A 12-week, project-based course: simulate a particle detector from scratch with Geant4. Join the founding waitlist.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <style>
 /* Layout: the page reads as one Geant4 run. Left rail = macro command, right = what it produces. Hero = live event display + ROOT-style histogram. */
 :root {
@@ -217,7 +217,7 @@ cmake .. &amp;&amp; make
 build geometry, verify volumes
 choose physics list, justify cuts
 score Edep, compare to Bethe–Bloch
-<span class="ok">// MPV within 2% of reference</span>
+<span class="ok">// mean dE/dx agrees with PDG within errors</span>
 <span class="ok">// result you can defend</span></pre>
           <p class="cap">Runs, and you know why the numbers are right.</p>
         </div>
@@ -235,10 +235,10 @@ score Edep, compare to Bethe–Bloch
           <thead><tr><th>Stage</th><th>You learn to</th><th>阶段</th></tr></thead>
           <tbody>
             <tr><td class="n">1 · See it</td><td>Build geometry and materials, and draw your first tracks</td><td class="zh">观测</td></tr>
-            <tr><td class="n">2 · Measure it</td><td>Score energy, record hits and write ROOT output</td><td class="zh">度量</td></tr>
+            <tr><td class="n">2 · Measure it</td><td>Score energy, record hits with a trigger, and write ntuples you read in Python</td><td class="zh">度量</td></tr>
             <tr><td class="n">3 · Understand it</td><td>Choose physics lists and production cuts, and know what they change</td><td class="zh">理解</td></tr>
             <tr><td class="n">4 · Build it</td><td>Write a complete detector application with sensitive detectors</td><td class="zh">建造</td></tr>
-            <tr><td class="n">5 · Trust it</td><td>Validate against data and quote a systematic uncertainty</td><td class="zh">取信</td></tr>
+            <tr><td class="n">5 · Trust it</td><td>Debug systematically, validate against reference data, and quote an uncertainty</td><td class="zh">信任</td></tr>
           </tbody>
         </table>
       </div>
@@ -254,11 +254,11 @@ score Edep, compare to Bethe–Bloch
         <table class="tbl">
           <thead><tr><th>Weeks</th><th>Project</th></tr></thead>
           <tbody>
-            <tr><td class="wk">01–02</td><td>A plastic scintillator slab and your first cosmic-ray muon tracks</td></tr>
-            <tr><td class="wk">03–05</td><td>Energy deposits, hit collections and ROOT ntuples</td></tr>
-            <tr><td class="wk">06–08</td><td>Physics-list choices tested against known stopping power</td></tr>
-            <tr><td class="wk">09–10</td><td>A multi-layer muon telescope, as used in muography</td></tr>
-            <tr><td class="wk">11–12</td><td>A validated capstone you can put in a thesis or show in an interview</td></tr>
+            <tr><td class="wk">01–02</td><td>A two-layer muon telescope in Python, then your first Geant4 application and its muon tracks</td></tr>
+            <tr><td class="wk">03–05</td><td>Geometry and materials, energy loss against the Bethe formula, hits and a coincidence trigger</td></tr>
+            <tr><td class="wk">06–08</td><td>Physics lists and production cuts, momentum from a magnetic field, a multithreaded analysis chain</td></tr>
+            <tr><td class="wk">09–10</td><td>musrSim and a transverse-field μSR experiment (optional for the muography track)</td></tr>
+            <tr><td class="wk">11–12</td><td>Debugging and validation against PDG, then a capstone proposal you defend</td></tr>
           </tbody>
         </table>
       </div>
@@ -287,7 +287,7 @@ score Edep, compare to Bethe–Bloch
     <div>
       <h2 id="h-price">Waitlist members get the founding price.</h2>
       <div class="prices">
-        <div class="price"><div class="tag">self-paced</div><div class="amt">$290</div><p>All 12 projects, solutions and the container image.</p></div>
+        <div class="price"><div class="tag">self-paced</div><div class="amt">$290</div><p>All 12 weeks with complete code and expected outputs, plus the course container recipe.</p></div>
         <div class="price"><div class="tag">live cohort</div><div class="amt">$590</div><p>Weekly code review and a capstone defence.</p></div>
         <div class="price"><div class="tag">lab licence · 5 seats</div><div class="amt">$1,900</div><p>For a research group onboarding new students.</p></div>
       </div>
@@ -304,9 +304,12 @@ score Edep, compare to Bethe–Bloch
 *** G4Exception : Course001
       issued by : Geant4 2.0 waitlist
 Prerequisites for this course:
-  - basic C++: classes and pointers, not templates
-  - a Linux or macOS machine (container provided for Windows)
-  - about five hours a week, mostly building
+  - comfortable in a terminal; some Python or C++
+    (Week 1 is Python; C++ is built up from Week 2)
+  - Linux, macOS, or Windows with WSL2
+    (Week 0 gives conda and container setup routes)
+  - 2-3 hours a week if Linux and C++ are familiar,
+    4-6 hours a week if they are new
 Best fit: senior undergraduates, new graduate students,
 and engineers moving into detector work.
 *** This is just a warning message. ***

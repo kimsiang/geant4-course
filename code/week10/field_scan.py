@@ -15,9 +15,15 @@ for fn in sys.argv[1:]:
     out = subprocess.run([sys.executable, "asymmetry.py", fn], capture_output=True, text=True, check=True).stdout
     f, df = map(float, re.search(r"f   = ([\d.]+) \+/- ([\d.]+)", out).groups())
     b = float(re.search(r"tf_(\d+)mT", fn).group(1)) / 1000.0
+    if "WARNING" in out:
+        # asymmetry.py found no significant oscillation: its f is noise, not a measurement
+        print(f"B = {b*1000:5.1f} mT   NO OSCILLATION (A0 consistent with zero): excluded from the fit")
+        continue
     B.append(b); F.append(f); dF.append(df)
     print(f"B = {b*1000:5.1f} mT   f = {f:.4f} +/- {df:.4f} MHz   expected {GAMMA_MU*b:.4f}   pull {(f-GAMMA_MU*b)/df:+.2f}")
 
+if len(B) < 2:
+    sys.exit("fewer than two fields with a significant oscillation: no slope")
 B, F, dF = map(np.asarray, (B, F, dF))
 w = 1 / dF**2
 # weighted straight line through the origin: f = k B

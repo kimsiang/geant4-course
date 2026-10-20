@@ -48,5 +48,14 @@ print("mean decay time, sentinels removed [us]:", round(float(tdec[good].mean())
 tt = tdec[good]
 counts, edges = np.histogram(tt, bins=120, range=(0, 12))
 centres = 0.5 * (edges[:-1] + edges[1:])
-popt, pcov = curve_fit(decay, centres, counts, p0=[counts.max(), 2.2, 0.0])
-print(f"fit: tau = {popt[1]:.4f} +/- {np.sqrt(pcov[1, 1]):.4f} us   (PDG mu+: 2.1970 us)")
+# Counts are Poisson: weight each bin by the variance the model predicts (Pearson chi2),
+# iterate once so the weights come from the fit, not from the noisy counts, and keep the
+# absolute errors. An unweighted fit lets the many near-empty tail bins pull as hard as
+# the full bins near t = 0, and its quoted error is not an uncertainty.
+popt, _ = curve_fit(decay, centres, counts, p0=[counts.max(), 2.2, 0.0])
+for _ in range(2):
+    sigma = np.sqrt(np.maximum(decay(centres, *popt), 1.0))
+    popt, pcov = curve_fit(decay, centres, counts, p0=popt, sigma=sigma, absolute_sigma=True)
+chi2 = float((((counts - decay(centres, *popt)) / sigma) ** 2).sum())
+print(f"fit: tau = {popt[1]:.4f} +/- {np.sqrt(pcov[1, 1]):.4f} us   (PDG mu+: 2.1970 us)"
+      f"   chi2/ndf = {chi2:.1f}/{len(counts) - 3}")

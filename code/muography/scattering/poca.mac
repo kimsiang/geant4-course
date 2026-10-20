@@ -1,0 +1,13 @@
+# PoCA image: 3 GeV mu- over a 80 cm x 80 cm square, up to 20 deg, through a 20 cm steel cube
+/control/verbose 1
+/run/verbose 0
+/scat/det/shape block
+/scat/det/material G4_Fe
+/run/initialize
+# the generator's commands exist only after /run/initialize (it is built per thread)
+/scat/gun/halfSize 40 cm
+/scat/gun/maxAngle 20 deg
+/gun/energy 3 GeV
+/analysis/setFileName poca
+/random/setSeeds 31 41
+/run/beamOn 200000

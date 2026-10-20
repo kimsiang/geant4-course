@@ -10,7 +10,7 @@ RunAction::RunAction()
   analysisManager->SetDefaultFileType("root");
   analysisManager->SetFileName("edep_scan");  // override per run: /analysis/setFileName
   // Ranges chosen so the whole Landau peak AND its tail fit (10 cm of plastic
-  // gives ~20 MeV at the minimum and ~28 MeV at 100 MeV kinetic energy).
+  // gives ~20 MeV at the minimum and ~24 MeV at 100 MeV kinetic energy).
   analysisManager->CreateH1("Edep", "Energy deposit per event [MeV]", 200, 0., 80.);
   analysisManager->CreateH1("PrimarydEdx",
                             "Primary muon energy loss per path length [MeV/cm]",

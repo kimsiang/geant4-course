@@ -7,9 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Geant4 2.0, Week 10: attach a field, keep the physics list honest, and measure a magnetic field from the precession of the muon spin.">
 <script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/course.css">
 </head>
 <body>
@@ -17,7 +15,7 @@
 <!--shell:top--><a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="zh-Hans">跳到正文</span></a>
 <header class="topbar"><div class="tb-in"><button type="button" class="nav-toggle" aria-controls="nav" aria-expanded="false"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg><span class="sr"><span lang="en">Open the item list</span><span lang="zh-Hans">打开目录</span></span></button><a class="brand" href="index.html"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="logo-bg"/><path d="M5 25 15.5 15" class="logo-mu"/><path d="M15.5 15c3.5-3 7-5.6 11.5-6.5" class="logo-pos"/><path d="M15.5 15c1.8 3.6 4.6 6.5 9 8.5" class="logo-neu"/><circle cx="15.5" cy="15" r="2.2" class="logo-v"/></svg><b>Geant4 2.0</b></a><span class="tb-week"><span lang="en">Week 10 of 12</span><span lang="zh-Hans">第 10 / 12 周</span><span class="tb-title"><span lang="en">Transverse-field μSR capstone</span><span lang="zh-Hans">横场 μSR 综合实验</span></span></span><span class="tb-prog" data-prog="w10" aria-hidden="true"><span class="pbar"><i></i></span><span class="pn"></span></span><span class="lang" role="group" aria-label="Language / 语言"><button type="button" data-setlang="en" id="lang-en">EN</button><button type="button" data-setlang="zh" id="lang-zh">中文</button><button type="button" data-setlang="both" id="lang-both">EN+中</button></span></div></header><!--/shell:top-->
 <div class="player">
-<!--shell:nav--><nav class="nav" id="nav" aria-label="Items on this page / 本页目录"><div class="nav-in"><a class="nav-home" href="index.html"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg><span lang="en">Course home</span><span lang="zh-Hans">课程主页</span></a><p class="nav-week"><span lang="en">Week 10 · Build it</span><span lang="zh-Hans">第 10 周 · 建造</span></p><p class="nav-title"><span lang="en">Transverse-field μSR capstone</span><span lang="zh-Hans">横场 μSR 综合实验</span></p><div class="nav-prog" data-prog="w10"><span class="pbar"><i></i></span><span class="pn"></span></div><ol class="nav-items"><li><a href="#s-goals" data-item="s-goals"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-overview"/></svg><span class="t"><span lang="en">Overview and goals</span><span lang="zh-Hans">概览与目标</span><small><span lang="en">Overview · 3 min</span><span lang="zh-Hans">概览 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#background" data-item="background"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Background</span><span lang="zh-Hans">背景知识</span><small><span lang="en">Reading · 6 min</span><span lang="zh-Hans">阅读 · 6 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-evd" data-item="s-evd"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-display"/></svg><span class="t"><span lang="en">3D event display</span><span lang="zh-Hans">三维事例显示</span><small><span lang="en">Event display · 3 min</span><span lang="zh-Hans">事例显示 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-field" data-item="s-field"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">10.1 Attach a field</span><span lang="zh-Hans">10.1 加上磁场</span><small><span lang="en">Reading · 7 min</span><span lang="zh-Hans">阅读 · 7 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-phys" data-item="s-phys"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">10.2 Keep the physics list honest</span><span lang="zh-Hans">10.2 让物理列表保持诚实</span><small><span lang="en">Reading · 6 min</span><span lang="zh-Hans">阅读 · 6 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-toy" data-item="s-toy"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-interactive"/></svg><span class="t"><span lang="en">Interactive toy model</span><span lang="zh-Hans">交互玩具模型</span><small><span lang="en">Interactive · 10 min</span><span lang="zh-Hans">交互 · 10 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-task" data-item="s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: Lab 10</span><span lang="zh-Hans">动手：实验 10</span><small><span lang="en">Hands-on lab · 1 h 55 min</span><span lang="zh-Hans">动手实验 · 1 小时 55 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-quiz" data-item="s-quiz"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-quiz"/></svg><span class="t"><span lang="en">Practice quiz</span><span lang="zh-Hans">练习测验</span><small><span lang="en">Practice quiz · 9 min</span><span lang="zh-Hans">练习测验 · 9 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-err" data-item="s-err"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Common errors</span><span lang="zh-Hans">常见错误</span><small><span lang="en">Reading · 11 min</span><span lang="zh-Hans">阅读 · 11 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-review" data-item="s-review"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-review"/></svg><span class="t"><span lang="en">Review notes</span><span lang="zh-Hans">复习要点</span><small><span lang="en">Checklist · 5 min</span><span lang="zh-Hans">清单 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-share" data-item="s-share"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span class="t"><span lang="en">Share this week</span><span lang="zh-Hans">分享本周成果</span><small><span lang="en">Share · 5 min</span><span lang="zh-Hans">分享 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li></ol><p class="nav-total"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">About 3 h in total</span><span lang="zh-Hans">共约 3 小时</span></p></div></nav><div class="nav-scrim" hidden></div>
+<!--shell:nav--><nav class="nav" id="nav" aria-label="Items on this page / 本页目录"><div class="nav-in"><a class="nav-home" href="index.html"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg><span lang="en">Course home</span><span lang="zh-Hans">课程主页</span></a><p class="nav-week"><span lang="en">Week 10 · Build it</span><span lang="zh-Hans">第 10 周 · 建造</span></p><p class="nav-title"><span lang="en">Transverse-field μSR capstone</span><span lang="zh-Hans">横场 μSR 综合实验</span></p><div class="nav-prog" data-prog="w10"><span class="pbar"><i></i></span><span class="pn"></span></div><ol class="nav-items"><li><a href="#s-goals" data-item="s-goals"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-overview"/></svg><span class="t"><span lang="en">Overview and goals</span><span lang="zh-Hans">概览与目标</span><small><span lang="en">Overview · 3 min</span><span lang="zh-Hans">概览 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#background" data-item="background"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Background</span><span lang="zh-Hans">背景知识</span><small><span lang="en">Reading · 6 min</span><span lang="zh-Hans">阅读 · 6 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-evd" data-item="s-evd"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-display"/></svg><span class="t"><span lang="en">3D event display</span><span lang="zh-Hans">三维事例显示</span><small><span lang="en">Event display · 3 min</span><span lang="zh-Hans">事例显示 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-field" data-item="s-field"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">10.1 Attach a field</span><span lang="zh-Hans">10.1 加上磁场</span><small><span lang="en">Reading · 10 min</span><span lang="zh-Hans">阅读 · 10 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-phys" data-item="s-phys"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">10.2 Keep the physics list honest</span><span lang="zh-Hans">10.2 让物理列表保持诚实</span><small><span lang="en">Reading · 6 min</span><span lang="zh-Hans">阅读 · 6 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-toy" data-item="s-toy"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-interactive"/></svg><span class="t"><span lang="en">Interactive toy model</span><span lang="zh-Hans">交互玩具模型</span><small><span lang="en">Interactive · 10 min</span><span lang="zh-Hans">交互 · 10 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-task" data-item="s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: Lab 10</span><span lang="zh-Hans">动手：实验 10</span><small><span lang="en">Hands-on lab · 1 h 50 min</span><span lang="zh-Hans">动手实验 · 1 小时 50 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-quiz" data-item="s-quiz"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-quiz"/></svg><span class="t"><span lang="en">Practice quiz</span><span lang="zh-Hans">练习测验</span><small><span lang="en">Practice quiz · 9 min</span><span lang="zh-Hans">练习测验 · 9 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-err" data-item="s-err"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Common errors</span><span lang="zh-Hans">常见错误</span><small><span lang="en">Reading · 11 min</span><span lang="zh-Hans">阅读 · 11 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-review" data-item="s-review"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-review"/></svg><span class="t"><span lang="en">Review notes</span><span lang="zh-Hans">复习要点</span><small><span lang="en">Checklist · 5 min</span><span lang="zh-Hans">清单 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-share" data-item="s-share"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span class="t"><span lang="en">Share this week</span><span lang="zh-Hans">分享本周成果</span><small><span lang="en">Share · 5 min</span><span lang="zh-Hans">分享 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li></ol><p class="nav-total"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">About 3 h in total</span><span lang="zh-Hans">共约 3 小时</span></p></div></nav><div class="nav-scrim" hidden></div>
 <main id="main" tabindex="-1">
 <!--/shell:nav-->
   <!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb / 路径"><a href="index.html"><span lang="en">Geant4 2.0</span><span lang="zh-Hans">Geant4 2.0</span></a><span aria-hidden="true">›</span><span><span lang="en">Stage 4 · Build it</span><span lang="zh-Hans">第 4 阶段 · 建造</span></span><span aria-hidden="true">›</span><span aria-current="page"><span lang="en">Week 10</span><span lang="zh-Hans">第 10 周</span></span></nav><!--/shell:crumbs-->
@@ -93,8 +91,8 @@
 
 <!-- /fig:evd-w10 -->
 
-  <section class="run item" id="s-field" data-type="reading" data-min="7" aria-labelledby="h-field">
-    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">7 min</span><span lang="zh-Hans">7 分钟</span></span></p>
+  <section class="run item" id="s-field" data-type="reading" data-min="10" aria-labelledby="h-field">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">10 min</span><span lang="zh-Hans">10 分钟</span></span></p>
     <p class="cmd">/musr/command globalfield<span lang="en">10.1 · attach a field</span><span lang="zh-Hans">10.1 · 加上磁场</span></p>
     <div class="prose">
       <h2 id="h-field" class="bi"><span lang="en">A field can be wrong while the simulation runs perfectly.</span><span lang="zh-Hans">磁场可能是错的，而模拟照样跑得好好的。</span></h2>
@@ -111,13 +109,18 @@
       <p lang="zh-Hans">磁场盒也用半长，所以 400 400 400 是边长 800 mm。在 musrsim-sms 源码中，均匀场的数值以特斯拉读入（电场以 kV/mm 读入）。定义场图之后，在几个你能手算核对的点上打印磁场：坐标轴顺序、中心偏移或缩放因子出错时，径迹看起来都很合理。积分控制参数（<code>SetLargestAcceptableStep</code>、<code>SetMinimumEpsilonStep</code>、<code>SetDeltaOneStep</code>）是需要检验其效果的数值，和第 7 周一样。</p>
       <div class="box">
         <p class="box-label">Theorem 10.1 · <span lang="en">Muon spin precession</span><span lang="zh-Hans">缪子自旋进动</span></p>
-        <p lang="en">A stopped μ⁺ in a transverse field B precesses at f = (γμ/2π)·B, with γμ/2π = 135.5388 MHz/T. At 10 mT: f = 1.3554 MHz, period 0.738 µs, about three turns per lifetime (τμ = 2.1970 µs). Direction: dS/dt = γμ S × B with γμ &gt; 0, so a spin starting along −z in B ∥ +x turns towards −y first.</p>
-        <p lang="zh-Hans">横向磁场 B 中静止的 μ⁺ 以 f = (γμ/2π)·B 进动，γμ/2π = 135.5388 MHz/T。10 mT 时 f = 1.3554 MHz，周期 0.738 µs，每个寿命（τμ = 2.1970 µs）内约转三圈。方向：dS/dt = γμ S × B，γμ &gt; 0，所以在 B ∥ +x 中初始沿 −z 的自旋先转向 −y。</p>
+        <p lang="en">A stopped μ⁺ in a transverse field B precesses at f = (γμ/2π)·B, where γμ is the muon gyromagnetic ratio and γμ/2π = 135.5388 MHz/T. At 10 mT: f = 1.3554 MHz, period 0.738 µs, about three turns per lifetime (τμ = 2.1970 µs). Direction: dS/dt = γμ S × B with γμ &gt; 0, so a spin starting along −z in B ∥ +x turns towards −y first.</p>
+        <p lang="zh-Hans">横向磁场 B 中静止的 μ⁺ 以 f = (γμ/2π)·B 进动，其中 γμ 是缪子的旋磁比，γμ/2π = 135.5388 MHz/T。10 mT 时 f = 1.3554 MHz，周期 0.738 µs，每个寿命（τμ = 2.1970 µs）内约转三圈。方向：dS/dt = γμ S × B，γμ &gt; 0，所以在 B ∥ +x 中初始沿 −z 的自旋先转向 −y。</p>
       </div>
       <div class="box">
         <p class="box-label">Definition 10.1 · <span lang="en">Decay asymmetry</span><span lang="zh-Hans">衰变不对称度</span></p>
-        <p lang="en">The positron from μ⁺ → e⁺ ν ν̄ is emitted preferentially along the muon spin: dN/dΩ ∝ 1 + a cos θ. Averaged over the whole positron energy spectrum a = 1/3; it rises to 1 for the most energetic positrons. With two opposite counters, N_U,D(t) ∝ e^(−t/τ)(1 ∓ A0 sin ωt) and A(t) = (N_D − N_U)/(N_D + N_U) = A0 sin(ωt + φ): the lifetime envelope cancels and the precession remains.</p>
-        <p lang="zh-Hans">μ⁺ → e⁺ ν ν̄ 的正电子倾向于沿缪子自旋方向发射：dN/dΩ ∝ 1 + a cos θ。对整个正电子能谱平均，a = 1/3；能量最高的正电子 a 升至 1。用两个相对的计数器，N_U,D(t) ∝ e^(−t/τ)(1 ∓ A0 sin ωt)，A(t) = (N_D − N_U)/(N_D + N_U) = A0 sin(ωt + φ)：寿命包络相消，进动留了下来。</p>
+        <p lang="en">The positron from μ⁺ → e⁺ ν ν̄ is emitted preferentially along the muon spin: dN/dΩ ∝ 1 + a cos θ. The asymmetry depends on the positron energy: with ε = E/E_max (E_max = 52.83 MeV), a(ε) = (2ε − 1)/(3 − 2ε). It is negative below ε = 1/2, zero at ε = 1/2 and reaches 1 at the end point; averaged over the whole spectrum it is a = 1/3. An energy threshold or an absorber in front of a counter therefore raises the effective asymmetry, at the cost of rate. With two opposite counters, N_U,D(t) ∝ e^(−t/τ)(1 ∓ A0 sin ωt) and A(t) = (N_D − N_U)/(N_D + N_U) = A0 sin(ωt + φ): the lifetime envelope cancels and the precession remains.</p>
+        <p lang="zh-Hans">μ⁺ → e⁺ ν ν̄ 的正电子倾向于沿缪子自旋方向发射：dN/dΩ ∝ 1 + a cos θ。不对称度依赖于正电子能量：令 ε = E/E_max（E_max = 52.83 MeV），则 a(ε) = (2ε − 1)/(3 − 2ε)。ε &lt; 1/2 时为负，ε = 1/2 时为零，在端点处达到 1；对整个能谱平均为 a = 1/3。因此在计数器前加能量阈或吸收体，会以计数率为代价提高有效不对称度。用两个相对的计数器，N_U,D(t) ∝ e^(−t/τ)(1 ∓ A0 sin ωt)，A(t) = (N_D − N_U)/(N_D + N_U) = A0 sin(ωt + φ)：寿命包络相消，进动留了下来。</p>
+      </div>
+      <div class="aside">
+        <p class="aside-label"><span lang="en">What Geant4 simulates here, and what it does not</span><span lang="zh-Hans">这里 Geant4 模拟了什么，没模拟什么</span></p>
+        <p lang="en">Geant4 and musrSim simulate the instrument: the beam, the field, where the muon stops, the decay and the positron detection. They do not simulate the sample's spin physics: no local or internal fields, no nuclear dipoles (Kubo–Toyabe relaxation), no muonium. You put the sample in by hand, as the precession frequency and a relaxation rate you impose. So the simulation answers instrument questions (rates, asymmetry, backgrounds, field homogeneity), not what a material does to the muon.</p>
+        <p lang="zh-Hans">Geant4 和 musrSim 模拟的是仪器：束流、磁场、缪子停在哪里、衰变以及正电子探测。它们不模拟样品中的自旋物理：没有局域场或内场，没有核偶极（Kubo–Toyabe 弛豫），也没有缪子素。样品要你手工放进去，以你设定的进动频率和弛豫率出现。所以模拟回答的是仪器问题（计数率、不对称度、本底、磁场均匀度），而不是材料对缪子做了什么。</p>
       </div>
     </div>
   </section>
@@ -148,8 +151,13 @@ musrSim.cc (musrsim-sms, commit 767208f) builds its own FTFP_BERT, which
   registers G4DecayPhysics only; the class that installs spin decay
   channels (musrPhysicsList) is commented out in main(). Read from
   source, not run: check your build with /process/list before trusting
-  any asymmetry. Fix (one line, after creating the list):
-  physicsList-&gt;RegisterPhysics(new G4SpinDecayPhysics());
+  any asymmetry. Fix in musrSim.cc, which creates the list inline
+  (#include "G4SpinDecayPhysics.hh" at the top):
+  before: runManager-&gt;SetUserInitialization(new FTFP_BERT(1,steeringFileName));
+  after:  auto* physicsList = new FTFP_BERT(1, steeringFileName);
+          physicsList-&gt;RegisterPhysics(new G4SpinDecayPhysics());
+          runManager-&gt;SetUserInitialization(physicsList);
+  (FTFP_BERT here is musrSim's own G4VModularPhysicsList.)
 *** Fatal for a muSR result, silent for the program ***
 <span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
       <div class="g4ex" role="note" lang="zh-Hans"><span class="e">-------- EEEE ------- G4Exception-START -------- EEEE -------</span>
@@ -162,8 +170,13 @@ FTFP_BERT 中的 G4DecayPhysics 使用 G4Decay 和 G4MuonDecayChannel，
 musrSim.cc（musrsim-sms，提交 767208f）自建的 FTFP_BERT 只注册了
   G4DecayPhysics；安装自旋衰变道的类（musrPhysicsList）在 main() 中
   被注释掉了。以上来自源码阅读，并未实际运行：在相信任何不对称度
-  之前，先用 /process/list 检查你的版本。修正（一行，在创建列表后）：
-  physicsList-&gt;RegisterPhysics(new G4SpinDecayPhysics());
+  之前，先用 /process/list 检查你的版本。修正 musrSim.cc（列表是
+  在一行内创建的；文件开头加 #include "G4SpinDecayPhysics.hh"）：
+  修改前：runManager-&gt;SetUserInitialization(new FTFP_BERT(1,steeringFileName));
+  修改后：auto* physicsList = new FTFP_BERT(1, steeringFileName);
+          physicsList-&gt;RegisterPhysics(new G4SpinDecayPhysics());
+          runManager-&gt;SetUserInitialization(physicsList);
+  （这里的 FTFP_BERT 是 musrSim 自己的 G4VModularPhysicsList。）
 *** 对 μSR 结果是致命的，对程序却毫无声响 ***
 <span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
       <h3 class="bi"><span lang="en">10.3 · Optical photons are a fidelity switch</span><span lang="zh-Hans">10.3 · 光学光子是一个保真度开关</span></h3>
@@ -207,17 +220,18 @@ musrSim.cc（musrsim-sms，提交 767208f）自建的 FTFP_BERT 只注册了
       </div>
       <div class="toybox">
         <p><b>TOY MODEL · <span lang="en">approximations</span><span lang="zh-Hans">近似</span></b></p>
-        <p lang="en">Every muon stops at the target centre at t = 0 (in Geant4 it takes a few ns). Positron direction from 1 + a·S·n with a = 1/3, the energy-averaged Michel value, with no energy threshold and no copper or plastic in the way. Counters are cones of half-angle α around ±y; 44° matches the 80 mm wide slabs 42 mm from the target. The toy therefore expects A0 = a·P·(1 + cos α)/2 = 0.29. Our Geant4 run gives A0 = 0.241 ± 0.009, because positrons scatter and lose energy in the copper and the counters are square slabs, not cones. Field spread is Gaussian per muon. The frequency, its error and the fitted B behave as in the real analysis.</p>
-        <p lang="zh-Hans">每个缪子都在 t = 0 时停在靶中心（在 Geant4 中需要几 ns）。正电子方向按 1 + a·S·n 抽样，a = 1/3 为能谱平均的 Michel 值，没有能量阈，也没有铜或塑料挡路。计数器被近似为绕 ±y 轴、半张角为 α 的圆锥；44° 对应距靶 42 mm、宽 80 mm 的板。所以玩具模型预期 A0 = a·P·(1 + cos α)/2 = 0.29。我们的 Geant4 运行给出 A0 = 0.241 ± 0.009，因为正电子在铜中散射并损失能量，而且计数器是方形板而不是圆锥。磁场弥散按每个缪子的高斯分布处理。频率、其误差以及拟合出的 B 与真实分析的行为相同。</p>
+        <p lang="en">Every muon stops at the target centre at t = 0 (in Geant4 it takes a few ns). Positron direction from 1 + a·S·n with a = 1/3, the energy-averaged Michel value, with no energy threshold and no copper or plastic in the way. Counters are cones of half-angle α around ±y; 44° matches the 80 mm wide slabs 42 mm from the target. The toy therefore expects A0 = a·P·(1 + cos α)/2 = 0.29. Our Geant4 run gives A0 = 0.241 ± 0.009. Energy loss alone would not lower A0 (absorbing the slow positrons, whose a(ε) is small or negative, raises it). The drop comes from multiple scattering in up to 15 mm of copper (about one radiation length) for positrons emitted along ±y, which smears their directions, and from the square-slab acceptance, which differs from a cone. Field spread is Gaussian per muon. The frequency, its error and the fitted B behave as in the real analysis.</p>
+        <p lang="zh-Hans">每个缪子都在 t = 0 时停在靶中心（在 Geant4 中需要几 ns）。正电子方向按 1 + a·S·n 抽样，a = 1/3 为能谱平均的 Michel 值，没有能量阈，也没有铜或塑料挡路。计数器被近似为绕 ±y 轴、半张角为 α 的圆锥；44° 对应距靶 42 mm、宽 80 mm 的板。所以玩具模型预期 A0 = a·P·(1 + cos α)/2 = 0.29。我们的 Geant4 运行给出 A0 = 0.241 ± 0.009。单靠能量损失并不会降低 A0（吸收掉 a(ε) 很小甚至为负的慢正电子反而会提高它）。下降来自沿 ±y 发射的正电子在最多 15 mm 铜（约一个辐射长度）中的多次散射，它抹平了方向；以及方形板与圆锥不同的接受度。磁场弥散按每个缪子的高斯分布处理。频率、其误差以及拟合出的 B 与真实分析的行为相同。</p>
       </div>
     </div>
   </section>
 
-  <section class="run item" id="s-task" data-type="lab" data-min="115" aria-labelledby="h-task">
-    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on lab</span><span lang="zh-Hans">动手实验</span></span><span class="d"><span lang="en">1 h 55 min</span><span lang="zh-Hans">1 小时 55 分钟</span></span></p>
+  <section class="run item" id="s-task" data-type="lab" data-min="110" aria-labelledby="h-task">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on lab</span><span lang="zh-Hans">动手实验</span></span><span class="d"><span lang="en">1 h 50 min</span><span lang="zh-Hans">1 小时 50 分钟</span></span></p>
     <p class="cmd">./week10 tf.mac<span lang="en">hands-on · Lab 10</span><span lang="zh-Hans">动手实验 · 实验 10</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Measure 10 mT with muons, prove the spin matters, then scan the field.</span><span lang="zh-Hans">用缪子测出 10 mT，证明自旋至关重要，再扫描磁场。</span></h2>
+      <!--shell:dl--><p class="dl"><a class="btn-s" href="downloads/week10-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download all files for this lab (zip)</span><span lang="zh-Hans">下载本实验的全部文件（zip）</span></a><a class="dl-all" href="downloads/geant4-course-code.zip" download><span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></a></p><!--/shell:dl-->
       <p lang="en">The week10 app is tf_musr.mac rebuilt in Geant4 11.4: the same World, copper target (ID 5), counters (IDs 11 and 1), 10 mT field and polarized 29.8 MeV/c beam, writing a <code>t1</code> tree with musrSim's branch names. That way the same analysis script, asymmetry.py, runs unchanged on it and on real musrSim output.</p>
       <p lang="zh-Hans">week10 程序是用 Geant4 11.4 重建的 tf_musr.mac：同样的 World、铜靶（ID 5）、计数器（ID 11 和 1）、10 mT 磁场和 29.8 MeV/c 极化束流，写出带 musrSim 分支名的 <code>t1</code> 树。这样，同一个分析脚本 asymmetry.py 不加修改就能在它上面运行，也能在真实的 musrSim 输出上运行。</p>
       <ol class="steps">
@@ -701,8 +715,8 @@ mkdir -p data</pre></div>
           <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our Geant4 11.4.p01 run)</span><span lang="zh-Hans">预期（我们的 Geant4 11.4.p01 运行）</span></b></span></div>
 <pre>Field at (0,0,0): Bx = 10 mT  (printFieldValueAtPoint analogue)
 Run complete: 200000 muons</pre></div>
-          <p lang="en">The run takes about 35 s on two threads. Of 200 000 muons, 199 843 stopped and decayed in the target. In 6 mm of copper a 29.8 MeV/c μ⁺ (4.1 MeV kinetic energy) stops within a fraction of a millimetre of the front face.</p>
-          <p lang="zh-Hans">双线程下运行约需 35 s。20 万个缪子中有 199 843 个停在靶中并在靶中衰变。29.8 MeV/c 的 μ⁺（动能 4.1 MeV）在 6 mm 厚的铜中，停在离前表面不到一毫米的地方。</p>
+          <p lang="en">The run takes about 35 s on two threads. Of 200 000 muons, 199 843 stopped and decayed in the target. In 6 mm of copper a 29.8 MeV/c μ⁺ (4.1 MeV kinetic energy) stops within a fraction of a millimetre of the front face. Note what the first line proves: it prints the value you configured, not the field the tracks feel. A wrong axis or offset in a field map would still print 10 mT. The precession fit in the next step is the real check, because it measures the field the muons saw.</p>
+          <p lang="zh-Hans">双线程下运行约需 35 s。20 万个缪子中有 199 843 个停在靶中并在靶中衰变。29.8 MeV/c 的 μ⁺（动能 4.1 MeV）在 6 mm 厚的铜中，停在离前表面不到一毫米的地方。注意第一行能证明什么：它打印的是你设定的值，不是径迹实际感受到的磁场。场图的坐标轴或偏移写错了，它照样打印 10 mT。下一步的进动拟合才是真正的检验，因为它测量的是缪子实际经历的磁场。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Recover the field</span><span lang="zh-Hans">反推磁场</span></h3><label class="done" for="w10-s3"><input type="checkbox" id="w10-s3" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -759,17 +773,31 @@ def osc(t, A0, f, phi, lam):
     return A0 * np.exp(-lam * t) * np.sin(2 * np.pi * f * t + phi)
 
 
-popt, pcov = curve_fit(osc, tg, A, p0=[0.25, 1.35, 0.0, 0.05], sigma=Aerr, absolute_sigma=True)
+# Starting values from a periodogram, not from the field you expect: at each trial
+# frequency fit A = a sin(2 pi f t) + b cos(2 pi f t) by weighted least squares and keep
+# the f with the smallest chi2. A start fixed at the 10 mT value (1.35 MHz) makes the
+# fit lock onto a wrong minimum at other fields, and nothing would warn you.
+w = 1.0 / Aerr**2
+best = None
+for ftry in np.arange(0.10, 8.0, 0.002):
+    X = np.column_stack([np.sin(2 * np.pi * ftry * tg), np.cos(2 * np.pi * ftry * tg)])
+    coef, *_ = np.linalg.lstsq(X * np.sqrt(w)[:, None], A * np.sqrt(w), rcond=None)
+    c2 = np.sum(w * (A - X @ coef) ** 2)
+    if best is None or c2 &lt; best[0]:
+        best = (c2, ftry, coef)
+_, f0, (a0, b0) = best
+popt, pcov = curve_fit(osc, tg, A, p0=[np.hypot(a0, b0), f0, np.arctan2(b0, a0), 0.0],
+                       sigma=Aerr, absolute_sigma=True)
 perr = np.sqrt(np.diag(pcov))
 chi2 = np.sum(((A - osc(tg, *popt)) / Aerr) ** 2)
-ndf = len(A) - 4
+ndf = len(A) - 4                                        # bins with tot &lt;= 20 are dropped, so ndf can change by one or two between runs
 f, df = popt[1], perr[1]
 print(f"A0  = {popt[0]:.4f} +/- {perr[0]:.4f}")
 print(f"f   = {f:.4f} +/- {df:.4f} MHz")
 print(f"phi = {popt[2]:+.3f} +/- {perr[2]:.3f} rad    lambda = {popt[3]:.4f} +/- {perr[3]:.4f} /us")
 print(f"chi2/ndf = {chi2:.1f}/{ndf}")
 if abs(popt[0]) &lt; 3 * perr[0]:
-    # A fit always returns numbers. With no oscillation, f just stays near its starting value.
+    # A fit always returns numbers. With no oscillation, f is just the largest noise wiggle.
     print("WARNING: A0 is consistent with zero: there is no oscillation, so f and B are meaningless")
 print(f"B   = {f / GAMMA_MU * 1000:.3f} +/- {df / GAMMA_MU * 1000:.3f} mT")</pre></details>
           </div>
@@ -794,6 +822,8 @@ chi2/ndf = 179.6/175
 B   = 10.002 +/- 0.015 mT</pre></div>
           <p lang="en">The fitted field is 10.014 ± 0.015 mT against the 10 mT configured: 0.9σ. χ²/ndf = 172/175, and λ is consistent with zero because the field is perfectly uniform. Using the counter time instead of the truth decay time changes f by less than its error (the positron needs well under a nanosecond to reach the counter). Only the measured time exists in a real experiment, so prefer it. A0 = 0.24, not 1: see Course-W10-d. Your own two-thread run will not match these digits exactly, even with the same seeds: our reruns gave f = 1.3578 and 1.3572. The reason is a thread race inside G4DecayWithSpin, explained in Week 12 (Course-W12-b). Compare within the errors.</p>
           <p lang="zh-Hans">拟合得到的磁场为 10.014 ± 0.015 mT，设定值为 10 mT，相差 0.9σ。χ²/ndf = 172/175，λ 与零相容，因为磁场完全均匀。用计数器时间代替真值衰变时间，f 的变化小于其误差（正电子飞到计数器远不到一纳秒）。真实实验中只有测量时间，所以优先用它。A0 = 0.24 而不是 1：见 Course-W10-d。即使种子相同，你自己的双线程运行也不会与这些数字逐位相同：我们重跑得到 f = 1.3578 和 1.3572。原因是 G4DecayWithSpin 内部的线程竞争，见第 12 周（Course-W12-b）。请在误差范围内比较。</p>
+          <p lang="en">One honest caveat: <code>CounterSD</code> has no energy threshold, so any deposit counts as a hit, which Week 5 tells you not to do. In a 60 000-muon run about 0.3% (U) and 0.8% (D) of counter hits are small deposits a few tens of keV at about 0.8 ns, from the incoming muon's own secondaries, microseconds before the decay. They are why <code>--measured</code> moves f by about 1σ. Exercise: require at least 300 keV per counter in <code>CounterSD</code> (or in <code>asymmetry.py</code>, using the hit's energy), rerun, and check that the two fits move together.</p>
+          <p lang="zh-Hans">需要坦白一点：<code>CounterSD</code> 没有能量阈，任何沉积都算一次击中，而第 5 周正是告诉你不要这样做。在一次 60 000 缪子的运行中，约 0.3%（U）和 0.8%（D）的计数器击中是约 0.8 ns、几十 keV 的小沉积，来自入射缪子自身的次级粒子，比衰变早了几微秒。这就是 <code>--measured</code> 让 f 移动约 1σ 的原因。练习：在 <code>CounterSD</code> 中（或在 <code>asymmetry.py</code> 中利用击中的能量）要求每个计数器至少 300 keV，重新运行，检查两种拟合是否一起移动。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Break it: remove the spin from the decay</span><span lang="zh-Hans">打破它：从衰变中去掉自旋</span></h3><label class="done" for="w10-s4"><input type="checkbox" id="w10-s4" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -804,14 +834,14 @@ python3 asymmetry.py data/tf_10mT_nospin.root</pre></div>
           <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our run, stock G4DecayPhysics)</span><span lang="zh-Hans">预期（我们的运行，默认 G4DecayPhysics）</span></b></span></div>
 <pre>muons decayed in target: 199843
 positrons in U (ID 11): 26871   in D (ID 1): 26625
-A0  = -0.0036 +/- 0.0038
-f   = 1.3864 +/- 0.0252 MHz
-phi = -1.836 +/- 1.076 rad    lambda = -0.3877 +/- 0.1532 /us
-chi2/ndf = 152.7/175
+A0  = 0.0148 +/- 0.0073
+f   = 2.2952 +/- 0.0191 MHz
+phi = -0.325 +/- 0.491 rad    lambda = -0.1335 +/- 0.1202 /us
+chi2/ndf = 149.8/175
 WARNING: A0 is consistent with zero: there is no oscillation, so f and B are meaningless
-B   = 10.228 +/- 0.186 mT</pre></div>
-          <p lang="en">Same geometry, same beam, same number of positrons in each counter (26 871 and 26 625), and no oscillation: A0 is zero within 1σ. The fit still converges and prints a field, 10.2 ± 0.2 mT, because the frequency never leaves its starting value of 1.35 MHz. That is why the script now refuses to believe f when A0 is not significant. A confident number from a fit is not a measurement.</p>
-          <p lang="zh-Hans">几何相同，束流相同，每个计数器中的正电子数也几乎相同（26 871 和 26 625），却没有振荡：A0 在 1σ 内为零。拟合照样收敛，还打印出一个磁场 10.2 ± 0.2 mT，因为频率根本没有离开 1.35 MHz 的初值。所以脚本现在在 A0 不显著时拒绝相信 f。拟合给出的一个自信的数字并不是测量。</p>
+B   = 16.934 +/- 0.141 mT</pre></div>
+          <p lang="en">Same geometry, same beam, same number of positrons in each counter (26 871 and 26 625), and no oscillation: A0 = 0.015 ± 0.007 is a 2σ wiggle, below the 3σ the script asks for. The fit still converges and prints a field, 16.9 ± 0.1 mT: the script seeds f from a periodogram, which always finds some largest wiggle in noise, and the fit polishes it. That is why the script refuses to believe f when A0 is not significant, and why <code>field_scan.py</code> leaves such a file out of the slope. A confident number from a fit is not a measurement.</p>
+          <p lang="zh-Hans">几何相同，束流相同，每个计数器中的正电子数也几乎相同（26 871 和 26 625），却没有振荡：A0 = 0.015 ± 0.007 只是一个 2σ 的起伏，低于脚本要求的 3σ。拟合照样收敛，还打印出一个磁场 16.9 ± 0.1 mT：脚本用周期图给 f 赋初值，而周期图在噪声里总能找到某个最大的起伏，拟合再把它打磨一番。所以脚本在 A0 不显著时拒绝相信 f，<code>field_scan.py</code> 也会把这样的文件排除在斜率拟合之外。拟合给出的一个自信的数字并不是测量。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Lab 10: f against B</span><span lang="zh-Hans">实验 10：f 对 B 的关系</span></h3><label class="done" for="w10-s5"><input type="checkbox" id="w10-s5" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -848,9 +878,15 @@ for fn in sys.argv[1:]:
     out = subprocess.run([sys.executable, "asymmetry.py", fn], capture_output=True, text=True, check=True).stdout
     f, df = map(float, re.search(r"f   = ([\d.]+) \+/- ([\d.]+)", out).groups())
     b = float(re.search(r"tf_(\d+)mT", fn).group(1)) / 1000.0
+    if "WARNING" in out:
+        # asymmetry.py found no significant oscillation: its f is noise, not a measurement
+        print(f"B = {b*1000:5.1f} mT   NO OSCILLATION (A0 consistent with zero): excluded from the fit")
+        continue
     B.append(b); F.append(f); dF.append(df)
     print(f"B = {b*1000:5.1f} mT   f = {f:.4f} +/- {df:.4f} MHz   expected {GAMMA_MU*b:.4f}   pull {(f-GAMMA_MU*b)/df:+.2f}")
 
+if len(B) &lt; 2:
+    sys.exit("fewer than two fields with a significant oscillation: no slope")
 B, F, dF = map(np.asarray, (B, F, dF))
 w = 1 / dF**2
 # weighted straight line through the origin: f = k B
@@ -868,8 +904,13 @@ B =  10.0 mT   f = 1.3573 +/- 0.0020 MHz   expected 1.3554   pull +0.96
 B =  20.0 mT   f = 2.7069 +/- 0.0021 MHz   expected 2.7108   pull -1.85
 B =  30.0 mT   f = 4.0644 +/- 0.0022 MHz   expected 4.0662   pull -0.80
 slope k = 135.459 +/- 0.057 MHz/T   (gamma_mu/2pi = 135.5388)   chi2/ndf = 3.14/3</pre></div>
-          <p lang="en">Four fields, four fits: every frequency lies within 2σ of (γμ/2π)·B, and the slope through the origin is 135.46 ± 0.06 MHz/T against 135.5388, a 1.4σ difference with χ²/ndf = 3.1/3. With 200 000 muons per point the slope is good to 0.04%. More muons would show whether the 1.4σ is statistics or a small bias, for example the few nanoseconds each muon spends in flight before it stops. Then change one assumption at a time: lower <code>SetParticlePolarization</code> to (0, 0, −0.5), shrink the counters, or replace the uniform field with one that has a 1% gradient across the target. Predict whether A0, f or λ moves before you run, then check with the toy above.</p>
-          <p lang="zh-Hans">四个磁场，四次拟合：每个频率都在 (γμ/2π)·B 的 2σ 以内，过原点的斜率为 135.46 ± 0.06 MHz/T，对比 135.5388，相差 1.4σ，χ²/ndf = 3.1/3。每点 20 万个缪子，斜率精确到 0.04%。更多缪子才能说明这 1.4σ 是统计涨落，还是一个小偏差，例如每个缪子停下之前在飞行中度过的几纳秒。 然后每次只改一个假设：把 <code>SetParticlePolarization</code> 降到 (0, 0, −0.5)，缩小计数器，或把均匀场换成在靶上有 1% 梯度的磁场。运行之前先预测 A0、f、λ 中哪个会变，再用上面的玩具模型检验。</p>
+          <p lang="en">Four fields, four fits: every frequency lies within 2σ of (γμ/2π)·B, and the slope through the origin is 135.46 ± 0.06 MHz/T against 135.5388, a 1.4σ difference with χ²/ndf = 3.1/3. With 200 000 muons per point the slope is good to 0.04%. More muons would show whether the 1.4σ is statistics or a small bias. A constant time offset, such as the few nanoseconds each muon spends in flight before it stops, is not a candidate: it shifts the phase φ, not the frequency, so it cannot move the slope. The number of degrees of freedom can differ by one or two between runs, because bins with 20 or fewer positrons are left out of the fit. Then change one assumption at a time: lower <code>SetParticlePolarization</code> to (0, 0, −0.5), shrink the counters, or replace the uniform field with one that has a 1% gradient across the target. Predict whether A0, f or λ moves before you run, then check with the toy above.</p>
+          <p lang="zh-Hans">四个磁场，四次拟合：每个频率都在 (γμ/2π)·B 的 2σ 以内，过原点的斜率为 135.46 ± 0.06 MHz/T，对比 135.5388，相差 1.4σ，χ²/ndf = 3.1/3。每点 20 万个缪子，斜率精确到 0.04%。更多缪子才能说明这 1.4σ 是统计涨落还是一个小偏差。恒定的时间偏移（例如每个缪子停下之前在飞行中度过的几纳秒）不是候选原因：它只移动相位 φ，不改变频率，所以不会影响斜率。不同运行之间自由度可能差一两个，因为正电子数不超过 20 的 bin 不参与拟合。 然后每次只改一个假设：把 <code>SetParticlePolarization</code> 降到 (0, 0, −0.5)，缩小计数器，或把均匀场换成在靶上有 1% 梯度的磁场。运行之前先预测 A0、f、λ 中哪个会变，再用上面的玩具模型检验。</p>
+          <div class="aside">
+            <p class="aside-label"><span lang="en">μSR practice the course does not cover</span><span lang="zh-Hans">本课程未涉及的 μSR 实践</span></p>
+            <p lang="en">A real TF-μSR analysis adds a balance parameter α for unequal counter efficiencies, A = (N_D − α N_U)/(N_D + α N_U); a time zero t0 and a first good bin t_good per counter; longitudinal- and zero-field (LF, ZF) geometries with forward and backward counters; and the difference between continuous beams (PSI, ns timing) and pulsed beams (ISIS, J-PARC), where the pulse width, about 80 ns at ISIS, limits the highest frequency you can see to roughly 10 MHz. Real data are fitted with dedicated programs such as musrfit. Use this week's simulation to design and check the instrument, then analyse data with those tools.</p>
+            <p lang="zh-Hans">真实的横场 μSR 分析还包括：用平衡参数 α 修正计数器效率差异，A = (N_D − α N_U)/(N_D + α N_U)；每个计数器的时间零点 t0 和第一个有效 bin t_good；纵场与零场（LF、ZF）几何及前后计数器；以及连续束（PSI，纳秒时间分辨）与脉冲束（ISIS、J-PARC）的区别，后者的脉冲宽度（ISIS 约 80 ns）把能看到的最高频率限制在约 10 MHz。真实数据用 musrfit 等专门程序拟合。本周的模拟用来设计和检查仪器，数据分析请用这些工具。</p>
+          </div>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">The same experiment in musrSim</span><span lang="zh-Hans">在 musrSim 中做同一个实验</span></h3><label class="done" for="w10-s6"><input type="checkbox" id="w10-s6" data-progress="w10"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -972,7 +1013,7 @@ A0 read as "the polarization". A0 = a x P x (geometry) x (energy
   永远不要拿它和 1 比。
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
-      <p class="cap"><span lang="en">Course-W10-a (no spin in the decay) is in section 10.2 above. It is the most expensive of the five, because nothing crashes.</span><span lang="zh-Hans">Course-W10-a（衰变中没有自旋）见上文第 10.2 节。它是五个错误中代价最大的，因为什么都不会崩溃。</span></p>
+      <p class="cap"><span lang="en">Course-W10-a (no spin in the decay) is in section 10.2 above. It is the most expensive of the four, because nothing crashes.</span><span lang="zh-Hans">Course-W10-a（衰变中没有自旋）见上文第 10.2 节。它是这四个错误中代价最大的，因为什么都不会崩溃。</span></p>
     </div>
   </section>
 

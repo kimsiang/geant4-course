@@ -1,0 +1,11 @@
+{
+  "name": "Geant4 2.0 course (Geant4 11.4)",
+  "build": { "dockerfile": "../Dockerfile", "context": ".." },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-vscode.cpptools", "ms-vscode.cmake-tools", "ms-python.python"]
+    }
+  },
+  "postCreateCommand": "bash -ic 'geant4-config --version && geant4-config --check-datasets'"
+}

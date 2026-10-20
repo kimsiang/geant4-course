@@ -1,8 +1,8 @@
 /* Week 08 — toy event stream through the simulation-to-data chain (Week 8 lesson).
    TOY MODEL, not Geant4. Events follow the week08 app: cos^2-crossing muons from a 30 x 30 cm
    plane 10 cm above the top counter; two 10 x 10 x 1 cm counters 20 cm apart. Energy deposit:
-   Moyal approximation to the Landau distribution (MPV 1.75 MeV per cm, width 0.11 MeV, scaled by
-   path length); digitization as in Week 5 (25 p.e./MeV, 4 ADC counts per p.e., pedestal 50,
+   Moyal approximation to the Landau distribution (MPV 1.78 MeV per cm and width 0.086 MeV, the
+   Week 5 values from our Geant4 run; scaled by path length); digitization as in Week 5 (25 p.e./MeV, 4 ADC counts per p.e., pedestal 50,
    noise 3 counts). Events are dealt to worker threads at random. The output-file behaviour
    (per-thread files without SetNtupleMerging, an unreadable file without Write/CloseFile)
    is what we observed with Geant4 11.4; the toy only reproduces it. */
@@ -22,7 +22,7 @@
         if (Math.abs(xx) < 5 && Math.abs(yy) < 5) {
           hit[k] = true;
           var z = r.gauss(), moy = -Math.log(z * z + 1e-12);
-          edep[k] = Math.max(0.05, (1.75 + 0.11 * moy) / c);
+          edep[k] = Math.max(0.05, (1.78 + 0.086 * moy) / c);
         }
       });
       for (var k = 0; k < 2; k++) {

@@ -1,0 +1,3 @@
+# called by slab_scan.mac with {t} = thickness in cm
+/scat/det/thickness {t} cm
+/control/foreach slab_energy.mac e "1 3 10"

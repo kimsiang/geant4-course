@@ -1,0 +1,9 @@
+# Smoke test: 5 000 sky muons, 30 m overburden, no void (seconds)
+/control/verbose 1
+/run/verbose 1
+/muo/det/void false
+/run/initialize
+/run/setCut 1 m
+/analysis/setFileName quick
+/random/setSeeds 12345 67890
+/run/beamOn 5000

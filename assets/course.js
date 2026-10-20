@@ -31,6 +31,8 @@
     { n: 11, stage: 5, file: 'week11.html', live: true , en: 'Debug and validate', zh: '调试与验证' },
     { n: 12, stage: 5, file: 'week12.html', live: true , en: 'Proposal and defence', zh: '选题与答辩' }
   ];
+  /* course support channels: fill these in for a cohort; the course home's FAQ shows them */
+  G.support = G.support || { forum: '', officeHours: '', email: '' };
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   G.pad = pad;
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -404,7 +406,7 @@
       if (card) {
         var body = q('.wk-done-body', card), h = q('#h-complete', card);
         card.classList.toggle('all', n === total);
-        if (h) h.innerHTML = n === total ? G.bi(wk ? { en: 'You have completed Week ' + wk + '.', zh: '你已完成第 ' + wk + ' 周。' } : { en: 'You have read the whole primer.', zh: '你已读完入门背景。' }) : G.bi({ en: 'Your progress on this page', zh: '本页学习进度' });
+        if (h) h.innerHTML = n === total ? G.bi(wk ? { en: 'You have completed Week ' + wk + '.', zh: '你已完成第 ' + wk + ' 周。' } : key === 'setup' ? { en: 'Your computer is set up.', zh: '你的电脑已配置完成。' } : { en: 'You have read the whole primer.', zh: '你已读完入门背景。' }) : G.bi({ en: 'Your progress on this page', zh: '本页学习进度' });
         var stats = '<li>' + icon('check') + G.bi({ en: '<b>' + n + ' of ' + total + '</b> items complete', zh: '已完成 <b>' + n + ' / ' + total + '</b> 项' }) + '</li>';
         var qs = G.load('quizsum.' + key, null);
         if (qs && qs[1] > 0) stats += '<li>' + icon('quiz') + G.bi({ en: 'Quiz: <b>' + qs[0] + ' of ' + qs[2] + '</b> correct' + (qs[1] < qs[2] ? ' (' + qs[1] + ' answered)' : ''), zh: '测验：答对 <b>' + qs[0] + ' / ' + qs[2] + '</b>' + (qs[1] < qs[2] ? '（已答 ' + qs[1] + '）' : '') }) + '</li>';
@@ -412,8 +414,8 @@
         var st = G.load('progress.' + key + '.count', null);
         if (st && st[1]) stats += '<li>' + icon('lab') + G.bi({ en: 'Lab: <b>' + st[0] + ' of ' + st[1] + '</b> steps ticked', zh: '实验：已勾选 <b>' + st[0] + ' / ' + st[1] + '</b> 步' }) + '</li>';
         if (left) { var f = fmtMin(left); stats += '<li>' + icon('clock') + G.bi({ en: 'About <b>' + f.en + '</b> left', zh: '还剩约 <b>' + f.zh + '</b>' }) + '</li>'; }
-        var nextW = wk ? G.weeks[wk] : G.weeks[0], ctas = '';
-        if (nextW) ctas += '<a class="btn-p" href="' + nextW.file + '">' + G.bi({ en: (wk ? 'Continue to Week ' : 'Start Week ') + nextW.n, zh: (wk ? '继续第 ' : '开始第 ') + nextW.n + ' 周' }) + icon('arrow-r') + '</a>';
+        var nextW = wk ? G.weeks[wk] : key === 'setup' ? G.weeks[1] : G.weeks[0], ctas = '';
+        if (nextW) ctas += '<a class="btn-p" href="' + nextW.file + '">' + G.bi({ en: (wk || key === 'setup' ? 'Continue to Week ' : 'Start Week ') + nextW.n, zh: (wk || key === 'setup' ? '继续第 ' : '开始第 ') + nextW.n + ' 周' }) + icon('arrow-r') + '</a>';
         ctas += '<a class="btn-s" href="index.html">' + icon('home') + G.bi({ en: 'Course home', zh: '课程主页' }) + '</a>';
         ctas += '<p>' + G.bi({ en: 'Saved in this browser only.', zh: '仅保存在本浏览器中。' }) + '</p>';
         body.innerHTML = G.ring(pct, pct + '%', G.t('done', '完成')) + '<ul class="done-stats">' + stats + '</ul><div class="done-cta">' + ctas + '</div>';
@@ -463,9 +465,37 @@
     det.parentNode.insertBefore(wrap, det); wrap.appendChild(btn); wrap.appendChild(det);
   });
 
+  /* wide SVG figures: scroll inside their own frame on narrow screens, with a visible hint */
+  qa('.fig-svg').forEach(function (fig) {
+    var svg = fig.querySelector(':scope > svg'); if (!svg) return;
+    var wrap = d.createElement('div'); wrap.className = 'fig-scroll';
+    fig.insertBefore(wrap, svg); wrap.appendChild(svg);
+    var hint = d.createElement('p'); hint.className = 'scroll-hint'; hint.setAttribute('aria-hidden', 'true');
+    hint.innerHTML = G.bi({ en: 'Wide figure: scroll sideways →', zh: '宽图：左右滑动查看 →' });
+    fig.insertBefore(hint, wrap);
+    function upd() {
+      var sc = wrap.scrollWidth > wrap.clientWidth + 1;
+      fig.classList.toggle('is-scrollable', sc);
+      fig.classList.toggle('at-end', !sc || wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 2);
+    }
+    wrap.addEventListener('scroll', upd, { passive: true }); window.addEventListener('resize', upd); upd();
+  });
+
+  /* share GIFs: with reduced motion, show a still frame and let the reader start the animation */
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    qa('img[src$=".gif"]').forEach(function (img) {
+      var m = img.getAttribute('src').match(/^media\/(week\d\d-[\w-]+)\.gif$/); if (!m) return;
+      var gif = img.getAttribute('src'); img.setAttribute('src', 'media/stills/' + m[1] + '.png');
+      var b = d.createElement('button'); b.type = 'button'; b.className = 'btn gif-play';
+      b.innerHTML = G.bi({ en: 'Play the animation', zh: '播放动画' });
+      b.addEventListener('click', function () { var on = img.getAttribute('src') === gif; img.setAttribute('src', on ? 'media/stills/' + m[1] + '.png' : gif); b.innerHTML = on ? G.bi({ en: 'Play the animation', zh: '播放动画' }) : G.bi({ en: 'Stop the animation', zh: '停止动画' }); });
+      img.insertAdjacentElement('afterend', b);
+    });
+  }
+
   /* scrollable code and figures must be reachable by keyboard */
   function focusScrollers() {
-    qa('pre, .flow, .scroll, .g4ex, .fig-svg, .verbose').forEach(function (e) {
+    qa('pre, .flow, .scroll, .g4ex, .fig-scroll, .verbose').forEach(function (e) {
       if (e.scrollWidth > e.clientWidth + 1) { if (!e.hasAttribute('tabindex')) e.setAttribute('tabindex', '0'); }
       else if (e.getAttribute('tabindex') === '0' && !e.matches('a, button')) e.removeAttribute('tabindex');
     });
@@ -490,7 +520,7 @@
 
   G.home = function () {
     var SY = window.G4C_SYLLABUS; if (!SY) return;
-    var keys = ['primer'].concat(G.weeks.map(function (w) { return 'w' + G.pad(w.n); }));
+    var keys = ['primer', 'setup'].concat(G.weeks.map(function (w) { return 'w' + G.pad(w.n); }));
     var allItems = 0, allDone = 0, allMin = 0, weekMin = 0, pagesDone = 0;
     function state(k) {
       var p = SY[k], done = G.load('done.' + k, {}), n = 0;
@@ -504,7 +534,7 @@
     }
     function row(k, numHtml, title, sub, open) {
       var st = state(k), p = st.p, f = G.fmtMin(p.total);
-      allItems += st.total; allDone += st.n; allMin += p.total; if (k !== 'primer') weekMin += p.total; if (st.n === st.total) pagesDone++;
+      allItems += st.total; allDone += st.n; allMin += p.total; if (k !== 'primer' && k !== 'setup') weekMin += p.total; if (st.n === st.total) pagesDone++;
       var counts = {}; p.items.forEach(function (it) { counts[it.type] = (counts[it.type] || 0) + 1; });
       var lis = p.items.map(function (it) {
         var t = TYPE[it.type] || TYPE.reading, fm = G.fmtMin(it.min);
@@ -516,10 +546,11 @@
       return '<details class="syl-w"' + (open ? ' open' : '') + '><summary>' + numHtml +
         '<span class="syl-t"><b>' + G.bi(title) + '</b><small>' + G.bi(sub) + G.bi({ en: ' · ' + st.total + ' items · ' + f.en + (counts.lab ? ' · lab' : '') + (counts.display ? ' · 3D display' : ''), zh: ' · ' + st.total + ' 项 · ' + f.zh + (counts.lab ? ' · 实验' : '') + (counts.display ? ' · 三维显示' : '') }) + '</small></span>' +
         pill(st) + icon('chev') + '</summary><div class="syl-body"><span class="pbar" aria-hidden="true"><i style="width:' + pct + '%"></i></span><ol>' + lis + '</ol>' +
-        '<a class="btn-s" href="' + p.file + '">' + G.bi(k === 'primer' ? { en: 'Open the primer', zh: '打开入门背景' } : { en: 'Open week ' + p.week, zh: '打开第 ' + p.week + ' 周' }) + icon('arrow-r') + '</a></div></details>';
+        '<a class="btn-s" href="' + p.file + '">' + G.bi(k === 'primer' ? { en: 'Open the primer', zh: '打开入门背景' } : k === 'setup' ? { en: 'Open the setup page', zh: '打开配置页面' } : { en: 'Open week ' + p.week, zh: '打开第 ' + p.week + ' 周' }) + icon('arrow-r') + '</a></div></details>';
     }
     var html = '<div class="syl-stage"><p class="syl-sh">' + icon('flag') + G.bi({ en: 'Start here', zh: '从这里开始' }) + '</p>' +
-      row('primer', '<span class="syl-n">0</span>', { en: 'Background primer', zh: '入门背景' }, { en: 'for every student', zh: '适合所有同学' }) + '</div>';
+      row('primer', '<span class="syl-n">0</span>', { en: 'Background primer', zh: '入门背景' }, { en: 'for every student', zh: '适合所有同学' }) +
+      (SY.setup ? row('setup', '<span class="syl-n">0</span>', { en: 'Week 0 · Set up your computer', zh: '第 0 周 · 配置你的电脑' }, { en: 'before Week 2', zh: '第 2 周之前' }) : '') + '</div>';
     var last = 0;
     G.weeks.forEach(function (w) {
       if (w.stage !== last) {
@@ -536,10 +567,18 @@
 
     var hrs = Math.round(allMin / 60), wh = Math.round(weekMin / 60);
     var sum = d.getElementById('syl-sum');
-    if (sum) sum.innerHTML = G.bi({ en: '12 weeks and a primer · ' + allItems + ' items · about ' + hrs + ' hours of study in all. Open a week to see its items; ticks show what you have completed in this browser.',
-      zh: '12 周加一篇入门背景 · 共 ' + allItems + ' 项 · 总计约 ' + hrs + ' 小时。展开任一周可查看各项内容；勾号表示你在本浏览器中已完成的项。' });
+    if (sum) sum.innerHTML = G.bi({ en: '12 weeks, a primer and a setup page · ' + allItems + ' items · about ' + hrs + ' hours of study in all. Open a week to see its items; ticks show what you have completed in this browser.',
+      zh: '12 周，加上入门背景和配置页面 · 共 ' + allItems + ' 项 · 总计约 ' + hrs + ' 小时。展开任一周可查看各项内容；勾号表示你在本浏览器中已完成的项。' });
     d.querySelectorAll('[data-total-en]').forEach(function (e) { e.textContent = 'about ' + hrs + ' hours'; });
     d.querySelectorAll('[data-total-zh]').forEach(function (e) { e.textContent = '共约 ' + hrs + ' 小时'; });
+    var sup = d.querySelector('[data-support]'), S = G.support || {};
+    if (sup && (S.forum || S.officeHours || S.email)) {
+      var li = [];
+      if (S.forum) li.push(G.bi({ en: 'Discussion: ', zh: '讨论区：' }) + (/^https?:/.test(S.forum) ? '<a href="' + esc(S.forum) + '">' + esc(S.forum) + '</a>' : esc(S.forum)));
+      if (S.officeHours) li.push(G.bi({ en: 'Office hour: ', zh: '答疑时间：' }) + esc(S.officeHours));
+      if (S.email) li.push(G.bi({ en: 'Email: ', zh: '邮箱：' }) + '<a href="mailto:' + esc(S.email) + '">' + esc(S.email) + '</a>');
+      sup.innerHTML = '<p>' + li.join('<br>') + '</p>';
+    }
     var eff = d.querySelector('[data-effort]'); if (eff) eff.innerHTML = G.bi({ en: '12 weeks · ~' + wh + ' h', zh: '12 周 · 约 ' + wh + ' 小时' });
 
     /* course progress + resume */
@@ -549,11 +588,11 @@
     var resumeTxt = '';
     if (lastV && SY[lastV.key]) {
       var p = SY[lastV.key], it = p.items.filter(function (x) { return x.id === lastV.item; })[0];
-      if (res) { res.href = p.file + (it ? '#' + it.id : ''); res.innerHTML = G.bi(lastV.key === 'primer' ? { en: 'Resume the primer', zh: '继续阅读入门背景' } : { en: 'Resume week ' + p.week, zh: '继续第 ' + p.week + ' 周' }) + icon('arrow-r'); }
+      if (res) { res.href = p.file + (it ? '#' + it.id : ''); res.innerHTML = G.bi(lastV.key === 'primer' ? { en: 'Resume the primer', zh: '继续阅读入门背景' } : lastV.key === 'setup' ? { en: 'Resume the setup', zh: '继续配置' } : { en: 'Resume week ' + p.week, zh: '继续第 ' + p.week + ' 周' }) + icon('arrow-r'); }
       if (it) resumeTxt = G.bi({ en: 'Last visited: ' + esc(it.en), zh: '上次学到：' + esc(it.zh) });
     }
     if (cp) cp.innerHTML = G.ring(pct, pct + '%', G.t('complete', '完成')) + '<div><b>' + G.bi({ en: 'Your progress', zh: '你的进度' }) + '</b><span>' +
-      G.bi({ en: allDone + ' of ' + allItems + ' items · ' + pagesDone + ' of 13 pages', zh: '已完成 ' + allDone + ' / ' + allItems + ' 项 · ' + pagesDone + ' / 13 页' }) + '</span>' + (resumeTxt ? '<span>' + resumeTxt + '</span>' : '') + '</div>';
+      G.bi({ en: allDone + ' of ' + allItems + ' items · ' + pagesDone + ' of ' + keys.length + ' pages', zh: '已完成 ' + allDone + ' / ' + allItems + ' 项 · ' + pagesDone + ' / ' + keys.length + ' 页' }) + '</span>' + (resumeTxt ? '<span>' + resumeTxt + '</span>' : '') + '</div>';
   };
   window.addEventListener('g4c:lang', function () { if (d.getElementById('weeks') && window.G4C_SYLLABUS && d.documentElement.classList.contains('is-home')) G.home(); });
 })();

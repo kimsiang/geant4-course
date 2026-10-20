@@ -13,16 +13,11 @@
   EVD.scene = function (name, def) { scenes[name] = def; };
   EVD.C = { neg: '#FF6369', neu: '#4FC98A', pos: '#7393FF', hit: '#F2D06B', det: '#5B7690', detHi: '#8FA9C0', ink: '#DCE3E8', mute: '#8FA0AC', white: '#FFFFFF' };
 
-  var LIBS = [
-    'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
-    'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js',
-    'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js',
-    'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js',
-    'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js',
-    'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js',
-    'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js',
-    'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js'
-  ];
+  /* three.js r128 and its example add-ons, self-hosted under assets/vendor/three/ (MIT licence)
+     so the displays work where public CDNs are slow or blocked */
+  var VENDOR = 'assets/vendor/three/';
+  var LIBS = ['three.min.js', 'OrbitControls.js', 'CopyShader.js', 'LuminosityHighPassShader.js',
+    'EffectComposer.js', 'RenderPass.js', 'ShaderPass.js', 'UnrealBloomPass.js'].map(function (f) { return VENDOR + f; });
   var libPromise = null;
   function loadLibs() {
     if (libPromise) return libPromise;

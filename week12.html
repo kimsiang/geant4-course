@@ -7,9 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Geant4 2.0, Week 12: propose your own virtual experiment, check it is feasible, make it reproducible from a clean checkout, and defend it.">
 <script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/course.css">
 <style>
 #w12-kind{width:100%;font:400 .85rem var(--mono);padding:6px 8px;border:1px solid var(--rule);background:var(--panel);color:var(--fg);border-radius:3px}
@@ -21,7 +19,7 @@
 <!--shell:top--><a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="zh-Hans">跳到正文</span></a>
 <header class="topbar"><div class="tb-in"><button type="button" class="nav-toggle" aria-controls="nav" aria-expanded="false"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg><span class="sr"><span lang="en">Open the item list</span><span lang="zh-Hans">打开目录</span></span></button><a class="brand" href="index.html"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="logo-bg"/><path d="M5 25 15.5 15" class="logo-mu"/><path d="M15.5 15c3.5-3 7-5.6 11.5-6.5" class="logo-pos"/><path d="M15.5 15c1.8 3.6 4.6 6.5 9 8.5" class="logo-neu"/><circle cx="15.5" cy="15" r="2.2" class="logo-v"/></svg><b>Geant4 2.0</b></a><span class="tb-week"><span lang="en">Week 12 of 12</span><span lang="zh-Hans">第 12 / 12 周</span><span class="tb-title"><span lang="en">Proposal and defence</span><span lang="zh-Hans">选题与答辩</span></span></span><span class="tb-prog" data-prog="w12" aria-hidden="true"><span class="pbar"><i></i></span><span class="pn"></span></span><span class="lang" role="group" aria-label="Language / 语言"><button type="button" data-setlang="en" id="lang-en">EN</button><button type="button" data-setlang="zh" id="lang-zh">中文</button><button type="button" data-setlang="both" id="lang-both">EN+中</button></span></div></header><!--/shell:top-->
 <div class="player">
-<!--shell:nav--><nav class="nav" id="nav" aria-label="Items on this page / 本页目录"><div class="nav-in"><a class="nav-home" href="index.html"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg><span lang="en">Course home</span><span lang="zh-Hans">课程主页</span></a><p class="nav-week"><span lang="en">Week 12 · Trust it</span><span lang="zh-Hans">第 12 周 · 信任</span></p><p class="nav-title"><span lang="en">Proposal and defence</span><span lang="zh-Hans">选题与答辩</span></p><div class="nav-prog" data-prog="w12"><span class="pbar"><i></i></span><span class="pn"></span></div><ol class="nav-items"><li><a href="#s-goals" data-item="s-goals"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-overview"/></svg><span class="t"><span lang="en">Overview and goals</span><span lang="zh-Hans">概览与目标</span><small><span lang="en">Overview · 3 min</span><span lang="zh-Hans">概览 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#background" data-item="background"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Background</span><span lang="zh-Hans">背景知识</span><small><span lang="en">Reading · 6 min</span><span lang="zh-Hans">阅读 · 6 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-prop" data-item="s-prop"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">12.1 From exercise to research</span><span lang="zh-Hans">12.1 从练习到研究</span><small><span lang="en">Reading · 9 min</span><span lang="zh-Hans">阅读 · 9 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-toy" data-item="s-toy"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-interactive"/></svg><span class="t"><span lang="en">Interactive: feasibility and weights</span><span lang="zh-Hans">交互：可行性与权重</span><small><span lang="en">Interactive · 10 min</span><span lang="zh-Hans">交互 · 10 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-def" data-item="s-def"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">12.2 The last gate is a defence</span><span lang="zh-Hans">12.2 最后一关是答辩</span><small><span lang="en">Reading · 11 min</span><span lang="zh-Hans">阅读 · 11 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-task" data-item="s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: Lab 12 · proposal to defence</span><span lang="zh-Hans">动手：实验 12 · 从提案到答辩</span><small><span lang="en">Hands-on lab · 2 h 50 min</span><span lang="zh-Hans">动手实验 · 2 小时 50 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-quiz" data-item="s-quiz"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-quiz"/></svg><span class="t"><span lang="en">Practice quiz</span><span lang="zh-Hans">练习测验</span><small><span lang="en">Practice quiz · 8 min</span><span lang="zh-Hans">练习测验 · 8 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-err" data-item="s-err"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Common errors</span><span lang="zh-Hans">常见错误</span><small><span lang="en">Reading · 11 min</span><span lang="zh-Hans">阅读 · 11 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-review" data-item="s-review"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-review"/></svg><span class="t"><span lang="en">Review notes</span><span lang="zh-Hans">复习要点</span><small><span lang="en">Checklist · 5 min</span><span lang="zh-Hans">清单 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-share" data-item="s-share"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span class="t"><span lang="en">Share the course</span><span lang="zh-Hans">分享这门课</span><small><span lang="en">Share · 5 min</span><span lang="zh-Hans">分享 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li></ol><p class="nav-total"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">About 4 h in total</span><span lang="zh-Hans">共约 4 小时</span></p></div></nav><div class="nav-scrim" hidden></div>
+<!--shell:nav--><nav class="nav" id="nav" aria-label="Items on this page / 本页目录"><div class="nav-in"><a class="nav-home" href="index.html"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg><span lang="en">Course home</span><span lang="zh-Hans">课程主页</span></a><p class="nav-week"><span lang="en">Week 12 · Trust it</span><span lang="zh-Hans">第 12 周 · 信任</span></p><p class="nav-title"><span lang="en">Proposal and defence</span><span lang="zh-Hans">选题与答辩</span></p><div class="nav-prog" data-prog="w12"><span class="pbar"><i></i></span><span class="pn"></span></div><ol class="nav-items"><li><a href="#s-goals" data-item="s-goals"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-overview"/></svg><span class="t"><span lang="en">Overview and goals</span><span lang="zh-Hans">概览与目标</span><small><span lang="en">Overview · 3 min</span><span lang="zh-Hans">概览 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#background" data-item="background"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Background</span><span lang="zh-Hans">背景知识</span><small><span lang="en">Reading · 7 min</span><span lang="zh-Hans">阅读 · 7 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-prop" data-item="s-prop"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">12.1 From exercise to research</span><span lang="zh-Hans">12.1 从练习到研究</span><small><span lang="en">Reading · 9 min</span><span lang="zh-Hans">阅读 · 9 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-toy" data-item="s-toy"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-interactive"/></svg><span class="t"><span lang="en">Interactive: feasibility and weights</span><span lang="zh-Hans">交互：可行性与权重</span><small><span lang="en">Interactive · 10 min</span><span lang="zh-Hans">交互 · 10 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-def" data-item="s-def"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">12.2 The last gate is a defence</span><span lang="zh-Hans">12.2 最后一关是答辩</span><small><span lang="en">Reading · 11 min</span><span lang="zh-Hans">阅读 · 11 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-task" data-item="s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: Lab 12 · proposal to defence</span><span lang="zh-Hans">动手：实验 12 · 从提案到答辩</span><small><span lang="en">Hands-on lab · 15 h 50 min</span><span lang="zh-Hans">动手实验 · 15 小时 50 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-mustart" data-item="s-mustart"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: muography capstone starter</span><span lang="zh-Hans">动手：缪子成像结课项目起点</span><small><span lang="en">Hands-on lab · 3 h</span><span lang="zh-Hans">动手实验 · 3 小时</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-quiz" data-item="s-quiz"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-quiz"/></svg><span class="t"><span lang="en">Practice quiz</span><span lang="zh-Hans">练习测验</span><small><span lang="en">Practice quiz · 8 min</span><span lang="zh-Hans">练习测验 · 8 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-err" data-item="s-err"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Common errors</span><span lang="zh-Hans">常见错误</span><small><span lang="en">Reading · 11 min</span><span lang="zh-Hans">阅读 · 11 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-review" data-item="s-review"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-review"/></svg><span class="t"><span lang="en">Review notes</span><span lang="zh-Hans">复习要点</span><small><span lang="en">Checklist · 5 min</span><span lang="zh-Hans">清单 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-share" data-item="s-share"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span class="t"><span lang="en">Share the course</span><span lang="zh-Hans">分享这门课</span><small><span lang="en">Share · 5 min</span><span lang="zh-Hans">分享 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li></ol><p class="nav-total"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">About 20 h in total</span><span lang="zh-Hans">共约 20 小时</span></p></div></nav><div class="nav-scrim" hidden></div>
 <main id="main" tabindex="-1">
 <!--/shell:nav-->
   <!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb / 路径"><a href="index.html"><span lang="en">Geant4 2.0</span><span lang="zh-Hans">Geant4 2.0</span></a><span aria-hidden="true">›</span><span><span lang="en">Stage 5 · Trust it</span><span lang="zh-Hans">第 5 阶段 · 信任</span></span><span aria-hidden="true">›</span><span aria-current="page"><span lang="en">Week 12</span><span lang="zh-Hans">第 12 周</span></span></nav><!--/shell:crumbs-->
@@ -35,8 +33,9 @@
         <li class="stage"><b>5 · <span lang="en">Trust it</span><span lang="zh-Hans">信任</span></b><span lang="en">stage</span><span lang="zh-Hans">阶段</span></li>
         <li><b>Lab 12 → defence</b><span lang="en">hands-on lab</span><span lang="zh-Hans">动手实验</span></li>
         <li><b>10 min</b><span lang="en">talk + questions</span><span lang="zh-Hans">报告 + 提问</span></li>
+        <li><b>≈ 20 h</b><span lang="en">project, over 3–4 weeks</span><span lang="zh-Hans">项目，分 3–4 周完成</span></li>
       </ul>
-      <!--shell:cta--><div class="hero-cta"><a class="btn-p" href="#s-goals" data-resume="w12"><span lang="en">Start</span><span lang="zh-Hans">开始</span><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-r"/></svg></a><a class="btn-s" href="#s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span lang="en">Go to the lab</span><span lang="zh-Hans">直接去实验</span></a><span class="hero-sum"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">10 items · about 4 h</span><span lang="zh-Hans">10 项 · 约 4 小时</span></span></div><!--/shell:cta-->
+      <!--shell:cta--><div class="hero-cta"><a class="btn-p" href="#s-goals" data-resume="w12"><span lang="en">Start</span><span lang="zh-Hans">开始</span><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-r"/></svg></a><a class="btn-s" href="#s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span lang="en">Go to the lab</span><span lang="zh-Hans">直接去实验</span></a><span class="hero-sum"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">11 items · about 20 h</span><span lang="zh-Hans">11 项 · 约 20 小时</span></span></div><!--/shell:cta-->
       </div>
     <div class="statbox" role="table" aria-label="Defence weights">
       <div role="row"><span role="cell">Definition 12.2</span></div>
@@ -62,8 +61,8 @@
     </div>
   </section>
 
-  <section class="run item" id="background" data-type="reading" data-min="6" aria-labelledby="h-bg">
-    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">6 min</span><span lang="zh-Hans">6 分钟</span></span></p>
+  <section class="run item" id="background" data-type="reading" data-min="7" aria-labelledby="h-bg">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">7 min</span><span lang="zh-Hans">7 分钟</span></span></p>
     <p class="cmd">/control/echo background<span lang="en">background · for non-physicists</span><span lang="zh-Hans">背景知识 · 写给非物理专业</span></p>
     <div class="prose">
       <h2 id="h-bg" class="bi"><span lang="en">A research question for a muography project fits in one sentence.</span><span lang="zh-Hans">一个缪子成像项目的研究问题，一句话就能说清。</span></h2>
@@ -74,8 +73,8 @@
       </div>
       <div class="box">
         <p class="box-label">Background · <span lang="en">Significance of a feature</span><span lang="zh-Hans">特征的显著性</span></p>
-        <p lang="en">If the model without the void predicts N muons along a direction and the void adds ΔN, the feature stands out by about ΔN/√N standard deviations. Both N and ΔN grow with exposure time, so significance grows only as √time. That is the 1/√N rule of Week 1 again, now deciding how long the instrument stays underground.</p>
-        <p lang="zh-Hans">若无空洞的模型在某个方向上预测 N 个缪子，空洞使其增加 ΔN，则这个特征的显著性约为 ΔN/√N 个标准差。N 和 ΔN 都随测量时间增长，所以显著性只按 √时间 增长。这又是第 1 周的 1/√N 规律，只是现在它决定仪器要在地下待多久。</p>
+        <p lang="en">If the model without the void predicts N muons along a direction and the void adds ΔN, the feature stands out by about ΔN/√N standard deviations. Both N and ΔN grow with exposure time, so significance grows only as √time. That is the 1/√N rule of Week 1 again, now deciding how long the instrument stays underground. The growth stops at the systematic floor: over long exposures the flux model (10–20% at large zenith angles) and the rock density dominate, so a ratio to an open-sky or reference direction usually buys more than extra months.</p>
+        <p lang="zh-Hans">若无空洞的模型在某个方向上预测 N 个缪子，空洞使其增加 ΔN，则这个特征的显著性约为 ΔN/√N 个标准差。N 和 ΔN 都随测量时间增长，所以显著性只按 √时间 增长。这又是第 1 周的 1/√N 规律，只是现在它决定仪器要在地下待多久。这种增长止于系统误差的下限：长时间曝光时，通量模型（大天顶角处 10–20%）和岩石密度占主导，所以与开阔天空或参考方向取比值，通常比多测几个月更有用。</p>
       </div>
       <div class="aside">
         <p class="aside-label"><span lang="en">For muography projects</span><span lang="zh-Hans">用于缪子成像工程</span></p>
@@ -108,10 +107,13 @@
         <li lang="en">a scintillating-fibre tracker: light yield, threshold and efficiency</li><li lang="zh-Hans">闪烁光纤径迹探测器：光产额、阈值与效率</li>
         <li lang="en">the cosmic muon spectrum against altitude and zenith angle</li><li lang="zh-Hans">宇宙线缪子能谱随海拔和天顶角的变化</li>
         <li lang="en">TF-μSR with a field gradient or partial polarization: which parameter moves (W10)</li><li lang="zh-Hans">带磁场梯度或部分极化的 TF-μSR：哪个参数会变（第 10 周）</li>
+        <li lang="en">depth–dose curve of a proton or electron beam in a water phantom, against a reference range table (W3, W4, W6)</li><li lang="zh-Hans">质子或电子束在水模体中的深度剂量曲线，与参考射程表比较（第 3、4、6 周）</li>
         <li lang="en">muon yield of an electron-driven source such as SHINE</li><li lang="zh-Hans">SHINE 这类电子驱动缪子源的缪子产额</li>
       </ul>
       <p lang="en">Every project starts from the same skeleton: the CMakeLists.txt and main() you have used since Week 2. Week 10's app is a complete template, with a messenger for pre-initialisation parameters, an SD keyed by copy number, a t1-style ntuple and a scan script. A proposal that cannot say which of DetectorConstruction, PrimaryGeneratorAction, RunAction and EventAction change, and how, is not concrete yet.</p>
       <p lang="zh-Hans">每个项目都从同一个骨架起步：你从第 2 周起一直在用的 CMakeLists.txt 和 main()。第 10 周的程序就是一个完整模板：有用于初始化前参数的 messenger、按复制号区分的灵敏探测器、t1 风格的 ntuple 和扫描脚本。如果一份提案说不出 DetectorConstruction、PrimaryGeneratorAction、RunAction、EventAction 中哪几个要改、怎么改，它就还不够具体。</p>
+      <p lang="en">Muography projects can start from the muography starter instead of Week 10's app; it is described in the lab below.</p>
+      <p lang="zh-Hans">缪子成像项目也可以不用第 10 周的程序，而从缪子成像起步模板开始；见下面的实验部分。</p>
       <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W12-a
       issued by : proposal review
@@ -155,6 +157,20 @@ A boundless topic ("study every aspect of muon detectors") can never
           <div class="verbose"><pre id="w12-out"></pre></div>
         </div>
       </div>
+      <h3 class="bi" style="margin-top:36px"><span lang="en">Muography exposure estimate</span><span lang="zh-Hans">缪子成像曝光估算</span></h3>
+      <p lang="en" style="color:var(--muted);max-width:64ch">For one line-of-sight bin: N = I(θ) · A · ΔΩ · T · transmission, with I(θ) = I<sub>v</sub> cos²θ. The void's signal is a fractional excess ΔN/N. A systematic that does not cancel (flux model, rock density) caps the significance. An estimate for a proposal, not a simulation: take the transmission from your own Geant4 run or the range table.</p>
+      <p lang="zh-Hans" style="color:var(--muted);max-width:64ch">对一个视线方向的 bin：N = I(θ) · A · ΔΩ · T · 透射率，I(θ) = I<sub>v</sub> cos²θ。空洞的信号是一个相对超出 ΔN/N。不能相消的系统误差（通量模型、岩石密度）会封顶显著性。这是写提案用的估算，不是模拟：透射率请取自你自己的 Geant4 运行或射程表。</p>
+      <div class="controls" style="margin-top:12px">
+        <label class="ctl" for="w12m-th"><span class="ctl-row"><span lang="en">zenith angle θ</span><span lang="zh-Hans">天顶角 θ</span><output id="w12m-th-out" for="w12m-th">60°</output></span><input id="w12m-th" type="range" min="0" max="80" step="1" value="60"></label>
+        <label class="ctl" for="w12m-tr"><span class="ctl-row"><span lang="en">transmission through the rock</span><span lang="zh-Hans">岩石透射率</span><output id="w12m-tr-out" for="w12m-tr">5%</output></span><input id="w12m-tr" type="range" min="-4" max="0" step="0.05" value="-1.3"></label>
+        <label class="ctl" for="w12m-a"><span class="ctl-row"><span lang="en">detector area</span><span lang="zh-Hans">探测器面积</span><output id="w12m-a-out" for="w12m-a">1 m²</output></span><input id="w12m-a" type="range" min="0.1" max="10" step="0.1" value="1"></label>
+        <label class="ctl" for="w12m-dw"><span class="ctl-row"><span lang="en">solid angle of one bin</span><span lang="zh-Hans">单个 bin 的立体角</span><output id="w12m-dw-out" for="w12m-dw">0.010 sr</output></span><input id="w12m-dw" type="range" min="0.001" max="0.05" step="0.001" value="0.01"></label>
+        <label class="ctl" for="w12m-d"><span class="ctl-row"><span lang="en">exposure</span><span lang="zh-Hans">曝光时间</span><output id="w12m-d-out" for="w12m-d">30 d</output></span><input id="w12m-d" type="range" min="1" max="365" step="1" value="30"></label>
+        <label class="ctl" for="w12m-x"><span class="ctl-row"><span lang="en">void signal ΔN/N</span><span lang="zh-Hans">空洞信号 ΔN/N</span><output id="w12m-x-out" for="w12m-x">10%</output></span><input id="w12m-x" type="range" min="1" max="50" step="1" value="10"></label>
+        <label class="ctl" for="w12m-s"><span class="ctl-row"><span lang="en">systematic that does not cancel</span><span lang="zh-Hans">不能相消的系统误差</span><output id="w12m-s-out" for="w12m-s">5%</output></span><input id="w12m-s" type="range" min="0" max="20" step="0.5" value="5"></label>
+      </div>
+      <div class="panels one"><div><div class="verbose"><pre id="w12m-out"></pre></div></div></div>
+      <p class="cap"><span lang="en">I<sub>v</sub> = 70 m⁻² s⁻¹ sr⁻¹ (PDG, vertical, E &gt; 1 GeV) and cos²θ are rough beyond θ ≈ 60–70°, where the real spectrum is harder and flatter in angle; use a published large-zenith flux model for a real proposal.</span><span lang="zh-Hans">I<sub>v</sub> = 70 m⁻² s⁻¹ sr⁻¹（PDG，竖直方向，E &gt; 1 GeV）与 cos²θ 在 θ 大于约 60–70° 时很粗略，那里真实能谱更硬、角分布更平；正式提案请用已发表的大天顶角通量模型。</span></p>
       <h3 class="bi" style="margin-top:36px"><span lang="en">Defence weights (Definition 12.2)</span><span lang="zh-Hans">答辩权重（定义 12.2）</span></h3>
       <div class="btns" style="border:1px solid var(--rule);border-radius:4px 4px 0 0">
         <button type="button" id="w12-ex-a"><span lang="en">A: elegant code, never compared</span><span lang="zh-Hans">A：代码优雅，从未比较</span></button>
@@ -206,12 +222,17 @@ The same tf.mac gave f = 1.3573, 1.3578 and 1.3572 MHz on three runs.
   Muon decay times were identical; positron hits were not. Cause, in
   the 11.4 source: G4DecayWithSpin writes the muon spin into
   G4VDecayChannel::parent_polarization, a plain member of a decay
-  table that all threads share, then decays. Two threads can race.
+  table that all threads share, then decays. Another thread can
+  overwrite it in between, so a positron can be emitted along the
+  spin of a muon in a different thread. That is a correctness bug,
+  not only lost reproducibility: worth a report to the Geant4
+  bug tracker with this explanation.
 With /run/numberOfThreads 1 the output is identical run to run, and
-  A0 (0.2455 +/- 0.0088) agrees with the 2-thread value: no physics
-  effect visible at this precision, but bit-level reproducibility is
-  gone. Quote a headline with a statistical tolerance (2 sigma), and
-  make reference runs single-threaded.
+  A0 (0.2455 +/- 0.0088) agrees with the 2-thread value: the effect
+  is not visible at this precision, but it could be at higher
+  statistics or with more threads. Make reference runs single-
+  threaded, and quote a headline with a statistical tolerance
+  (2 sigma).
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
       <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
@@ -220,75 +241,87 @@ With /run/numberOfThreads 1 the output is identical run to run, and
 同一个 tf.mac 三次运行给出 f = 1.3573、1.3578 和 1.3572 MHz。缪子衰变
   时间完全相同，正电子击中却不同。11.4 源码中的原因：G4DecayWithSpin
   把缪子自旋写进 G4VDecayChannel::parent_polarization，它是所有线程
-  共享的衰变表中的普通成员，写完再做衰变。两个线程可能发生竞争。
+  共享的衰变表中的普通成员，写完再做衰变。其间另一个线程可能改写它，
+  于是正电子可能沿着另一线程中某个缪子的自旋方向发射。这是正确性错误，
+  不只是丢失了可复现性：值得附上这段解释向 Geant4 缺陷追踪系统报告。
 用 /run/numberOfThreads 1 时，每次运行的输出完全一致，A0
-  （0.2455 +/- 0.0088）与双线程结果相符：在这个精度下看不出物理影响，
-  但比特级可复现性没有了。给核心数字附上统计容差（2 sigma），参考
-  运行用单线程。
+  （0.2455 +/- 0.0088）与双线程结果相符：在这个精度下看不出影响，
+  但统计量更高或线程更多时可能看得出。参考运行用单线程，并给核心
+  数字附上统计容差（2 sigma）。
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
     </div>
   </section>
 
-  <section class="run item" id="s-task" data-type="lab" data-min="170" aria-labelledby="h-task">
-    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on lab</span><span lang="zh-Hans">动手实验</span></span><span class="d"><span lang="en">2 h 50 min</span><span lang="zh-Hans">2 小时 50 分钟</span></span></p>
+  <section class="run item" id="s-task" data-type="lab" data-min="950" aria-labelledby="h-task">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on lab</span><span lang="zh-Hans">动手实验</span></span><span class="d"><span lang="en">15 h 50 min</span><span lang="zh-Hans">15 小时 50 分钟</span></span></p>
     <p class="cmd">git tag v1.0<span lang="en">hands-on · Lab 12 · proposal to defence</span><span lang="zh-Hans">动手实验 · 实验 12 · 从提案到答辩</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Five steps from a blank page to a reproduced number.</span><span lang="zh-Hans">从一张白纸到一个被复现的数字，五步。</span></h2>
+      <!--shell:dl--><p class="dl"><a class="btn-s" href="downloads/week12-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download all files for this lab (zip)</span><span lang="zh-Hans">下载本实验的全部文件（zip）</span></a><a class="dl-all" href="downloads/geant4-course-code.zip" download><span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></a></p><!--/shell:dl-->
       <ol class="steps">
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Fill the proposal and get it signed off</span><span lang="zh-Hans">填写提案并获得认可</span></h3><label class="done" for="w12-s1"><input type="checkbox" id="w12-s1" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="files">
-            <details><summary><b>proposal.md</b><button class="copy" type="button" data-copy="f12-p">copy</button></summary><pre id="f12-p" data-src="code/week12/proposal.md"># Proposal: &lt;one-line title&gt;
+            <details><summary><b>proposal.md</b><button class="copy" type="button" data-copy="f12-p">copy</button></summary><pre id="f12-p" data-src="code/week12/proposal.md"># Proposal / 提案: &lt;one-line title / 一行标题&gt;
 
 Author · date · repository URL · tag
+作者 · 日期 · 仓库地址 · 标签
 
-## 1. Question (one sentence)
+## 1. Question (one sentence) / 问题（一句话）
 &lt;What physical quantity do you want to learn, and to what precision?&gt;
+&lt;你想得到哪个物理量，精度多少？&gt;
 
-## 2. Observable
+## 2. Observable / 可观测量
 &lt;The one number the simulation will produce. Units. How it is computed from the ROOT file.&gt;
+&lt;模拟将给出的那一个数字。单位。如何从 ROOT 文件算出。&gt;
 
-## 3. Prediction
+## 3. Prediction / 预测
 &lt;Direction and rough size, BEFORE running, with the reasoning (chapter / formula).&gt;
+&lt;在运行之前写下变化方向和大致大小，并给出理由（章节 / 公式）。&gt;
 
-## 4. Virtual detector and physics
-- Geometry and materials: &lt;...&gt;
-- Primary particles (spectrum, angles, position): &lt;...&gt;
-- Physics list and any added constructor: &lt;...&gt;  (check with /process/list)
-- Detector response: &lt;truth Edep / digitised / optical&gt;  and why that fidelity is enough
+## 4. Virtual detector and physics / 虚拟探测器与物理
+- Geometry and materials / 几何与材料: &lt;...&gt;
+- Primary particles (spectrum, angles, position) / 初级粒子（能谱、角度、位置）: &lt;...&gt;
+- Physics list and any added constructor / 物理列表及添加的构造器: &lt;...&gt;  (check with /process/list / 用 /process/list 检查)
+- Detector response / 探测器响应: &lt;truth Edep / digitised / optical&gt;  and why that fidelity is enough / 以及为什么这个保真度足够
 
-## 5. Skills used (at least three weeks)
-&lt;e.g. W5 trigger, W8 analysis chain, W10 spin physics&gt;
+## 5. Skills used (at least three weeks) / 用到的技能（至少三周）
+&lt;e.g. W5 trigger, W8 analysis chain, W10 spin physics / 例如 第 5 周触发、第 8 周分析链、第 10 周自旋物理&gt;
 
-## 6. Validation criterion
+## 6. Validation criterion / 验证标准
 &lt;Reference (analytic, table, published measurement), the rung you aim for (Week 11 validation ladder),
 and the discrepancy in sigma that would count as agreement.&gt;
+&lt;参照（解析式、表格、已发表测量）、你瞄准的层级（第 11 周验证阶梯），以及多少 sigma 的偏差算一致。&gt;
 
-## 7. Feasibility
-- Target precision: &lt;...&gt;   systematic floor: &lt;...&gt;
-- Events per configuration: &lt;...&gt;   configurations: &lt;...&gt;
-- CPU time per event from a pilot run: &lt;... ms&gt;   wall time on &lt;N&gt; cores: &lt;...&gt;
+## 7. Feasibility / 可行性
+- Target precision / 目标精度: &lt;...&gt;   systematic floor / 系统误差下限: &lt;...&gt;
+- Events per configuration / 每个配置的事例数: &lt;...&gt;   configurations / 配置数: &lt;...&gt;
+- CPU time per event from a pilot run / 试跑测得的每事例 CPU 时间: &lt;... ms&gt;   wall time on &lt;N&gt; cores / &lt;N&gt; 核上的墙钟时间: &lt;...&gt;
 
-## 8. Boundary statement
+## 8. Boundary statement / 边界声明
 &lt;At least one physically important effect deliberately ignored, and its consequence.
 If musrSim: one application-specific behaviour checked against the installed source.&gt;
+&lt;至少一个被有意忽略的重要物理效应及其后果。若用 musrSim：一个对照已安装源码核实过的应用特有行为。&gt;
 
-## 9. Reproducibility record
-- Geant4 version (geant4-config --version), ROOT / Python package versions
-- Commit and tag; macro(s); seed strategy and thread count
-- Analysis command that prints the headline number, and its statistical tolerance</pre></details>
+## 9. Reproducibility record / 可复现性记录
+- Geant4 version (geant4-config --version), ROOT / Python package versions / Geant4 版本、ROOT / Python 包版本
+- Commit and tag; macro(s); seed strategy and thread count / 提交与标签；宏文件；种子策略与线程数
+- Analysis command that prints the headline number, and its statistical tolerance / 打印核心数字的分析命令及其统计容差</pre></details>
           </div>
           <p lang="en">One page. If any section is empty or vague, the proposal is not ready. Section 3 (prediction) is written before any run, and section 6 names the rung you aim for and the σ that would count as agreement.</p>
           <p lang="zh-Hans">一页纸。任何一节空着或含糊，提案就还没准备好。第 3 节（预测）要在任何运行之前写好，第 6 节要写明你瞄准的阶梯层级，以及多少 σ 算一致。</p>
+          <p lang="en"><b>Muography track:</b> use the <a href="#s-mustart">muography capstone starter</a> below as your template instead of the Week 10 app.</p><p lang="zh-Hans"><b>缪子成像方向：</b>请用下方的<a href="#s-mustart">缪子成像结课项目起点</a>作为模板，代替第 10 周的应用。</p>
+          <p lang="en">Self-paced, with no advisor to sign off? Ask a peer, or sign it off yourself: put it away for a day, then check every section against Definition 12.1 and the questions in step 5. Commit the signed version before the pilot run, so the prediction in section 3 is visibly older than your results.</p>
+          <p lang="zh-Hans">自学、没有导师认可？请同学看，或自己认可：放一天，再逐节对照定义 12.1 和第 5 步的问题检查。在试跑之前提交这一版，让第 3 节的预测明显早于你的结果。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Pilot run: measure your cost per event</span><span lang="zh-Hans">试跑：测出每个事例的代价</span></h3><label class="done" for="w12-s2"><input type="checkbox" id="w12-s2" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c12-a">copy</button></div>
 <pre id="c12-a">sed "s|beamOn .*|beamOn 10000|" run.mac &gt; pilot.mac
 /usr/bin/time -v ./myExperiment pilot.mac 2&gt;&amp;1 | grep -E "User time|System time|Maximum resident"</pre></div>
-          <p lang="en">(User + system seconds) / 10 000 is your CPU per event. Put it in the planner above, with the efficiency and systematic you expect. For reference, our Week 10 run used 63 s user + 6 s system for 200 000 muons. If the planner says "impossible", narrow the question now rather than on the night before the defence.</p>
-          <p lang="zh-Hans">（用户秒数 + 系统秒数）/ 10 000 就是每个事例的 CPU 时间。把它和你预期的效率、系统误差一起填进上面的规划器。作为参照，我们第 10 周的运行处理 20 万个缪子用了 63 s 用户时间加 6 s 系统时间。如果规划器显示“不可能”，现在就收窄问题，别等到答辩前一晚。</p>
+          <p lang="en">(User + system seconds) / 10 000 is your CPU per event. On macOS, /usr/bin/time has no -v: use <code>/usr/bin/time -l ./myExperiment pilot.mac</code> and read "user", "sys" and "maximum resident set size". Put it in the planner above, with the efficiency and systematic you expect. For reference, our Week 10 run used 63 s user + 6 s system for 200 000 muons. If the planner says "impossible", narrow the question now rather than on the night before the defence.</p>
+          <p lang="zh-Hans">（用户秒数 + 系统秒数）/ 10 000 就是每个事例的 CPU 时间。macOS 上 /usr/bin/time 没有 -v：改用 <code>/usr/bin/time -l ./myExperiment pilot.mac</code>，读 “user”“sys” 和 “maximum resident set size”。把它和你预期的效率、系统误差一起填进上面的规划器。作为参照，我们第 10 周的运行处理 20 万个缪子用了 63 s 用户时间加 6 s 系统时间。如果规划器显示“不可能”，现在就收窄问题，别等到答辩前一晚。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Version everything and tag the result</span><span lang="zh-Hans">一切纳入版本管理并给结果打标签</span></h3><label class="done" for="w12-s3"><input type="checkbox" id="w12-s3" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -306,12 +339,19 @@ git tag v1.0 &amp;&amp; git push --tags</pre></div>
             <details><summary><b>repro_check.sh</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f12-r">copy</button></summary><pre id="f12-r" data-src="code/week12/repro_check.sh">#!/bin/bash
 # repro_check.sh -- what an evaluator does before your defence: clone, rebuild from scratch,
 # run your macro, and compare your headline number with the one in your slides.
-# Usage: bash repro_check.sh &lt;git-url&gt; &lt;tag&gt; &lt;app-dir&gt; &lt;macro&gt; "&lt;analysis command&gt;" &lt;expected&gt; &lt;tolerance&gt;
-# Example (Week 10 as a defence package):
+# Usage: bash repro_check.sh &lt;git-url&gt; &lt;tag&gt; &lt;app-dir&gt; &lt;macro&gt; "&lt;analysis command&gt;" &lt;expected&gt; &lt;tolerance&gt; [headline-regex]
+#   headline-regex  an extended regex for the ONE output line that carries your headline number,
+#                   written as  &lt;name&gt; = &lt;value&gt; +/- &lt;error&gt;.  Default: the first such line.
+#   EXE=&lt;name&gt;      environment variable: the executable to run, if the build makes more than one.
+# Example (Week 10 as a defence package, headline "f   = 1.3573 +/- 0.0020 MHz"):
 #   bash repro_check.sh https://github.com/you/tf-musr.git v1.0 week10 tf.mac \
-#        "python3 asymmetry.py data/tf_10mT.root" 1.3573 0.0040
+#        "python3 asymmetry.py data/tf_10mT.root" 1.3573 0.0040 '^f +='
+# Example (a muography project printing "ratio = 0.873 +/- 0.012"):
+#   bash repro_check.sh https://github.com/you/void.git v1.0 app run.mac \
+#        "python3 analyse.py data/run.root" 0.873 0.024 '^ratio +='
 set -euo pipefail
 URL=$1; TAG=$2; APP=$3; MACRO=$4; ANALYSIS=$5; EXPECTED=$6; TOL=$7
+HEADLINE=${8:-'^[A-Za-z_][A-Za-z0-9_()/ ]*= *[-+0-9.eE]+ *\+/- '}
 WORK=$(mktemp -d)
 echo "== environment"
 geant4-config --version
@@ -321,43 +361,1064 @@ python3 -c "import uproot, awkward, scipy; print('uproot', uproot.__version__, '
 echo "== clean checkout of $TAG"
 git clone -q --branch "$TAG" --depth 1 "$URL" "$WORK/src"
 git -C "$WORK/src" log -1 --format='commit %H  %ad'
-test -z "$(git -C "$WORK/src" status --porcelain)" || { echo "FAIL: tree not clean"; exit 1; }
 
-echo "== build from scratch"
+echo "== build from scratch (outside the source tree)"
 cmake -S "$WORK/src/$APP" -B "$WORK/build" -DCMAKE_BUILD_TYPE=Release &gt; "$WORK/cmake.log"
 cmake --build "$WORK/build" -j4 &gt; "$WORK/build.log"
 
 echo "== run"
 cd "$WORK/build" &amp;&amp; mkdir -p data
-EXE=$(find . -maxdepth 1 -type f -perm -u+x ! -name '*.sh' | head -1)
-"$EXE" "$MACRO" &gt; run.log 2&gt;&amp;1
+if [ -n "${EXE:-}" ]; then RUN="./$EXE"; else
+  RUN=$(find . -maxdepth 1 -type f -perm -u+x ! -name '*.sh' ! -name '*.py' ! -name '*.so' | head -1); fi
+[ -n "$RUN" ] || { echo "FAIL: no executable found in the build (set EXE=&lt;name&gt;)"; exit 1; }
+echo "running $RUN $MACRO"
+"$RUN" "$MACRO" &gt; run.log 2&gt;&amp;1
 grep -E "seed|Run complete|Field at" run.log || true
 
+# The build and the run must not write into the repository: everything they produce belongs in
+# build/. A dirty tree here means your code writes next to its sources, so a second run differs.
+test -z "$(git -C "$WORK/src" status --porcelain)" || {
+  echo "FAIL: building or running changed the checked-out tree:"; git -C "$WORK/src" status --short; exit 1; }
+
 echo "== analysis"
-OUT=$($ANALYSIS)
+OUT=$(bash -c "$ANALYSIS")
 echo "$OUT"
-GOT=$(echo "$OUT" | grep -E "^f +=" | awk '{print $3}')
-python3 - "$GOT" "$EXPECTED" "$TOL" &lt;&lt;'EOF'
-import sys
-got, exp, tol = map(float, sys.argv[1:])
+LINE=$(echo "$OUT" | grep -E -m1 -- "$HEADLINE" || true)
+[ -n "$LINE" ] || { echo "FAIL: no output line matches the headline pattern: $HEADLINE"; exit 1; }
+python3 - "$LINE" "$EXPECTED" "$TOL" &lt;&lt;'EOF'
+import re, sys
+line, exp, tol = sys.argv[1], float(sys.argv[2]), float(sys.argv[3])
+got = float(re.search(r"=\s*([-+0-9.eE]+)", line).group(1))
 ok = abs(got - exp) &lt;= tol
-print(f"headline: got {got}, slides say {exp}, tolerance {tol} -&gt; {'REPRODUCED' if ok else 'NOT REPRODUCED'}")
+print(f"headline: {line.strip()}")
+print(f"got {got}, slides say {exp}, tolerance {tol} -&gt; {'REPRODUCED' if ok else 'NOT REPRODUCED'}")
 sys.exit(0 if ok else 1)
 EOF</pre></details>
           </div>
           <div class="code"><div class="code-head"><span class="l"><b><span lang="en">terminal (a different account or machine)</span><span lang="zh-Hans">终端（换一个账号或机器）</span></b></span><button class="copy" type="button" data-copy="c12-c">copy</button></div>
 <pre id="c12-c">bash repro_check.sh https://github.com/you/tf-musr.git v1.0 week10 tf.mac \
-     "python3 asymmetry.py data/tf_10mT.root" 1.3573 0.0040</pre></div>
-          <p lang="en">The script prints the environment, clones the tag, refuses a dirty tree, rebuilds from scratch, runs the macro and compares the headline within your tolerance. We could not run it end to end here (the sandbox has no CMake-installed Geant4), but its three inputs are real. The three Week 10 runs above all fall within 1.3573 ± 0.0040, which is 2σ, while none is identical bit for bit (Course-W12-b). A tolerance of 0 would fail an honest result.</p>
-          <p lang="zh-Hans">脚本会打印环境、克隆标签、拒绝不干净的工作树、从零编译、运行宏，并按你的容差比较核心数字。我们无法在这里完整运行它（沙盒里没有用 CMake 安装的 Geant4），但它的三个输入都是真实的。上面三次第 10 周运行都落在 1.3573 ± 0.0040（即 2σ）之内，却没有一次比特级相同（Course-W12-b）。容差设为 0，会让一个诚实的结果不及格。</p>
+     "python3 asymmetry.py data/tf_10mT.root" 1.3573 0.0040 '^f +='</pre></div>
+          <p lang="en">The script prints the environment, clones the tag, rebuilds from scratch, runs the macro, refuses a tree that the build or run left dirty (an untracked output not in .gitignore), and compares the headline within your tolerance. The last argument is a regular expression for the line that holds the headline (here asymmetry.py's "f = ..." line); without it the script takes the first "name = value +/- error" line. Set EXE=yourApp if the build makes more than one executable. We could not run it end to end here (the sandbox has no CMake-installed Geant4), but its three inputs are real. The three Week 10 runs above all fall within 1.3573 ± 0.0040, which is 2σ, while none is identical bit for bit (Course-W12-b). A tolerance of 0 would fail an honest result.</p>
+          <p lang="zh-Hans">脚本会打印环境、克隆标签、从零编译、运行宏，若编译或运行后工作树不干净（有未列入 .gitignore 的输出文件）就拒绝，再按你的容差比较核心数字。最后一个参数是匹配核心数字所在行的正则表达式（这里是 asymmetry.py 的 “f = ...” 行）；不给时，脚本取第一行 “名称 = 数值 +/- 误差”。如果编译产生不止一个可执行文件，设置 EXE=你的程序名。我们无法在这里完整运行它（沙盒里没有用 CMake 安装的 Geant4），但它的三个输入都是真实的。上面三次第 10 周运行都落在 1.3573 ± 0.0040（即 2σ）之内，却没有一次比特级相同（Course-W12-b）。容差设为 0，会让一个诚实的结果不及格。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Rehearse the defence with a referee</span><span lang="zh-Hans">请一位“审稿人”预演答辩</span></h3><label class="done" for="w12-s5"><input type="checkbox" id="w12-s5" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <p lang="en">Ten minutes on the clock. Your partner asks three questions from this list and grades with the weights above: What would falsify your result? Which effect you ignored would change it most, and in which direction? Why is this physics list enough for this observable? What does your main macro command make Geant4 do? Could I get your number from your repository tonight?</p>
           <p lang="zh-Hans">计时十分钟。你的搭档从下列问题中挑三个来问，并按上面的权重打分：什么结果能证伪你的结论？你忽略的哪个效应对结果影响最大，朝哪个方向？为什么这个物理列表对这个可观测量够用？你主要的宏命令让 Geant4 做了什么？我今晚能从你的仓库得到你的数字吗？</p>
+          <p lang="en">No partner? Record yourself giving the talk, watch it once, and answer all five questions in writing in your repository. Then run repro_check.sh on your own tag from a fresh clone in another directory (or another account), and grade yourself with the rubric below.</p>
+          <p lang="zh-Hans">没有搭档？把自己的报告录下来看一遍，在仓库里书面回答全部五个问题。再从另一个目录（或另一个账号）的全新克隆中，对你自己的标签运行 repro_check.sh，并按下面的评分细则给自己打分。</p>
+          <p lang="en"><b>Hand in</b>: proposal.md (the signed version and the final one); the tagged repository; the repro_check.sh output from a fresh clone; slides, or a 2–4 page report if there is no live defence; and a self-assessment against the rubric, one line per row.</p>
+          <p lang="zh-Hans"><b>提交内容</b>：proposal.md（认可时的版本和最终版本）；打了标签的仓库；在全新克隆上运行 repro_check.sh 的输出；幻灯片，若没有现场答辩则提交 2–4 页报告；以及按评分细则逐行写的自评。</p>
+          <div class="scroll"><table class="tbl">
+            <thead><tr><th><span lang="en">Weight</span><span lang="zh-Hans">权重</span></th><th><span lang="en">Excellent (90–100)</span><span lang="zh-Hans">优秀（90–100）</span></th><th><span lang="en">Adequate (60–80)</span><span lang="zh-Hans">合格（60–80）</span></th><th><span lang="en">Insufficient (&lt; 50)</span><span lang="zh-Hans">不足（&lt; 50）</span></th></tr></thead>
+            <tbody>
+              <tr><td><span lang="en">problem · 20</span><span lang="zh-Hans">问题 · 20</span></td><td><span lang="en">one sentence, one observable, prediction committed before any run</span><span lang="zh-Hans">一句话、一个可观测量，预测在任何运行之前提交</span></td><td><span lang="en">clear question, prediction vague or written late</span><span lang="zh-Hans">问题清楚，预测含糊或写得晚</span></td><td><span lang="en">no single question or observable</span><span lang="zh-Hans">没有单一的问题或可观测量</span></td></tr>
+              <tr><td><span lang="en">implementation · 20</span><span lang="zh-Hans">实现 · 20</span></td><td><span lang="en">every choice of geometry, source, physics list and response justified for the observable</span><span lang="zh-Hans">几何、源、物理列表和响应的每个选择都针对可观测量给出理由</span></td><td><span lang="en">works, some choices unexplained</span><span lang="zh-Hans">能运行，部分选择未解释</span></td><td><span lang="en">defaults copied, no check that they matter</span><span lang="zh-Hans">照搬默认值，未检查是否有影响</span></td></tr>
+              <tr><td><span lang="en">validation · 25</span><span lang="zh-Hans">验证 · 25</span></td><td><span lang="en">independent reference, agreement in σ with stat and sys, criterion fixed in advance</span><span lang="zh-Hans">独立参照，以含统计和系统误差的 σ 表示一致程度，标准事先确定</span></td><td><span lang="en">a reference comparison, uncertainty incomplete</span><span lang="zh-Hans">有与参照的比较，不确定度不完整</span></td><td><span lang="en">no comparison, or "looks right"</span><span lang="zh-Hans">没有比较，或“看起来对”</span></td></tr>
+              <tr><td><span lang="en">analysis · 15</span><span lang="zh-Hans">分析 · 15</span></td><td><span lang="en">fit quality reported, systematics varied, error bars traceable</span><span lang="zh-Hans">报告拟合优度、做了系统变化、误差棒可追溯</span></td><td><span lang="en">correct fit, statistical error only</span><span lang="zh-Hans">拟合正确，只有统计误差</span></td><td><span lang="en">numbers without uncertainties</span><span lang="zh-Hans">数字没有不确定度</span></td></tr>
+              <tr><td><span lang="en">communication · 10</span><span lang="zh-Hans">表达 · 10</span></td><td><span lang="en">on time, boundary statement, referee questions answered directly</span><span lang="zh-Hans">准时、有边界声明、直接回答审稿式问题</span></td><td><span lang="en">clear talk, weak answers</span><span lang="zh-Hans">报告清楚，回答较弱</span></td><td><span lang="en">over time, no limitations named</span><span lang="zh-Hans">超时，未说明局限</span></td></tr>
+              <tr><td><span lang="en">code · 10</span><span lang="zh-Hans">代码 · 10</span></td><td><span lang="en">repro_check.sh reproduces the headline from the tag</span><span lang="zh-Hans">repro_check.sh 能从标签复现核心数字</span></td><td><span lang="en">reproduces after one fix you tell the evaluator</span><span lang="zh-Hans">告诉评审一处修改后能复现</span></td><td><span lang="en">does not build or run from the repository</span><span lang="zh-Hans">无法从仓库编译或运行</span></td></tr>
+            </tbody>
+          </table></div>
         </li>
       </ol>
       <p class="progress" data-progress-out="w12"></p>
+    </div>
+  </section>
+
+  <section class="run item" id="s-mustart" data-type="lab" data-min="180" data-min-set="180" aria-labelledby="h-mustart">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on lab</span><span lang="zh-Hans">动手实验</span></span><span class="d"><span lang="en">3 h</span><span lang="zh-Hans">3 小时</span></span></p>
+    <p class="cmd">./muography void_on.mac<span lang="en">hands-on · muography capstone starter</span><span lang="zh-Hans">动手实验 · 缪子成像结课项目起点</span></p>
+    <div class="prose">
+      <h2 id="h-mustart" class="bi"><span lang="en">Muography track: start your capstone from a working tunnel, not a blank file.</span><span lang="zh-Hans">缪子成像方向：从一个能运行的隧道开始结课项目，而不是从空文件开始。</span></h2>
+      <p class="dl"><a class="btn-s" href="downloads/muography-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download the muography starter (zip)</span><span lang="zh-Hans">下载缪子成像起点项目（zip）</span></a></p>
+          <p lang="en">This starter is the template for muography capstones, in place of the Week 10 μSR app. It has 30 m of standard rock over a tunnel, an optional 4 m air void and a two-plane telescope in the tunnel. Muons come from the sky with a realistic energy and angle spectrum. Every simulated muon stands for the same exposure time, so counts become rates per day. You run it twice, void off and void on, and ask the question every muography proposal must answer: how many days of data before the void is significant?</p>
+          <p lang="zh-Hans">这个起点项目是缪子成像结课项目的模板，代替第 10 周的 μSR 程序。它有一条隧道，上方覆盖 30 m 标准岩石，岩石中可放一个 4 m 的空气空洞，隧道里有一台两层探测面的望远镜。缪子从天空入射，能量和角度分布接近真实。每个模拟缪子代表相同的曝光时间，因此计数可以换算成每天的计数率。你要运行两次：无空洞和有空洞，然后回答每个缪子成像提案都必须回答的问题：要采集多少天的数据，空洞才显著？</p>
+          <p lang="en">Outputs below are real Geant4 11.4.p01 runs of these files with the course test physics list (standard EM processes for muons and electrons, no hadronic datasets). Muon transport through rock is mostly electromagnetic. <code>FTFP_BERT</code> adds muon–nuclear interactions, about a tenth of the high-energy energy loss, so expect its rates to be a few percent lower.</p>
+          <p lang="zh-Hans">下面的输出来自这些文件在 Geant4 11.4.p01 上的真实运行，使用课程测试物理列表（缪子和电子的标准电磁过程，不含强子数据集）。缪子在岩石中的输运主要是电磁过程。<code>FTFP_BERT</code> 还包含缪子–核相互作用，约占高能能损的十分之一，所以它给出的计数率会低几个百分点。</p>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Build the starter</span><span lang="zh-Hans">编译起点项目</span></h3><label class="done" for="w12-mu1"><input type="checkbox" id="w12-mu1" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Twenty-one files, in the same layout as Weeks 5 and 8. Read three first: <code>SkyFlux.hh</code> (the muon sky), <code>PrimaryGeneratorAction.cc</code> (how muons are aimed at the telescope) and <code>RunAction.cc</code> (how counts become a rate).</p>
+          <p lang="zh-Hans">共 21 个文件，结构与第 5、8 周相同。先读三个：<code>SkyFlux.hh</code>（缪子天空）、<code>PrimaryGeneratorAction.cc</code>（缪子如何瞄准望远镜）和 <code>RunAction.cc</code>（计数如何换算成计数率）。</p>
+          <div class="files">
+            <details><summary><b>CMakeLists.txt</b><button class="copy" type="button" data-copy="fmu-1">copy</button></summary><pre id="fmu-1" data-src="code/muography/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
+project(Muography LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Geant4 REQUIRED ui_all vis_all)
+include(${Geant4_USE_FILE})
+
+file(GLOB sources CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/include/*.hh)
+
+add_executable(muography muography.cc ${sources} ${headers})
+target_include_directories(muography PRIVATE include)
+target_link_libraries(muography PRIVATE ${Geant4_LIBRARIES})
+
+foreach(_f quick.mac void_off.mac void_on.mac vis.mac analyse.py)
+  configure_file(${PROJECT_SOURCE_DIR}/${_f} ${PROJECT_BINARY_DIR}/${_f} COPYONLY)
+endforeach()</pre></details>
+            <details><summary><b>muography.cc</b><button class="copy" type="button" data-copy="fmu-2">copy</button></summary><pre id="fmu-2" data-src="code/muography/muography.cc">// Muography starter: cosmic muons through rock with a tunnel, an optional void,
+// and a two-plane telescope in the tunnel. Start from this for a muography capstone.
+//
+//   ./muography void_off.mac      headless run (the macro sets geometry, then /run/initialize)
+//   ./muography                   viewer with vis.mac
+#include "ActionInitialization.hh"
+#include "DetectorConstruction.hh"
+
+#include "FTFP_BERT.hh"
+#include "G4RunManagerFactory.hh"
+#include "G4UIExecutive.hh"
+#include "G4UImanager.hh"
+#include "G4VisExecutive.hh"
+
+int main(int argc, char** argv)
+{
+  auto* runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+  runManager-&gt;SetNumberOfThreads(2);
+
+  runManager-&gt;SetUserInitialization(new DetectorConstruction());
+  runManager-&gt;SetUserInitialization(new FTFP_BERT());
+  runManager-&gt;SetUserInitialization(new ActionInitialization());
+  // No Initialize() here: the macros set /muo/det/... first, then call /run/initialize.
+
+  auto* uiManager = G4UImanager::GetUIpointer();
+  if (argc &gt; 1) {
+    uiManager-&gt;ApplyCommand("/control/execute " + G4String(argv[1]));
+  } else {
+    auto* ui = new G4UIExecutive(argc, argv);
+    auto* visManager = new G4VisExecutive();
+    visManager-&gt;Initialize();
+    uiManager-&gt;ApplyCommand("/control/execute vis.mac");
+    ui-&gt;SessionStart();
+    delete visManager;
+    delete ui;
+  }
+
+  delete runManager;
+  return 0;
+}</pre></details>
+            <details><summary><b>include/SkyFlux.hh</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="fmu-3">copy</button></summary><pre id="fmu-3" data-src="code/muography/include/SkyFlux.hh">#ifndef SkyFlux_h
+#define SkyFlux_h 1
+
+// Sea-level cosmic-muon intensity: the Gaisser parametrisation with the
+// Guan et al. (2015) correction for low energies and large zenith angles
+// (M. Guan et al., arXiv:1509.06176, Eq. 3; the cos(theta*) curvature
+// correction of D. Chirkin, hep-ph/0407078).
+//
+//   dI/dE dOmega = 0.14 [E (1 + 3.64 GeV / (E cos^1.29 th*))]^-2.7
+//                  x [ 1/(1 + 1.1 E cos th*/115 GeV) + 0.054/(1 + 1.1 E cos th*/850 GeV) ]
+//                  in cm^-2 s^-1 sr^-1 GeV^-1, E in GeV
+//
+// Approximations (state them in any result you quote):
+//  - one intensity for mu+ and mu-; the charge is drawn with mu+/mu- = 1.27
+//    (a typical sea-level value; it depends on energy and site)
+//  - sea level, no altitude, geomagnetic or seasonal correction
+//  - above ~100 TeV, prompt muons and the knee are ignored (irrelevant here)
+//  - the parametrisation is good to roughly 10-20% in absolute flux: this is
+//    the "flux-model systematic" of the analysis.
+
+#include &lt;cmath&gt;
+
+namespace SkyFlux
+{
+// cos(theta*) of the curved atmosphere (Chirkin), from the geometric cos(theta)
+inline double CosThetaStar(double c)
+{
+  const double P1 = 0.102573, P2 = -0.068287, P3 = 0.958633, P4 = 0.0407253, P5 = 0.817285;
+  const double num = c * c + P1 * P1 + P2 * std::pow(c, P3) + P4 * std::pow(c, P5);
+  const double den = 1. + P1 * P1 + P2 + P4;
+  return std::sqrt(num / den);
+}
+
+// differential intensity, cm^-2 s^-1 sr^-1 GeV^-1; E in GeV, c = cos(zenith)
+inline double Intensity(double E, double c)
+{
+  const double cs = CosThetaStar(c);
+  const double Eeff = E * (1. + 3.64 / (E * std::pow(cs, 1.29)));
+  return 0.14 * std::pow(Eeff, -2.7) *
+         (1. / (1. + 1.1 * E * cs / 115.) + 0.054 / (1. + 1.1 * E * cs / 850.));
+}
+
+// Upper bound used by the rejection sampler: Eeff &gt;= E and the bracket &lt;= 1.054,
+// so Intensity(E, c) * c &lt;= 0.14 * 1.054 * E^-2.7 for every c in [0, 1].
+inline double Envelope(double E) { return 0.14 * 1.054 * std::pow(E, -2.7); }
+
+// Flux through a HORIZONTAL plane, integrated over E in [emin, emax] GeV and
+// cos(theta) in [cmin, 1], all azimuths: cm^-2 s^-1. Midpoint rule in log E and cos.
+inline double PlaneFlux(double emin, double emax, double cmin)
+{
+  const int nE = 1200, nC = 200;
+  const double lmin = std::log(emin), lmax = std::log(emax);
+  double sum = 0.;
+  for (int i = 0; i &lt; nE; ++i) {
+    const double E = std::exp(lmin + (i + 0.5) * (lmax - lmin) / nE);
+    double inner = 0.;
+    for (int j = 0; j &lt; nC; ++j) {
+      const double c = cmin + (j + 0.5) * (1. - cmin) / nC;
+      inner += Intensity(E, c) * c;
+    }
+    sum += inner * (1. - cmin) / nC * E * (lmax - lmin) / nE;   // dE = E dlnE
+  }
+  return 2. * M_PI * sum;
+}
+}  // namespace SkyFlux
+
+#endif</pre></details>
+            <details><summary><b>include/DetectorConstruction.hh</b><button class="copy" type="button" data-copy="fmu-4">copy</button></summary><pre id="fmu-4" data-src="code/muography/include/DetectorConstruction.hh">#ifndef DetectorConstruction_h
+#define DetectorConstruction_h 1
+
+#include "G4SystemOfUnits.hh"
+#include "G4VUserDetectorConstruction.hh"
+#include "globals.hh"
+
+class G4GenericMessenger;
+
+// Muography starter geometry (z points UP; ground surface at z = 0):
+//
+//   z = 0        +-------------------------------------------+  flat ground, sky above
+//                |  standard rock (2.65 g/cm3)               |
+//                |        ( void: optional air sphere )      |
+//   z = -T       |      +------ tunnel (air) ------+         |  T = overburden
+//                |      |   == top plane ==        |         |
+//                |      |   == bottom plane ==     |         |
+//                +------+--------------------------+---------+  2 m of rock under the floor
+//
+// All settings are UI commands (/muo/det/..., /muo/sky/...) and must be given
+// BEFORE /run/initialize. The sky settings live here, not in the generator,
+// because the master thread (which writes the run summary) has no generator.
+class DetectorConstruction : public G4VUserDetectorConstruction
+{
+  public:
+    DetectorConstruction();
+    ~DetectorConstruction() override;
+
+    G4VPhysicalVolume* Construct() override;
+    void ConstructSDandField() override;
+
+    // geometry, read by the generator and the run summary
+    G4double Overburden() const { return fOverburden; }
+    G4double RockHalfXY() const { return fRockHalfXY; }
+    G4double TopPlaneZ() const { return TunnelCentreZ() + 0.5 * fPlaneSep; }
+    G4double BottomPlaneZ() const { return TunnelCentreZ() - 0.5 * fPlaneSep; }
+    G4double PlaneHalf() const { return fPlaneHalf; }
+    G4double PlaneSep() const { return fPlaneSep; }
+    G4bool VoidOn() const { return fVoidOn; }
+    G4double VoidRadius() const { return fVoidR; }
+    G4double VoidX() const { return fVoidX; }
+    G4double VoidY() const { return fVoidY; }
+    G4double VoidZ() const { return fVoidZ; }
+
+    // sky (generator) settings
+    G4double EMin() const { return fEmin; }
+    G4double EMax() const { return fEmax; }
+    G4double ThetaMax() const { return fThetaMax; }
+    G4double AimHalf() const { return fPlaneHalf + fAimMargin; }
+
+    G4double TunnelCentreZ() const { return -fOverburden - kTunnelHalf; }
+    static constexpr G4double kTunnelHalf = 2. * m;   // tunnel is 4 m x 4 m in cross-section
+    static constexpr G4double kFloorRock = 2. * m;    // rock under the tunnel floor
+
+  private:
+    G4GenericMessenger* fDetMessenger = nullptr;
+    G4GenericMessenger* fSkyMessenger = nullptr;
+
+    G4double fOverburden = 30. * m;
+    G4double fRockHalfXY = 150. * m;   // wide enough that every sampled track enters through the top
+    G4double fPlaneHalf = 0.5 * m;     // 1 m x 1 m scintillator planes
+    G4double fPlaneSep = 0.5 * m;      // centre-to-centre distance of the two planes
+    G4bool fVoidOn = false;
+    G4double fVoidR = 4. * m;
+    G4double fVoidX = 10. * m, fVoidY = 0., fVoidZ = -15. * m;   // world coordinates
+
+    G4double fEmin = 10. * GeV;        // below ~18 GeV no muon crosses 30 m of rock (range table)
+    G4double fEmax = 10. * TeV;
+    G4double fThetaMax = 60. * deg;
+    G4double fAimMargin = 0.5 * m;     // aim plane = planes + margin for scattering in the rock
+};
+
+#endif</pre></details>
+            <details><summary><b>src/DetectorConstruction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="fmu-5">copy</button></summary><pre id="fmu-5" data-src="code/muography/src/DetectorConstruction.cc">#include "DetectorConstruction.hh"
+
+#include "TelescopeSD.hh"
+
+#include "G4Box.hh"
+#include "G4Exception.hh"
+#include "G4GenericMessenger.hh"
+#include "G4LogicalVolume.hh"
+#include "G4Material.hh"
+#include "G4NistManager.hh"
+#include "G4Orb.hh"
+#include "G4PVPlacement.hh"
+#include "G4SDManager.hh"
+
+namespace {
+// G4GenericMessenger commands are created once, on the master. Do not broadcast them
+// to worker threads: the workers have no DetectorConstruction of their own.
+void Local(G4GenericMessenger::Command&amp; c) { c.command-&gt;SetToBeBroadcasted(false); }
+}
+
+DetectorConstruction::DetectorConstruction()
+{
+  fDetMessenger = new G4GenericMessenger(this, "/muo/det/", "Muography starter geometry");
+  Local(fDetMessenger-&gt;DeclarePropertyWithUnit("overburden", "m", fOverburden, "rock above the tunnel ceiling"));
+  Local(fDetMessenger-&gt;DeclarePropertyWithUnit("planeHalf", "m", fPlaneHalf, "half side of each tracker plane"));
+  Local(fDetMessenger-&gt;DeclarePropertyWithUnit("planeSep", "m", fPlaneSep, "distance between the two planes"));
+  Local(fDetMessenger-&gt;DeclareProperty("void", fVoidOn, "place the air void in the rock (true/false)"));
+  Local(fDetMessenger-&gt;DeclarePropertyWithUnit("voidRadius", "m", fVoidR, "void radius"));
+  Local(fDetMessenger-&gt;DeclarePropertyWithUnit("voidX", "m", fVoidX, "void centre x (world)"));
+  Local(fDetMessenger-&gt;DeclarePropertyWithUnit("voidY", "m", fVoidY, "void centre y (world)"));
+  Local(fDetMessenger-&gt;DeclarePropertyWithUnit("voidZ", "m", fVoidZ, "void centre z (world; ground is z = 0)"));
+
+  fSkyMessenger = new G4GenericMessenger(this, "/muo/sky/", "Cosmic-muon sky (Guan et al. 2015)");
+  Local(fSkyMessenger-&gt;DeclarePropertyWithUnit("emin", "GeV", fEmin, "lowest sampled energy at the ground"));
+  Local(fSkyMessenger-&gt;DeclarePropertyWithUnit("emax", "GeV", fEmax, "highest sampled energy"));
+  Local(fSkyMessenger-&gt;DeclarePropertyWithUnit("thetaMax", "deg", fThetaMax, "largest zenith angle sampled"));
+  Local(fSkyMessenger-&gt;DeclarePropertyWithUnit("aimMargin", "m", fAimMargin, "aim plane = planes + this margin"));
+}
+
+DetectorConstruction::~DetectorConstruction()
+{
+  delete fDetMessenger;
+  delete fSkyMessenger;
+}
+
+G4VPhysicalVolume* DetectorConstruction::Construct()
+{
+  auto* nist = G4NistManager::Instance();
+  auto* air = nist-&gt;FindOrBuildMaterial("G4_AIR");
+  auto* scint = nist-&gt;FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
+
+  // PDG "standard rock": &lt;Z&gt; = 11, &lt;A&gt; = 22, rho = 2.65 g/cm3 (Z/A = 0.5).
+  // A single pseudo-element is exactly how the PDG defines it for muon tables.
+  auto* rock = G4Material::GetMaterial("StandardRock", false);
+  if (!rock) rock = new G4Material("StandardRock", 11., 22. * g / mole, 2.65 * g / cm3);
+
+  const G4double rockHalfZ = 0.5 * (fOverburden + 2. * kTunnelHalf + kFloorRock);
+  const G4double rockCentreZ = -rockHalfZ;   // top face at z = 0
+  const G4double worldHalfXY = fRockHalfXY + 10. * m;
+  const G4double worldHalfZ = 2. * rockHalfZ + 10. * m;
+
+  auto* logicWorld = new G4LogicalVolume(new G4Box("World", worldHalfXY, worldHalfXY, worldHalfZ), air, "World");
+  auto* physWorld = new G4PVPlacement(nullptr, {}, logicWorld, "World", nullptr, false, 0, true);
+
+  auto* logicRock = new G4LogicalVolume(new G4Box("Rock", fRockHalfXY, fRockHalfXY, rockHalfZ), rock, "Rock");
+  new G4PVPlacement(nullptr, G4ThreeVector(0, 0, rockCentreZ), logicRock, "Rock", logicWorld, false, 0, true);
+
+  // tunnel: an air box inside the rock, running along y
+  const G4double tunnelLocalZ = TunnelCentreZ() - rockCentreZ;
+  auto* logicTunnel = new G4LogicalVolume(new G4Box("Tunnel", kTunnelHalf, fRockHalfXY, kTunnelHalf), air, "Tunnel");
+  new G4PVPlacement(nullptr, G4ThreeVector(0, 0, tunnelLocalZ), logicTunnel, "Tunnel", logicRock, false, 0, true);
+
+  // two 1 cm scintillator planes, copy 0 = top, 1 = bottom (positions in tunnel coordinates)
+  auto* logicPlane = new G4LogicalVolume(new G4Box("Plane", fPlaneHalf, fPlaneHalf, 0.5 * cm), scint, "Plane");
+  new G4PVPlacement(nullptr, G4ThreeVector(0, 0, +0.5 * fPlaneSep), logicPlane, "Plane", logicTunnel, false, 0, true);
+  new G4PVPlacement(nullptr, G4ThreeVector(0, 0, -0.5 * fPlaneSep), logicPlane, "Plane", logicTunnel, false, 1, true);
+
+  // the target: an air-filled void in the rock above the tunnel
+  if (fVoidOn) {
+    if (fVoidZ + fVoidR &gt; 0. || fVoidZ - fVoidR &lt; -fOverburden)
+      G4Exception("DetectorConstruction", "MUO001", FatalException,
+                  "The void must lie inside the rock between the ground and the tunnel ceiling.");
+    auto* logicVoid = new G4LogicalVolume(new G4Orb("Void", fVoidR), air, "Void");
+    new G4PVPlacement(nullptr, G4ThreeVector(fVoidX, fVoidY, fVoidZ - rockCentreZ), logicVoid, "Void", logicRock,
+                      false, 0, true);
+  }
+
+  G4cout &lt;&lt; "Muography starter: overburden " &lt;&lt; fOverburden / m &lt;&lt; " m, rock to z = " &lt;&lt; -2. * rockHalfZ / m
+         &lt;&lt; " m, planes " &lt;&lt; 2. * fPlaneHalf / m &lt;&lt; " m x " &lt;&lt; 2. * fPlaneHalf / m &lt;&lt; " m, " &lt;&lt; fPlaneSep / m
+         &lt;&lt; " m apart, top plane at z = " &lt;&lt; TopPlaneZ() / m &lt;&lt; " m, void "
+         &lt;&lt; (fVoidOn ? "ON" : "off") &lt;&lt; G4endl;
+  return physWorld;
+}
+
+void DetectorConstruction::ConstructSDandField()
+{
+  auto* sd = new TelescopeSD("Telescope/PlaneSD", "PlaneHits");
+  G4SDManager::GetSDMpointer()-&gt;AddNewDetector(sd);
+  SetSensitiveDetector("Plane", sd);
+}</pre></details>
+            <details><summary><b>include/PrimaryGeneratorAction.hh</b><button class="copy" type="button" data-copy="fmu-6">copy</button></summary><pre id="fmu-6" data-src="code/muography/include/PrimaryGeneratorAction.hh">#ifndef PrimaryGeneratorAction_h
+#define PrimaryGeneratorAction_h 1
+
+#include "G4VUserPrimaryGeneratorAction.hh"
+#include "globals.hh"
+
+class G4ParticleGun;
+class G4Event;
+class DetectorConstruction;
+
+// Cosmic muons from the sky, aimed at the telescope ("importance region").
+// For each event:
+//   1. draw (E, cos theta) with density  I(E, theta) * cos theta  (flux through a
+//      horizontal plane, Guan et al. 2015), and phi uniform;
+//   2. draw an AIM POINT uniformly on a horizontal square around the top plane
+//      (plane + margin);
+//   3. start the muon on the straight line through the aim point, 0.5 m above
+//      the ground, travelling downwards.
+// Because the aim points are uniform and the directions follow the plane flux,
+// every event represents the same exposure time:
+//   dt = 1 / (Phi * A_aim),  Phi = flux through a horizontal plane in the sampled
+//   E and theta ranges [cm^-2 s^-1], A_aim = aim-square area [cm^2].
+// Muons that would reach the telescope from OUTSIDE the aim square after
+// scattering in the rock are missed: keep the margin larger than the lateral
+// spread (about 0.2 m for 20 GeV muons through 30 m of rock).
+class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
+{
+  public:
+    PrimaryGeneratorAction();
+    ~PrimaryGeneratorAction() override;
+    void GeneratePrimaries(G4Event* event) override;
+
+  private:
+    G4ParticleGun* fGun = nullptr;
+    const DetectorConstruction* fDet = nullptr;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/PrimaryGeneratorAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="fmu-7">copy</button></summary><pre id="fmu-7" data-src="code/muography/src/PrimaryGeneratorAction.cc">#include "PrimaryGeneratorAction.hh"
+
+#include "DetectorConstruction.hh"
+#include "SkyFlux.hh"
+
+#include "G4Event.hh"
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
+#include "G4PhysicalConstants.hh"
+#include "G4RunManager.hh"
+#include "G4SystemOfUnits.hh"
+#include "Randomize.hh"
+
+#include &lt;cmath&gt;
+
+PrimaryGeneratorAction::PrimaryGeneratorAction()
+{
+  fGun = new G4ParticleGun(1);
+  fDet = static_cast&lt;const DetectorConstruction*&gt;(G4RunManager::GetRunManager()-&gt;GetUserDetectorConstruction());
+}
+
+PrimaryGeneratorAction::~PrimaryGeneratorAction() { delete fGun; }
+
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
+{
+  const G4double emin = fDet-&gt;EMin() / GeV, emax = fDet-&gt;EMax() / GeV;
+  const G4double cmin = std::cos(fDet-&gt;ThetaMax());
+  const G4double a = 2.7, p = 1. - a;
+  const G4double lo = std::pow(emin, p), hi = std::pow(emax, p);
+
+  // 1. (E, cos theta) by rejection: proposal E^-2.7 x uniform cos theta,
+  //    accepted with probability I(E,c) c / envelope(E) &lt;= 1
+  G4double E = 0., c = 1.;
+  do {
+    E = std::pow(lo + G4UniformRand() * (hi - lo), 1. / p);
+    c = cmin + (1. - cmin) * G4UniformRand();
+  } while (G4UniformRand() * SkyFlux::Envelope(E) &gt; SkyFlux::Intensity(E, c) * c);
+  const G4double s = std::sqrt(1. - c * c), phi = twopi * G4UniformRand();
+  const G4ThreeVector dir(s * std::cos(phi), s * std::sin(phi), -c);   // downwards
+
+  // 2. aim point on the square around the top plane
+  const G4double h = fDet-&gt;AimHalf();
+  const G4ThreeVector aim((2. * G4UniformRand() - 1.) * h, (2. * G4UniformRand() - 1.) * h, fDet-&gt;TopPlaneZ());
+
+  // 3. back along the line to 0.5 m above the ground
+  const G4double zStart = 0.5 * m;
+  const G4ThreeVector start = aim - dir * ((zStart - aim.z()) / c);
+
+  // charge: mu+/mu- = 1.27 (approximate sea-level ratio)
+  const char* name = (G4UniformRand() &lt; 1.27 / 2.27) ? "mu+" : "mu-";
+  fGun-&gt;SetParticleDefinition(G4ParticleTable::GetParticleTable()-&gt;FindParticle(name));
+  fGun-&gt;SetParticleEnergy(E * GeV - 105.658 * MeV);   // E is the total energy; the gun takes kinetic energy
+  fGun-&gt;SetParticleMomentumDirection(dir);
+  fGun-&gt;SetParticlePosition(start);
+  fGun-&gt;GeneratePrimaryVertex(event);
+}</pre></details>
+            <details><summary><b>include/TelescopeHit.hh</b><button class="copy" type="button" data-copy="fmu-8">copy</button></summary><pre id="fmu-8" data-src="code/muography/include/TelescopeHit.hh">#ifndef TelescopeHit_h
+#define TelescopeHit_h 1
+
+#include "G4THitsCollection.hh"
+#include "G4ThreeVector.hh"
+#include "G4VHit.hh"
+
+// One hit = where the PRIMARY muon first crossed one tracker plane in one event.
+// A real plane measures every charged particle; keeping the primary only is the
+// "ideal tracker" approximation of this starter (no noise, 100% efficiency,
+// no position resolution). Adding those is part of a good capstone.
+class TelescopeHit : public G4VHit
+{
+  public:
+    void Set(const G4ThreeVector&amp; p, G4double t, G4double ekin)
+    {
+      if (fHit) return;   // keep the first crossing
+      fHit = true; fPos = p; fTime = t; fEkin = ekin;
+    }
+    G4bool IsHit() const { return fHit; }
+    const G4ThreeVector&amp; GetPos() const { return fPos; }
+    G4double GetTime() const { return fTime; }
+    G4double GetEkin() const { return fEkin; }
+
+  private:
+    G4bool fHit = false;
+    G4ThreeVector fPos;
+    G4double fTime = 0.;
+    G4double fEkin = 0.;
+};
+
+using TelescopeHitsCollection = G4THitsCollection&lt;TelescopeHit&gt;;
+
+#endif</pre></details>
+            <details><summary><b>include/TelescopeSD.hh</b><button class="copy" type="button" data-copy="fmu-9">copy</button></summary><pre id="fmu-9" data-src="code/muography/include/TelescopeSD.hh">#ifndef TelescopeSD_h
+#define TelescopeSD_h 1
+
+#include "TelescopeHit.hh"
+
+#include "G4VSensitiveDetector.hh"
+
+class TelescopeSD : public G4VSensitiveDetector
+{
+  public:
+    TelescopeSD(const G4String&amp; name, const G4String&amp; hitsCollectionName);
+
+    void Initialize(G4HCofThisEvent* hce) override;
+    G4bool ProcessHits(G4Step* step, G4TouchableHistory*) override;
+
+  private:
+    TelescopeHitsCollection* fHits = nullptr;
+    static constexpr G4int kNPlanes = 2;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/TelescopeSD.cc</b><button class="copy" type="button" data-copy="fmu-10">copy</button></summary><pre id="fmu-10" data-src="code/muography/src/TelescopeSD.cc">#include "TelescopeSD.hh"
+
+#include "G4HCofThisEvent.hh"
+#include "G4SDManager.hh"
+#include "G4Step.hh"
+
+TelescopeSD::TelescopeSD(const G4String&amp; name, const G4String&amp; hitsCollectionName)
+  : G4VSensitiveDetector(name)
+{
+  collectionName.insert(hitsCollectionName);
+}
+
+void TelescopeSD::Initialize(G4HCofThisEvent* hce)
+{
+  fHits = new TelescopeHitsCollection(SensitiveDetectorName, collectionName[0]);
+  hce-&gt;AddHitsCollection(G4SDManager::GetSDMpointer()-&gt;GetCollectionID(fHits), fHits);
+  for (G4int i = 0; i &lt; kNPlanes; ++i) fHits-&gt;insert(new TelescopeHit());
+}
+
+G4bool TelescopeSD::ProcessHits(G4Step* step, G4TouchableHistory*)
+{
+  if (step-&gt;GetTrack()-&gt;GetTrackID() != 1) return false;   // primary muon only (ideal tracker)
+  const auto* pre = step-&gt;GetPreStepPoint();
+  const G4int copy = pre-&gt;GetTouchable()-&gt;GetCopyNumber();   // 0 = top, 1 = bottom
+  (*fHits)[copy]-&gt;Set(pre-&gt;GetPosition(), pre-&gt;GetGlobalTime(), pre-&gt;GetKineticEnergy());
+  return true;
+}</pre></details>
+            <details><summary><b>include/EventAction.hh</b><button class="copy" type="button" data-copy="fmu-11">copy</button></summary><pre id="fmu-11" data-src="code/muography/include/EventAction.hh">#ifndef EventAction_h
+#define EventAction_h 1
+
+#include "G4UserEventAction.hh"
+#include "globals.hh"
+
+class RunAction;
+
+class EventAction : public G4UserEventAction
+{
+  public:
+    explicit EventAction(RunAction* runAction) : fRunAction(runAction) {}
+    void EndOfEventAction(const G4Event* event) override;
+
+  private:
+    RunAction* fRunAction = nullptr;
+    G4int fHitsID = -1;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/EventAction.cc</b><button class="copy" type="button" data-copy="fmu-12">copy</button></summary><pre id="fmu-12" data-src="code/muography/src/EventAction.cc">#include "EventAction.hh"
+
+#include "RunAction.hh"
+#include "TelescopeHit.hh"
+
+#include "G4AnalysisManager.hh"
+#include "G4Event.hh"
+#include "G4HCofThisEvent.hh"
+#include "G4PrimaryParticle.hh"
+#include "G4PrimaryVertex.hh"
+#include "G4SDManager.hh"
+#include "G4SystemOfUnits.hh"
+
+#include &lt;cmath&gt;
+
+void EventAction::EndOfEventAction(const G4Event* event)
+{
+  if (fHitsID &lt; 0) fHitsID = G4SDManager::GetSDMpointer()-&gt;GetCollectionID("PlaneHits");
+  auto* hce = event-&gt;GetHCofThisEvent();
+  if (!hce) return;
+  auto* hits = static_cast&lt;TelescopeHitsCollection*&gt;(hce-&gt;GetHC(fHitsID));
+  if (!hits || hits-&gt;entries() &lt; 2) return;
+
+  const TelescopeHit* top = (*hits)[0];
+  const TelescopeHit* bot = (*hits)[1];
+  const G4bool both = top-&gt;IsHit() &amp;&amp; bot-&gt;IsHit();
+  fRunAction-&gt;Count(top-&gt;IsHit(), both);
+  if (!both) return;
+
+  const G4PrimaryParticle* mu = event-&gt;GetPrimaryVertex()-&gt;GetPrimary();
+  const G4ThreeVector d = mu-&gt;GetMomentumDirection();   // downward
+  const G4ThreeVector p0 = top-&gt;GetPos(), p1 = bot-&gt;GetPos();
+  const G4double dz = p0.z() - p1.z();                  // &gt; 0
+
+  auto* a = G4AnalysisManager::Instance();
+  a-&gt;FillNtupleDColumn(0, 0, (mu-&gt;GetKineticEnergy() + mu-&gt;GetMass()) / GeV);
+  a-&gt;FillNtupleDColumn(0, 1, -d.z());
+  a-&gt;FillNtupleDColumn(0, 2, std::atan2(d.y(), d.x()));
+  a-&gt;FillNtupleIColumn(0, 3, static_cast&lt;G4int&gt;(mu-&gt;GetCharge()));
+  a-&gt;FillNtupleDColumn(0, 4, top-&gt;GetEkin() / GeV);
+  a-&gt;FillNtupleDColumn(0, 5, p0.x() / m);
+  a-&gt;FillNtupleDColumn(0, 6, p0.y() / m);
+  a-&gt;FillNtupleDColumn(0, 7, p1.x() / m);
+  a-&gt;FillNtupleDColumn(0, 8, p1.y() / m);
+  a-&gt;FillNtupleDColumn(0, 9, (p0.x() - p1.x()) / dz);
+  a-&gt;FillNtupleDColumn(0, 10, (p0.y() - p1.y()) / dz);
+  a-&gt;FillNtupleDColumn(0, 11, d.x() / d.z());           // upward slope = (-d.x)/(-d.z)
+  a-&gt;FillNtupleDColumn(0, 12, d.y() / d.z());
+  a-&gt;AddNtupleRow(0);
+}</pre></details>
+            <details><summary><b>include/RunAction.hh</b><button class="copy" type="button" data-copy="fmu-13">copy</button></summary><pre id="fmu-13" data-src="code/muography/include/RunAction.hh">#ifndef RunAction_h
+#define RunAction_h 1
+
+#include "G4Accumulable.hh"
+#include "G4UserRunAction.hh"
+#include "globals.hh"
+
+class G4Run;
+
+// Counts and the run summary. The master also writes &lt;file&gt;_run.json with the
+// exposure per event, so analyse.py can turn counts into rates per day.
+class RunAction : public G4UserRunAction
+{
+  public:
+    RunAction();
+    void BeginOfRunAction(const G4Run*) override;
+    void EndOfRunAction(const G4Run* run) override;
+
+    void Count(G4bool top, G4bool both)
+    {
+      fTop += top ? 1 : 0;
+      fBoth += both ? 1 : 0;
+    }
+
+  private:
+    G4Accumulable&lt;G4int&gt; fTop{0};
+    G4Accumulable&lt;G4int&gt; fBoth{0};
+};
+
+#endif</pre></details>
+            <details><summary><b>src/RunAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="fmu-14">copy</button></summary><pre id="fmu-14" data-src="code/muography/src/RunAction.cc">#include "RunAction.hh"
+
+#include "DetectorConstruction.hh"
+#include "SkyFlux.hh"
+
+#include "G4AccumulableManager.hh"
+#include "G4AnalysisManager.hh"
+#include "G4Run.hh"
+#include "G4RunManager.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4ios.hh"
+
+#include &lt;cmath&gt;
+#include &lt;fstream&gt;
+
+RunAction::RunAction()
+{
+  G4AccumulableManager::Instance()-&gt;Register(fTop);
+  G4AccumulableManager::Instance()-&gt;Register(fBoth);
+
+  auto* analysis = G4AnalysisManager::Instance();
+  analysis-&gt;SetDefaultFileType("root");
+  analysis-&gt;SetFileName("muography");
+  analysis-&gt;SetNtupleMerging(true);
+
+  // One row per muon that crossed BOTH planes (what a two-plane telescope records).
+  analysis-&gt;CreateNtuple("tel", "Muons through both tracker planes");
+  analysis-&gt;CreateNtupleDColumn("E0_GeV");       // total energy at the ground (generated)
+  analysis-&gt;CreateNtupleDColumn("cos_theta");    // generated zenith angle
+  analysis-&gt;CreateNtupleDColumn("phi");          // generated azimuth (rad)
+  analysis-&gt;CreateNtupleIColumn("charge");
+  analysis-&gt;CreateNtupleDColumn("Etel_GeV");     // kinetic energy at the top plane
+  analysis-&gt;CreateNtupleDColumn("x0_m");         // top plane hit
+  analysis-&gt;CreateNtupleDColumn("y0_m");
+  analysis-&gt;CreateNtupleDColumn("x1_m");         // bottom plane hit
+  analysis-&gt;CreateNtupleDColumn("y1_m");
+  analysis-&gt;CreateNtupleDColumn("sx_rec");       // reconstructed slopes of the upward direction:
+  analysis-&gt;CreateNtupleDColumn("sy_rec");       //   sx = dx/dz, sy = dy/dz (tan of projected angles)
+  analysis-&gt;CreateNtupleDColumn("sx_true");      // the same from the generated direction
+  analysis-&gt;CreateNtupleDColumn("sy_true");
+  analysis-&gt;FinishNtuple();
+}
+
+void RunAction::BeginOfRunAction(const G4Run*)
+{
+  G4AccumulableManager::Instance()-&gt;Reset();
+  G4AnalysisManager::Instance()-&gt;OpenFile();
+}
+
+void RunAction::EndOfRunAction(const G4Run* run)
+{
+  G4AccumulableManager::Instance()-&gt;Merge();
+  auto* analysis = G4AnalysisManager::Instance();
+
+  if (IsMaster() &amp;&amp; run-&gt;GetNumberOfEvent() &gt; 0) {
+    const auto* det =
+      static_cast&lt;const DetectorConstruction*&gt;(G4RunManager::GetRunManager()-&gt;GetUserDetectorConstruction());
+    const G4int n = run-&gt;GetNumberOfEvent();
+    const G4double emin = det-&gt;EMin() / GeV, emax = det-&gt;EMax() / GeV, cmin = std::cos(det-&gt;ThetaMax());
+    const G4double thetaDeg = std::round(det-&gt;ThetaMax() / deg * 1000.) / 1000.;   // 60, not 60.0001
+    const G4double phi = SkyFlux::PlaneFlux(emin, emax, cmin);                  // cm^-2 s^-1
+    const G4double aim = std::pow(2. * det-&gt;AimHalf() / cm, 2);                 // cm^2
+    const G4double dt = 1. / (phi * aim);                                       // s per generated muon
+    const G4double live = n * dt;
+    const G4int both = fBoth.GetValue();
+
+    G4cout &lt;&lt; "Run " &lt;&lt; run-&gt;GetRunID() &lt;&lt; ": " &lt;&lt; n &lt;&lt; " sky muons, E " &lt;&lt; emin &lt;&lt; "-" &lt;&lt; emax
+           &lt;&lt; " GeV, theta &lt; " &lt;&lt; thetaDeg &lt;&lt; " deg" &lt;&lt; G4endl
+           &lt;&lt; "  flux through a horizontal plane in that range = " &lt;&lt; phi &lt;&lt; " cm^-2 s^-1" &lt;&lt; G4endl
+           &lt;&lt; "  aim square " &lt;&lt; 2. * det-&gt;AimHalf() / m &lt;&lt; " m x " &lt;&lt; 2. * det-&gt;AimHalf() / m
+           &lt;&lt; " m  -&gt;  exposure " &lt;&lt; live &lt;&lt; " s (" &lt;&lt; live / 3600. &lt;&lt; " h)" &lt;&lt; G4endl
+           &lt;&lt; "  top plane hit " &lt;&lt; fTop.GetValue() &lt;&lt; ", both planes " &lt;&lt; both &lt;&lt; "  -&gt;  "
+           &lt;&lt; both / live * 86400. &lt;&lt; " +/- " &lt;&lt; std::sqrt(static_cast&lt;G4double&gt;(both)) / live * 86400.
+           &lt;&lt; " telescope muons per day" &lt;&lt; G4endl;
+
+    G4String base = analysis-&gt;GetFileName();
+    if (base.size() &gt; 5 &amp;&amp; base.substr(base.size() - 5) == ".root") base = base.substr(0, base.size() - 5);
+    std::ofstream js(base + "_run.json");
+    js &lt;&lt; "{\n  \"n_generated\": " &lt;&lt; n &lt;&lt; ",\n  \"n_top\": " &lt;&lt; fTop.GetValue() &lt;&lt; ",\n  \"n_both\": " &lt;&lt; both
+       &lt;&lt; ",\n  \"seconds_per_event\": " &lt;&lt; dt &lt;&lt; ",\n  \"plane_flux_cm2_s\": " &lt;&lt; phi
+       &lt;&lt; ",\n  \"aim_area_cm2\": " &lt;&lt; aim &lt;&lt; ",\n  \"emin_GeV\": " &lt;&lt; emin &lt;&lt; ",\n  \"emax_GeV\": " &lt;&lt; emax
+       &lt;&lt; ",\n  \"theta_max_deg\": " &lt;&lt; thetaDeg &lt;&lt; ",\n  \"overburden_m\": " &lt;&lt; det-&gt;Overburden() / m
+       &lt;&lt; ",\n  \"plane_side_m\": " &lt;&lt; 2. * det-&gt;PlaneHalf() / m &lt;&lt; ",\n  \"plane_sep_m\": " &lt;&lt; det-&gt;PlaneSep() / m
+       &lt;&lt; ",\n  \"top_plane_z_m\": " &lt;&lt; det-&gt;TopPlaneZ() / m &lt;&lt; ",\n  \"void_on\": " &lt;&lt; (det-&gt;VoidOn() ? "true" : "false")
+       &lt;&lt; ",\n  \"void_xyz_m\": [" &lt;&lt; det-&gt;VoidX() / m &lt;&lt; ", " &lt;&lt; det-&gt;VoidY() / m &lt;&lt; ", " &lt;&lt; det-&gt;VoidZ() / m
+       &lt;&lt; "],\n  \"void_radius_m\": " &lt;&lt; det-&gt;VoidRadius() / m &lt;&lt; "\n}\n";
+  }
+  analysis-&gt;Write();
+  analysis-&gt;CloseFile();
+}</pre></details>
+            <details><summary><b>include/ActionInitialization.hh</b><button class="copy" type="button" data-copy="fmu-15">copy</button></summary><pre id="fmu-15" data-src="code/muography/include/ActionInitialization.hh">#ifndef ActionInitialization_h
+#define ActionInitialization_h 1
+
+#include "G4VUserActionInitialization.hh"
+
+class ActionInitialization : public G4VUserActionInitialization
+{
+  public:
+    void BuildForMaster() const override;
+    void Build() const override;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/ActionInitialization.cc</b><button class="copy" type="button" data-copy="fmu-16">copy</button></summary><pre id="fmu-16" data-src="code/muography/src/ActionInitialization.cc">#include "ActionInitialization.hh"
+
+#include "EventAction.hh"
+#include "PrimaryGeneratorAction.hh"
+#include "RunAction.hh"
+
+void ActionInitialization::BuildForMaster() const
+{
+  SetUserAction(new RunAction());
+}
+
+void ActionInitialization::Build() const
+{
+  SetUserAction(new PrimaryGeneratorAction());
+  auto* runAction = new RunAction();
+  SetUserAction(runAction);
+  SetUserAction(new EventAction(runAction));
+}</pre></details>
+            <details><summary><b>quick.mac</b><button class="copy" type="button" data-copy="fmu-17">copy</button></summary><pre id="fmu-17" data-src="code/muography/quick.mac"># Smoke test: 5 000 sky muons, 30 m overburden, no void (seconds)
+/control/verbose 1
+/run/verbose 1
+/muo/det/void false
+/run/initialize
+/run/setCut 1 m
+/analysis/setFileName quick
+/random/setSeeds 12345 67890
+/run/beamOn 5000</pre></details>
+            <details><summary><b>void_off.mac</b><button class="copy" type="button" data-copy="fmu-18">copy</button></summary><pre id="fmu-18" data-src="code/muography/void_off.mac"># Reference: 30 m of standard rock over the tunnel, no void
+/control/verbose 1
+/run/verbose 1
+/muo/det/overburden 30 m
+/muo/det/void false
+/muo/sky/emin 10 GeV
+/muo/sky/thetaMax 60 deg
+/run/initialize
+# A 1 m range cut: delta rays and photons below the cut are not produced as particles;
+# the muon still loses that energy continuously (Week 6), so its range is unchanged.
+# In rock it makes the run about 30x faster. Do not use it if you study the detector signal.
+/run/setCut 1 m
+/analysis/setFileName void_off
+/random/setSeeds 2026 1020
+/run/beamOn 1000000</pre></details>
+            <details><summary><b>void_on.mac</b><button class="copy" type="button" data-copy="fmu-19">copy</button></summary><pre id="fmu-19" data-src="code/muography/void_on.mac"># Target: the same rock with a 4 m air void at (10, 0, -15) m
+/control/verbose 1
+/run/verbose 1
+/muo/det/overburden 30 m
+/muo/det/void true
+/muo/det/voidRadius 4 m
+/muo/det/voidX 10 m
+/muo/det/voidY 0 m
+/muo/det/voidZ -15 m
+/muo/sky/emin 10 GeV
+/muo/sky/thetaMax 60 deg
+/run/initialize
+# A 1 m range cut: delta rays and photons below the cut are not produced as particles;
+# the muon still loses that energy continuously (Week 6), so its range is unchanged.
+# In rock it makes the run about 30x faster. Do not use it if you study the detector signal.
+/run/setCut 1 m
+/analysis/setFileName void_on
+/random/setSeeds 2026 1020
+/run/beamOn 1000000</pre></details>
+            <details><summary><b>vis.mac</b><button class="copy" type="button" data-copy="fmu-20">copy</button></summary><pre id="fmu-20" data-src="code/muography/vis.mac">/muo/det/void true
+/muo/det/overburden 30 m
+/run/initialize
+/vis/open TSG
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 90 90 deg
+/vis/scene/add/trajectories smooth
+/vis/scene/endOfEventAction accumulate 50
+/vis/modeling/trajectories/create/drawByCharge
+/vis/viewer/set/autoRefresh true
+/run/beamOn 50</pre></details>
+            <details><summary><b>analyse.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="fmu-21">copy</button></summary><pre id="fmu-21" data-src="code/muography/analyse.py">"""Muography starter analysis: rates, the void signal, and the exposure you need.
+
+    python3 analyse.py void_off void_on [--fabs 0.10] [--frel 0.02]
+
+Reads &lt;name&gt;.root (ntuple "tel") and &lt;name&gt;_run.json for both runs.
+Every simulated muon stands for the same exposure (seconds_per_event in the JSON),
+so counts / (n_generated x seconds_per_event) is a rate a real telescope would see.
+
+Three numbers matter:
+  1. the rate in the void direction without and with the void (per day);
+  2. the significance after T days of data taking, Z(T);
+  3. the exposure T needed for 3 sigma and 5 sigma.
+Two ways to predict the "no void" rate, with different systematics:
+  - absolute: take the flux model at face value. Its normalisation is uncertain by
+    10-20% (fabs), and that error does not shrink with more data;
+  - relative: measure a control region at the same zenith angle (flat ground: same
+    rock path) and scale it with the simulated window/control ratio. The flux
+    normalisation cancels; what is left (frel, default 2%) is the model's angular
+    shape plus detector non-uniformity.
+"""
+import argparse
+import json
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+import uproot
+
+
+def load(name):
+    with open(name + "_run.json") as f:
+        meta = json.load(f)
+    t = uproot.open(name + ".root")["tel"].arrays(["sx_rec", "sy_rec"], library="np")
+    live_days = meta["n_generated"] * meta["seconds_per_event"] / 86400.0
+    return meta, t["sx_rec"], t["sy_rec"], live_days
+
+
+def directions(sx, sy):
+    u = np.stack([sx, sy, np.ones_like(sx)], axis=1)
+    return u / np.linalg.norm(u, axis=1)[:, None]
+
+
+def exposure(delta, var_rate, sys_rate, z):
+    """Days T with delta*T = z*sqrt(var_rate*T + (sys_rate*T)^2); inf if systematics win."""
+    den = delta**2 - (z * sys_rate) ** 2
+    return z**2 * var_rate / den if den &gt; 0 else np.inf
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("off")
+    ap.add_argument("on")
+    ap.add_argument("--fabs", type=float, default=0.10, help="flux-model normalisation systematic")
+    ap.add_argument("--frel", type=float, default=0.02, help="residual systematic of the relative method")
+    args = ap.parse_args()
+
+    m_off, sx0, sy0, d_off = load(args.off)
+    m_on, sx1, sy1, d_on = load(args.on)
+    print(f"MC exposure: {d_off * 24:.2f} h (void off), {d_on * 24:.2f} h (void on)")
+    print(f"telescope rate: {len(sx0) / d_off:,.0f} /day (void off), {len(sx1) / d_on:,.0f} /day (void on)")
+
+    # the void as seen from the centre of the top plane
+    v = np.array(m_on["void_xyz_m"]) - np.array([0.0, 0.0, m_on["top_plane_z_m"]])
+    dist = np.linalg.norm(v)
+    v /= dist
+    r_ang = np.arcsin(min(1.0, m_on["void_radius_m"] / dist))
+    zen_v = np.arccos(v[2])
+    print(f"void direction: zenith {np.degrees(zen_v):.1f} deg, slopes ({v[0] / v[2]:.3f}, {v[1] / v[2]:.3f}), "
+          f"angular radius {np.degrees(r_ang):.1f} deg")
+
+    def regions(sx, sy):
+        u = directions(sx, sy)
+        ang = np.arccos(np.clip(u @ v, -1, 1))
+        zen = np.arccos(u[:, 2])
+        window = ang &lt; r_ang
+        control = (np.abs(zen - zen_v) &lt; r_ang) &amp; (ang &gt; 2 * r_ang)
+        return window.sum(), control.sum()
+
+    W0, C0 = regions(sx0, sy0)
+    W1, C1 = regions(sx1, sy1)
+    rW0, rC0, rW1, rC1 = W0 / d_off, C0 / d_off, W1 / d_on, C1 / d_on
+    excess = rW1 / rW0 - 1
+    err = np.sqrt(1 / W1 + 1 / W0) * (rW1 / rW0)
+    print(f"\nvoid window: {W0} -&gt; {W1} muons in the simulation = {rW0:,.0f} -&gt; {rW1:,.0f} per day, "
+          f"excess {100 * excess:+.1f} +/- {100 * err:.1f} % (MC statistics)")
+    print(f"control ring (same zenith, away from the void): {C0} -&gt; {C1} muons, "
+          f"ratio on/off {C1 / C0 * d_off / d_on:.3f}")
+
+    # 1. absolute: reference = flux model (void-off simulation), normalisation error fabs
+    delta_a = rW1 - rW0
+    # 2. relative: prediction = k * control(on), k from the void-off simulation
+    k = W0 / C0
+    pred = k * rC1
+    delta_r = rW1 - pred
+    print("\nexposure for a real telescope (days of data):")
+    print(f"{'method':&lt;34}{'3 sigma':&gt;10}{'5 sigma':&gt;10}")
+    for label, delta, var, sysr in (
+        (f"absolute, flux model +/-{100 * args.fabs:.0f}%", delta_a, rW0, args.fabs * rW0),
+        (f"relative to control, +/-{100 * args.frel:.0f}%", delta_r, pred + k * k * rC1, args.frel * pred),
+    ):
+        cells = []
+        for z in (3, 5):
+            t = exposure(delta, var, sysr, z)
+            cells.append("never" if np.isinf(t) else (f"{t * 24:.1f} h" if t &lt; 1 else f"{t:.1f} d"))
+        print(f"{label:&lt;34}{cells[0]:&gt;10}{cells[1]:&gt;10}")
+
+    # figure: rate map, ratio map, Z(T)
+    bins = np.linspace(-1.6, 1.6, 17)
+    h0, _, _ = np.histogram2d(sx0, sy0, bins=[bins, bins])
+    h1, _, _ = np.histogram2d(sx1, sy1, bins=[bins, bins])
+    ratio = np.where(h0 &gt;= 20, (h1 / d_on) / np.maximum(h0 / d_off, 1e-9), np.nan)
+    fig, ax = plt.subplots(1, 3, figsize=(15, 4.6))
+    im = ax[0].imshow((h0 / d_off).T, origin="lower", extent=[-1.6, 1.6, -1.6, 1.6], cmap="viridis")
+    fig.colorbar(im, ax=ax[0], label="muons per day per bin")
+    ax[0].set_title(f"void off: {m_off['overburden_m']:.0f} m of standard rock")
+    im = ax[1].imshow(ratio.T, origin="lower", extent=[-1.6, 1.6, -1.6, 1.6], cmap="RdBu_r", vmin=0.6, vmax=1.4)
+    fig.colorbar(im, ax=ax[1], label="rate ratio, void on / off")
+    ax[1].add_patch(plt.Circle((v[0] / v[2], v[1] / v[2]), np.tan(r_ang) / v[2] ** 2, fill=False, ls="--", color="k"))
+    ax[1].set_title("ratio map (dashed: void outline)")
+    for a in ax[:2]:
+        a.set_xlabel("slope dx/dz")
+        a.set_ylabel("slope dy/dz")
+    T = np.logspace(-2, 2, 200)
+    ax[2].plot(T, delta_a * T / np.sqrt(rW0 * T + (args.fabs * rW0 * T) ** 2), label=f"absolute, {100 * args.fabs:.0f}% sys")
+    ax[2].plot(T, delta_r * T / np.sqrt((pred + k * k * rC1) * T + (args.frel * pred * T) ** 2),
+               label=f"relative, {100 * args.frel:.0f}% sys")
+    for z in (3, 5):
+        ax[2].axhline(z, color="grey", lw=0.8, ls=":")
+    ax[2].set_xscale("log")
+    ax[2].set_xlabel("exposure [days]")
+    ax[2].set_ylabel("significance Z")
+    ax[2].legend()
+    ax[2].set_title("significance of the void")
+    fig.tight_layout()
+    fig.savefig("analyse.png", dpi=120)
+    print("\nwrote analyse.png")
+
+
+if __name__ == "__main__":
+    main()</pre></details>
+          </div>
+          <div class="code"><div class="code-head"><span class="l"><b><span lang="en">terminal</span><span lang="zh-Hans">终端</span></b></span><button class="copy" type="button" data-copy="cmu-1">copy</button></div>
+<pre id="cmu-1">cd muography &amp;&amp; mkdir build &amp;&amp; cd build
+cmake .. &amp;&amp; make -j4
+./muography quick.mac</pre></div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Smoke test: 5 000 sky muons</span><span lang="zh-Hans">冒烟测试：5 000 个天空缪子</span></h3><label class="done" for="w12-mu2"><input type="checkbox" id="w12-mu2" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en"><code>quick.mac</code> runs in seconds. Check the geometry line, the flux and the rate before you start long runs.</p>
+          <p lang="zh-Hans"><code>quick.mac</code> 几秒钟就能跑完。在开始长时间运行之前，先检查几何信息、通量和计数率。</p>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01, course test physics list)</span><span lang="zh-Hans">预期（Geant4 11.4.p01，课程测试物理列表）</span></b></span></div>
+<pre>Muography starter: overburden 30 m, rock to z = -36 m, planes 1 m x 1 m, 0.5 m apart, top plane at z = -31.75 m, void off
+Run 0: 5000 sky muons, E 10-10000 GeV, theta &lt; 60 deg
+  flux through a horizontal plane in that range = 0.00170995 cm^-2 s^-1
+  aim square 2 m x 2 m  -&gt;  exposure 73.1015 s (0.020306 h)
+  top plane hit 411, both planes 245  -&gt;  289570 +/- 18500 telescope muons per day</pre></div>
+          <p lang="en">Why only muons above 10 GeV? A muon needs about 18 GeV at the ground to cross 30 m (7 950 g/cm²) of standard rock vertically (step 5 shows the estimate), and more at an angle. Muons below 10 GeV can never reach the tunnel, so sampling them would only waste time. The flux line is the flux of muons above 10 GeV and below 60°: about 1.7 × 10⁻³ cm⁻² s⁻¹, a tenth of the total sea-level flux.</p>
+          <p lang="zh-Hans">为什么只取 10 GeV 以上的缪子？缪子在地面需要约 18 GeV 才能竖直穿过 30 m（7 950 g/cm²）标准岩石（第 5 步给出估算），斜穿需要更多。10 GeV 以下的缪子永远到不了隧道，抽样它们只会浪费时间。通量那一行是 10 GeV 以上、60° 以内的缪子通量：约 1.7 × 10⁻³ cm⁻² s⁻¹，约为海平面总通量的十分之一。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Run void off and void on</span><span lang="zh-Hans">分别运行无空洞和有空洞</span></h3><label class="done" for="w12-mu3"><input type="checkbox" id="w12-mu3" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Each macro sends one million sky muons, about four hours of real exposure. The two runs use the same random seeds, so muons that never pass near the void are identical in both. The difference is the void and nothing else.</p>
+          <p lang="zh-Hans">每个宏发射一百万个天空缪子，相当于约四小时的真实曝光。两次运行使用相同的随机数种子，所以从不经过空洞附近的缪子在两次运行中完全相同。差别只来自空洞。</p>
+          <div class="code"><div class="code-head"><span class="l"><b><span lang="en">terminal</span><span lang="zh-Hans">终端</span></b></span><button class="copy" type="button" data-copy="cmu-2">copy</button></div>
+<pre id="cmu-2">./muography void_off.mac
+./muography void_on.mac</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01, course test physics list)</span><span lang="zh-Hans">预期（Geant4 11.4.p01，课程测试物理列表）</span></b></span></div>
+<pre># void_off.mac (80 s on 2 threads in our sandbox)
+Run 0: 1000000 sky muons, E 10-10000 GeV, theta &lt; 60 deg
+  flux through a horizontal plane in that range = 0.00170996 cm^-2 s^-1
+  aim square 2 m x 2 m  -&gt;  exposure 14620.3 s (4.06118 h)
+  top plane hit 84271, both planes 52629  -&gt;  311017 +/- 1355.72 telescope muons per day
+# void_on.mac
+  top plane hit 85712, both planes 53646  -&gt;  317027 +/- 1368.76 telescope muons per day</pre></div>
+          <p lang="en">The macros set a 1 m production cut. Below the cut, δ-rays and photons are not made as particles, but the muon still loses that energy continuously (Week 6), so its range does not change. In rock this makes the run many times faster: in our runs 5 000 muons took 65 s with a 10 cm cut and 2 s with 1 m, with the same counts within errors. Use the normal cut when you study the detector signal itself.</p>
+          <p lang="zh-Hans">这些宏把产生阈设为 1 m。低于阈值的 δ 电子和光子不再作为粒子产生，但缪子仍以连续方式损失这部分能量（第 6 周），所以射程不变。在岩石中这让运行快了许多倍：在我们的运行中，5 000 个缪子用 10 cm 产生阈要 65 s，用 1 m 只要 2 s，计数在误差内一致。如果要研究探测器信号本身，请用正常的产生阈。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Analyse: the void, and the days you need</span><span lang="zh-Hans">分析：空洞，以及需要的天数</span></h3><label class="done" for="w12-mu4"><input type="checkbox" id="w12-mu4" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="code"><div class="code-head"><span class="l"><b><span lang="en">terminal</span><span lang="zh-Hans">终端</span></b></span><button class="copy" type="button" data-copy="cmu-3">copy</button></div>
+<pre id="cmu-3">python3 analyse.py void_off void_on</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
+<pre>MC exposure: 4.06 h (void off), 4.06 h (void on)
+telescope rate: 311,016 /day (void off), 317,026 /day (void on)
+void direction: zenith 30.8 deg, slopes (0.597, 0.000), angular radius 11.8 deg
+
+void window: 3207 -&gt; 4128 muons in the simulation = 18,952 -&gt; 24,395 per day, excess +28.7 +/- 3.0 % (MC statistics)
+control ring (same zenith, away from the void): 22101 -&gt; 22101 muons, ratio on/off 1.000
+
+exposure for a real telescope (days of data):
+method                               3 sigma   5 sigma
+absolute, flux model +/-10%            never     never
+relative to control, +/-2%             0.2 h     0.5 h
+
+wrote analyse.png</pre></div>
+          <p lang="en">Read the last table carefully. The void adds 29% more muons in its direction. If you compare with the flux model directly, the model's 10% normalisation error never shrinks with more data, and a 29% excess can never reach 3σ (it would need more than 30%). If you instead compare with a control region at the same zenith angle, which on flat ground sees the same rock, the normalisation cancels. Then a 1 m² telescope at this depth needs well under an hour. The method, not the detector, decides whether the project is feasible.</p>
+          <p lang="zh-Hans">仔细读最后一张表。空洞让其方向上的缪子多了 29%。如果直接与通量模型比较，模型 10% 的归一化误差不会随数据增多而减小，29% 的超出永远到不了 3σ（需要超过 30%）。如果改为与同一天顶角的对照区比较（平地上它穿过的岩石相同），归一化误差就抵消了，此深度下 1 m² 的望远镜不到一小时就够。决定项目是否可行的是方法，而不是探测器。</p>
+          <p lang="en">Two things the table leaves out. The simulation itself is only four hours of exposure, so the excess carries a 3% Monte Carlo error; run longer before you quote it. And the control ring stays exactly the same (22 101 in both runs) because the same seeds were used: a neat check that the void is the only change.</p>
+          <p lang="zh-Hans">表中没有包含两点。模拟本身只有四小时曝光，所以超出量带有 3% 的蒙特卡罗误差；引用之前请跑更长时间。另外，对照区在两次运行中完全相同（都是 22 101），因为用了相同的种子：这恰好验证了空洞是唯一的变化。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Check the rate by hand (Week 11, rung 2)</span><span lang="zh-Hans">手算检查计数率（第 11 周，第 2 级）</span></h3><label class="done" for="w12-mu5"><input type="checkbox" id="w12-mu5" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Before you trust 311 000 muons per day, estimate it without Geant4. Approximate the energy loss as dE/dX = a + bE with a ≈ 2.2 MeV cm²/g and b ≈ 4.0 × 10⁻⁶ cm²/g for standard rock. A muon crosses a slant depth X if E &gt; (a/b)(e<sup>bX</sup> − 1), which is 17.8 GeV vertically. Integrate the same sky intensity above that energy over the telescope acceptance: we get 287 000 per day.</p>
+          <p lang="zh-Hans">在相信每天 311 000 个缪子之前，先不用 Geant4 估算一下。把能损近似为 dE/dX = a + bE，对标准岩石 a ≈ 2.2 MeV cm²/g、b ≈ 4.0 × 10⁻⁶ cm²/g。缪子能穿过斜深 X 的条件是 E &gt; (a/b)(e<sup>bX</sup> − 1)，竖直方向为 17.8 GeV。在望远镜接受度内对同一天空强度从该能量往上积分，得到每天 287 000 个。</p>
+          <p lang="en">Geant4 gives 8% more. That is the expected direction: the a + bE formula treats every muon as losing the mean energy, while real losses fluctuate, and some muons below the mean threshold get through. Agreement within 10% at this rung means the geometry, the units and the normalisation are right. It does not validate the flux model; only a measurement can do that.</p>
+          <p lang="zh-Hans">Geant4 的结果高 8%。方向符合预期：a + bE 公式假设每个缪子都损失平均能量，而真实能损有涨落，一些低于平均阈值的缪子也能穿过。在这一级达到 10% 以内的一致，说明几何、单位和归一化是对的。它并不验证通量模型，那只能靠测量。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Turn it into your capstone</span><span lang="zh-Hans">把它变成你的结课项目</span></h3><label class="done" for="w12-mu6"><input type="checkbox" id="w12-mu6" data-progress="w12"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">The starter is honest but simple. A good capstone replaces one simplification with the real thing and shows how the answer moves. Choose at least one:</p>
+          <p lang="zh-Hans">这个起点项目诚实但简单。好的结课项目会把其中一个简化换成真实情况，并展示结果如何变化。至少选一项：</p>
+          <ul>
+            <li><span lang="en"><b>Terrain.</b> Replace the flat ground with a digital elevation model: triangulate it into a <code>G4TessellatedSolid</code> (or a GDML tessellated solid, or CADMesh). Then the control region is no longer "same zenith"; you need the simulated rock length per direction.</span><span lang="zh-Hans"><b>地形。</b>用数字高程模型代替平地：三角化成 <code>G4TessellatedSolid</code>（或 GDML 镶嵌实体、CADMesh）。这时对照区不再是“同一天顶角”，你需要模拟每个方向上的岩石长度。</span></li>
+            <li><span lang="en"><b>Real rock.</b> Use measured density and composition from cores; a few percent error in density changes the expected rate by several percent, as much as a small void does.</span><span lang="zh-Hans"><b>真实岩石。</b>使用岩芯测得的密度和成分；几个百分点的密度误差会使预期计数率改变几个百分点，与一个小空洞的信号相当。</span></li>
+            <li><span lang="en"><b>The detector.</b> Add efficiency, position resolution and noise to the hits (Week 5), and record every charged particle, not only the primary.</span><span lang="zh-Hans"><b>探测器。</b>给击中加上效率、位置分辨率和噪声（第 5 周），并记录所有带电粒子，而不只是初级粒子。</span></li>
+            <li><span lang="en"><b>Large zenith angles.</b> At θ &gt; 70° low-energy particles and scattered muons fake a signal; the flux model is also less certain near the horizon. Raise <code>/muo/sky/thetaMax</code> and study the background.</span><span lang="zh-Hans"><b>大天顶角。</b>θ &gt; 70° 时，低能粒子和被散射的缪子会伪造信号，通量模型在接近地平线处也更不确定。提高 <code>/muo/sky/thetaMax</code> 并研究本底。</span></li>
+          </ul>
+          <p lang="en">Then follow Week 12 as written. In the proposal, the observable is the window excess and the validation criterion is step 5's hand estimate. Make <code>analyse.py</code> print one headline line (for example <code>excess = +28.7 %</code>) and use that line as the headline of your reproducibility check.</p>
+          <p lang="zh-Hans">然后按第 12 周的步骤进行。在提案中，可观测量是窗口中的超出量，验证标准是第 5 步的手算估计。让 <code>analyse.py</code> 打印一行标题结果（例如 <code>excess = +28.7 %</code>），并把这一行作为可复现性检查的标题。</p>
+        </li>
+      </ol>
+      <div class="toybox">
+        <p><b><span lang="en">Approximations in the starter</span><span lang="zh-Hans">起点项目中的近似</span></b></p>
+        <p lang="en">Sky: Gaisser formula with the Guan et al. (2015) correction, sea level, good to roughly 10–20% in absolute flux; μ⁺/μ⁻ = 1.27 for all energies; no altitude, geomagnetic or seasonal effects. Ground: flat. Rock: PDG standard rock (Z = 11, A = 22, 2.65 g/cm³), uniform. Generator: muons aimed at a 2 m × 2 m square around the 1 m × 1 m top plane; a muon scattered into the telescope from outside that square is missed (lateral spread is about 0.2 m for 20 GeV muons through 30 m of rock). Tracker: ideal planes that record only the primary muon, with no resolution and 100% efficiency. Physics: course test physics list, 1 m production cut.</p>
+        <p lang="zh-Hans">天空：带 Guan 等（2015）修正的 Gaisser 公式，海平面，绝对通量精度约 10–20%；所有能量 μ⁺/μ⁻ = 1.27；不含海拔、地磁和季节效应。地面：平地。岩石：PDG 标准岩石（Z = 11，A = 22，2.65 g/cm³），均匀。产生器：缪子瞄准 1 m × 1 m 顶层周围 2 m × 2 m 的方形区域；从区域外被散射进望远镜的缪子会被漏掉（20 GeV 缪子穿过 30 m 岩石的横向偏移约 0.2 m）。径迹探测器：理想探测面，只记录初级缪子，无分辨率，效率 100%。物理：课程测试物理列表，产生阈 1 m。</p>
+      </div>
     </div>
   </section>
 

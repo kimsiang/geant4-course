@@ -7,9 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Geant4 2.0, Week 11: walk a debugging tree through six deliberately broken simulations, then say exactly how far a Geant4 result has been validated.">
 <script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/course.css">
 <style>
 #w11-cases button.on{background:var(--fg);color:var(--bg)}
@@ -34,7 +32,7 @@
 <!--shell:top--><a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="zh-Hans">跳到正文</span></a>
 <header class="topbar"><div class="tb-in"><button type="button" class="nav-toggle" aria-controls="nav" aria-expanded="false"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg><span class="sr"><span lang="en">Open the item list</span><span lang="zh-Hans">打开目录</span></span></button><a class="brand" href="index.html"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="logo-bg"/><path d="M5 25 15.5 15" class="logo-mu"/><path d="M15.5 15c3.5-3 7-5.6 11.5-6.5" class="logo-pos"/><path d="M15.5 15c1.8 3.6 4.6 6.5 9 8.5" class="logo-neu"/><circle cx="15.5" cy="15" r="2.2" class="logo-v"/></svg><b>Geant4 2.0</b></a><span class="tb-week"><span lang="en">Week 11 of 12</span><span lang="zh-Hans">第 11 / 12 周</span><span class="tb-title"><span lang="en">Debug and validate</span><span lang="zh-Hans">调试与验证</span></span></span><span class="tb-prog" data-prog="w11" aria-hidden="true"><span class="pbar"><i></i></span><span class="pn"></span></span><span class="lang" role="group" aria-label="Language / 语言"><button type="button" data-setlang="en" id="lang-en">EN</button><button type="button" data-setlang="zh" id="lang-zh">中文</button><button type="button" data-setlang="both" id="lang-both">EN+中</button></span></div></header><!--/shell:top-->
 <div class="player">
-<!--shell:nav--><nav class="nav" id="nav" aria-label="Items on this page / 本页目录"><div class="nav-in"><a class="nav-home" href="index.html"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg><span lang="en">Course home</span><span lang="zh-Hans">课程主页</span></a><p class="nav-week"><span lang="en">Week 11 · Trust it</span><span lang="zh-Hans">第 11 周 · 信任</span></p><p class="nav-title"><span lang="en">Debug and validate</span><span lang="zh-Hans">调试与验证</span></p><div class="nav-prog" data-prog="w11"><span class="pbar"><i></i></span><span class="pn"></span></div><ol class="nav-items"><li><a href="#s-goals" data-item="s-goals"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-overview"/></svg><span class="t"><span lang="en">Overview and goals</span><span lang="zh-Hans">概览与目标</span><small><span lang="en">Overview · 3 min</span><span lang="zh-Hans">概览 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#background" data-item="background"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Background</span><span lang="zh-Hans">背景知识</span><small><span lang="en">Reading · 6 min</span><span lang="zh-Hans">阅读 · 6 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-tree" data-item="s-tree"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">11.1 Debugging is a tree</span><span lang="zh-Hans">11.1 调试是一棵树</span><small><span lang="en">Reading · 15 min</span><span lang="zh-Hans">阅读 · 15 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-valid" data-item="s-valid"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">11.3 What counts as validated</span><span lang="zh-Hans">11.3 什么才算“验证”</span><small><span lang="en">Reading · 7 min</span><span lang="zh-Hans">阅读 · 7 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-toy" data-item="s-toy"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-interactive"/></svg><span class="t"><span lang="en">Interactive: six real cases</span><span lang="zh-Hans">交互：六个真实案例</span><small><span lang="en">Interactive · 10 min</span><span lang="zh-Hans">交互 · 10 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-task" data-item="s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: Labs 11.1 and 11.2</span><span lang="zh-Hans">动手：实验 11.1 与 11.2</span><small><span lang="en">Hands-on lab · 1 h 45 min</span><span lang="zh-Hans">动手实验 · 1 小时 45 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-quiz" data-item="s-quiz"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-quiz"/></svg><span class="t"><span lang="en">Practice quiz</span><span lang="zh-Hans">练习测验</span><small><span lang="en">Practice quiz · 9 min</span><span lang="zh-Hans">练习测验 · 9 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-err" data-item="s-err"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Common errors</span><span lang="zh-Hans">常见错误</span><small><span lang="en">Reading · 12 min</span><span lang="zh-Hans">阅读 · 12 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-review" data-item="s-review"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-review"/></svg><span class="t"><span lang="en">Review notes</span><span lang="zh-Hans">复习要点</span><small><span lang="en">Checklist · 5 min</span><span lang="zh-Hans">清单 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-share" data-item="s-share"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span class="t"><span lang="en">Share this week</span><span lang="zh-Hans">分享本周成果</span><small><span lang="en">Share · 5 min</span><span lang="zh-Hans">分享 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li></ol><p class="nav-total"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">About 2 h 55 min in total</span><span lang="zh-Hans">共约 2 小时 55 分钟</span></p></div></nav><div class="nav-scrim" hidden></div>
+<!--shell:nav--><nav class="nav" id="nav" aria-label="Items on this page / 本页目录"><div class="nav-in"><a class="nav-home" href="index.html"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg><span lang="en">Course home</span><span lang="zh-Hans">课程主页</span></a><p class="nav-week"><span lang="en">Week 11 · Trust it</span><span lang="zh-Hans">第 11 周 · 信任</span></p><p class="nav-title"><span lang="en">Debug and validate</span><span lang="zh-Hans">调试与验证</span></p><div class="nav-prog" data-prog="w11"><span class="pbar"><i></i></span><span class="pn"></span></div><ol class="nav-items"><li><a href="#s-goals" data-item="s-goals"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-overview"/></svg><span class="t"><span lang="en">Overview and goals</span><span lang="zh-Hans">概览与目标</span><small><span lang="en">Overview · 3 min</span><span lang="zh-Hans">概览 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#background" data-item="background"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Background</span><span lang="zh-Hans">背景知识</span><small><span lang="en">Reading · 6 min</span><span lang="zh-Hans">阅读 · 6 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-tree" data-item="s-tree"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">11.1 Debugging is a tree</span><span lang="zh-Hans">11.1 调试是一棵树</span><small><span lang="en">Reading · 15 min</span><span lang="zh-Hans">阅读 · 15 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-valid" data-item="s-valid"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">11.2 What counts as validated</span><span lang="zh-Hans">11.2 什么才算“验证”</span><small><span lang="en">Reading · 7 min</span><span lang="zh-Hans">阅读 · 7 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-toy" data-item="s-toy"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-interactive"/></svg><span class="t"><span lang="en">Interactive: six real cases</span><span lang="zh-Hans">交互：六个真实案例</span><small><span lang="en">Interactive · 10 min</span><span lang="zh-Hans">交互 · 10 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-task" data-item="s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: Labs 11.1 and 11.2</span><span lang="zh-Hans">动手：实验 11.1 与 11.2</span><small><span lang="en">Hands-on lab · 1 h 45 min</span><span lang="zh-Hans">动手实验 · 1 小时 45 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-quiz" data-item="s-quiz"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-quiz"/></svg><span class="t"><span lang="en">Practice quiz</span><span lang="zh-Hans">练习测验</span><small><span lang="en">Practice quiz · 9 min</span><span lang="zh-Hans">练习测验 · 9 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-err" data-item="s-err"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Common errors</span><span lang="zh-Hans">常见错误</span><small><span lang="en">Reading · 12 min</span><span lang="zh-Hans">阅读 · 12 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-review" data-item="s-review"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-review"/></svg><span class="t"><span lang="en">Review notes</span><span lang="zh-Hans">复习要点</span><small><span lang="en">Checklist · 5 min</span><span lang="zh-Hans">清单 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-share" data-item="s-share"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span class="t"><span lang="en">Share this week</span><span lang="zh-Hans">分享本周成果</span><small><span lang="en">Share · 5 min</span><span lang="zh-Hans">分享 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li></ol><p class="nav-total"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">About 2 h 55 min in total</span><span lang="zh-Hans">共约 2 小时 55 分钟</span></p></div></nav><div class="nav-scrim" hidden></div>
 <main id="main" tabindex="-1">
 <!--/shell:nav-->
   <!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb / 路径"><a href="index.html"><span lang="en">Geant4 2.0</span><span lang="zh-Hans">Geant4 2.0</span></a><span aria-hidden="true">›</span><span><span lang="en">Stage 5 · Trust it</span><span lang="zh-Hans">第 5 阶段 · 信任</span></span><span aria-hidden="true">›</span><span aria-current="page"><span lang="en">Week 11</span><span lang="zh-Hans">第 11 周</span></span></nav><!--/shell:crumbs-->
@@ -55,7 +53,7 @@
       <div role="row"><span role="cell">week11</span></div>
       <div role="row"><span role="cell"><span lang="en">fault branches</span><span lang="zh-Hans">故障分支</span></span><span role="cell">6</span></div>
       <div role="row"><span role="cell"><span lang="en">that crash</span><span lang="zh-Hans">会崩溃的</span></span><span role="cell"><b>1</b></span></div>
-      <div role="row"><span role="cell">dE/dx vs PDG</span><span role="cell">≤ 0.4σ <span lang="en">at 5 energies</span><span lang="zh-Hans">（5 个能量点）</span></span></div>
+      <div role="row"><span role="cell">dE/dx vs PDG</span><span role="cell">≤ 0.4% <span lang="en">at 5 energies</span><span lang="zh-Hans">（5 个能量点）</span></span></div>
       <div role="row"><span role="cell"><span lang="en">ladder rung</span><span lang="zh-Hans">阶梯</span></span><span role="cell">3 · physics benchmarked</span></div>
     </div>
   </section>
@@ -121,8 +119,8 @@
           <tr><td>L1</td><td>/tracking/verbose 1</td><td><span lang="en">fault-1: Step 0 at z = −800 mm in a world of half-length 500 mm</span><span lang="zh-Hans">fault-1：第 0 步在 z = −800 mm，world 半长 500 mm</span></td></tr>
           <tr><td>L2</td><td>checkOverlaps = true</td><td><span lang="en">fault-5: G4Exception GeomVol1002, just a warning; the run went on</span><span lang="zh-Hans">fault-5：G4Exception GeomVol1002，只是警告；运行照常继续</span></td></tr>
           <tr><td>L3–L4</td><td>trace + /process/list</td><td><span lang="en">fault-4: crosses the counter with dE = 0; list shows Transportation, Decay</span><span lang="zh-Hans">fault-4：穿过计数器但 dE = 0；列表只有 Transportation、Decay</span></td></tr>
-          <tr><td>L5</td><td><span lang="en">read the init log</td><td lang="en">fault-3: fatal G4Exception Run0053, the only crash of the six</span><span lang="zh-Hans">fault-3：致命 G4Exception Run0053，六个中唯一的崩溃</span></td></tr>
-          <tr><td>L6</td><td><span lang="en">print Edep and fired</td><td lang="en">fault-2: Edep = 0 → fired = 1; Edep = 1.59 MeV → fired = 0</span><span lang="zh-Hans">fault-2：Edep = 0 → fired = 1；Edep = 1.59 MeV → fired = 0</span></td></tr>
+          <tr><td>L5</td><td><span lang="en">read the init log</span><span lang="zh-Hans">读初始化日志</span></td><td><span lang="en">fault-3: fatal G4Exception Run0053, the only crash of the six</span><span lang="zh-Hans">fault-3：致命 G4Exception Run0053，六个中唯一的崩溃</span></td></tr>
+          <tr><td>L6</td><td><span lang="en">print Edep and fired</span><span lang="zh-Hans">打印 Edep 和 fired</span></td><td><span lang="en">fault-2: Edep = 0 → fired = 1; Edep = 1.59 MeV → fired = 0</span><span lang="zh-Hans">fault-2：Edep = 0 → fired = 1；Edep = 1.59 MeV → fired = 0</span></td></tr>
         </tbody>
       </table></div>
       <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
@@ -170,7 +168,7 @@ Fault 3 is not silent in Geant4 11.4: SetSensitiveDetector("counter")
   存在但错误的体积上。
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
-      <h3 class="bi"><span lang="en">11.2 · AI-assisted debugging: delegate syntax, keep the physics</span><span lang="zh-Hans">11.2 · AI 辅助调试：语法可以交出去，物理留给自己</span></h3>
+      <h3 class="bi"><span lang="en">AI-assisted debugging: delegate syntax, keep the physics</span><span lang="zh-Hans">AI 辅助调试：语法可以交出去，物理留给自己</span></h3>
       <p lang="en">An assistant (Claude, Gemini, DeepSeek) is a fast way to navigate the Geant4 API if you give it evidence, not "my code is broken". Ask for hypotheses you can test, and keep the decisions about what a hit is, which units, thread safety and validation for yourself. "It compiles" is never the acceptance criterion: require a minimal diff, a smoke test, a numerical sanity check and a comparison with an independent expectation. Never paste credentials, unpublished collaboration data or proprietary code into an external service.</p>
       <p lang="zh-Hans">如果你给 AI 助手（Claude、Gemini、DeepSeek）的是证据而不是“我的代码坏了”，它是浏览 Geant4 API 的快捷方式。请它提出你能检验的假设；什么算击中、用什么单位、是否线程安全、怎样验证，这些决定留给自己。“能编译”永远不是验收标准：要求最小改动、冒烟测试、数值合理性检查，以及与独立预期的比较。绝不要把凭据、未发表的合作组数据或专有代码贴进外部服务。</p>
 <pre>I am debugging Geant4 11.4.1 on Linux with CMake.
@@ -187,7 +185,7 @@ Please: 1. the most likely root cause and the evidence for it; 2. the Geant4 rul
 
   <section class="run item" id="s-valid" data-type="reading" data-min="7" aria-labelledby="h-valid">
     <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">7 min</span><span lang="zh-Hans">7 分钟</span></span></p>
-    <p class="cmd">discrepancy_sigma()<span lang="en">11.3 · what counts as validated</span><span lang="zh-Hans">11.3 · 什么才算“验证”</span></p>
+    <p class="cmd">discrepancy_sigma()<span lang="en">11.2 · what counts as validated</span><span lang="zh-Hans">11.2 · 什么才算“验证”</span></p>
     <div class="prose">
       <h2 id="h-valid" class="bi"><span lang="en">A simulation producing a number is not the same as that number being trustworthy.</span><span lang="zh-Hans">模拟算出一个数，不等于这个数值得信任。</span></h2>
       <div class="box">
@@ -263,56 +261,50 @@ Geant4 output such as 1.94 +/- 0.03 MeV/cm is per unit length. A PDG
     <p class="cmd">bash make_faults.sh<span lang="en">hands-on · Labs 11.1 and 11.2</span><span lang="zh-Hans">动手实验 · 实验 11.1 与 11.2</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Diagnose six broken copies of your own counter, then benchmark one working simulation.</span><span lang="zh-Hans">诊断你自己计数器的六个坏副本，再为一个正常的模拟做基准比较。</span></h2>
+      <!--shell:dl--><p class="dl"><a class="btn-s" href="downloads/week11-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download all files for this lab (zip)</span><span lang="zh-Hans">下载本实验的全部文件（zip）</span></a><a class="dl-all" href="downloads/geant4-course-code.zip" download><span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></a></p><!--/shell:dl-->
       <ol class="steps">
         <li>
-          <div class="step-head"><h3 class="bi"><span lang="en">Lab 11.1: instructor builds the fault lab</span><span lang="zh-Hans">实验 11.1：教师搭建故障实验室</span></h3><label class="done" for="w11-s1"><input type="checkbox" id="w11-s1" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="step-head"><h3 class="bi"><span lang="en">Lab 11.1: build the fault lab (instructor, or yourself)</span><span lang="zh-Hans">实验 11.1：搭建故障实验室（教师或你自己）</span></h3><label class="done" for="w11-s1"><input type="checkbox" id="w11-s1" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="files">
             <details><summary><b>make_faults.sh</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f11-mf">copy</button></summary><pre id="f11-mf" data-src="code/week11/make_faults.sh">#!/bin/bash
-# make_faults.sh -- Lab 11.1 for instructors: turn the working week05 counter into a repository
-# with one deliberately broken simulation per branch. Each fault is ONE line, compiles, and runs.
-# Usage: bash make_faults.sh path/to/week05  faultlab
+# make_faults.sh -- Lab 11.1: turn a working week05 counter into a git repository with one
+# deliberately broken simulation per branch (fault-1 ... fault-6). Each fault is one line or one
+# setting, compiles, and runs. The edits are stored base64-encoded so that running the script does
+# not tell you what they are. Self-paced? Run it, do NOT decode it, diagnose every branch first;
+# the answers are in FAULTS_ANSWERS.md.
+# Usage: bash make_faults.sh path/to/week05 faultlab
 #        cd faultlab &amp;&amp; git branch          # main, fault-1 ... fault-6
-set -e
+set -euo pipefail
 SRC=$1; OUT=${2:-faultlab}
-rm -rf "$OUT"; cp -r "$SRC" "$OUT"; cd "$OUT"
+rm -rf "$OUT"; mkdir -p "$OUT"
+# copy the sources, never a build directory: its CMakeCache.txt points at the old source tree
+(cd "$SRC" &amp;&amp; tar --exclude=./build --exclude='./*.log' --exclude='./*.root' -cf - .) | (cd "$OUT" &amp;&amp; tar -xf -)
+cd "$OUT"
+printf 'build/\n*.log\n*.root\n' &gt; .gitignore
 git init -q -b main &amp;&amp; git add -A &amp;&amp; git commit -qm "working counter (week05)"
 
-fault () {   # fault &lt;n&gt; &lt;file&gt; &lt;sed expression&gt; &lt;commit message&gt;
+d () { echo "$1" | base64 -d; }
+fault () {   # fault &lt;n&gt; &lt;file, encoded&gt; &lt;sed expression, encoded&gt;
+  local f; f=$(d "$2")
   git checkout -q -b "fault-$1" main
-  sed -i "$3" "$2"
-  git diff --quiet &amp;&amp; { echo "fault-$1: pattern not found in $2"; exit 1; }
+  sed -i "$(d "$3")" "$f"
+  git diff --quiet &amp;&amp; { echo "fault-$1: pattern not found (is $SRC the course's week05?)"; exit 1; }
   git commit -qam "fault-$1"            # the message gives nothing away
   git checkout -q main
 }
 
-# 1  generator: source plane moved to z = -80 cm, outside the world (half-length 50 cm)
-fault 1 src/PrimaryGeneratorAction.cc 's/G4ThreeVector(x, y, -20\. \* cm)/G4ThreeVector(x, y, -80. * cm)/'
-# 2  digitization: threshold comparison inverted (event level)
-fault 2 src/EventAction.cc 's/edep\[0\] &gt;= fEdepThreshold, edep\[1\] &gt;= fEdepThreshold/edep[0] &lt; fEdepThreshold, edep[1] &lt; fEdepThreshold/'
-# 3  sensitive detector: logical-volume name typed in lower case
-fault 3 src/DetectorConstruction.cc 's/SetSensitiveDetector("Counter", muonSD)/SetSensitiveDetector("counter", muonSD)/'
-# 4  physics: a "lightweight" list with decay only -- no ionisation at all
+fault 1 c3JjL1ByaW1hcnlHZW5lcmF0b3JBY3Rpb24uY2M= cy9HNFRocmVlVmVjdG9yKHgsIHksIC0yMFwuIFwqIGNtKS9HNFRocmVlVmVjdG9yKHgsIHksIC04MC4gKiBjbSkv
+fault 2 c3JjL0V2ZW50QWN0aW9uLmNj cy9lZGVwXFswXF0gPj0gZkVkZXBUaHJlc2hvbGQsIGVkZXBcWzFcXSA+PSBmRWRlcFRocmVzaG9sZC9lZGVwWzBdIDwgZkVkZXBUaHJlc2hvbGQsIGVkZXBbMV0gPCBmRWRlcFRocmVzaG9sZC8=
+fault 3 c3JjL0RldGVjdG9yQ29uc3RydWN0aW9uLmNj cy9TZXRTZW5zaXRpdmVEZXRlY3RvcigiQ291bnRlciIsIG11b25TRCkvU2V0U2Vuc2l0aXZlRGV0ZWN0b3IoImNvdW50ZXIiLCBtdW9uU0QpLw==
 git checkout -q -b fault-4 main
-cat &gt; include/LightPhysicsList.hh &lt;&lt;'EOF'
-#pragma once
-#include "G4DecayPhysics.hh"
-#include "G4VModularPhysicsList.hh"
-// "Faster than FTFP_BERT for a muon counter." (It is: nothing happens in matter.)
-class LightPhysicsList : public G4VModularPhysicsList
-{
-  public:
-    LightPhysicsList() { RegisterPhysics(new G4DecayPhysics()); }
-};
-EOF
-sed -i 's/#include "FTFP_BERT.hh"/#include "LightPhysicsList.hh"/; s/new FTFP_BERT()/new LightPhysicsList()/' week05.cc
+d I3ByYWdtYSBvbmNlCiNpbmNsdWRlICJHNERlY2F5UGh5c2ljcy5oaCIKI2luY2x1ZGUgIkc0Vk1vZHVsYXJQaHlzaWNzTGlzdC5oaCIKY2xhc3MgTGlnaHRQaHlzaWNzTGlzdCA6IHB1YmxpYyBHNFZNb2R1bGFyUGh5c2ljc0xpc3QKewogIHB1YmxpYzoKICAgIExpZ2h0UGh5c2ljc0xpc3QoKSB7IFJlZ2lzdGVyUGh5c2ljcyhuZXcgRzREZWNheVBoeXNpY3MoKSk7IH0KfTsK &gt; include/LightPhysicsList.hh
+sed -i "$(d cy8jaW5jbHVkZSAiRlRGUF9CRVJULmhoIi8jaW5jbHVkZSAiTGlnaHRQaHlzaWNzTGlzdC5oaCIvOyBzL25ldyBGVEZQX0JFUlQoKS9uZXcgTGlnaHRQaHlzaWNzTGlzdCgpLw==)" week05.cc
 git add -A &amp;&amp; git commit -qm "fault-4" &amp;&amp; git checkout -q main
-# 5  geometry: bottom counter placed at z = -9.5 cm instead of +10 cm; it overlaps the top one
-fault 5 src/DetectorConstruction.cc 's/G4ThreeVector(0, 0, +10\. \* cm)/G4ThreeVector(0, 0, -9.5 * cm)/'
-# 6  no code change: a 200-event run whose efficiency "looks wrong"
-git checkout -q -b fault-6 main
-sed -i 's/beamOn 20000/beamOn 200/' trigger.mac
-git commit -qam "fault-6" &amp;&amp; git checkout -q main
+fault 5 c3JjL0RldGVjdG9yQ29uc3RydWN0aW9uLmNj cy9HNFRocmVlVmVjdG9yKDAsIDAsICsxMFwuIFwqIGNtKS9HNFRocmVlVmVjdG9yKDAsIDAsIC05LjUgKiBjbSkv
+fault 6 dHJpZ2dlci5tYWM= cy9iZWFtT24gMjAwMDAvYmVhbU9uIDIwMC8=
 
+cmake -S . -B build &gt; /dev/null || echo "could not configure build/ here: run  cmake -S . -B build  once Geant4 is set up"
+# one build directory serves every branch: cmake --build re-configures when files change
 git branch</pre></details>
           </div>
           <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c11-a">copy</button></div>
@@ -327,12 +319,15 @@ cd faultlab &amp;&amp; git branch</pre></div>
   fault-6
 * main</pre></div>
           <p lang="en">Each fault is one line (fault-4 adds a header) on its own branch, and the commit message gives nothing away. Students may read <code>git diff main</code> only after they have named the layer and written down their evidence.</p>
+          <p lang="en"><b>Studying on your own?</b> Run the script yourself. The six edits are stored base64-encoded inside it, so running it does not show you the faults; do not decode them. The script copies your week05 sources without any old <code>build/</code> directory and configures a fresh one. When you have a diagnosis for every branch, check it against <code>FAULTS_ANSWERS.md</code> (in the week's download; it is a spoiler).</p>
           <p lang="zh-Hans">每个故障都是一行改动（fault-4 另加了一个头文件），各在自己的分支上，提交信息不透露任何线索。学生必须先说出故障所在层并写下证据，之后才能看 <code>git diff main</code>。</p>
+          <p lang="zh-Hans"><b>自学？</b>自己运行这个脚本。六处改动以 base64 编码存放在脚本中，所以运行它不会让你看到故障内容；请不要解码。脚本会复制你的 week05 源码而不带任何旧的 <code>build/</code> 目录，并配置一个新的构建目录。等你对每个分支都有了诊断，再对照 <code>FAULTS_ANSWERS.md</code>（在本周下载包中；它是答案剧透）。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Students: run every branch and fill the symptom table</span><span lang="zh-Hans">学生：运行每个分支，填写症状表</span></h3><label class="done" for="w11-s2"><input type="checkbox" id="w11-s2" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c11-b">copy</button></div>
-<pre id="c11-b">for b in main fault-1 fault-2 fault-3 fault-4 fault-5 fault-6; do
+<pre id="c11-b">cmake -S . -B build &gt; /dev/null        # once, if make_faults.sh could not configure it
+for b in main fault-1 fault-2 fault-3 fault-4 fault-5 fault-6; do
   git checkout -q $b &amp;&amp; cmake --build build -j4 &gt; /dev/null
   (cd build &amp;&amp; ./week05 trigger.mac &gt; ../$b.log 2&gt;&amp;1); echo "$b exit $?"
 done
@@ -347,7 +342,9 @@ fault-4   0     0                 0                 0.0026 ± 0.0004   nothing
 fault-5   0     0.1100 ± 0.0022   0.1003 ± 0.0021   0.1055 ± 0.0022   GeomVol1002 (warning)
 fault-6   0     0.1250 ± 0.0234   0.0250 ± 0.0110   0.0050 ± 0.0050   nothing</pre></div>
           <p lang="en">Five of six exit cleanly. Only one prints an error, and one prints a warning that scrolls away above about 240 000 lines of physics tables. Grade the walk, not the fix: symptom, the layer, the evidence that clears each layer above it, and one sentence a labmate could use next time.</p>
+          <p lang="en">Read fault-6's last column with care: 0.0050 ± 0.0050 is k = 1 of 200, where the binomial error √(ε(1−ε)/N) fails (Week 1, MC0004). The exact (Clopper–Pearson) 68% interval is 0.0009–0.0163 and the 95% interval 0.0001–0.0275. Main's 0.0193 lies inside the 95% interval: with ε = 0.0193, one or zero triggers in 200 events happens 10% of the time. The other two columns agree with main within 0.7σ and 1.1σ. Nothing is broken; the run is simply too short to say anything sharper.</p>
           <p lang="zh-Hans">六个中有五个正常退出。只有一个打印错误，另有一个打印的警告被埋在约 24 万行物理表输出的上方。评分看排查过程而不是修复：症状、所在层、排除其上每一层的证据，以及一句下次能给同学参考的话。</p>
+          <p lang="zh-Hans">fault-6 最后一列要仔细读：0.0050 ± 0.0050 是 200 个事例中 k = 1，此时二项误差 √(ε(1−ε)/N) 失效（第 1 周 MC0004）。精确（Clopper–Pearson）68% 区间为 0.0009–0.0163，95% 区间为 0.0001–0.0275。main 的 0.0193 落在 95% 区间之内：若 ε = 0.0193，200 个事例中只触发 0 或 1 次的概率为 10%。另外两列与 main 的差别分别为 0.7σ 和 1.1σ。没有任何东西坏了，只是运行太短，给不出更精确的结论。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Lab 11.2: compare Geant4 with the PDG table, naively first</span><span lang="zh-Hans">实验 11.2：把 Geant4 与 PDG 表比较，先用天真的方法</span></h3><label class="done" for="w11-s3"><input type="checkbox" id="w11-s3" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -402,6 +399,13 @@ def discrepancy_sigma(sim, sim_unc, ref, ref_stat, ref_sys=0.0):
     return abs(sim - ref) / np.sqrt(sim_unc**2 + ref_stat**2 + ref_sys**2)
 
 
+def chi2_sf(x, k):
+    """P(chi2 &gt;= x) for k degrees of freedom."""
+    from scipy.stats import chi2
+    return float(chi2.sf(x, k))
+
+
+pulls_stat, pulls_ref = [], []
 for fn in sys.argv[1:]:
     T = float(re.search(r"edep_(\d+)MeV", fn).group(1))
     h = uproot.open(fn)["PrimarydEdx"]
@@ -420,12 +424,24 @@ for fn in sys.argv[1:]:
               f"this mean is truncated. Widen the range (/analysis/h1/set) and rerun.")
         continue
     ns = discrepancy_sigma(mean, err, ref, 0.0, REF_SYS * ref)
-    print(f"           ratio {mean / ref:.4f}   discrepancy {ns:.1f} sigma (stat + 1% reference)")
+    pull = (mean - ref) / err
+    pulls_stat.append(pull)
+    pulls_ref.append((mean - ref) / np.sqrt(err**2 + (REF_SYS * ref) ** 2))
+    print(f"           ratio {mean / ref:.4f}   discrepancy {ns:.1f} sigma (stat + 1% reference)   "
+          f"stat-only pull {pull:+.1f}")
+if len(pulls_stat) &gt;= 2:
+    # Look at both. Statistics alone tests whether Geant4 and the table agree to the precision of
+    # the run; the 1% is an ASSUMED reference error. If it makes chi2/ndf much smaller than 1, the
+    # assumed error is larger than the scatter of the points and hides any common offset.
+    n = len(pulls_stat)
+    c2s, c2r = float(np.sum(np.square(pulls_stat))), float(np.sum(np.square(pulls_ref)))
+    print(f"stat only: chi2 = {c2s:.1f}/{n} (p = {chi2_sf(c2s, n):.2f})   "
+          f"with the assumed 1% reference: chi2 = {c2r:.2f}/{n} (p = {chi2_sf(c2r, n):.3f})")
 print("Ladder: physics benchmarked against a calculated table over 10 cm of plastic. Not yet detector "
       "benchmarked: no measured spectrum, threshold or trigger has been compared.")</pre></details>
           </div>
-          <p lang="en">Start from the Week 4 output files. The quick comparison a tired student makes is ratio = Geant4 mean / (PDG at the entry energy × 1.032). From our runs:</p>
-          <p lang="zh-Hans">从第 4 周的输出文件开始。疲惫的学生会做的快速比较是：比值 = Geant4 均值 / (入射能量处的 PDG 值 × 1.032)。我们的运行结果：</p>
+          <p lang="en">Start from the Week 4 output files. The quick comparison a tired student makes, by hand, is ratio = Geant4 mean / (PDG at the entry energy × 1.032). The script below never does this; the table is what you would get from its Geant4 means and the PDG entry values. From our runs:</p>
+          <p lang="zh-Hans">从第 4 周的输出文件开始。疲惫的学生会手算一个快速比较：比值 = Geant4 均值 / (入射能量处的 PDG 值 × 1.032)。下面的脚本从不这样做；这张表是用脚本输出的 Geant4 均值和 PDG 入射值算出来的。我们的运行结果：</p>
 <pre>T [MeV]   Geant4 [MeV/cm]     PDG at entry   ratio    sigma
   100     2.3938 ± 0.0014     2.3086         1.0369    3.7   &lt;- "Geant4 is 4% high"
   200     2.0650 ± 0.0019     2.0557         1.0045    0.4
@@ -438,15 +454,17 @@ print("Ladder: physics benchmarked against a calculated table over 10 cm of plas
 <pre id="c11-c">python3 validate_dedx.py edep_0100MeV.root edep_0200MeV.root edep_0500MeV.root edep_1000MeV.root edep_10000MeV.root</pre></div>
           <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our Week 4 files)</span><span lang="zh-Hans">预期（我们的第 4 周文件）</span></b></span></div>
 <pre>T =    100 MeV  Geant4 2.3938 +/- 0.0014 MeV/cm | PDG at entry 2.3086, path-averaged 2.3966 (exits at 76.0 MeV)
-           ratio 0.9988   discrepancy 0.1 sigma (stat + 1% reference)
+           ratio 0.9988   discrepancy 0.1 sigma (stat + 1% reference)   stat-only pull -2.0
 T =    200 MeV  Geant4 2.0650 +/- 0.0019 MeV/cm | PDG at entry 2.0557, path-averaged 2.0669 (exits at 179.3 MeV)
-           ratio 0.9991   discrepancy 0.1 sigma (stat + 1% reference)
+           ratio 0.9991   discrepancy 0.1 sigma (stat + 1% reference)   stat-only pull -1.0
 T =    500 MeV  Geant4 2.0317 +/- 0.0036 MeV/cm | PDG at entry 2.0413, path-averaged 2.0395 (exits at 479.6 MeV)
-           ratio 0.9962   discrepancy 0.4 sigma (stat + 1% reference)
+           ratio 0.9962   discrepancy 0.4 sigma (stat + 1% reference)   stat-only pull -2.2
 T =   1000 MeV  Geant4 2.1193 +/- 0.0063 MeV/cm | PDG at entry 2.1331, path-averaged 2.1315 (exits at 978.7 MeV)
            REFUSED: 6 of 10000 entries outside the histogram range; this mean is truncated. Widen the range (/analysis/h1/set) and rerun.
 T =  10000 MeV  Geant4 2.2340 +/- 0.0085 MeV/cm | PDG at entry 2.5232, path-averaged 2.5230 (exits at 9974.8 MeV)
-           REFUSED: 99 of 10000 entries outside the histogram range; this mean is truncated. Widen the range (/analysis/h1/set) and rerun.</pre></div>
+           REFUSED: 99 of 10000 entries outside the histogram range; this mean is truncated. Widen the range (/analysis/h1/set) and rerun.
+stat only: chi2 = 9.5/3 (p = 0.02)   with the assumed 1% reference: chi2 = 0.16/3 (p = 0.983)
+Ladder: physics benchmarked against a calculated table over 10 cm of plastic. Not yet detector benchmarked: no measured spectrum, threshold or trigger has been compared.</pre></div>
           <p lang="en">At 100 MeV the muon leaves the 10 cm slab at 76 MeV, where the stopping power is higher, so the right reference is the PDG table integrated along the path. At 10 GeV the week04 app's 0–10 MeV/cm histogram drops the 1% of events with large δ-ray losses. ROOT-style histogram statistics ignore overflow, so its mean is a truncated mean, and the PDG mean includes exactly that tail.</p>
           <p lang="zh-Hans">在 100 MeV，缪子离开 10 cm 厚的板时只剩 76 MeV，那里的阻止本领更大，所以正确的参考是沿路径积分的 PDG 表。在 10 GeV，week04 程序 0–10 MeV/cm 的直方图丢掉了 1% 带有大 δ 电子损失的事例。ROOT 式的直方图统计忽略溢出，所以它的均值是截断均值，而 PDG 均值恰恰包含这条尾巴。</p>
         </li>
@@ -486,18 +504,19 @@ T =  10000 MeV  Geant4 2.2340 +/- 0.0085 MeV/cm | PDG at entry 2.5232, path-aver
 python3 validate_dedx.py edep_0100MeV_wide.root edep_0200MeV_wide.root edep_0500MeV_wide.root edep_1000MeV_wide.root edep_10000MeV_wide.root</pre></div>
           <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our run)</span><span lang="zh-Hans">预期（我们的运行）</span></b></span></div>
 <pre>T =    100 MeV  Geant4 2.3938 +/- 0.0014 MeV/cm | PDG at entry 2.3086, path-averaged 2.3966 (exits at 76.0 MeV)
-           ratio 0.9988   discrepancy 0.1 sigma (stat + 1% reference)
+           ratio 0.9988   discrepancy 0.1 sigma (stat + 1% reference)   stat-only pull -2.0
 T =    200 MeV  Geant4 2.0650 +/- 0.0019 MeV/cm | PDG at entry 2.0557, path-averaged 2.0669 (exits at 179.3 MeV)
-           ratio 0.9991   discrepancy 0.1 sigma (stat + 1% reference)
+           ratio 0.9991   discrepancy 0.1 sigma (stat + 1% reference)   stat-only pull -1.0
 T =    500 MeV  Geant4 2.0317 +/- 0.0036 MeV/cm | PDG at entry 2.0413, path-averaged 2.0395 (exits at 479.6 MeV)
-           ratio 0.9962   discrepancy 0.4 sigma (stat + 1% reference)
+           ratio 0.9962   discrepancy 0.4 sigma (stat + 1% reference)   stat-only pull -2.2
 T =   1000 MeV  Geant4 2.1247 +/- 0.0067 MeV/cm | PDG at entry 2.1331, path-averaged 2.1315 (exits at 978.7 MeV)
-           ratio 0.9968   discrepancy 0.3 sigma (stat + 1% reference)
+           ratio 0.9968   discrepancy 0.3 sigma (stat + 1% reference)   stat-only pull -1.0
 T =  10000 MeV  Geant4 2.5138 +/- 0.0571 MeV/cm | PDG at entry 2.5232, path-averaged 2.5230 (exits at 9974.8 MeV)
-           ratio 0.9963   discrepancy 0.1 sigma (stat + 1% reference)
+           ratio 0.9963   discrepancy 0.1 sigma (stat + 1% reference)   stat-only pull -0.2
+stat only: chi2 = 10.6/5 (p = 0.06)   with the assumed 1% reference: chi2 = 0.28/5 (p = 0.998)
 Ladder: physics benchmarked against a calculated table over 10 cm of plastic. Not yet detector benchmarked: no measured spectrum, threshold or trigger has been compared.</pre></div>
-          <p lang="en">All five agree within 0.4σ. The price shows at 10 GeV: the error grew from 0.0085 to 0.057, because the mean of a heavy-tailed quantity is dominated by rare events. That is why detector papers quote a most probable value or a truncated mean, and say which. The reference systematic is our assumption (1%); write it down as one. Our runs use the course's dataset-free test physics list; with FTFP_BERT, expect agreement at the same level and check it.</p>
-          <p lang="zh-Hans">五个能量点都在 0.4σ 以内一致。代价在 10 GeV 处显现：误差从 0.0085 增大到 0.057，因为重尾量的均值由罕见事例主导。这就是探测器论文给出最可几值或截断均值，并且说明用的是哪一个的原因。参考系统误差是我们的假设（1%），要把它作为假设写明。我们的运行用的是课程中不需要数据集的测试物理列表；换成 FTFP_BERT，预期一致程度相同，请自己核对。</p>
+          <p lang="en">Read both summaries. With the assumed 1% reference error every point agrees within 0.4σ, but χ² = 0.28 for 5 points (p = 0.998) means that error is larger than the scatter of the points: it is doing the agreeing. With statistics alone, Geant4 lies 0.1–0.4% below the path-averaged table at all five energies (pulls −2.0 to −0.2, χ² = 10.6/5, p = 0.06). The honest statement is: Geant4 agrees with the PDG table to 0.4% from 100 MeV to 10 GeV, well inside the table's own accuracy (about 1%, mostly the mean excitation energy I, our assumption); a common offset of about −0.2% is hinted at and cannot be resolved by this benchmark. The price of a full mean shows at 10 GeV: the error grew from 0.0085 to 0.057, because the mean of a heavy-tailed quantity is dominated by rare events. That is why detector papers quote a most probable value or a truncated mean, and say which. The reference systematic is our assumption (1%); write it down as one. Our runs use the course's dataset-free test physics list; with FTFP_BERT, expect agreement at the same level and check it.</p>
+          <p lang="zh-Hans">两个汇总都要看。加上假设的 1% 参考误差，每个点都在 0.4σ 以内一致，但 5 个点的 χ² = 0.28（p = 0.998）说明这个误差比各点的散布还大：一致性是它“造”出来的。只看统计误差，Geant4 在全部五个能量点都比路径平均的数据表低 0.1–0.4%（拉力 −2.0 到 −0.2，χ² = 10.6/5，p = 0.06）。诚实的说法是：从 100 MeV 到 10 GeV，Geant4 与 PDG 表在 0.4% 内一致，远在数据表自身精度（约 1%，主要来自平均激发能 I，这是我们的假设）之内；约 −0.2% 的共同偏移有迹象，但本基准无法分辨。完整均值的代价在 10 GeV 处显现：误差从 0.0085 增大到 0.057，因为重尾量的均值由罕见事例主导。这就是探测器论文给出最可几值或截断均值，并且说明用的是哪一个的原因。参考系统误差是我们的假设（1%），要把它作为假设写明。我们的运行用的是课程中不需要数据集的测试物理列表；换成 FTFP_BERT，预期一致程度相同，请自己核对。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Place it on the ladder, then name the next rung</span><span lang="zh-Hans">放到阶梯上，再说出下一阶</span></h3><label class="done" for="w11-s5"><input type="checkbox" id="w11-s5" data-progress="w11"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>

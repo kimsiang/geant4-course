@@ -113,7 +113,7 @@
     /* field box + label */
     x.fillStyle = 'rgba(115,147,255,0.07)'; x.fillRect(0, 0, w, h);
     x.font = '10px ' + MONO; x.fillStyle = 'rgba(220,227,232,0.6)'; x.textAlign = 'left';
-    x.fillText('B = ' + P.B + ' mT  ⊙ ' + G.t('out of the page (+x)', '指出纸面 (+x)'), 10, h - 10);
+    x.fillText('B = ' + P.B + ' mT  ⊗ ' + G.t('into the page (+x)', '指入纸面 (+x)'), 10, h - 10);
     x.fillText('z → ' + G.t('beam', '束流') + '   y ↑', 10, 16);
     /* counters: 80 mm wide, 6 mm thick, at y = ±45 */
     [[45, '#7393FF', 'CounterU · ID 11'], [-45, '#FF6369', 'CounterD · ID 1']].forEach(function (k) {

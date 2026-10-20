@@ -7,9 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Geant4 2.0, Week 07: build a tracker–magnet–tracker spectrometer in Geant4 11.4, reconstruct momentum from curvature, and measure its resolution.">
 <script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/course.css">
 </head>
 <body>
@@ -17,7 +15,7 @@
 <!--shell:top--><a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="zh-Hans">跳到正文</span></a>
 <header class="topbar"><div class="tb-in"><button type="button" class="nav-toggle" aria-controls="nav" aria-expanded="false"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg><span class="sr"><span lang="en">Open the item list</span><span lang="zh-Hans">打开目录</span></span></button><a class="brand" href="index.html"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="logo-bg"/><path d="M5 25 15.5 15" class="logo-mu"/><path d="M15.5 15c3.5-3 7-5.6 11.5-6.5" class="logo-pos"/><path d="M15.5 15c1.8 3.6 4.6 6.5 9 8.5" class="logo-neu"/><circle cx="15.5" cy="15" r="2.2" class="logo-v"/></svg><b>Geant4 2.0</b></a><span class="tb-week"><span lang="en">Week 7 of 12</span><span lang="zh-Hans">第 7 / 12 周</span><span class="tb-title"><span lang="en">Momentum from a magnetic field</span><span lang="zh-Hans">用磁场测量动量</span></span></span><span class="tb-prog" data-prog="w07" aria-hidden="true"><span class="pbar"><i></i></span><span class="pn"></span></span><span class="lang" role="group" aria-label="Language / 语言"><button type="button" data-setlang="en" id="lang-en">EN</button><button type="button" data-setlang="zh" id="lang-zh">中文</button><button type="button" data-setlang="both" id="lang-both">EN+中</button></span></div></header><!--/shell:top-->
 <div class="player">
-<!--shell:nav--><nav class="nav" id="nav" aria-label="Items on this page / 本页目录"><div class="nav-in"><a class="nav-home" href="index.html"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg><span lang="en">Course home</span><span lang="zh-Hans">课程主页</span></a><p class="nav-week"><span lang="en">Week 7 · Understand it</span><span lang="zh-Hans">第 7 周 · 理解</span></p><p class="nav-title"><span lang="en">Momentum from a magnetic field</span><span lang="zh-Hans">用磁场测量动量</span></p><div class="nav-prog" data-prog="w07"><span class="pbar"><i></i></span><span class="pn"></span></div><ol class="nav-items"><li><a href="#s-goals" data-item="s-goals"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-overview"/></svg><span class="t"><span lang="en">Overview and goals</span><span lang="zh-Hans">概览与目标</span><small><span lang="en">Overview · 3 min</span><span lang="zh-Hans">概览 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#background" data-item="background"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Background</span><span lang="zh-Hans">背景知识</span><small><span lang="en">Reading · 6 min</span><span lang="zh-Hans">阅读 · 6 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-evd" data-item="s-evd"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-display"/></svg><span class="t"><span lang="en">3D event display</span><span lang="zh-Hans">三维事例显示</span><small><span lang="en">Event display · 3 min</span><span lang="zh-Hans">事例显示 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-theory" data-item="s-theory"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">7.1 Curvature to momentum</span><span lang="zh-Hans">7.1 由曲率到动量</span><small><span lang="en">Reading · 20 min</span><span lang="zh-Hans">阅读 · 20 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-toy" data-item="s-toy"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-interactive"/></svg><span class="t"><span lang="en">Interactive toy model</span><span lang="zh-Hans">交互玩具模型</span><small><span lang="en">Interactive · 10 min</span><span lang="zh-Hans">交互 · 10 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-task" data-item="s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: Labs 7.1 and 7.2</span><span lang="zh-Hans">动手：实验 7.1 与 7.2</span><small><span lang="en">Hands-on lab · 1 h 15 min</span><span lang="zh-Hans">动手实验 · 1 小时 15 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-quiz" data-item="s-quiz"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-quiz"/></svg><span class="t"><span lang="en">Practice quiz</span><span lang="zh-Hans">练习测验</span><small><span lang="en">Practice quiz · 8 min</span><span lang="zh-Hans">练习测验 · 8 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-err" data-item="s-err"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Common errors</span><span lang="zh-Hans">常见错误</span><small><span lang="en">Reading · 12 min</span><span lang="zh-Hans">阅读 · 12 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-review" data-item="s-review"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-review"/></svg><span class="t"><span lang="en">Review notes</span><span lang="zh-Hans">复习要点</span><small><span lang="en">Checklist · 5 min</span><span lang="zh-Hans">清单 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-share" data-item="s-share"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span class="t"><span lang="en">Share this week</span><span lang="zh-Hans">分享本周成果</span><small><span lang="en">Share · 5 min</span><span lang="zh-Hans">分享 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li></ol><p class="nav-total"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">About 2 h 25 min in total</span><span lang="zh-Hans">共约 2 小时 25 分钟</span></p></div></nav><div class="nav-scrim" hidden></div>
+<!--shell:nav--><nav class="nav" id="nav" aria-label="Items on this page / 本页目录"><div class="nav-in"><a class="nav-home" href="index.html"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg><span lang="en">Course home</span><span lang="zh-Hans">课程主页</span></a><p class="nav-week"><span lang="en">Week 7 · Understand it</span><span lang="zh-Hans">第 7 周 · 理解</span></p><p class="nav-title"><span lang="en">Momentum from a magnetic field</span><span lang="zh-Hans">用磁场测量动量</span></p><div class="nav-prog" data-prog="w07"><span class="pbar"><i></i></span><span class="pn"></span></div><ol class="nav-items"><li><a href="#s-goals" data-item="s-goals"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-overview"/></svg><span class="t"><span lang="en">Overview and goals</span><span lang="zh-Hans">概览与目标</span><small><span lang="en">Overview · 3 min</span><span lang="zh-Hans">概览 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#background" data-item="background"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Background</span><span lang="zh-Hans">背景知识</span><small><span lang="en">Reading · 6 min</span><span lang="zh-Hans">阅读 · 6 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-evd" data-item="s-evd"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-display"/></svg><span class="t"><span lang="en">3D event display</span><span lang="zh-Hans">三维事例显示</span><small><span lang="en">Event display · 3 min</span><span lang="zh-Hans">事例显示 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-theory" data-item="s-theory"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">7.1 Curvature to momentum</span><span lang="zh-Hans">7.1 由曲率到动量</span><small><span lang="en">Reading · 20 min</span><span lang="zh-Hans">阅读 · 20 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-toy" data-item="s-toy"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-interactive"/></svg><span class="t"><span lang="en">Interactive toy model</span><span lang="zh-Hans">交互玩具模型</span><small><span lang="en">Interactive · 10 min</span><span lang="zh-Hans">交互 · 10 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-task" data-item="s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: Labs 7.1 and 7.2</span><span lang="zh-Hans">动手：实验 7.1 与 7.2</span><small><span lang="en">Hands-on lab · 1 h</span><span lang="zh-Hans">动手实验 · 1 小时</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-scatter" data-item="s-scatter"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: Lab 7.3 · scattering muography (no magnet)</span><span lang="zh-Hans">动手：实验 7.3 · 散射缪子成像（无磁场）</span><small><span lang="en">Hands-on lab · 45 min</span><span lang="zh-Hans">动手实验 · 45 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-quiz" data-item="s-quiz"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-quiz"/></svg><span class="t"><span lang="en">Practice quiz</span><span lang="zh-Hans">练习测验</span><small><span lang="en">Practice quiz · 8 min</span><span lang="zh-Hans">练习测验 · 8 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-err" data-item="s-err"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Common errors</span><span lang="zh-Hans">常见错误</span><small><span lang="en">Reading · 12 min</span><span lang="zh-Hans">阅读 · 12 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-review" data-item="s-review"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-review"/></svg><span class="t"><span lang="en">Review notes</span><span lang="zh-Hans">复习要点</span><small><span lang="en">Checklist · 5 min</span><span lang="zh-Hans">清单 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-share" data-item="s-share"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span class="t"><span lang="en">Share this week</span><span lang="zh-Hans">分享本周成果</span><small><span lang="en">Share · 5 min</span><span lang="zh-Hans">分享 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li></ol><p class="nav-total"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">About 2 h 55 min in total</span><span lang="zh-Hans">共约 2 小时 55 分钟</span></p></div></nav><div class="nav-scrim" hidden></div>
 <main id="main" tabindex="-1">
 <!--/shell:nav-->
   <!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb / 路径"><a href="index.html"><span lang="en">Geant4 2.0</span><span lang="zh-Hans">Geant4 2.0</span></a><span aria-hidden="true">›</span><span><span lang="en">Stage 3 · Understand it</span><span lang="zh-Hans">第 3 阶段 · 理解</span></span><span aria-hidden="true">›</span><span aria-current="page"><span lang="en">Week 7</span><span lang="zh-Hans">第 7 周</span></span></nav><!--/shell:crumbs-->
@@ -30,9 +28,9 @@
       <ul class="meta">
         <li class="stage"><b>3 · <span lang="en">Understand it</span><span lang="zh-Hans">理解</span></b><span lang="en">stage</span><span lang="zh-Hans">阶段</span></li>
         <li><b>Labs 7.1–7.2</b><span lang="en">hands-on lab</span><span lang="zh-Hans">动手实验</span></li>
-        <li><b>≈ 2.5 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
+        <li><b>≈ 3 h</b><span lang="en">study session</span><span lang="zh-Hans">学习时长</span></li>
       </ul>
-      <!--shell:cta--><div class="hero-cta"><a class="btn-p" href="#s-goals" data-resume="w07"><span lang="en">Start</span><span lang="zh-Hans">开始</span><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-r"/></svg></a><a class="btn-s" href="#s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span lang="en">Go to the lab</span><span lang="zh-Hans">直接去实验</span></a><span class="hero-sum"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">10 items · about 2 h 25 min</span><span lang="zh-Hans">10 项 · 约 2 小时 25 分钟</span></span></div><!--/shell:cta-->
+      <!--shell:cta--><div class="hero-cta"><a class="btn-p" href="#s-goals" data-resume="w07"><span lang="en">Start</span><span lang="zh-Hans">开始</span><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-r"/></svg></a><a class="btn-s" href="#s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span lang="en">Go to the lab</span><span lang="zh-Hans">直接去实验</span></a><span class="hero-sum"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">11 items · about 2 h 55 min</span><span lang="zh-Hans">11 项 · 约 2 小时 55 分钟</span></span></div><!--/shell:cta-->
       </div>
     <div class="statbox" role="table" aria-label="Week summary">
       <div role="row"><span role="cell">week07</span></div>
@@ -183,7 +181,7 @@ A single quadratic through hits from BOTH trackers assumes every
         <p lang="en">The stronger the field or the lower the momentum, the more the track bends and the easier the bend is to measure. A very stiff track is nearly straight, its radius heads to infinity, and position errors are amplified. High-energy experiments need stronger fields or longer lever arms for that reason.</p>
         <p lang="zh-Hans">磁场越强或动量越低，径迹弯得越厉害，弯曲就越容易测准。很“硬”的径迹几乎是直的，半径趋于无穷，位置误差被放大。正因如此，高能实验需要更强的磁场或更长的杠杆臂。</p>
       </div>
-      <h3 class="bi"><span lang="en">8.2 From an ideal field to a measured field map</span><span lang="zh-Hans">8.2 从理想磁场到实测场图</span></h3>
+      <h3 class="bi"><span lang="en">7.2 From an ideal field to a measured field map</span><span lang="zh-Hans">7.2 从理想磁场到实测场图</span></h3>
       <p lang="en">Real magnets have fringe fields, coil imperfections and gradients. A 1D map B(z) suits a symmetric field; a 3D map is needed when transverse structure matters. The map must state its coordinates, units, interpolation, coverage and what happens outside it. Never silently replace a measured map with a uniform field: a 1% variation matters for a 10⁻³ observable. Step 5 measures exactly this.</p>
       <p lang="zh-Hans">真实磁铁有边缘场、线圈缺陷和梯度。对称磁场适合用一维场图 B(z)；横向结构重要时需要三维场图。场图必须写明坐标约定、单位、插值方法、覆盖范围以及范围外的处理。绝不要悄悄用均匀场代替实测场图：对 10⁻³ 量级的可观测量，1% 的变化就很重要。第 5 步测量的正是这一点。</p>
     </div>
@@ -237,13 +235,14 @@ A single quadratic through hits from BOTH trackers assumes every
     </div>
   </section>
 
-  <section class="run item" id="s-task" data-type="lab" data-min="75" aria-labelledby="h-task">
-    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on lab</span><span lang="zh-Hans">动手实验</span></span><span class="d"><span lang="en">1 h 15 min</span><span lang="zh-Hans">1 小时 15 分钟</span></span></p>
+  <section class="run item" id="s-task" data-type="lab" data-min="60" aria-labelledby="h-task">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on lab</span><span lang="zh-Hans">动手实验</span></span><span class="d"><span lang="en">1 h</span><span lang="zh-Hans">1 小时</span></span></p>
     <p class="cmd">/control/execute spectrometer.mac<span lang="en">hands-on · Labs 7.1 and 7.2</span><span lang="zh-Hans">动手实验 · 实验 7.1 与 7.2</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Build the spectrometer, write the hits, reconstruct p, then distort the field.</span><span lang="zh-Hans">搭建谱仪、写出击中点、重建 p，再让磁场变形。</span></h2>
-      <p lang="en">Expected outputs are from Geant4 11.4.p01 runs of these files with the course test physics list. Muon tracking in fields and the muon EM processes are the same as with <code>FTFP_BERT</code>, so your numbers should agree within the statistical errors (about ±0.01–0.04% on the bias, ±3% relative on σ).</p>
-      <p lang="zh-Hans">预期输出来自这些文件在 Geant4 11.4.p01 上、使用课程测试物理列表的运行。磁场中的缪子输运和缪子电磁过程与 <code>FTFP_BERT</code> 相同，所以你的结果应在统计误差内一致（偏差约 ±0.01–0.04%，σ 相对 ±3%）。</p>
+      <!--shell:dl--><p class="dl"><a class="btn-s" href="downloads/week07-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download all files for this lab (zip)</span><span lang="zh-Hans">下载本实验的全部文件（zip）</span></a><a class="dl-all" href="downloads/geant4-course-code.zip" download><span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></a></p><!--/shell:dl-->
+      <p lang="en">Expected outputs are from Geant4 11.4.p01 runs of these files with the course test physics list. Muon tracking in fields and the muon EM processes are the same as with <code>FTFP_BERT</code>, so your numbers should agree within the statistical errors (about ±0.01–0.04% on the bias, and ±3% relative on the core width <code>core68</code>; the full <code>sigma_p/p</code> rms can move by 10–25% between runs because a handful of scattering tail events dominate it).</p>
+      <p lang="zh-Hans">预期输出来自这些文件在 Geant4 11.4.p01 上、使用课程测试物理列表的运行。磁场中的缪子输运和缪子电磁过程与 <code>FTFP_BERT</code> 相同，所以你的结果应在统计误差内一致（偏差约 ±0.01–0.04%，核心宽度 <code>core68</code> 相对 ±3%；完整的 <code>sigma_p/p</code> 均方根在不同运行之间可变动 10–25%，因为它由少数散射尾部事例主导）。</p>
       <ol class="steps">
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Create the project</span><span lang="zh-Hans">建立工程</span></h3><label class="done" for="w07-s1"><input type="checkbox" id="w07-s1" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -581,7 +580,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 {
   fParticleGun-&gt;GeneratePrimaryVertex(event);
 }</pre></details>
-            <details><summary><b>spectrometer.mac</b><button class="copy" type="button" data-copy="f7-mac">copy</button></summary><pre id="f7-mac" data-src="code/week07/spectrometer.mac"># Lab 7.1: 1000 mu- at each of five momenta, one CSV file per run
+            <details><summary><b>spectrometer.mac</b><button class="copy" type="button" data-copy="f7-mac">copy</button></summary><pre id="f7-mac" data-src="code/week07/spectrometer.mac"># Lab 7.1: 1000 mu- at each of five kinetic energies (p = 1.10 ... 20.1 GeV/c), one CSV file per run
 /control/verbose 0
 /run/verbose 0
 /tracking/verbose 0
@@ -651,13 +650,20 @@ def p_quadratic(z, x):
     return out
 
 
-print(f"{'file':&lt;28}{'p_true':&gt;8}{'bias(2 lines)':&gt;15}{'sigma_p/p':&gt;11}{'bias(quad)':&gt;12}")
+def core_width(r):
+    """Half-width of the central 68% of r: the Gaussian core, insensitive to a few
+    scattering tail events that dominate np.std on 1000 events."""
+    lo, hi = np.percentile(r, [15.865, 84.135])
+    return 0.5 * (hi - lo)
+
+
+print(f"{'file':&lt;28}{'p_true':&gt;8}{'bias(2 lines)':&gt;15}{'sigma_p/p':&gt;11}{'core68':&gt;8}{'bias(quad)':&gt;12}")
 for path in sorted(glob.glob("tracks_*GeV_nt_tracks.csv")):
     p_true, x, z = load(path)
     x_meas = x + rng.normal(0.0, SIGMA_X_MM / 1000.0, x.shape)       # measurement
     r2 = (p_two_lines(z, x_meas) - p_true) / p_true
     rq = (p_quadratic(z, x_meas) - p_true) / p_true
-    print(f"{path:&lt;28}{p_true.mean():8.3f}{np.median(r2):+15.4f}{np.std(r2):11.4f}{np.median(rq):+12.3f}")</pre></details>
+    print(f"{path:&lt;28}{p_true.mean():8.3f}{np.median(r2):+15.4f}{np.std(r2):11.4f}{core_width(r2):8.4f}{np.median(rq):+12.3f}")</pre></details>
           </div>
         </li>
         <li>
@@ -683,14 +689,14 @@ tracks_10GeV_nt_tracks.csv  tracks_20GeV_nt_tracks.csv</pre></div>
           <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c7-r">copy</button></div>
 <pre id="c7-r">python3 reconstruct.py</pre></div>
           <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our Geant4 11.4 run)</span><span lang="zh-Hans">预期（我们的 Geant4 11.4 运行）</span></b></span></div>
-<pre>file                          p_true  bias(2 lines)  sigma_p/p  bias(quad)
-tracks_01GeV_nt_tracks.csv     1.101        -0.0005     0.0040      +0.467
-tracks_02GeV_nt_tracks.csv     2.103        -0.0005     0.0031      +0.570
-tracks_05GeV_nt_tracks.csv     5.105        -0.0003     0.0042      +0.602
-tracks_10GeV_nt_tracks.csv    10.105        +0.0005     0.0064      +0.607
-tracks_20GeV_nt_tracks.csv    20.105        +0.0002     0.0113      +0.608</pre></div>
-          <p lang="en">p<sub>true</sub> is the momentum at the gun: <code>/gun/energy</code> sets kinetic energy, so 1 GeV gives p = 1.101 GeV/c. The two-line method is unbiased to 5 × 10⁻⁴; the small negative bias at low p is the energy lost in air and silicon before the magnet (about 0.5 MeV). σ<sub>p</sub>/p is flat at about 0.3–0.4% (scattering) up to 5 GeV, then grows ∝ p (measurement): 1.13% at 20 GeV, as the toy model's analytic line predicts.</p>
-          <p lang="zh-Hans">p<sub>true</sub> 是枪口处的动量：<code>/gun/energy</code> 设置的是动能，所以 1 GeV 对应 p = 1.101 GeV/c。两直线法的偏差小于 5 × 10⁻⁴；低 p 处的小负偏差来自进入磁铁前在空气和硅中损失的能量（约 0.5 MeV）。σ<sub>p</sub>/p 在 5 GeV 以下平坦，约 0.3–0.4%（散射主导），之后 ∝ p 增长（测量主导）：20 GeV 时 1.13%，与玩具模型的解析线一致。</p>
+<pre>file                          p_true  bias(2 lines)  sigma_p/p  core68  bias(quad)
+tracks_01GeV_nt_tracks.csv     1.101        -0.0005     0.0040  0.0029      +0.467
+tracks_02GeV_nt_tracks.csv     2.103        -0.0005     0.0031  0.0030      +0.570
+tracks_05GeV_nt_tracks.csv     5.105        -0.0003     0.0042  0.0042      +0.602
+tracks_10GeV_nt_tracks.csv    10.105        +0.0005     0.0064  0.0064      +0.607
+tracks_20GeV_nt_tracks.csv    20.105        +0.0002     0.0113  0.0111      +0.608</pre></div>
+          <p lang="en">p<sub>true</sub> is the momentum at the gun: <code>/gun/energy</code> sets kinetic energy, so 1 GeV gives p = 1.101 GeV/c. The two-line method is unbiased to 5 × 10⁻⁴; the small negative bias at low p is the energy lost in air and silicon before the magnet (about 0.5 MeV). σ<sub>p</sub>/p is flat at about 0.3–0.4% (scattering) up to 5 GeV, then grows ∝ p (measurement): 1.13% at 20 GeV, as the toy model's analytic line predicts. <code>sigma_p/p</code> is the rms of all 1000 events; <code>core68</code> is the half-width of the central 68%, which is what the toy draws. At 1 GeV they differ (0.0040 against 0.0029) because about five events scatter far into the tails: the rms is tail-dominated, the core is not.</p>
+          <p lang="zh-Hans">p<sub>true</sub> 是枪口处的动量：<code>/gun/energy</code> 设置的是动能，所以 1 GeV 对应 p = 1.101 GeV/c。两直线法的偏差小于 5 × 10⁻⁴；低 p 处的小负偏差来自进入磁铁前在空气和硅中损失的能量（约 0.5 MeV）。σ<sub>p</sub>/p 在 5 GeV 以下平坦，约 0.3–0.4%（散射主导），之后 ∝ p 增长（测量主导）：20 GeV 时 1.13%，与玩具模型的解析线一致。<code>sigma_p/p</code> 是全部 1000 个事例的均方根；<code>core68</code> 是中间 68% 的半宽，也就是玩具模型画的量。1 GeV 时两者不同（0.0040 对 0.0029），因为约五个事例散射进了远尾：均方根被尾部主导，核心宽度不会。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Check the integrator before blaming the physics</span><span lang="zh-Hans">先检查积分器，再怀疑物理</span></h3><label class="done" for="w07-s4"><input type="checkbox" id="w07-s4" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -700,24 +706,624 @@ tracks_20GeV_nt_tracks.csv    20.105        +0.0002     0.0113      +0.608</pre>
 <pre id="c7-tight">fieldMgr-&gt;GetChordFinder()-&gt;SetDeltaChord(0.01 * mm);
 fieldMgr-&gt;SetDeltaOneStep(0.001 * mm);
 fieldMgr-&gt;SetDeltaIntersection(0.0001 * mm);</pre></div>
-          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected: no change beyond statistics</span><span lang="zh-Hans">预期：除统计涨落外无变化</span></b></span></div>
-<pre>tracks_01GeV_nt_tracks.csv     1.101        -0.0005     0.0031      +0.467
-tracks_20GeV_nt_tracks.csv    20.105        -0.0004     0.0114      +0.607</pre></div>
-          <p lang="en">The bias does not move, so the default accuracy is adequate for this observable. The 1 GeV σ differs from step 3 (0.0031 against 0.0040) because the run produces different random scattering, not because of integration: compare in units of its own error.</p>
-          <p lang="zh-Hans">偏差没有变化，说明默认精度对这个可观测量已经足够。1 GeV 的 σ 与第 3 步不同（0.0031 对 0.0040），是因为这次运行的随机散射不同，而不是积分造成的：要以它自身的误差为单位来比较。</p>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected after rebuilding and rerunning spectrometer.mac (1 and 20 GeV lines): no change beyond statistics</span><span lang="zh-Hans">重新编译并重跑 spectrometer.mac 后的预期（1 和 20 GeV 两行）：除统计涨落外无变化</span></b></span></div>
+<pre>tracks_01GeV_nt_tracks.csv     1.101        -0.0005     0.0031  0.0030      +0.467
+tracks_20GeV_nt_tracks.csv    20.105        +0.0002     0.0113  0.0112      +0.608</pre></div>
+          <p lang="en">The bias and the core width do not move, so the default accuracy is adequate for this observable. The 1 GeV rms drops from 0.0040 to 0.0031 because the tighter steps change the random sequence and this run happens to have fewer far-tail events; the core width (0.0029 against 0.0030) shows nothing changed. Compare robust quantities, in units of their own errors.</p>
+          <p lang="zh-Hans">偏差和核心宽度都没有变化，说明默认精度对这个可观测量已经足够。1 GeV 的均方根从 0.0040 降到 0.0031，是因为更细的步长改变了随机数序列，这次运行恰好远尾事例更少；核心宽度（0.0029 对 0.0030）说明什么都没变。要比较稳健的量，并以它们自身的误差为单位。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Lab 7.2: same field integral, different field</span><span lang="zh-Hans">实验 7.2：同样的场积分，不同的磁场</span></h3><label class="done" for="w07-s5"><input type="checkbox" id="w07-s5" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
-          <p lang="en">Set <code>useFringeMap = true</code>, rebuild, and rerun at 1 and 20 GeV. <code>FringeField</code> is a synthetic 1D map with 5 cm Fermi-function edges. Its ∫B dl equals the uniform 1.5 T·m to 0.1%, but the field now reaches into the trackers (12% of B<sub>0</sub> at the inner planes), and reconstruct.py still assumes the uniform box.</p>
-          <p lang="zh-Hans">把 <code>useFringeMap</code> 设为 <code>true</code>，重新编译，在 1 和 20 GeV 下重新运行。<code>FringeField</code> 是一个合成的一维场图，边缘为 5 cm 宽的费米函数。它的 ∫B dl 与均匀的 1.5 T·m 相差不到 0.1%，但磁场伸进了径迹室（内侧平面处为 B<sub>0</sub> 的 12%），而 reconstruct.py 仍按均匀方盒假设。</p>
+          <p lang="en">Set <code>useFringeMap = true</code>, rebuild, and rerun <code>spectrometer.mac</code> and <code>reconstruct.py</code>; compare the 1 and 20 GeV lines. <code>FringeField</code> is a synthetic 1D map with 5 cm Fermi-function edges. Its ∫B dl equals the uniform 1.5 T·m to 0.1%, but the field now reaches into the trackers (12% of B<sub>0</sub> at the inner planes), and reconstruct.py still assumes the uniform box.</p>
+          <p lang="zh-Hans">把 <code>useFringeMap</code> 设为 <code>true</code>，重新编译，重跑 <code>spectrometer.mac</code> 和 <code>reconstruct.py</code>，比较 1 和 20 GeV 两行。<code>FringeField</code> 是一个合成的一维场图，边缘为 5 cm 宽的费米函数。它的 ∫B dl 与均匀的 1.5 T·m 相差不到 0.1%，但磁场伸进了径迹室（内侧平面处为 B<sub>0</sub> 的 12%），而 reconstruct.py 仍按均匀方盒假设。</p>
           <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (our Geant4 11.4 run)</span><span lang="zh-Hans">预期（我们的 Geant4 11.4 运行）</span></b></span></div>
-<pre>tracks_01GeV_nt_tracks.csv     1.101        +0.0011     0.0033      +0.470
-tracks_20GeV_nt_tracks.csv    20.105        +0.0015     0.0119      +0.610</pre></div>
-          <p lang="en">The bias moves from −0.05% to about +0.13%, roughly 15σ at 1 GeV and 5σ at 20 GeV, while the resolution hardly changes. A correct ∫B dl is not enough when the trackers sit in the fringe: bending inside the tracker spoils the straight-line fits. This is a typical 10⁻³-level systematic of a real spectrometer. To separate it from tracker resolution and scattering, compare runs that differ only in the field.</p>
-          <p lang="zh-Hans">偏差从 −0.05% 变为约 +0.13%，在 1 GeV 约为 15σ，在 20 GeV 约为 5σ，而分辨率几乎不变。当径迹室处于边缘场中时，∫B dl 正确并不够：径迹室内部的弯曲破坏了直线拟合。这是真实谱仪中典型的 10⁻³ 量级系统误差。要把它与径迹室分辨率和散射区分开，就比较只在磁场上不同的两组运行。</p>
+<pre>tracks_01GeV_nt_tracks.csv     1.101        +0.0011     0.0033  0.0029      +0.470
+tracks_20GeV_nt_tracks.csv    20.105        +0.0019     0.0113  0.0112      +0.611</pre></div>
+          <p lang="en">The bias moves from −0.05% to +0.11% at 1 GeV and from +0.02% to +0.19% at 20 GeV, while the resolution hardly changes. Each bias is a median of 1000 events (error ≈ 1.25 × width/√1000) and the shift is a difference of two independent runs (×√2): about 10σ at 1 GeV (core width) and about 2.7σ at 20 GeV, where the measurement term makes each event noisier. A correct ∫B dl is not enough when the trackers sit in the fringe: bending inside the tracker spoils the straight-line fits. This is a typical 10⁻³-level systematic of a real spectrometer. To separate it from tracker resolution and scattering, compare runs that differ only in the field.</p>
+          <p lang="zh-Hans">1 GeV 时偏差从 −0.05% 变为 +0.11%，20 GeV 时从 +0.02% 变为 +0.19%，而分辨率几乎不变。每个偏差是 1000 个事例的中位数（误差 ≈ 1.25 × 宽度/√1000），位移是两组独立运行之差（再乘 √2）：1 GeV 约 10σ（用核心宽度），20 GeV 约 2.7σ，因为那里测量项让每个事例更嘈杂。当径迹室处于边缘场中时，∫B dl 正确并不够：径迹室内部的弯曲破坏了直线拟合。这是真实谱仪中典型的 10⁻³ 量级系统误差。要把它与径迹室分辨率和散射区分开，就比较只在磁场上不同的两组运行。</p>
         </li>
       </ol>
       <p class="progress" data-progress-out="w07"></p>
+    </div>
+  </section>
+
+  <section class="run item" id="s-scatter" data-type="lab" data-min="45" data-min-set="45" aria-labelledby="h-scatter">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on lab</span><span lang="zh-Hans">动手实验</span></span><span class="d"><span lang="en">45 min</span><span lang="zh-Hans">45 分钟</span></span></p>
+    <p class="cmd">./scattering slab_scan.mac<span lang="en">hands-on · Lab 7.3 · scattering muography (no magnet)</span><span lang="zh-Hans">动手实验 · 实验 7.3 · 散射缪子成像（无磁场）</span></p>
+    <div class="prose">
+      <h2 id="h-scatter" class="bi"><span lang="en">Switch the magnet off and put steel between the trackers: the bend you measured becomes the signal.</span><span lang="zh-Hans">关掉磁铁，在径迹探测器之间放钢：你测过的偏折变成了信号。</span></h2>
+      <p class="dl"><a class="btn-s" href="downloads/muography-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download the scattering lab (zip, in muography/scattering)</span><span lang="zh-Hans">下载散射实验（zip，位于 muography/scattering）</span></a></p>
+          <p lang="en">Labs 7.1 and 7.2 fitted one line before the magnet and one after it. Scattering muography uses exactly that measurement, with no magnet: the change of angle comes from multiple scattering in the object. Dense, high-Z material scatters more. Industry uses this to image containers, pipes, vessels and waste drums, where absorption would need far longer exposures.</p>
+          <p lang="zh-Hans">实验 7.1 和 7.2 在磁铁前后各拟合一条直线。散射缪子成像用的正是这个测量，只是没有磁铁：角度的变化来自物体中的多次散射。密度大、原子序数高的材料散射更强。工业上用它对集装箱、管道、容器和废物桶成像，这些场合用吸收法需要长得多的曝光。</p>
+          <p lang="en">A separate small app, with four ideal tracker planes at z = ±40 and ±60 cm and a steel slab or a 20 cm steel cube at the centre. Outputs below are real Geant4 11.4.p01 runs of these files with the course test physics list; multiple scattering of muons is in it, so <code>FTFP_BERT</code> should agree within the errors.</p>
+          <p lang="zh-Hans">这是一个独立的小程序：四层理想径迹探测面位于 z = ±40 和 ±60 cm，中间放一块钢板或一个 20 cm 钢立方体。下面的输出来自这些文件在 Geant4 11.4.p01 上的真实运行，使用课程测试物理列表；其中包含缪子的多次散射，所以 <code>FTFP_BERT</code> 应在误差内一致。</p>
+      <ol class="steps">
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Build the scattering app</span><span lang="zh-Hans">编译散射程序</span></h3><label class="done" for="w07-sc1"><input type="checkbox" id="w07-sc1" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <div class="files">
+            <details><summary><b>CMakeLists.txt</b><button class="copy" type="button" data-copy="fsc-1">copy</button></summary><pre id="fsc-1" data-src="code/muography/scattering/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
+project(Scattering LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Geant4 REQUIRED ui_all vis_all)
+include(${Geant4_USE_FILE})
+
+file(GLOB sources CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/include/*.hh)
+
+add_executable(scattering scattering.cc ${sources} ${headers})
+target_include_directories(scattering PRIVATE include)
+target_link_libraries(scattering PRIVATE ${Geant4_LIBRARIES})
+
+foreach(_f slab_scan.mac slab_thickness.mac slab_energy.mac poca.mac highland.py poca.py)
+  configure_file(${PROJECT_SOURCE_DIR}/${_f} ${PROJECT_BINARY_DIR}/${_f} COPYONLY)
+endforeach()</pre></details>
+            <details><summary><b>scattering.cc</b><button class="copy" type="button" data-copy="fsc-2">copy</button></summary><pre id="fsc-2" data-src="code/muography/scattering/scattering.cc">// Scattering muography without a magnet: how much does steel bend a muon?
+//   ./scattering slab_scan.mac   Highland test: 1, 2, 5, 10 cm of steel at 1, 3, 10 GeV
+//   ./scattering poca.mac        a 20 cm steel cube for the PoCA image
+#include "Actions.hh"
+#include "DetectorConstruction.hh"
+
+#include "FTFP_BERT.hh"
+#include "G4RunManagerFactory.hh"
+#include "G4UImanager.hh"
+
+int main(int argc, char** argv)
+{
+  auto* runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+  runManager-&gt;SetNumberOfThreads(2);
+  runManager-&gt;SetUserInitialization(new DetectorConstruction());
+  runManager-&gt;SetUserInitialization(new FTFP_BERT());
+  runManager-&gt;SetUserInitialization(new ActionInitialization());
+  if (argc &gt; 1) G4UImanager::GetUIpointer()-&gt;ApplyCommand("/control/execute " + G4String(argv[1]));
+  delete runManager;
+  return 0;
+}</pre></details>
+            <details><summary><b>include/DetectorConstruction.hh</b><button class="copy" type="button" data-copy="fsc-3">copy</button></summary><pre id="fsc-3" data-src="code/muography/scattering/include/DetectorConstruction.hh">#ifndef DetectorConstruction_h
+#define DetectorConstruction_h 1
+
+#include "G4SystemOfUnits.hh"
+#include "G4VUserDetectorConstruction.hh"
+#include "globals.hh"
+
+class G4Box;
+class G4GenericMessenger;
+
+// Scattering muography, no magnet (z points UP, muons travel down):
+//   four ideal tracker planes at z = +60, +40, -40, -60 cm (300 um silicon, 1.2 m wide)
+//   and between them either a steel SLAB (1 m x 1 m, thickness set by command)
+//   or a steel BLOCK (20 cm cube) for the PoCA image.
+// The two upper planes measure the incoming line, the two lower planes the outgoing line.
+class DetectorConstruction : public G4VUserDetectorConstruction
+{
+  public:
+    DetectorConstruction();
+    ~DetectorConstruction() override;
+    G4VPhysicalVolume* Construct() override;
+    void ConstructSDandField() override;
+
+    static constexpr G4double kPlaneZ[4] = {60. * cm, 40. * cm, -40. * cm, -60. * cm};
+
+    // /scat/det/thickness: resizes the slab between runs (no rebuild needed)
+    void SetThickness(G4double t);
+
+  private:
+    G4Box* fSlab = nullptr;
+    G4GenericMessenger* fMessenger = nullptr;
+    G4String fShape = "slab";
+    G4String fMaterial = "G4_Fe";
+    G4double fThickness = 5. * cm;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/DetectorConstruction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="fsc-4">copy</button></summary><pre id="fsc-4" data-src="code/muography/scattering/src/DetectorConstruction.cc">#include "DetectorConstruction.hh"
+
+#include "TrackerSD.hh"
+
+#include "G4Box.hh"
+#include "G4GenericMessenger.hh"
+#include "G4LogicalVolume.hh"
+#include "G4NistManager.hh"
+#include "G4PVPlacement.hh"
+#include "G4SDManager.hh"
+#include "G4RunManager.hh"
+
+DetectorConstruction::DetectorConstruction()
+{
+  fMessenger = new G4GenericMessenger(this, "/scat/det/", "Scattering muography geometry");
+  auto&amp; shape = fMessenger-&gt;DeclareProperty("shape", fShape, "slab | block");
+  shape.SetCandidates("slab block");
+  shape.command-&gt;SetToBeBroadcasted(false);
+  fMessenger-&gt;DeclareProperty("material", fMaterial, "NIST material of the object").command-&gt;SetToBeBroadcasted(false);
+  fMessenger-&gt;DeclareMethodWithUnit("thickness", "cm", &amp;DetectorConstruction::SetThickness, "slab thickness")
+    .command-&gt;SetToBeBroadcasted(false);
+}
+
+DetectorConstruction::~DetectorConstruction() { delete fMessenger; }
+
+G4VPhysicalVolume* DetectorConstruction::Construct()
+{
+  auto* nist = G4NistManager::Instance();
+  auto* air = nist-&gt;FindOrBuildMaterial("G4_AIR");
+  auto* si = nist-&gt;FindOrBuildMaterial("G4_Si");
+  auto* obj = nist-&gt;FindOrBuildMaterial(fMaterial);
+
+  auto* logicWorld = new G4LogicalVolume(new G4Box("World", 1. * m, 1. * m, 1. * m), air, "World");
+  auto* physWorld = new G4PVPlacement(nullptr, {}, logicWorld, "World", nullptr, false, 0, true);
+
+  auto* logicPlane = new G4LogicalVolume(new G4Box("Plane", 60. * cm, 60. * cm, 150. * um), si, "Plane");
+  for (G4int i = 0; i &lt; 4; ++i)
+    new G4PVPlacement(nullptr, G4ThreeVector(0, 0, kPlaneZ[i]), logicPlane, "Plane", logicWorld, false, i, true);
+
+  G4Box* box = (fShape == "block") ? new G4Box("Object", 10. * cm, 10. * cm, 10. * cm)
+                                   : new G4Box("Object", 50. * cm, 50. * cm, 0.5 * fThickness);
+  if (fShape == "slab") fSlab = box;
+  new G4PVPlacement(nullptr, {}, new G4LogicalVolume(box, obj, "Object"), "Object", logicWorld, false, 0, true);
+
+  G4cout &lt;&lt; "Scattering setup: " &lt;&lt; fShape &lt;&lt; " of " &lt;&lt; fMaterial &lt;&lt; " ("
+         &lt;&lt; obj-&gt;GetRadlen() / cm &lt;&lt; " cm radiation length)"
+         &lt;&lt; (fShape == "slab" ? ", thickness " + std::to_string(fThickness / cm) + " cm" : G4String(", 20 cm cube"))
+         &lt;&lt; G4endl;
+  return physWorld;
+}
+
+void DetectorConstruction::SetThickness(G4double t)
+{
+  fThickness = t;
+  if (fSlab) {   // after /run/initialize: change the existing solid, then tell the kernel
+    fSlab-&gt;SetZHalfLength(0.5 * t);
+    G4RunManager::GetRunManager()-&gt;GeometryHasBeenModified();
+    G4cout &lt;&lt; "Slab thickness now " &lt;&lt; t / cm &lt;&lt; " cm" &lt;&lt; G4endl;
+  }
+}
+
+void DetectorConstruction::ConstructSDandField()
+{
+  auto* sd = new TrackerSD("Tracker/PlaneSD", "TrackerHits");
+  G4SDManager::GetSDMpointer()-&gt;AddNewDetector(sd);
+  SetSensitiveDetector("Plane", sd);
+}</pre></details>
+            <details><summary><b>include/PrimaryGeneratorAction.hh</b><button class="copy" type="button" data-copy="fsc-5">copy</button></summary><pre id="fsc-5" data-src="code/muography/scattering/include/PrimaryGeneratorAction.hh">#ifndef PrimaryGeneratorAction_h
+#define PrimaryGeneratorAction_h 1
+
+#include "G4VUserPrimaryGeneratorAction.hh"
+#include "globals.hh"
+
+class G4ParticleGun;
+class G4GenericMessenger;
+
+// Monoenergetic mu- (energy with /gun/energy) starting at z = +80 cm, going down.
+// /scat/gun/halfSize spreads the start point over a square; /scat/gun/maxAngle
+// tilts the direction (cos theta uniform up to that angle, phi uniform).
+// Defaults (0, 0) give a pencil beam at normal incidence for the Highland test.
+class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
+{
+  public:
+    PrimaryGeneratorAction();
+    ~PrimaryGeneratorAction() override;
+    void GeneratePrimaries(G4Event* event) override;
+
+  private:
+    G4ParticleGun* fGun = nullptr;
+    G4GenericMessenger* fMessenger = nullptr;
+    G4double fHalfSize = 0.;
+    G4double fMaxAngle = 0.;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/PrimaryGeneratorAction.cc</b><button class="copy" type="button" data-copy="fsc-6">copy</button></summary><pre id="fsc-6" data-src="code/muography/scattering/src/PrimaryGeneratorAction.cc">#include "PrimaryGeneratorAction.hh"
+
+#include "G4Event.hh"
+#include "G4GenericMessenger.hh"
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
+#include "G4PhysicalConstants.hh"
+#include "G4SystemOfUnits.hh"
+#include "Randomize.hh"
+
+#include &lt;cmath&gt;
+
+PrimaryGeneratorAction::PrimaryGeneratorAction()
+{
+  fGun = new G4ParticleGun(1);
+  fGun-&gt;SetParticleDefinition(G4ParticleTable::GetParticleTable()-&gt;FindParticle("mu-"));
+  fGun-&gt;SetParticleEnergy(3. * GeV);
+  fMessenger = new G4GenericMessenger(this, "/scat/gun/", "Muon source");
+  fMessenger-&gt;DeclarePropertyWithUnit("halfSize", "cm", fHalfSize, "half side of the start square");
+  fMessenger-&gt;DeclarePropertyWithUnit("maxAngle", "deg", fMaxAngle, "largest zenith angle");
+}
+
+PrimaryGeneratorAction::~PrimaryGeneratorAction()
+{
+  delete fMessenger;
+  delete fGun;
+}
+
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
+{
+  const G4double cmin = std::cos(fMaxAngle);
+  const G4double c = 1. - (1. - cmin) * G4UniformRand(), s = std::sqrt(1. - c * c), phi = twopi * G4UniformRand();
+  const G4ThreeVector dir(s * std::cos(phi), s * std::sin(phi), -c);
+  // place the start so the line crosses z = 0 at a uniform point of the square
+  const G4ThreeVector atZero((2. * G4UniformRand() - 1.) * fHalfSize, (2. * G4UniformRand() - 1.) * fHalfSize, 0.);
+  fGun-&gt;SetParticlePosition(atZero - dir * (80. * cm / c));
+  fGun-&gt;SetParticleMomentumDirection(dir);
+  fGun-&gt;GeneratePrimaryVertex(event);
+}</pre></details>
+            <details><summary><b>include/TrackerSD.hh</b><button class="copy" type="button" data-copy="fsc-7">copy</button></summary><pre id="fsc-7" data-src="code/muography/scattering/include/TrackerSD.hh">#ifndef TrackerSD_h
+#define TrackerSD_h 1
+
+#include "G4THitsCollection.hh"
+#include "G4ThreeVector.hh"
+#include "G4VHit.hh"
+#include "G4VSensitiveDetector.hh"
+
+// Ideal tracker: the position where the PRIMARY muon first enters each plane.
+// No resolution, no noise, 100% efficiency (a real detector adds all three).
+class TrackerHit : public G4VHit
+{
+  public:
+    void Set(const G4ThreeVector&amp; p) { if (!fHit) { fHit = true; fPos = p; } }
+    G4bool IsHit() const { return fHit; }
+    const G4ThreeVector&amp; GetPos() const { return fPos; }
+
+  private:
+    G4bool fHit = false;
+    G4ThreeVector fPos;
+};
+using TrackerHitsCollection = G4THitsCollection&lt;TrackerHit&gt;;
+
+class TrackerSD : public G4VSensitiveDetector
+{
+  public:
+    TrackerSD(const G4String&amp; name, const G4String&amp; hcName);
+    void Initialize(G4HCofThisEvent* hce) override;
+    G4bool ProcessHits(G4Step* step, G4TouchableHistory*) override;
+
+  private:
+    TrackerHitsCollection* fHits = nullptr;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/TrackerSD.cc</b><button class="copy" type="button" data-copy="fsc-8">copy</button></summary><pre id="fsc-8" data-src="code/muography/scattering/src/TrackerSD.cc">#include "TrackerSD.hh"
+
+#include "G4HCofThisEvent.hh"
+#include "G4SDManager.hh"
+#include "G4Step.hh"
+
+TrackerSD::TrackerSD(const G4String&amp; name, const G4String&amp; hcName) : G4VSensitiveDetector(name)
+{
+  collectionName.insert(hcName);
+}
+
+void TrackerSD::Initialize(G4HCofThisEvent* hce)
+{
+  fHits = new TrackerHitsCollection(SensitiveDetectorName, collectionName[0]);
+  hce-&gt;AddHitsCollection(G4SDManager::GetSDMpointer()-&gt;GetCollectionID(fHits), fHits);
+  for (G4int i = 0; i &lt; 4; ++i) fHits-&gt;insert(new TrackerHit());
+}
+
+G4bool TrackerSD::ProcessHits(G4Step* step, G4TouchableHistory*)
+{
+  if (step-&gt;GetTrack()-&gt;GetTrackID() != 1) return false;
+  const auto* pre = step-&gt;GetPreStepPoint();
+  (*fHits)[pre-&gt;GetTouchable()-&gt;GetCopyNumber()]-&gt;Set(pre-&gt;GetPosition());
+  return true;
+}</pre></details>
+            <details><summary><b>include/Actions.hh</b><button class="copy" type="button" data-copy="fsc-9">copy</button></summary><pre id="fsc-9" data-src="code/muography/scattering/include/Actions.hh">#ifndef Actions_h
+#define Actions_h 1
+
+#include "G4Accumulable.hh"
+#include "G4UserEventAction.hh"
+#include "G4UserRunAction.hh"
+#include "G4VUserActionInitialization.hh"
+#include "globals.hh"
+
+class RunAction : public G4UserRunAction
+{
+  public:
+    RunAction();
+    void BeginOfRunAction(const G4Run*) override;
+    void EndOfRunAction(const G4Run* run) override;
+    void Count(G4bool all4) { fAll4 += all4 ? 1 : 0; }
+
+  private:
+    G4Accumulable&lt;G4int&gt; fAll4{0};
+};
+
+class EventAction : public G4UserEventAction
+{
+  public:
+    explicit EventAction(RunAction* r) : fRun(r) {}
+    void EndOfEventAction(const G4Event* event) override;
+
+  private:
+    RunAction* fRun = nullptr;
+    G4int fHitsID = -1;
+};
+
+class ActionInitialization : public G4VUserActionInitialization
+{
+  public:
+    void BuildForMaster() const override;
+    void Build() const override;
+};
+
+#endif</pre></details>
+            <details><summary><b>src/Actions.cc</b><button class="copy" type="button" data-copy="fsc-10">copy</button></summary><pre id="fsc-10" data-src="code/muography/scattering/src/Actions.cc">#include "Actions.hh"
+
+#include "PrimaryGeneratorAction.hh"
+#include "TrackerSD.hh"
+
+#include "G4AccumulableManager.hh"
+#include "G4AnalysisManager.hh"
+#include "G4Event.hh"
+#include "G4HCofThisEvent.hh"
+#include "G4PrimaryParticle.hh"
+#include "G4PrimaryVertex.hh"
+#include "G4Run.hh"
+#include "G4SDManager.hh"
+#include "G4SystemOfUnits.hh"
+
+RunAction::RunAction()
+{
+  G4AccumulableManager::Instance()-&gt;Register(fAll4);
+  auto* a = G4AnalysisManager::Instance();
+  a-&gt;SetDefaultFileType("root");
+  a-&gt;SetFileName("scattering");
+  a-&gt;SetNtupleMerging(true);
+  // one row per muon seen by all four planes; positions in cm, planes at
+  // z = +60, +40, -40, -60 cm (DetectorConstruction::kPlaneZ)
+  a-&gt;CreateNtuple("trk", "Muon positions on the four tracker planes");
+  a-&gt;CreateNtupleDColumn("Ekin_GeV");
+  for (const char* c : {"x0", "y0", "x1", "y1", "x2", "y2", "x3", "y3"}) a-&gt;CreateNtupleDColumn(c);
+  a-&gt;FinishNtuple();
+}
+
+void RunAction::BeginOfRunAction(const G4Run*)
+{
+  G4AccumulableManager::Instance()-&gt;Reset();
+  G4AnalysisManager::Instance()-&gt;OpenFile();
+}
+
+void RunAction::EndOfRunAction(const G4Run* run)
+{
+  G4AccumulableManager::Instance()-&gt;Merge();
+  if (IsMaster())
+    G4cout &lt;&lt; "Run " &lt;&lt; run-&gt;GetRunID() &lt;&lt; ": " &lt;&lt; run-&gt;GetNumberOfEvent() &lt;&lt; " muons, "
+           &lt;&lt; fAll4.GetValue() &lt;&lt; " seen by all four planes" &lt;&lt; G4endl;
+  auto* a = G4AnalysisManager::Instance();
+  a-&gt;Write();
+  a-&gt;CloseFile();
+}
+
+void EventAction::EndOfEventAction(const G4Event* event)
+{
+  if (fHitsID &lt; 0) fHitsID = G4SDManager::GetSDMpointer()-&gt;GetCollectionID("TrackerHits");
+  auto* hce = event-&gt;GetHCofThisEvent();
+  if (!hce) return;
+  auto* hits = static_cast&lt;TrackerHitsCollection*&gt;(hce-&gt;GetHC(fHitsID));
+  G4bool all4 = hits &amp;&amp; hits-&gt;entries() == 4;
+  for (G4int i = 0; all4 &amp;&amp; i &lt; 4; ++i) all4 = (*hits)[i]-&gt;IsHit();
+  fRun-&gt;Count(all4);
+  if (!all4) return;
+
+  auto* a = G4AnalysisManager::Instance();
+  a-&gt;FillNtupleDColumn(0, 0, event-&gt;GetPrimaryVertex()-&gt;GetPrimary()-&gt;GetKineticEnergy() / GeV);
+  for (G4int i = 0; i &lt; 4; ++i) {
+    a-&gt;FillNtupleDColumn(0, 1 + 2 * i, (*hits)[i]-&gt;GetPos().x() / cm);
+    a-&gt;FillNtupleDColumn(0, 2 + 2 * i, (*hits)[i]-&gt;GetPos().y() / cm);
+  }
+  a-&gt;AddNtupleRow(0);
+}
+
+void ActionInitialization::BuildForMaster() const { SetUserAction(new RunAction()); }
+
+void ActionInitialization::Build() const
+{
+  SetUserAction(new PrimaryGeneratorAction());
+  auto* r = new RunAction();
+  SetUserAction(r);
+  SetUserAction(new EventAction(r));
+}</pre></details>
+            <details><summary><b>slab_scan.mac</b><button class="copy" type="button" data-copy="fsc-11">copy</button></summary><pre id="fsc-11" data-src="code/muography/scattering/slab_scan.mac"># Highland test: a pencil beam of mu- through 1, 2, 5 and 10 cm of steel, at 1, 3 and 10 GeV.
+# Twelve runs of 20 000 muons, one ROOT file each: slab_&lt;t&gt;cm_&lt;E&gt;GeV.root
+/control/verbose 1
+/run/verbose 0
+/scat/det/shape slab
+/scat/det/material G4_Fe
+/run/initialize
+/control/foreach slab_thickness.mac t "1 2 5 10"</pre></details>
+            <details><summary><b>slab_thickness.mac</b><button class="copy" type="button" data-copy="fsc-12">copy</button></summary><pre id="fsc-12" data-src="code/muography/scattering/slab_thickness.mac"># called by slab_scan.mac with {t} = thickness in cm
+/scat/det/thickness {t} cm
+/control/foreach slab_energy.mac e "1 3 10"</pre></details>
+            <details><summary><b>slab_energy.mac</b><button class="copy" type="button" data-copy="fsc-13">copy</button></summary><pre id="fsc-13" data-src="code/muography/scattering/slab_energy.mac"># called by slab_thickness.mac with {t} and {e} = kinetic energy in GeV
+/gun/energy {e} GeV
+/analysis/setFileName slab_{t}cm_{e}GeV
+/random/setSeeds 4{t} 7{e}
+/run/beamOn 20000</pre></details>
+            <details><summary><b>poca.mac</b><button class="copy" type="button" data-copy="fsc-14">copy</button></summary><pre id="fsc-14" data-src="code/muography/scattering/poca.mac"># PoCA image: 3 GeV mu- over a 80 cm x 80 cm square, up to 20 deg, through a 20 cm steel cube
+/control/verbose 1
+/run/verbose 0
+/scat/det/shape block
+/scat/det/material G4_Fe
+/run/initialize
+# the generator's commands exist only after /run/initialize (it is built per thread)
+/scat/gun/halfSize 40 cm
+/scat/gun/maxAngle 20 deg
+/gun/energy 3 GeV
+/analysis/setFileName poca
+/random/setSeeds 31 41
+/run/beamOn 200000</pre></details>
+            <details><summary><b>highland.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="fsc-15">copy</button></summary><pre id="fsc-15" data-src="code/muography/scattering/highland.py">"""Compare the simulated scattering angle in steel with the Highland formula.
+
+    python3 highland.py          reads slab_&lt;t&gt;cm_&lt;E&gt;GeV.root from slab_scan.mac
+
+The upper two planes give the incoming slope, the lower two the outgoing slope.
+The plane-projected deflection is theta_x = atan(sx_out) - atan(sx_in) (same for y).
+PDG RPP 2024 Eq. 34.16 (Highland, as refined by Lynch and Dahl):
+    theta0 = 13.6 MeV / (beta c p) * z * sqrt(x/X0) * [1 + 0.038 ln(x z^2 / (X0 beta^2))]
+theta0 is the width of the CENTRAL 98% of the projected-angle distribution, so we
+compare it with the r.m.s. of the central 98% of the simulated angles, not the
+full r.m.s. (single large-angle scatters make the full r.m.s. larger).
+"""
+import numpy as np
+import uproot
+
+M_MU = 0.1056584       # GeV
+X0_FE = 1.757          # cm, PDG
+Z_PLANE = np.array([60.0, 40.0, -40.0, -60.0])   # cm, DetectorConstruction::kPlaneZ
+
+
+def highland(t_cm, ekin):
+    E = ekin + M_MU
+    p = np.sqrt(E * E - M_MU * M_MU)
+    beta = p / E
+    x = t_cm / X0_FE
+    return 13.6e-3 / (beta * p) * np.sqrt(x) * (1 + 0.038 * np.log(x / beta**2))   # rad
+
+
+def central98_rms(a):
+    lo, hi = np.percentile(a, [1, 99])
+    a = a[(a &gt;= lo) &amp; (a &lt;= hi)]
+    return a.std()
+
+
+def angles(t):
+    sx_in = (t["x0"] - t["x1"]) / (Z_PLANE[0] - Z_PLANE[1])
+    sy_in = (t["y0"] - t["y1"]) / (Z_PLANE[0] - Z_PLANE[1])
+    sx_out = (t["x2"] - t["x3"]) / (Z_PLANE[2] - Z_PLANE[3])
+    sy_out = (t["y2"] - t["y3"]) / (Z_PLANE[2] - Z_PLANE[3])
+    return np.concatenate([np.arctan(sx_out) - np.arctan(sx_in), np.arctan(sy_out) - np.arctan(sy_in)])
+
+
+print(f"{'steel':&gt;6} {'E_kin':&gt;6} {'muons':&gt;6} {'sim theta0':&gt;11} {'Highland':&gt;9} {'sim/Highland':&gt;13}")
+for t_cm in (1, 2, 5, 10):
+    for e in (1, 3, 10):
+        tree = uproot.open(f"slab_{t_cm}cm_{e}GeV.root")["trk"].arrays(library="np")
+        th = angles(tree)
+        sim = central98_rms(th)
+        hl = highland(t_cm, e)
+        err = sim / np.sqrt(2 * len(th))   # approximate statistical error of a width
+        print(f"{t_cm:&gt;4} cm {e:&gt;4} GeV {len(tree['x0']):&gt;6} {1e3 * sim:&gt;7.2f} mrad {1e3 * hl:&gt;6.2f} mrad "
+              f"{sim / hl:&gt;8.3f} +/- {err / hl:.3f}")</pre></details>
+            <details><summary><b>poca.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="fsc-16">copy</button></summary><pre id="fsc-16" data-src="code/muography/scattering/poca.py">"""A first scattering-muography image: Point of Closest Approach (PoCA).
+
+    python3 poca.py poca.root
+
+For each muon: the incoming line (planes 0, 1) and the outgoing line (planes 2, 3)
+are straight lines in 3D. If the muon scattered once, the two lines meet where it
+scattered. PoCA puts the whole deflection at the point where the two lines come
+closest, and weights it by the squared scattering angle. Dense, high-Z material
+lights up. Real muography adds detector resolution, a momentum estimate and
+iterative methods (e.g. maximum likelihood); PoCA is the 10-line baseline.
+"""
+import sys
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+import uproot
+
+Z = np.array([60.0, 40.0, -40.0, -60.0])   # cm, plane positions
+t = uproot.open(sys.argv[1] if len(sys.argv) &gt; 1 else "poca.root")["trk"].arrays(library="np")
+
+P = [np.stack([t[f"x{i}"], t[f"y{i}"], np.full_like(t["x0"], Z[i])], axis=1) for i in range(4)]
+a0, u = P[1], P[0] - P[1]                 # incoming line: point on plane 1, direction
+b0, v = P[2], P[2] - P[3]                 # outgoing line: point on plane 2, direction
+u /= np.linalg.norm(u, axis=1)[:, None]
+v /= np.linalg.norm(v, axis=1)[:, None]
+theta = np.arccos(np.clip(np.sum(u * v, axis=1), -1, 1))     # 3D scattering angle
+
+# closest points of the two lines: minimise |a0 + s u - (b0 + r v)|
+w = a0 - b0
+uv = np.sum(u * v, axis=1)
+den = np.maximum(1 - uv**2, 1e-12)
+s = (uv * np.sum(w * v, axis=1) - np.sum(w * u, axis=1)) / den
+r = (np.sum(w * v, axis=1) - uv * np.sum(w * u, axis=1)) / den
+poca = 0.5 * ((a0 + s[:, None] * u) + (b0 + r[:, None] * v))
+
+sel = (theta &gt; 2e-3) &amp; (np.abs(poca[:, 2]) &lt; 35)               # scattered, between the trackers
+inside = (np.abs(poca[:, 0]) &lt; 10) &amp; (np.abs(poca[:, 1]) &lt; 10) &amp; (np.abs(poca[:, 2]) &lt; 10)
+big = theta &gt; 20e-3
+print(f"{len(theta)} muons; median scattering angle {1e3 * np.median(theta):.1f} mrad")
+print(f"PoCA inside the cube: {inside.sum()} muons; {np.sum(inside &amp; big)} of them "
+      f"({100 * np.mean(big[inside]):.0f}%) scattered by more than 20 mrad")
+print(f"PoCA outside the cube: {np.sum(~inside)} muons; {np.sum(~inside &amp; big)} "
+      f"({100 * np.mean(big[~inside]):.1f}%) scattered by more than 20 mrad")
+
+fig, ax = plt.subplots(1, 2, figsize=(11, 4.8))
+edges = np.linspace(-40, 40, 41)
+img, _, _ = np.histogram2d(poca[sel, 0], poca[sel, 1], bins=[edges, edges], weights=(1e3 * theta[sel]) ** 2)
+cnt, _, _ = np.histogram2d(poca[sel, 0], poca[sel, 1], bins=[edges, edges])
+im = ax[0].imshow((img / np.maximum(cnt, 1)).T, origin="lower", extent=[-40, 40, -40, 40], cmap="magma")
+fig.colorbar(im, ax=ax[0], label="mean theta^2 [mrad^2]")
+ax[0].add_patch(plt.Rectangle((-10, -10), 20, 20, fill=False, ls="--", color="w"))
+ax[0].set(title="PoCA image, top view (dashed: 20 cm steel cube)", xlabel="x [cm]", ylabel="y [cm]")
+img2, _, _ = np.histogram2d(poca[sel, 0], poca[sel, 2], bins=[edges, np.linspace(-35, 35, 36)],
+                            weights=(1e3 * theta[sel]) ** 2)
+cnt2, _, _ = np.histogram2d(poca[sel, 0], poca[sel, 2], bins=[edges, np.linspace(-35, 35, 36)])
+im = ax[1].imshow((img2 / np.maximum(cnt2, 1)).T, origin="lower", extent=[-40, 40, -35, 35], cmap="magma")
+fig.colorbar(im, ax=ax[1], label="mean theta^2 [mrad^2]")
+ax[1].add_patch(plt.Rectangle((-10, -10), 20, 20, fill=False, ls="--", color="w"))
+ax[1].set(title="side view: PoCA smears the cube along z", xlabel="x [cm]", ylabel="z [cm]")
+fig.tight_layout()
+fig.savefig("poca.png", dpi=120)
+print("wrote poca.png")</pre></details>
+          </div>
+          <div class="code"><div class="code-head"><span class="l"><b><span lang="en">terminal</span><span lang="zh-Hans">终端</span></b></span><button class="copy" type="button" data-copy="csc-1">copy</button></div>
+<pre id="csc-1">cd muography/scattering &amp;&amp; mkdir build &amp;&amp; cd build
+cmake .. &amp;&amp; make -j4</pre></div>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Measure θ₀ against Highland</span><span lang="zh-Hans">测量 θ₀ 并与 Highland 公式比较</span></h3><label class="done" for="w07-sc2"><input type="checkbox" id="w07-sc2" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">A pencil beam of μ⁻ crosses 1, 2, 5 and 10 cm of steel at 1, 3 and 10 GeV: twelve runs of 20 000 muons, 25 s in all. <code>highland.py</code> takes the projected deflection angle, keeps its central 98% (PDG defines θ₀ that way) and compares with PDG RPP 2024 Eq. 34.16. Predict first: how should θ₀ change when you double the steel? When you triple the momentum?</p>
+          <p lang="zh-Hans">μ⁻ 笔形束以 1、3、10 GeV 穿过 1、2、5、10 cm 钢：十二次运行，每次 20 000 个缪子，共 25 s。<code>highland.py</code> 取投影偏转角，保留中心 98%（PDG 正是这样定义 θ₀），并与 PDG RPP 2024 式 34.16 比较。先预测：钢厚加倍时 θ₀ 怎样变化？动量变为三倍呢？</p>
+          <div class="code"><div class="code-head"><span class="l"><b><span lang="en">terminal</span><span lang="zh-Hans">终端</span></b></span><button class="copy" type="button" data-copy="csc-2">copy</button></div>
+<pre id="csc-2">./scattering slab_scan.mac
+python3 highland.py</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01, course test physics list)</span><span lang="zh-Hans">预期（Geant4 11.4.p01，课程测试物理列表）</span></b></span></div>
+<pre> steel  E_kin  muons  sim theta0  Highland  sim/Highland
+   1 cm    1 GeV  19997    9.15 mrad   9.17 mrad    0.998 +/- 0.004
+   1 cm    3 GeV  20000    3.24 mrad   3.24 mrad    1.000 +/- 0.004
+   1 cm   10 GeV  20000    0.99 mrad   0.99 mrad    0.993 +/- 0.004
+   2 cm    1 GeV  19996   13.33 mrad  13.31 mrad    1.001 +/- 0.004
+   2 cm    3 GeV  19999    4.71 mrad   4.70 mrad    1.001 +/- 0.004
+   2 cm   10 GeV  20000    1.45 mrad   1.44 mrad    1.004 +/- 0.004
+   5 cm    1 GeV  19996   22.10 mrad  21.78 mrad    1.014 +/- 0.004
+   5 cm    3 GeV  20000    7.72 mrad   7.69 mrad    1.004 +/- 0.004
+   5 cm   10 GeV  19999    2.35 mrad   2.36 mrad    0.996 +/- 0.004
+  10 cm    1 GeV  19994   32.77 mrad  31.58 mrad    1.038 +/- 0.004
+  10 cm    3 GeV  19998   11.19 mrad  11.15 mrad    1.003 +/- 0.004
+  10 cm   10 GeV  20000    3.41 mrad   3.42 mrad    0.997 +/- 0.004</pre></div>
+          <p lang="en">Eleven of twelve points agree within 1.5%. θ₀ grows roughly as √thickness and falls as 1/p. The one outlier is honest physics: a 1 GeV muon loses about 115 MeV in 10 cm of steel, so it scatters with a lower momentum than the entrance value that Highland uses. At 10 GeV the loss is 1% and the agreement returns.</p>
+          <p lang="zh-Hans">十二个点中有十一个在 1.5% 以内一致。θ₀ 大致随 √厚度 增大、随 1/p 减小。唯一的偏离是真实的物理：1 GeV 缪子在 10 cm 钢中损失约 115 MeV，所以它散射时的动量低于 Highland 公式所用的入射动量。10 GeV 时能损只有 1%，又恢复一致。</p>
+          <p lang="en">For muography this sets the scale. A 3 GeV cosmic muon through 10 cm of steel turns by about 11 mrad; through 10 cm of water it turns by about 2.3 mrad. Your trackers must resolve a few milliradians, which is why Lab 7.2's plane resolution matters here too.</p>
+          <p lang="zh-Hans">这给出了缪子成像的尺度。3 GeV 宇宙线缪子穿过 10 cm 钢偏转约 11 mrad，穿过 10 cm 水约 2.3 mrad。你的径迹探测器必须分辨几个毫弧度，这就是为什么实验 7.2 的探测面分辨率在这里同样重要。</p>
+        </li>
+        <li>
+          <div class="step-head"><h3 class="bi"><span lang="en">Make an image: PoCA</span><span lang="zh-Hans">做一幅图像：PoCA</span></h3><label class="done" for="w07-sc3"><input type="checkbox" id="w07-sc3" data-progress="w07"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Now a 20 cm steel cube, and 200 000 muons of 3 GeV spread over 80 cm × 80 cm and up to 20°. For each muon the incoming and outgoing lines are extended to the point where they come closest (the Point of Closest Approach, PoCA) and weighted by the squared scattering angle. Ten lines of numpy.</p>
+          <p lang="zh-Hans">现在换成一个 20 cm 钢立方体，200 000 个 3 GeV 缪子分布在 80 cm × 80 cm 内，角度最大 20°。对每个缪子，把入射线和出射线延长到彼此最接近的点（最近接近点，PoCA），并以散射角的平方加权。只需十行 numpy。</p>
+          <div class="code"><div class="code-head"><span class="l"><b><span lang="en">terminal</span><span lang="zh-Hans">终端</span></b></span><button class="copy" type="button" data-copy="csc-3">copy</button></div>
+<pre id="csc-3">./scattering poca.mac
+python3 poca.py poca.root</pre></div>
+          <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01, course test physics list)</span><span lang="zh-Hans">预期（Geant4 11.4.p01，课程测试物理列表）</span></b></span></div>
+<pre>Scattering setup: block of G4_Fe (1.75749 cm radiation length), 20 cm cube
+Run 0: 200000 muons, 199805 seen by all four planes
+199805 muons; median scattering angle 0.4 mrad
+PoCA inside the cube: 12751 muons; 6212 of them (49%) scattered by more than 20 mrad
+PoCA outside the cube: 187054 muons; 189 (0.1%) scattered by more than 20 mrad
+wrote poca.png</pre></div>
+          <p lang="en">The top view in <code>poca.png</code> shows the cube's outline sharply. The side view smears it along z: with only two lines per muon, the depth of the scatter is the least certain coordinate. That is the first limitation every scattering-muography paper works around. Iterative likelihood methods and a momentum estimate are the next steps.</p>
+          <p lang="zh-Hans"><code>poca.png</code> 的俯视图清楚地显示出立方体的轮廓；侧视图则沿 z 方向被拉长：每个缪子只有两条直线，散射发生的深度是最不确定的坐标。这是每篇散射缪子成像论文首先要处理的局限。下一步是迭代似然方法和动量估计。</p>
+          <p lang="en">Ideal trackers, monoenergetic muons and a fixed 3 GeV make this the best case. Add the plane resolution from Lab 7.2 and a cosmic energy spectrum, and watch the image blur.</p>
+          <p lang="zh-Hans">理想径迹探测器、单能缪子、固定 3 GeV，这是最理想的情况。加上实验 7.2 的探测面分辨率和宇宙线能谱，看看图像如何变模糊。</p>
+        </li>
+      </ol>
     </div>
   </section>
 

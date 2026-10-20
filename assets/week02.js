@@ -174,7 +174,7 @@
         : G.t('vertex outside world (constructor, unchecked): track length includes the outside part', '顶点在世界外（构造函数，未检查）：径迹长度包含世界外部分');
       x.fillText(msg, 12, h - 12);
     }
-    el('w2-runlabel').textContent = 'Run ' + Math.max(0, st.run) + ' · ' + st.events.toLocaleString('en') + G.t(' events', ' 个事件');
+    el('w2-runlabel').textContent = 'Run ' + Math.max(0, st.run) + ' · ' + st.events.toLocaleString('en') + G.t(' events', ' 个事例');
   }
   function drawHist() {
     var D = distToBoundary(), nb = 20, bins = new Array(nb).fill(0), esc = 0, sum = 0, n = 0, lam = st.lam;
@@ -233,8 +233,8 @@
   /* ---------- self-check ---------- */
   G.quiz(el('quiz'), 'w02', [
     { prompt: { en: 'A macro runs <code>/run/beamOn 100</code>. How many times is <code>GeneratePrimaries()</code> called?', zh: '宏执行 <code>/run/beamOn 100</code>，<code>GeneratePrimaries()</code> 被调用几次？' },
-      opts: [{ en: 'Once, at the start of the run', zh: '一次，在运行开始时' }, { en: '100 times, once per event', zh: '100 次，每个事件一次' }, { en: 'Once per step', zh: '每一步一次' }, { en: 'Zero: the constructor already fired the particle', zh: '零次：构造函数已经发射了粒子' }],
-      a: 1, why: { en: 'GeneratePrimaries is called once per Event and creates that event\'s primary vertex. The constructor runs once and only sets up the gun. To vary energy or position event by event, change them inside GeneratePrimaries.', zh: 'GeneratePrimaries 每个事件调用一次，用来产生该事件的初级顶点。构造函数只运行一次，只负责配置粒子枪。要让能量或位置逐事件变化，应在 GeneratePrimaries 中修改。' } },
+      opts: [{ en: 'Once, at the start of the run', zh: '一次，在运行开始时' }, { en: '100 times, once per event', zh: '100 次，每个事例一次' }, { en: 'Once per step', zh: '每一步一次' }, { en: 'Zero: the constructor already fired the particle', zh: '零次：构造函数已经发射了粒子' }],
+      a: 1, why: { en: 'GeneratePrimaries is called once per Event and creates that event\'s primary vertex. The constructor runs once and only sets up the gun. To vary energy or position event by event, change them inside GeneratePrimaries.', zh: 'GeneratePrimaries 每个事例调用一次，用来产生该事例的初级顶点。构造函数只运行一次，只负责配置粒子枪。要让能量或位置逐事例变化，应在 GeneratePrimaries 中修改。' } },
     { prompt: { en: 'In the Week 2 world (a 3 m vacuum cube), a 1 GeV μ⁻ starts at z = −1 m heading +z. How many steps does its track have?', zh: '在第 2 周的世界（3 m 真空立方体）中，一个 1 GeV μ⁻ 从 z = −1 m 沿 +z 出发。它的径迹有几步？' },
       opts: [{ en: 'One: Transportation to the world boundary', zh: '一步：Transportation 到世界边界' }, { en: 'Thousands, one per millimetre', zh: '几千步，每毫米一步' }, { en: 'Two: initStep and Transportation are both steps', zh: '两步：initStep 和 Transportation 都是步' }, { en: 'Zero: nothing happens in vacuum', zh: '零步：真空里什么都不发生' }],
       a: 0, why: { en: 'A step ends at a geometry boundary or a physics process. In an empty world the only boundary is the world surface, 2.5 m away, so step 1 is a single 2.5 m Transportation step ending OutOfWorld. Row 0 (initStep) is the starting point, not a step.', zh: '一步结束于几何边界或物理过程。空世界里唯一的边界是 2.5 m 外的世界表面，所以第 1 步就是一次 2.5 m 的 Transportation，以 OutOfWorld 结束。第 0 行（initStep）是起点，不是一步。' } },
@@ -247,7 +247,7 @@
     { prompt: { en: 'After <code>/run/initialize</code> you type <code>/gun/position 0 0 2 m</code>, outside the 3 m world. What happens?', zh: '<code>/run/initialize</code> 之后输入 <code>/gun/position 0 0 2 m</code>（在 3 m 世界之外），会发生什么？' },
       opts: [{ en: 'Geant4 crashes with a fatal error', zh: 'Geant4 致命错误崩溃' }, { en: 'Warning Event0401, and the gun stays where it was', zh: '警告 Event0401，粒子枪留在原处' }, { en: 'The gun moves to z = 2 m and the track has zero length', zh: '枪移到 z = 2 m，径迹长度为零' }, { en: 'The world grows to include the gun', zh: '世界自动扩大以包含粒子枪' }],
       a: 1, why: { en: 'In the Idle state G4VPrimaryGenerator::SetParticlePosition checks the vertex against the world solid, prints Event0401 ("Gun position has NOT been changed!") and keeps the old position. The run then proceeds from the old position, so it is easy to miss.', zh: '在 Idle 状态下，G4VPrimaryGenerator::SetParticlePosition 会检查顶点是否在世界内，打印 Event0401（“Gun position has NOT been changed!”）并保留原位置。随后的运行仍从旧位置出发，因此很容易被忽略。' } },
-    { prompt: { en: 'You fire 1,000 π⁻ of 100 MeV kinetic energy from z = −1 m. Roughly how many events contain a μ⁻ track?', zh: '从 z = −1 m 发射 1,000 个动能 100 MeV 的 π⁻，大约多少个事件中会出现 μ⁻ 径迹？' },
+    { prompt: { en: 'You fire 1,000 π⁻ of 100 MeV kinetic energy from z = −1 m. Roughly how many events contain a μ⁻ track?', zh: '从 z = −1 m 发射 1,000 个动能 100 MeV 的 π⁻，大约多少个事例中会出现 μ⁻ 径迹？' },
       opts: [{ en: 'None: pions do not decay in vacuum', zh: '零个：π 在真空中不衰变' }, { en: 'About 205 ± 13', zh: '约 205 ± 13 个' }, { en: 'About 1,000', zh: '约 1,000 个' }, { en: 'About 2', zh: '约 2 个' }],
       a: 1, why: { en: 'For a π⁻ at 100 MeV, βγ = 1.395 and cτ = 7.80 m, so λ = 10.9 m. Over 2.5 m, P = 1 − e<sup>−2.5/10.9</sup> = 0.205. Every π⁻ decay in Geant4 gives μ⁻ ν̄<sub>μ</sub>, so expect 205 ± √(1000·0.205·0.795) ≈ 205 ± 13. Our Geant4 11.4 run gave 198.', zh: '100 MeV 的 π⁻：βγ = 1.395，cτ = 7.80 m，λ = 10.9 m。在 2.5 m 内 P = 1 − e<sup>−2.5/10.9</sup> = 0.205。Geant4 中每次 π⁻ 衰变都产生 μ⁻ ν̄<sub>μ</sub>，所以预期 205 ± √(1000·0.205·0.795) ≈ 205 ± 13。我们用 Geant4 11.4 实测为 198。' } }
   ]);

@@ -4,7 +4,9 @@
    Total relative uncertainty = sqrt(stat^2 + sys^2): beyond the systematic floor, more events do
    not help. Cost: constant CPU time per generated event (default 0.34 ms, measured in our Week 10
    Geant4 run: 200 000 muons in 67 CPU-seconds), perfect scaling over cores, no queueing, no
-   failed jobs, no analysis time. Grades: the Definition 12.2 weights. */
+   failed jobs, no analysis time. Grades: the Definition 12.2 weights.
+   Muography exposure estimate: N = Iv cos^2(theta) A dOmega T transmission, Iv = 70 m^-2 s^-1 sr^-1
+   (PDG, vertical, E > 1 GeV); significance = (dN/N) / sqrt(1/N + sys^2). An estimate, not a simulation. */
 (function () {
   'use strict';
   var G = window.G4C;
@@ -23,6 +25,35 @@
   }
   function fmtN(n) { return !isFinite(n) ? '∞' : n >= 1e9 ? (n / 1e9).toFixed(1) + 'G' : n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(0) + 'k' : String(Math.round(n)); }
   function fmtT(h) { return !isFinite(h) ? '∞' : h < 1 ? (h * 60).toFixed(0) + ' min' : h < 48 ? h.toFixed(1) + ' h' : (h / 24).toFixed(1) + ' d'; }
+
+  /* muography exposure estimate: N = Iv cos^2(theta) A dOmega T trans; significance with a floor */
+  function runMu() {
+    var th = +el('w12m-th').value, tr = Math.pow(10, +el('w12m-tr').value), A = +el('w12m-a').value,
+      dw = +el('w12m-dw').value, d = +el('w12m-d').value, x = +el('w12m-x').value / 100, sy = +el('w12m-s').value / 100;
+    el('w12m-th-out').textContent = th + '°';
+    el('w12m-tr-out').textContent = tr >= 0.01 ? (tr * 100).toFixed(1) + '%' : tr.toExponential(1);
+    el('w12m-a-out').textContent = A.toFixed(1) + ' m²';
+    el('w12m-dw-out').textContent = dw.toFixed(3) + ' sr';
+    el('w12m-d-out').textContent = d + ' d';
+    el('w12m-x-out').textContent = (x * 100).toFixed(0) + '%';
+    el('w12m-s-out').textContent = (sy * 100).toFixed(1) + '%';
+    var c = Math.cos(th * Math.PI / 180), I = 70 * c * c;               /* m^-2 s^-1 sr^-1 */
+    var N = I * A * dw * d * 86400 * tr, stat = 1 / Math.sqrt(Math.max(N, 1e-9));
+    var sig = x / Math.sqrt(stat * stat + sy * sy), sigInf = sy > 0 ? x / sy : Infinity;
+    var nFloor = sy > 0 ? 1 / (sy * sy) : Infinity;
+    var lines = [
+      ['', G.t('open-sky intensity I(θ)', '开阔天空强度 I(θ)') + '   ' + I.toFixed(1) + ' m⁻² s⁻¹ sr⁻¹'],
+      ['', G.t('muons in this bin', '该 bin 内的缪子数') + '   N = ' + (N >= 1e4 ? N.toExponential(2) : N.toFixed(0)) + '   ' + G.t('(stat ', '（统计 ') + (stat * 100).toFixed(1) + '%)'],
+      ['', G.t('significance of the void', '空洞的显著性') + '   ' + sig.toFixed(1) + ' σ   ' + G.t('(limit with infinite time: ', '（时间无限长时的上限：') + (isFinite(sigInf) ? sigInf.toFixed(1) + ' σ' : '∞') + ')'],
+      [sig >= 5 ? 'ok' : sig >= 3 ? '' : 'bad', isFinite(nFloor) && N > nFloor
+        ? G.t('The systematic dominates: more exposure barely helps. Reduce it (ratio to an open-sky run, better density model) before buying time.', '系统误差占主导：延长曝光几乎无济于事。先降低它（与开阔天空测量取比值、改进密度模型），再考虑加时间。')
+        : G.t('Statistics dominate: significance grows as √time until N ≈ 1/sys² = ', '统计误差占主导：显著性按 √时间 增长，直到 N ≈ 1/系统误差² = ') + (isFinite(nFloor) ? nFloor.toFixed(0) : '∞') + '.']
+    ];
+    el('w12m-out').innerHTML = lines.map(function (l) { return '<span class="' + l[0] + '">' + l[1] + '</span>'; }).join('\n');
+  }
+  ['w12m-th', 'w12m-tr', 'w12m-a', 'w12m-dw', 'w12m-d', 'w12m-x', 'w12m-s'].forEach(function (id) { var e = el(id); if (e) e.addEventListener('input', runMu); });
+  window.addEventListener('g4c:lang', function () { if (el('w12m-out')) runMu(); });
+  if (el('w12m-out')) runMu();
 
   var st;
   function run() {

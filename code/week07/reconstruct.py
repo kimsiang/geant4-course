@@ -48,10 +48,17 @@ def p_quadratic(z, x):
     return out
 
 
-print(f"{'file':<28}{'p_true':>8}{'bias(2 lines)':>15}{'sigma_p/p':>11}{'bias(quad)':>12}")
+def core_width(r):
+    """Half-width of the central 68% of r: the Gaussian core, insensitive to a few
+    scattering tail events that dominate np.std on 1000 events."""
+    lo, hi = np.percentile(r, [15.865, 84.135])
+    return 0.5 * (hi - lo)
+
+
+print(f"{'file':<28}{'p_true':>8}{'bias(2 lines)':>15}{'sigma_p/p':>11}{'core68':>8}{'bias(quad)':>12}")
 for path in sorted(glob.glob("tracks_*GeV_nt_tracks.csv")):
     p_true, x, z = load(path)
     x_meas = x + rng.normal(0.0, SIGMA_X_MM / 1000.0, x.shape)       # measurement
     r2 = (p_two_lines(z, x_meas) - p_true) / p_true
     rq = (p_quadratic(z, x_meas) - p_true) / p_true
-    print(f"{path:<28}{p_true.mean():8.3f}{np.median(r2):+15.4f}{np.std(r2):11.4f}{np.median(rq):+12.3f}")
+    print(f"{path:<28}{p_true.mean():8.3f}{np.median(r2):+15.4f}{np.std(r2):11.4f}{core_width(r2):8.4f}{np.median(rq):+12.3f}")

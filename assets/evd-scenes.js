@@ -317,7 +317,7 @@
         if (hitB) { light([x0 + 30 * dx, -10, z0 + 30 * dz], tB, -10); ampB = (0.7 + 0.5 * R()) / c; }
         if (!hitA && R() < 0.3) ampA = 0.3 + 0.2 * R();   // a random noise pulse
         var fa = ampA > 0.25, fb = ampB > 0.25;
-        var ta = hitA ? 20 : 20 + R() * 60, tb = hitB ? 21 : 25 + R() * 60, trig = fa && fb && Math.abs(ta - tb) < 15;   // 15 ns window in this toy
+        var ta = hitA ? 20 : 20 + R() * 60, tb = hitB ? 21 : 25 + R() * 60, trig = fa && fb && Math.abs(ta - tb) < 20;   // 20 ns window, as in the Week 5 lesson and code
         S.N++; if (fa) S.a++; if (fb) S.b++; if (trig) S.trig++;
         return { dur: 2.1, tracks: tracks, hits: hits,
           hud: function (t) {

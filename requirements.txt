@@ -1,0 +1,7 @@
+# Python packages for the analysis parts of the course (Weeks 1-12).
+# Versions pinned to the releases current in October 2026; newer ones should also work.
+numpy==2.5.4
+scipy==1.18.1
+matplotlib==3.11.2
+uproot==5.7.7
+awkward==2.14.0

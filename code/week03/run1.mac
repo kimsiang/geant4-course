@@ -1,3 +1,4 @@
 # One 1 GeV mu- through the block, every step printed
-/run/dumpCouples
 /run/beamOn 1
+# Production thresholds per material: the table is filled only after the first beamOn
+/run/dumpCouples

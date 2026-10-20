@@ -1,4 +1,4 @@
-# Lab 7.1: 1000 mu- at each of five momenta, one CSV file per run
+# Lab 7.1: 1000 mu- at each of five kinetic energies (p = 1.10 ... 20.1 GeV/c), one CSV file per run
 /control/verbose 0
 /run/verbose 0
 /tracking/verbose 0

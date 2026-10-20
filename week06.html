@@ -7,9 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Geant4 2.0, Week 06: what a physics list includes, what it silently leaves out, and what a production cut really controls.">
 <script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/course.css">
 </head>
 <body>
@@ -17,7 +15,7 @@
 <!--shell:top--><a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="zh-Hans">跳到正文</span></a>
 <header class="topbar"><div class="tb-in"><button type="button" class="nav-toggle" aria-controls="nav" aria-expanded="false"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg><span class="sr"><span lang="en">Open the item list</span><span lang="zh-Hans">打开目录</span></span></button><a class="brand" href="index.html"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="logo-bg"/><path d="M5 25 15.5 15" class="logo-mu"/><path d="M15.5 15c3.5-3 7-5.6 11.5-6.5" class="logo-pos"/><path d="M15.5 15c1.8 3.6 4.6 6.5 9 8.5" class="logo-neu"/><circle cx="15.5" cy="15" r="2.2" class="logo-v"/></svg><b>Geant4 2.0</b></a><span class="tb-week"><span lang="en">Week 6 of 12</span><span lang="zh-Hans">第 6 / 12 周</span><span class="tb-title"><span lang="en">Physics lists and production cuts</span><span lang="zh-Hans">物理列表与产生阈</span></span></span><span class="tb-prog" data-prog="w06" aria-hidden="true"><span class="pbar"><i></i></span><span class="pn"></span></span><span class="lang" role="group" aria-label="Language / 语言"><button type="button" data-setlang="en" id="lang-en">EN</button><button type="button" data-setlang="zh" id="lang-zh">中文</button><button type="button" data-setlang="both" id="lang-both">EN+中</button></span></div></header><!--/shell:top-->
 <div class="player">
-<!--shell:nav--><nav class="nav" id="nav" aria-label="Items on this page / 本页目录"><div class="nav-in"><a class="nav-home" href="index.html"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg><span lang="en">Course home</span><span lang="zh-Hans">课程主页</span></a><p class="nav-week"><span lang="en">Week 6 · Understand it</span><span lang="zh-Hans">第 6 周 · 理解</span></p><p class="nav-title"><span lang="en">Physics lists and production cuts</span><span lang="zh-Hans">物理列表与产生阈</span></p><div class="nav-prog" data-prog="w06"><span class="pbar"><i></i></span><span class="pn"></span></div><ol class="nav-items"><li><a href="#s-goals" data-item="s-goals"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-overview"/></svg><span class="t"><span lang="en">Overview and goals</span><span lang="zh-Hans">概览与目标</span><small><span lang="en">Overview · 3 min</span><span lang="zh-Hans">概览 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#background" data-item="background"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Background</span><span lang="zh-Hans">背景知识</span><small><span lang="en">Reading · 6 min</span><span lang="zh-Hans">阅读 · 6 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-list" data-item="s-list"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">6.1 Many possible fates</span><span lang="zh-Hans">6.1 许多可能的命运</span><small><span lang="en">Reading · 13 min</span><span lang="zh-Hans">阅读 · 13 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-toy" data-item="s-toy"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-interactive"/></svg><span class="t"><span lang="en">Interactive: explainer</span><span lang="zh-Hans">交互：演示</span><small><span lang="en">Interactive · 10 min</span><span lang="zh-Hans">交互 · 10 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-task" data-item="s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: Lab 6</span><span lang="zh-Hans">动手：实验 6</span><small><span lang="en">Hands-on lab · 55 min</span><span lang="zh-Hans">动手实验 · 55 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-quiz" data-item="s-quiz"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-quiz"/></svg><span class="t"><span lang="en">Practice quiz</span><span lang="zh-Hans">练习测验</span><small><span lang="en">Practice quiz · 9 min</span><span lang="zh-Hans">练习测验 · 9 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-err" data-item="s-err"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Common errors</span><span lang="zh-Hans">常见错误</span><small><span lang="en">Reading · 12 min</span><span lang="zh-Hans">阅读 · 12 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-review" data-item="s-review"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-review"/></svg><span class="t"><span lang="en">Review notes</span><span lang="zh-Hans">复习要点</span><small><span lang="en">Checklist · 5 min</span><span lang="zh-Hans">清单 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-share" data-item="s-share"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span class="t"><span lang="en">Share this week</span><span lang="zh-Hans">分享本周成果</span><small><span lang="en">Share · 5 min</span><span lang="zh-Hans">分享 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li></ol><p class="nav-total"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">About 2 h in total</span><span lang="zh-Hans">共约 2 小时</span></p></div></nav><div class="nav-scrim" hidden></div>
+<!--shell:nav--><nav class="nav" id="nav" aria-label="Items on this page / 本页目录"><div class="nav-in"><a class="nav-home" href="index.html"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow-l"/></svg><span lang="en">Course home</span><span lang="zh-Hans">课程主页</span></a><p class="nav-week"><span lang="en">Week 6 · Understand it</span><span lang="zh-Hans">第 6 周 · 理解</span></p><p class="nav-title"><span lang="en">Physics lists and production cuts</span><span lang="zh-Hans">物理列表与产生阈</span></p><div class="nav-prog" data-prog="w06"><span class="pbar"><i></i></span><span class="pn"></span></div><ol class="nav-items"><li><a href="#s-goals" data-item="s-goals"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-overview"/></svg><span class="t"><span lang="en">Overview and goals</span><span lang="zh-Hans">概览与目标</span><small><span lang="en">Overview · 3 min</span><span lang="zh-Hans">概览 · 3 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#background" data-item="background"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Background</span><span lang="zh-Hans">背景知识</span><small><span lang="en">Reading · 6 min</span><span lang="zh-Hans">阅读 · 6 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-list" data-item="s-list"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">6.1 Many possible fates</span><span lang="zh-Hans">6.1 许多可能的命运</span><small><span lang="en">Reading · 14 min</span><span lang="zh-Hans">阅读 · 14 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-toy" data-item="s-toy"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-interactive"/></svg><span class="t"><span lang="en">Interactive: explainer</span><span lang="zh-Hans">交互：演示</span><small><span lang="en">Interactive · 10 min</span><span lang="zh-Hans">交互 · 10 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-task" data-item="s-task"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-lab"/></svg><span class="t"><span lang="en">Hands-on: Lab 6</span><span lang="zh-Hans">动手：实验 6</span><small><span lang="en">Hands-on lab · 55 min</span><span lang="zh-Hans">动手实验 · 55 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-quiz" data-item="s-quiz"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-quiz"/></svg><span class="t"><span lang="en">Practice quiz</span><span lang="zh-Hans">练习测验</span><small><span lang="en">Practice quiz · 9 min</span><span lang="zh-Hans">练习测验 · 9 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-err" data-item="s-err"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-errors"/></svg><span class="t"><span lang="en">Common errors</span><span lang="zh-Hans">常见错误</span><small><span lang="en">Reading · 12 min</span><span lang="zh-Hans">阅读 · 12 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-review" data-item="s-review"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-review"/></svg><span class="t"><span lang="en">Review notes</span><span lang="zh-Hans">复习要点</span><small><span lang="en">Checklist · 5 min</span><span lang="zh-Hans">清单 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li><li><a href="#s-share" data-item="s-share"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span class="t"><span lang="en">Share this week</span><span lang="zh-Hans">分享本周成果</span><small><span lang="en">Share · 5 min</span><span lang="zh-Hans">分享 · 5 分钟</span></small></span><span class="tick" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span></a></li></ol><p class="nav-total"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span lang="en">About 2 h in total</span><span lang="zh-Hans">共约 2 小时</span></p></div></nav><div class="nav-scrim" hidden></div>
 <main id="main" tabindex="-1">
 <!--/shell:nav-->
   <!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb / 路径"><a href="index.html"><span lang="en">Geant4 2.0</span><span lang="zh-Hans">Geant4 2.0</span></a><span aria-hidden="true">›</span><span><span lang="en">Stage 3 · Understand it</span><span lang="zh-Hans">第 3 阶段 · 理解</span></span><span aria-hidden="true">›</span><span aria-current="page"><span lang="en">Week 6</span><span lang="zh-Hans">第 6 周</span></span></nav><!--/shell:crumbs-->
@@ -82,8 +80,8 @@
     </div>
   </section>
 
-  <section class="run item" id="s-list" data-type="reading" data-min="13" aria-labelledby="h-list">
-    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">13 min</span><span lang="zh-Hans">13 分钟</span></span></p>
+  <section class="run item" id="s-list" data-type="reading" data-min="14" aria-labelledby="h-list">
+    <p class="item-tag"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reading"/></svg><span class="t"><span lang="en">Reading</span><span lang="zh-Hans">阅读</span></span><span class="d"><span lang="en">14 min</span><span lang="zh-Hans">14 分钟</span></span></p>
     <p class="cmd">/process/list<span lang="en">6.1 · many possible fates</span><span lang="zh-Hans">6.1 · 许多可能的命运</span></p>
     <div class="prose">
       <h2 id="h-list" class="bi"><span lang="en">A process is included because an observable depends on it.</span><span lang="zh-Hans">纳入一个过程，是因为某个可观测量依赖它。</span></h2>
@@ -125,8 +123,10 @@ The EM-only list sets SetDefaultCutValue(0.7*mm) explicitly so its
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
       <h3 class="bi"><span lang="en">Production cuts: a range, not an energy</span><span lang="zh-Hans">产生阈：一个射程，而不是能量</span></h3>
-      <p lang="en">Geant4 does not produce a δ-ray, a bremsstrahlung photon or a positron as a track if it would travel less than the <strong>range cut</strong> (0.7 mm in <code>FTFP_BERT</code>). The range is converted per material into an energy threshold: 1.01 MeV for e⁻ in lead, 282 keV in plastic, 990 eV in air. Energy below the threshold is deposited continuously along the step instead. Nothing is thrown away, and particles that are produced are tracked down to zero energy. The cut sets the spatial resolution with which secondaries are followed. It is not a tracking cut.</p>
-      <p lang="zh-Hans">如果一个 δ 电子、轫致辐射光子或正电子的射程短于<strong>射程阈</strong>（<code>FTFP_BERT</code> 中为 0.7 mm），Geant4 就不会把它作为径迹产生。这个射程按材料换算成能量阈值：铅中 e⁻ 为 1.01 MeV，塑料中为 282 keV，空气中为 990 eV。阈值以下的能量改为沿步连续沉积。没有任何能量被丢弃，已产生的粒子会被追踪到能量为零。阈值决定的是追踪次级粒子的空间分辨率，而不是径迹截断。</p>
+      <p lang="en">Geant4 does not produce a δ-ray, a bremsstrahlung photon or a positron as a track if it would travel less than the <strong>range cut</strong> (0.7 mm in <code>FTFP_BERT</code>). The range is converted per material into an energy threshold: 1.01 MeV for e⁻ in lead, 282 keV in plastic, 990 eV in air. Energy below the threshold is deposited continuously along the step instead. Nothing is thrown away. Particles that are produced are tracked down to a low tracking limit (1 keV for e± by default in 11.4, set by <code>G4EmParameters</code>), where their remaining energy is deposited. The cut sets the spatial resolution with which secondaries are followed. It is not a tracking cut. It applies to ionisation (δ-rays), bremsstrahlung and e⁺e⁻ pair production by charged particles; photoelectric absorption, Compton scattering and γ conversion create their secondaries whatever the cut, unless you switch that on explicitly.</p>
+      <p lang="zh-Hans">如果一个 δ 电子、轫致辐射光子或正电子的射程短于<strong>射程阈</strong>（<code>FTFP_BERT</code> 中为 0.7 mm），Geant4 就不会把它作为径迹产生。这个射程按材料换算成能量阈值：铅中 e⁻ 为 1.01 MeV，塑料中为 282 keV，空气中为 990 eV。阈值以下的能量改为沿步连续沉积。没有任何能量被丢弃。已产生的粒子会被追踪到一个很低的追踪下限（11.4 中 e± 默认 1 keV，由 <code>G4EmParameters</code> 设定），剩余能量在那里沉积。阈值决定的是追踪次级粒子的空间分辨率，而不是径迹截断。它作用于电离（δ 电子）、轫致辐射和带电粒子的 e⁺e⁻ 对产生；光电吸收、康普顿散射和 γ 转换默认不受阈值影响，照常产生次级粒子，除非你显式打开。</p>
+      <p lang="en">One global cut is all this week's labs use. Real applications go further, and you should know the names: a <code>G4Region</code> with its own <code>G4ProductionCuts</code> (or <code>/run/setCutForRegion</code>) gives a thin sensitive layer a fine cut while the bulk keeps a coarse one, and the EM constructors <code>G4EmStandardPhysics_option4</code>, <code>G4EmLivermorePhysics</code> and <code>G4EmPenelopePhysics</code> trade speed for low-energy accuracy. None of them is exercised in the labs.</p>
+      <p lang="zh-Hans">本周的实验只用一个全局阈值。实际应用会更进一步，你应当认识这些名字：带有自己 <code>G4ProductionCuts</code> 的 <code>G4Region</code>（或 <code>/run/setCutForRegion</code>）可以让很薄的灵敏层用细阈值，而大块材料保持粗阈值；EM 构造器 <code>G4EmStandardPhysics_option4</code>、<code>G4EmLivermorePhysics</code> 和 <code>G4EmPenelopePhysics</code> 以速度换取低能精度。这些在实验中都没有练习。</p>
       <div class="aside">
         <p class="aside-label"><span lang="en">Think about it</span><span lang="zh-Hans">想一想</span></p>
         <p lang="en">If the only goal is a muon's ionisation energy loss, as in Week 4, is a heavyweight list with full hadronic physics necessary? What does it cost, and is there any benefit to show for it? Step 4 below gives the numbers.</p>
@@ -190,7 +190,8 @@ The EM-only list sets SetDefaultCutValue(0.7*mm) explicitly so its
     <p class="cmd">/control/execute cuts.mac<span lang="en">hands-on · Lab 6</span><span lang="zh-Hans">动手实验 · 实验 6</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Count every secondary, change the cut, then change the list.</span><span lang="zh-Hans">统计每个次级粒子，先改阈值，再换列表。</span></h2>
-      <p lang="en">Steps 2 and 3 were run on Geant4 11.4.p01 with the course test physics list, which has the same muon and hadron ionisation models as <code>G4EmStandardPhysics</code> and simpler photon and electron models. Expect the same Edep and δ-ray counts within errors, and somewhat different photon counts. Step 4 needs <code>FTFP_BERT</code>'s hadronic datasets, which our sandbox cannot download, so it gives a prediction instead of an output.</p>
+      <!--shell:dl--><p class="dl"><a class="btn-s" href="downloads/week06-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download all files for this lab (zip)</span><span lang="zh-Hans">下载本实验的全部文件（zip）</span></a><a class="dl-all" href="downloads/geant4-course-code.zip" download><span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></a></p><!--/shell:dl-->
+      <p lang="en">Steps 2 and 3 were run on Geant4 11.4.p01 with the course test physics list, which has the same muon and hadron ionisation models as <code>G4EmStandardPhysics</code> and simpler photon and electron models. Expect the same Edep and δ-ray counts within errors, and somewhat different photon counts. Step 4 needs <code>FTFP_BERT</code>'s hadronic datasets, which our build machine could not download, so the page gives a prediction instead of an output.</p>
       <p lang="zh-Hans">第 2、3 步在 Geant4 11.4.p01 上用课程测试物理列表运行：它的缪子与强子电离模型与 <code>G4EmStandardPhysics</code> 相同，光子与电子模型较简化。预期 Edep 和 δ 电子数在误差内一致，光子数略有不同。第 4 步需要 <code>FTFP_BERT</code> 的强子数据集，我们的沙盒无法下载，因此给出的是预测而不是输出。</p>
       <ol class="steps">
         <li>
@@ -235,10 +236,15 @@ int main(int argc, char** argv)
     G4cout &lt;&lt; "usage: week06 FTFP_BERT|EM macro.mac" &lt;&lt; G4endl;
     return 1;
   }
+  const std::string list = argv[1];
+  if (list != "EM" &amp;&amp; list != "FTFP_BERT") {
+    // never fall back silently to a physics list the user did not ask for
+    G4cerr &lt;&lt; "week06: unknown physics list '" &lt;&lt; list &lt;&lt; "'; use FTFP_BERT or EM" &lt;&lt; G4endl;
+    return 1;
+  }
   auto* runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
   runManager-&gt;SetUserInitialization(new DetectorConstruction());
 
-  const std::string list = argv[1];
   if (list == "EM")
     runManager-&gt;SetUserInitialization(new EMPhysicsList());   // run B
   else
@@ -536,33 +542,52 @@ void ActionInitialization::Build() const
           <div class="step-head"><h3 class="bi"><span lang="en">Scan the production cut</span><span lang="zh-Hans">扫描产生阈</span></h3><label class="done" for="w06-s2"><input type="checkbox" id="w06-s2" data-progress="w06"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag geant4">GEANT4</span></span><button class="copy" type="button" data-copy="c6-cut">copy</button></div>
 <pre id="c6-cut">./week06 FTFP_BERT cuts.mac &gt; cuts.log
-grep -A4 "=== Census" cuts.log
+grep -A6 "=== Census" cuts.log
 grep -A2 "Material : G4_Pb" cuts.log | grep "Energy thresholds"</pre></div>
-          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01, test list)</span><span lang="zh-Hans">预期（Geant4 11.4.p01，测试列表）</span></b></span></div>
+          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected (Geant4 11.4.p01, test list; CPU times depend on your machine)</span><span lang="zh-Hans">预期（Geant4 11.4.p01，测试列表；CPU 时间取决于你的机器）</span></b></span></div>
 <pre>=== Census: 1000 events, cut 10.000 mm ===
   Edep in Block      : 141.235 +/- 0.528 MeV (rms 16.701)
-  secondaries per event, by particle:   e- 2.387   gamma 1.358
+  CPU time per event : 0.020 ms
+  secondaries per event, by particle:
+    e-                 2.387
+    gamma              1.358
+    e+                 0.224
+--
 === Census: 1000 events, cut 0.700 mm ===
   Edep in Block      : 141.530 +/- 0.511 MeV (rms 16.148)
-  secondaries per event, by particle:   e- 9.354   gamma 1.546
+  CPU time per event : 0.050 ms
+  secondaries per event, by particle:
+    e-                 9.354
+    gamma              1.546
+    e+                 0.215
+--
 === Census: 1000 events, cut 0.100 mm ===
   Edep in Block      : 141.806 +/- 0.537 MeV (rms 16.978)
-  secondaries per event, by particle:   e- 35.859  gamma 2.256
+  CPU time per event : 0.120 ms
+  secondaries per event, by particle:
+    e-                35.859
+    gamma              2.256
+    e+                 0.261
+--
 === Census: 1000 events, cut 0.010 mm ===
   Edep in Block      : 140.792 +/- 0.500 MeV (rms 15.813)
-  secondaries per event, by particle:   e- 150.667 gamma 2.351
+  CPU time per event : 0.390 ms
+  secondaries per event, by particle:
+    e-               150.667
+    gamma              2.351
+    e+                 0.227
  Energy thresholds :  gamma  285 keV    e-  15.2 MeV    e+  14 MeV proton 1 MeV
  Energy thresholds :  gamma  94.7 keV    e-  1.01 MeV    e+  947 keV proton 70 keV
  Energy thresholds :  gamma  29.4 keV    e-  241 keV    e+  233 keV proton 10 keV
  Energy thresholds :  gamma  5.98 keV    e-  57.9 keV    e+  56.8 keV proton 1 keV</pre></div>
-          <p lang="en">A 1000-fold change in range cut changes the electron count 63-fold and the CPU time about 12-fold, and leaves Edep where it was (141 ± 0.5 MeV). Choose the cut from the spatial resolution your observable needs: 0.7 mm is fine for a 10 cm block's total deposit, but too coarse if you want the δ-ray halo around a 100 µm track.</p>
-          <p lang="zh-Hans">射程阈改变 1000 倍，电子数改变 63 倍、CPU 时间改变约 12 倍，而 Edep 原地不动（141 ± 0.5 MeV）。应根据可观测量所需的空间分辨率来选阈值：对 10 cm 方块的总沉积，0.7 mm 足够；但若要看 100 µm 径迹周围的 δ 电子晕，它就太粗了。</p>
+          <p lang="en">A 1000-fold change in range cut changes the electron count 63-fold and the CPU time 10–20-fold (about 20-fold on our machine), and leaves Edep where it was (141 ± 0.5 MeV). Choose the cut from the spatial resolution your observable needs: 0.7 mm is fine for a 10 cm block's total deposit, but too coarse if you want the δ-ray halo around a 100 µm track.</p>
+          <p lang="zh-Hans">射程阈改变 1000 倍，电子数改变 63 倍、CPU 时间改变 10–20 倍（在我们的机器上约 20 倍），而 Edep 原地不动（141 ± 0.5 MeV）。应根据可观测量所需的空间分辨率来选阈值：对 10 cm 方块的总沉积，0.7 mm 足够；但若要看 100 µm 径迹周围的 δ 电子晕，它就太粗了。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Run B: the EM-only list</span><span lang="zh-Hans">运行 B：纯电磁列表</span></h3><label class="done" for="w06-s3"><input type="checkbox" id="w06-s3" data-progress="w06"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
           <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c6-em">copy</button></div>
 <pre id="c6-em">./week06 EM census.mac | grep -A18 "=== Census"</pre></div>
-          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected, 1 GeV μ⁻ then 1 GeV π⁻ (EM + decay)</span><span lang="zh-Hans">预期：先 1 GeV μ⁻，后 1 GeV π⁻（电磁 + 衰变）</span></b></span></div>
+          <div class="code out verbose"><div class="code-head"><span class="l"><b><span lang="en">expected, 1 GeV μ⁻ then 1 GeV π⁻ (EM + decay), condensed: the run prints one species or process per line</span><span lang="zh-Hans">预期：先 1 GeV μ⁻，后 1 GeV π⁻（电磁 + 衰变），已压缩：实际运行每行只打印一个粒子或过程</span></b></span></div>
 <pre>=== Census: 2000 events, cut 0.700 mm ===       <span class="c"># mu-</span>
   Edep in Block      : 141.460 +/- 0.354 MeV (rms 15.837)
   by particle:  e- 9.299   gamma 1.530   e+ 0.204
@@ -583,7 +608,8 @@ grep -A2 "Material : G4_Pb" cuts.log | grep "Energy thresholds"</pre></div>
           <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W06-b
       issued by : this page
-PREDICTION, not run in our sandbox (no hadronic datasets).
+PREDICTION: the course team could not run this list (our build
+  machine had no hadronic datasets). Your run is the first measurement.
   mu-: same as run B within errors. Muon-nuclear interactions in
        10 cm of Pb are rarer than 1 in 1000 events.
   pi-: P(inelastic in 10 cm) ~ 1 - exp(-10/19.9) ~ 0.4, using the
@@ -596,7 +622,8 @@ PREDICTION, not run in our sandbox (no hadronic datasets).
           <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W06-b
       issued by : 本页
-这是预测，未在我们的沙盒中运行（没有强子数据集）。
+这是预测：课程团队无法运行这个列表（我们的构建机器没有强子数据集）。
+  你的运行就是第一次测量。
   mu-：在误差内与运行 B 相同。10 cm 铅中缪子–原子核相互
        作用少于千分之一个事例。
   pi-：10 cm 内非弹性作用概率约 1 - exp(-10/19.9) ≈ 0.4，取 PDG

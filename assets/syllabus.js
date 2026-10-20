@@ -6,7 +6,7 @@ window.G4C_SYLLABUS = {
   "file": "primer.html",
   "en": "Background primer",
   "zh": "入门背景",
-  "total": 45,
+  "total": 47,
   "items": [
    {
     "id": "s-muon",
@@ -20,14 +20,14 @@ window.G4C_SYLLABUS = {
     "type": "reading",
     "en": "2 Where cosmic muons come from",
     "zh": "2 宇宙线缪子从哪里来",
-    "min": 9
+    "min": 10
    },
    {
     "id": "s-rock",
     "type": "reading",
     "en": "3 Muons in rock",
     "zh": "3 缪子在岩石中",
-    "min": 8
+    "min": 9
    },
    {
     "id": "s-mug",
@@ -49,6 +49,72 @@ window.G4C_SYLLABUS = {
     "en": "6 Glossary",
     "zh": "6 术语表",
     "min": 5
+   },
+   {
+    "id": "s-next",
+    "type": "reading",
+    "en": "Next",
+    "zh": "下一步",
+    "min": 3
+   }
+  ]
+ },
+ "setup": {
+  "key": "setup",
+  "week": 0,
+  "file": "setup.html",
+  "en": "Week 0 · Set up your computer",
+  "zh": "第 0 周 · 配置你的电脑",
+  "total": 117,
+  "items": [
+   {
+    "id": "s-route",
+    "type": "reading",
+    "en": "0.1 Choose your route",
+    "zh": "0.1 选择路线",
+    "min": 3
+   },
+   {
+    "id": "s-conda",
+    "type": "lab",
+    "en": "Route A: conda-forge",
+    "zh": "路线 A：conda-forge",
+    "min": 45
+   },
+   {
+    "id": "s-container",
+    "type": "reading",
+    "en": "Alternative · route B: container",
+    "zh": "备选 · 路线 B：容器",
+    "min": 3
+   },
+   {
+    "id": "s-wsl",
+    "type": "reading",
+    "en": "Windows · route C: WSL2",
+    "zh": "Windows · 路线 C：WSL2",
+    "min": 3
+   },
+   {
+    "id": "s-check",
+    "type": "lab",
+    "en": "Check your install",
+    "zh": "检查安装",
+    "min": 45
+   },
+   {
+    "id": "s-err",
+    "type": "errors",
+    "en": "Common errors",
+    "zh": "常见错误",
+    "min": 12
+   },
+   {
+    "id": "s-musr",
+    "type": "reading",
+    "en": "Optional · musrSim for Weeks 9–10",
+    "zh": "选修 · 第 9–10 周的 musrSim",
+    "min": 3
    },
    {
     "id": "s-next",
@@ -507,7 +573,7 @@ window.G4C_SYLLABUS = {
   "file": "week06.html",
   "en": "Physics lists and production cuts",
   "zh": "物理列表与产生阈",
-  "total": 118,
+  "total": 119,
   "items": [
    {
     "id": "s-goals",
@@ -528,7 +594,7 @@ window.G4C_SYLLABUS = {
     "type": "reading",
     "en": "6.1 Many possible fates",
     "zh": "6.1 许多可能的命运",
-    "min": 13
+    "min": 14
    },
    {
     "id": "s-toy",
@@ -580,7 +646,7 @@ window.G4C_SYLLABUS = {
   "file": "week07.html",
   "en": "Momentum from a magnetic field",
   "zh": "用磁场测量动量",
-  "total": 147,
+  "total": 177,
   "items": [
    {
     "id": "s-goals",
@@ -622,7 +688,14 @@ window.G4C_SYLLABUS = {
     "type": "lab",
     "en": "Hands-on: Labs 7.1 and 7.2",
     "zh": "动手：实验 7.1 与 7.2",
-    "min": 75
+    "min": 60
+   },
+   {
+    "id": "s-scatter",
+    "type": "lab",
+    "en": "Hands-on: Lab 7.3 · scattering muography (no magnet)",
+    "zh": "动手：实验 7.3 · 散射缪子成像（无磁场）",
+    "min": 45
    },
    {
     "id": "s-quiz",
@@ -820,7 +893,7 @@ window.G4C_SYLLABUS = {
   "file": "week10.html",
   "en": "Transverse-field μSR capstone",
   "zh": "横场 μSR 综合实验",
-  "total": 180,
+  "total": 178,
   "items": [
    {
     "id": "s-goals",
@@ -848,7 +921,7 @@ window.G4C_SYLLABUS = {
     "type": "reading",
     "en": "10.1 Attach a field",
     "zh": "10.1 加上磁场",
-    "min": 7
+    "min": 10
    },
    {
     "id": "s-phys",
@@ -869,7 +942,7 @@ window.G4C_SYLLABUS = {
     "type": "lab",
     "en": "Hands-on: Lab 10",
     "zh": "动手：实验 10",
-    "min": 115
+    "min": 110
    },
    {
     "id": "s-quiz",
@@ -933,8 +1006,8 @@ window.G4C_SYLLABUS = {
    {
     "id": "s-valid",
     "type": "reading",
-    "en": "11.3 What counts as validated",
-    "zh": "11.3 什么才算“验证”",
+    "en": "11.2 What counts as validated",
+    "zh": "11.2 什么才算“验证”",
     "min": 7
    },
    {
@@ -987,7 +1060,7 @@ window.G4C_SYLLABUS = {
   "file": "week12.html",
   "en": "Proposal and defence",
   "zh": "选题与答辩",
-  "total": 238,
+  "total": 1199,
   "items": [
    {
     "id": "s-goals",
@@ -1001,7 +1074,7 @@ window.G4C_SYLLABUS = {
     "type": "reading",
     "en": "Background",
     "zh": "背景知识",
-    "min": 6
+    "min": 7
    },
    {
     "id": "s-prop",
@@ -1029,7 +1102,14 @@ window.G4C_SYLLABUS = {
     "type": "lab",
     "en": "Hands-on: Lab 12 · proposal to defence",
     "zh": "动手：实验 12 · 从提案到答辩",
-    "min": 170
+    "min": 950
+   },
+   {
+    "id": "s-mustart",
+    "type": "lab",
+    "en": "Hands-on: muography capstone starter",
+    "zh": "动手：缪子成像结课项目起点",
+    "min": 180
    },
    {
     "id": "s-quiz",

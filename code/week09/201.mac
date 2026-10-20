@@ -1,0 +1,24 @@
+# Lab 9 production macro. This is the course's own 201.mac: first_sim.mac with a
+# time-seeded random generator, so jobs started with different seed offsets differ.
+# The file name sets the run number (atoi("201.mac") = 201), so output files are
+# data/musrSim_201_<jobname>.root. Do not confuse it with run/201.mac in musrsim-sms,
+# the 2010 GPD instrument macro, which needs GPD_coil_primitive.table and vis.mac
+# and ends with /run/beamOn 10.
+/musr/run/randomOption 1
+# ---- GEOMETRY (half-lengths in mm) ----
+/musr/command construct box World 500 500 500 G4_AIR 0 0 0 no_logical_volume norot dead -1
+/musr/command construct box Slab 50 50 5 G4_PLASTIC_SC_VINYLTOLUENE 0 0 0 log_World norot musr/ScintSD 1
+# ---- OUTPUT ----
+/musr/command SetOutputFileName DEFAULT
+/musr/command storeOnlyEventsWithHits true
+# ---- BEAM ----
+/gun/primaryparticle mu+
+/gun/vertex 0 0 -100 mm
+/gun/vertexsigma 5 5 0 mm
+/gun/momentum 29.8 MeV
+/gun/muonPolarizVector 0 0 -1
+/gun/muonPolarizFraction 1
+# min, max, mean life: a max <= 0 switches the window off (musrPrimaryGeneratorAction.cc)
+/gun/decaytimelimits -1 -1 2197.03 ns
+# ---- GO ----
+/run/beamOn 2000

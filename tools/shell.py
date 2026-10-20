@@ -19,7 +19,7 @@ Item types and times:
   interactive 10 · quiz 1.5 per question · review 5 · share 5 ·
   lab = the week's stated study time minus everything else (at least 30 min).
 
-Usage: python3 tools/shell.py [--out DIR] [pages...]   (default: primer + week01..12)
+Usage: python3 tools/shell.py [--out DIR] [pages...]   (default: primer, setup, week01..12)
 """
 import html
 import json
@@ -39,6 +39,12 @@ STAGES = {1: ("See it", "观测"), 2: ("Measure it", "度量"), 3: ("Understand 
 
 # study time for pages whose hero does not state one (Week 12: proposal, pilot run, rehearsal)
 STUDY_MIN = {12: 240}
+
+# start-here pages (no week number): file -> (progress key, title en, title zh)
+SPECIAL = {
+    "primer.html": ("primer", "Background primer", "入门背景"),
+    "setup.html": ("setup", "Week 0 · Set up your computer", "第 0 周 · 配置你的电脑"),
+}
 
 TYPES = {  # en, zh, icon
     "overview": ("Overview", "概览", "overview"),
@@ -154,6 +160,8 @@ def titles(kind, en, zh):
     if kind == "lab":
         rest_en = re.sub(r"^hands-on\s*·?\s*", "", en, flags=re.I)
         rest_zh = re.sub(r"^动手(任务|实验)\s*·?\s*", "", zh)
+        if rest_en.lower().startswith(("route", "check")):
+            return (cap1(rest_en), rest_zh or "动手实验")
         return ("Hands-on: " + rest_en if rest_en else "Hands-on lab",
                 "动手：" + rest_zh if rest_zh else "动手实验")
     # lesson "4.1 · the Bethe formula"
@@ -219,9 +227,10 @@ CMD = re.compile(r'<p class="cmd">(.*?)<span lang="en">(.*?)</span><span lang="z
 def process(name, out_dir):
     path = ROOT / name
     text = path.read_text(encoding="utf-8")
-    is_primer = name == "primer.html"
+    special = SPECIAL.get(name)
+    is_primer = special is not None          # primer and setup: start-here pages, no week number
     wk = 0 if is_primer else int(re.search(r"week(\d+)", name).group(1))
-    key = "primer" if is_primer else f"w{wk:02d}"
+    key = special[0] if is_primer else f"w{wk:02d}"
 
     nquiz = 0
     js = ROOT / f"assets/week{wk:02d}.js"
@@ -244,12 +253,14 @@ def process(name, out_dir):
         old_id = re.search(r'\bid="([^"]+)"', attrs)
         sid = old_id.group(1) if old_id else "s-" + (lab_id.group(1)[2:] if lab_id else str(len(items)))
         t_en, t_zh = titles(kind, html.unescape(strip_tags(c.group(2))), html.unescape(strip_tags(c.group(3))))
-        items.append(dict(id=sid, kind=kind, en=t_en, zh=t_zh, min=minutes(kind, body, nquiz), span=m.span()))
+        fixed = re.search(r'data-min-set="(\d+)"', attrs)
+        items.append(dict(id=sid, kind=kind, en=t_en, zh=t_zh, min=int(fixed.group(1)) if fixed else minutes(kind, body, nquiz),
+                          fixed=bool(fixed), span=m.span()))
     if not items:
         raise SystemExit(f"{name}: no items found")
-    labs = [it for it in items if it["kind"] == "lab"]
+    labs = [it for it in items if it["kind"] == "lab" and not it["fixed"]]  # data-min-set="N" pins an item's time
     if total and labs:
-        rest = sum(it["min"] for it in items if it["kind"] != "lab")
+        rest = sum(it["min"] for it in items if it not in labs)
         each = max(30, (total - rest) / len(labs))
         for it in labs:
             it["min"] = int(round5(each))
@@ -273,9 +284,19 @@ def process(name, out_dir):
         new = f'<section class="run item" id="{it["id"]}" data-type="{it["kind"]}" data-min="{it["min"]}"{attrs}>{body}</section>'
         text = text[:a] + new + text[b:]
 
+    # ---- download link for the week's code, at the top of the (first) lab
+    text = re.sub(r"<!--shell:dl-->.*?<!--/shell:dl-->\s*", "", text, flags=re.S)
+    if wk and labs and (ROOT / "code" / f"week{wk:02d}").is_dir():
+        dl = ('<!--shell:dl--><p class="dl"><a class="btn-s" href="downloads/week%02d-code.zip" download>' % wk + icon("code") +
+              bi("Download all files for this lab (zip)", "下载本实验的全部文件（zip）") + '</a>'
+              '<a class="dl-all" href="downloads/geant4-course-code.zip" download>' + bi("all weeks", "全部周次") + '</a></p><!--/shell:dl-->\n      ')
+        m = re.search(r'<section class="run item" id="%s"[^>]*>.*?</h2>\s*' % re.escape(labs[0]["id"]), text, flags=re.S)
+        if m:
+            text = text[:m.end()] + dl + text[m.end():]
+
     # ---- titles for top bar / crumbs
     if is_primer:
-        w_en, w_zh = "Background primer", "入门背景"
+        w_en, w_zh = special[1], special[2]
         crumb_en, crumb_zh = "Start here", "从这里开始"
         week_en, week_zh = "Start here", "从这里开始"
     else:
@@ -291,6 +312,13 @@ def process(name, out_dir):
         chip = (f'<li class="stage"><b>{st} · <span lang="en">{STAGES[st][0]}</span><span lang="zh-Hans">{STAGES[st][1]}</span></b>'
                 '<span lang="en">stage</span><span lang="zh-Hans">阶段</span></li>')
         text = re.sub(r'<li class="stage">.*?</li>', lambda _: chip, text, count=1, flags=re.S)
+
+    # ---- self-hosted fonts instead of Google Fonts (blocked or slow in mainland China)
+    text = re.sub(r'<link rel="preconnect" href="https://fonts\.(googleapis|gstatic)\.com"[^>]*>\n?', "", text)
+    text = re.sub(r'<link rel="stylesheet" href="https://fonts\.googleapis\.com/[^"]*">\n?', "", text)
+    if 'assets/fonts/fonts.css' not in text:
+        text = text.replace('<link rel="stylesheet" href="assets/course.css">',
+                            '<link rel="stylesheet" href="assets/fonts/fonts.css">\n<link rel="stylesheet" href="assets/course.css">', 1)
 
     # ---- sprite
     text = re.sub(r"\n*<!--shell:sprite-->.*?<!--/shell:sprite-->", "", text, flags=re.S)
@@ -343,7 +371,7 @@ def process(name, out_dir):
     # ---- breadcrumb before the hero
     crumbs = ('<!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb / 路径"><a href="index.html">' + bi("Geant4 2.0", "Geant4 2.0") +
               '</a><span aria-hidden="true">›</span><span>' + bi(crumb_en, crumb_zh) + '</span><span aria-hidden="true">›</span>'
-              '<span aria-current="page">' + bi(week_en if is_primer else f"Week {wk}", week_zh if is_primer else f"第 {wk} 周") + '</span></nav><!--/shell:crumbs-->')
+              '<span aria-current="page">' + bi(w_en if is_primer else f"Week {wk}", w_zh if is_primer else f"第 {wk} 周") + '</span></nav><!--/shell:crumbs-->')
     text = re.sub(r"<!--shell:crumbs-->.*?<!--/shell:crumbs-->\s*", "", text, flags=re.S)
     text = re.sub(r'(\s*)(<section class="hero")', lambda m: m.group(1) + crumbs + m.group(1) + m.group(2), text, count=1)
 
@@ -389,7 +417,7 @@ def main():
     out = ROOT
     if args[:1] == ["--out"]:
         out = Path(args[1]); args = args[2:]
-    pages = args or ["primer.html"] + [f"week{i:02d}.html" for i in range(1, 13)]
+    pages = args or ["primer.html", "setup.html"] + [f"week{i:02d}.html" for i in range(1, 13)]
     syl = {}
     for p in pages:
         r = process(p, out)

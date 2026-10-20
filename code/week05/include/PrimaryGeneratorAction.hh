@@ -12,7 +12,9 @@ class G4GenericMessenger;
 // square plane above the telescope. Two angular models, chosen by /week05/gun/model:
 //   vertical : every muon along +z
 //   cos2     : sea-level intensity ~ cos^2(theta) per solid angle, crossing a plane,
-//              so the sampled density of cos(theta) is ~ cos^3 (Week 1, step 5)
+//              so the sampled density of cos(theta) is ~ cos^3: cos(theta) = u^(1/4).
+//              This is the Week 1 toy's "crossing a horizontal plane" model; Week 1
+//              step 5 samples cos^2 per solid angle, cos(theta) = u^(1/3).
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
   public:

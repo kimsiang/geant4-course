@@ -7,9 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Geant4 2.0, Week 01: build a toy Monte Carlo of a two-layer muon telescope in Python and measure the 1/√N statistical tax before writing any Geant4.">
 <script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/course.css">
 </head>
 <body>
@@ -82,8 +80,8 @@
       </div>
       <div class="aside">
         <p class="aside-label"><span lang="en">For muography projects</span><span lang="zh-Hans">用于缪子成像工程</span></p>
-        <p lang="en">The quantity you compute this week is a telescope's acceptance: which directions it sees and how often. In a muography survey, acceptance × sky intensity × time gives the number of muons expected along each line of sight. It is the first number in any feasibility study for a tunnel or slope.</p>
-        <p lang="zh-Hans">本周计算的是望远镜的接受度：它能看到哪些方向、看到的频率如何。在缪子成像勘测中，接受度 × 天空强度 × 时间，给出每条视线上预期的缪子数。这是隧道或边坡可行性研究中要算的第一个数。</p>
+        <p lang="en">The quantity you compute this week, ε, is a conditional transmission: of the muons that cross the upper layer, how many also cross the lower one. It is one ingredient of a telescope's geometric acceptance AΩ (m²·sr), which also needs the layer area and the solid angle. In a muography survey, AΩ × sky intensity × time gives the number of muons expected along each line of sight, the first number in any feasibility study for a tunnel or slope. Section 1.2 below explains the difference.</p>
+        <p lang="zh-Hans">本周计算的 ε 是条件透射概率：穿过上层的缪子中，有多少也穿过下层。它只是望远镜几何接受度 AΩ（m²·sr）的一个组成部分，AΩ 还需要探测层面积和立体角。在缪子成像勘测中，AΩ × 天空强度 × 时间，给出每条视线上预期的缪子数，这是隧道或边坡可行性研究中要算的第一个数。下面 1.2 节说明二者的区别。</p>
       </div>
       <p class="cap"><span lang="en">New to muons, units such as g/cm² or m.w.e., or muography? Start with the <a href="primer.html">background primer</a>.</span><span lang="zh-Hans">还不熟悉缪子、g/cm² 或米水当量这类单位，或缪子成像？先读<a href="primer.html">入门背景</a>。</span></p>
     </div>
@@ -286,6 +284,7 @@ hit = (np.abs(x1) &lt; L / 2) &amp; (np.abs(y1) &lt; L / 2)</pre>
     <p class="cmd">/control/shell python3 telescope_transmission.py<span lang="en">hands-on · Lab 1</span><span lang="zh-Hans">动手任务 · 实验 1</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Run it, validate it, break it, then give it a real sky.</span><span lang="zh-Hans">运行、验证、破坏，再换上真实的天空。</span></h2>
+      <!--shell:dl--><p class="dl"><a class="btn-s" href="downloads/week01-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download all files for this lab (zip)</span><span lang="zh-Hans">下载本实验的全部文件（zip）</span></a><a class="dl-all" href="downloads/geant4-course-code.zip" download><span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></a></p><!--/shell:dl-->
       <p lang="en">Work in your own terminal. Every expected output below was produced with NumPy 2.5.3 and the fixed seed in the script; any NumPy with <code>default_rng</code> should print the same digits. Tick each step when you have matched it.</p>
       <p lang="zh-Hans">在你自己的终端里完成。下面每个预期输出都是用 NumPy 2.5.3 和脚本中的固定种子得到的；任何带 <code>default_rng</code> 的 NumPy 版本都应输出相同的数字。对上结果后勾选该步。</p>
       <ol class="steps">
@@ -295,6 +294,13 @@ hit = (np.abs(x1) &lt; L / 2) &amp; (np.abs(y1) &lt; L / 2)</pre>
 <pre id="c-s1">python3 -m venv ~/g4c &amp;&amp; source ~/g4c/bin/activate
 pip install numpy
 python3 -c "import numpy; print(numpy.__version__)"</pre></div>
+          <p lang="en">On Windows without WSL, use PowerShell instead (if activation is blocked, run <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code> once). In mainland China add <code>-i https://pypi.tuna.tsinghua.edu.cn/simple</code> to <code>pip install</code>. From Week 2 on you need Linux, macOS or WSL2: see <a href="setup.html">Week 0 · Set up your computer</a>.</p>
+          <p lang="zh-Hans">在没有 WSL 的 Windows 上，请改用 PowerShell（如果激活被阻止，先运行一次 <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>）。在中国大陆，给 <code>pip install</code> 加上 <code>-i https://pypi.tuna.tsinghua.edu.cn/simple</code>。从第 2 周起需要 Linux、macOS 或 WSL2：见<a href="setup.html">第 0 周 · 配置你的电脑</a>。</p>
+          <div class="code"><div class="code-head"><span class="l"><b>Windows PowerShell</b><span class="tag analysis">ANALYSIS</span></span><button class="copy" type="button" data-copy="c-s1w">copy</button></div>
+<pre id="c-s1w">py -3 -m venv $HOME\g4c
+$HOME\g4c\Scripts\Activate.ps1
+pip install numpy
+python -c "import numpy; print(numpy.__version__)"</pre></div>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Save and run the script</span><span lang="zh-Hans">保存并运行脚本</span></h3><label class="done" for="w01-s2"><input type="checkbox" id="w01-s2" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -411,19 +417,19 @@ N= 100000 eps=0.1341 sigma=0.0011 rel.unc.=0.80%</pre></div>
           </div>
         </li>
         <li>
-          <div class="step-head"><h3 class="bi"><span lang="en">Prepare for Week 2: check your Geant4 install</span><span lang="zh-Hans">为第 2 周做准备：检查 Geant4 安装</span></h3><label class="done" for="w01-s7"><input type="checkbox" id="w01-s7" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
-          <p lang="en">Next week the same experiment moves into Geant4. The core chapters target Geant4 11.4 with C++17. Source your Geant4 and ROOT environment and run:</p>
-          <p lang="zh-Hans">下周同一个实验将搬进 Geant4。核心章节以 Geant4 11.4 和 C++17 为目标。加载 Geant4 与 ROOT 环境后运行：</p>
+          <div class="step-head"><h3 class="bi"><span lang="en">Prepare for Week 2: install and check Geant4</span><span lang="zh-Hans">为第 2 周做准备：安装并检查 Geant4</span></h3><label class="done" for="w01-s7"><input type="checkbox" id="w01-s7" data-progress="w01"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Next week the same experiment moves into Geant4. The core weeks target Geant4 11.4 with C++17. If you have not installed it yet, follow <a href="setup.html">Week 0 · Set up your computer</a> now (plan 1–3 hours; Windows users go through WSL2 or the container). Then activate your Geant4 environment and run:</p>
+          <p lang="zh-Hans">下周同一个实验将搬进 Geant4。核心周次以 Geant4 11.4 和 C++17 为目标。如果还没有安装，现在就按<a href="setup.html">第 0 周 · 配置你的电脑</a>操作（预留 1–3 小时；Windows 用户通过 WSL2 或容器）。然后激活 Geant4 环境并运行：</p>
           <div class="code"><div class="code-head"><span class="l"><b>terminal</b><span class="tag geant4">GEANT4</span></span><button class="copy" type="button" data-copy="c-s7">copy</button></div>
 <pre id="c-s7">geant4-config --version
 geant4-config --check-datasets
-root-config --version</pre></div>
+cmake --version</pre></div>
           <div class="code out"><div class="code-head"><span class="l"><b><span lang="en">expected</span><span lang="zh-Hans">预期</span></b></span></div>
 <pre>11.4.x                  <span class="c"># any 11.4 patch release</span>
 <span class="c"># --check-datasets: every data library reported as installed, none missing</span>
-6.xx/yy                 <span class="c"># a ROOT 6 release</span></pre></div>
-          <p lang="en">There is no generic <code>geant4 --version</code> command. If <code>geant4-config</code> is not found, your Geant4 environment script has not been sourced.</p>
-          <p lang="zh-Hans">并不存在通用的 <code>geant4 --version</code> 命令。如果找不到 <code>geant4-config</code>，说明还没有加载 Geant4 的环境脚本。</p>
+cmake version 3.16 or newer</pre></div>
+          <p lang="en">There is no generic <code>geant4 --version</code> command. If <code>geant4-config</code> is not found, your Geant4 environment has not been activated (<code>conda activate g4c</code>, or <code>source &lt;install&gt;/bin/geant4.sh</code>). ROOT is not needed now: Weeks 2–8 and 11–12 read output with Python (uproot). ROOT is only needed for musrSim in Weeks 9–10, and the setup page covers it.</p>
+          <p lang="zh-Hans">并不存在通用的 <code>geant4 --version</code> 命令。如果找不到 <code>geant4-config</code>，说明还没有激活 Geant4 环境（<code>conda activate g4c</code>，或 <code>source &lt;安装目录&gt;/bin/geant4.sh</code>）。现在不需要 ROOT：第 2–8 周和第 11–12 周都用 Python（uproot）读取输出。只有第 9–10 周的 musrSim 需要 ROOT，配置页面里有说明。</p>
         </li>
       </ol>
       <p class="progress" data-progress-out="w01"></p>

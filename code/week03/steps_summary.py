@@ -1,7 +1,7 @@
 """Summarise the SteppingAction printout of week03: per event, count the primary
 muon's steps inside the Block (by process) and sum the energy deposited in the Block.
 
-Usage: ./week03 run100.mac > concrete.log && python3 steps_summary.py concrete.log
+Usage: ./week03 run1000.mac > concrete.log && python3 steps_summary.py concrete.log
 """
 import collections
 import math
@@ -40,6 +40,9 @@ def events(lines):
 def main(path):
     evs = list(events(open(path)))
     n = len(evs)
+    if n == 0:
+        sys.exit(f"no events found in {path}: did the run abort? Check the log for a G4Exception "
+                 "(for example missing datasets) and that SteppingAction prints its step lines.")
     steps = [sum(e["steps"].values()) for e in evs]
     edep = [e["edep_MeV"] for e in evs]
     procs = collections.Counter()

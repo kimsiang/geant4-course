@@ -146,7 +146,7 @@
     { prompt: { en: 'At 10 GeV the histogram mean is 11% below PDG (10.9σ), with 99 entries in overflow. Why?', zh: '10 GeV 时直方图均值比 PDG 低 11%（10.9σ），溢出区有 99 个条目。为什么？' },
       opts: [{ en: 'Missing radiative processes', zh: '缺少辐射过程' }, { en: 'The histogram mean ignores overflow: a truncated mean, without the rare large δ-ray losses that the PDG mean includes', zh: '直方图均值忽略溢出：截断均值，不含 PDG 均值所包含的罕见大 δ 电子损失' }, { en: 'Too few events', zh: '事例太少' }, { en: 'Production cuts', zh: '产生阈' }],
       a: 1, why: { en: 'Widening the range to 0–1000 MeV/cm gives 2.514 ± 0.057 against 2.523: 0.1σ. Notice the error grew sevenfold: the mean of a heavy-tailed quantity is expensive.', zh: '把范围放宽到 0–1000 MeV/cm 后得到 2.514 ± 0.057，对比 2.523：0.1σ。注意误差增大了七倍：重尾量的均值代价高昂。' } },
-    { prompt: { en: 'Your dE/dx agrees with the PDG table within 0.4σ at five energies. Which rung is that?', zh: '你的 dE/dx 在五个能量点上与 PDG 表相差都在 0.4σ 以内，这是哪一阶？' },
+    { prompt: { en: 'Your dE/dx agrees with the PDG table to 0.4% at five energies. Which rung is that?', zh: '你的 dE/dx 在五个能量点上与 PDG 表的差别都在 0.4% 以内，这是哪一阶？' },
       opts: [{ en: 'Predictively validated', zh: '预测性验证' }, { en: 'Physics benchmarked', zh: '物理基准' }, { en: 'Detector benchmarked', zh: '探测器基准' }, { en: 'Fully validated', zh: '完全验证' }],
       a: 1, why: { en: 'A calculated table over a defined domain: physics benchmarked. Detector benchmarking needs measured detector response (spectrum, threshold, trigger). "Fully validated" is not on the ladder at all.', zh: '在限定范围内对照计算出的数据表：物理基准。探测器基准需要实测的探测器响应（能谱、阈值、触发）。“完全验证”根本不在阶梯上。' } }
   ]);

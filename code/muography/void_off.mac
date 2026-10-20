@@ -1,0 +1,15 @@
+# Reference: 30 m of standard rock over the tunnel, no void
+/control/verbose 1
+/run/verbose 1
+/muo/det/overburden 30 m
+/muo/det/void false
+/muo/sky/emin 10 GeV
+/muo/sky/thetaMax 60 deg
+/run/initialize
+# A 1 m range cut: delta rays and photons below the cut are not produced as particles;
+# the muon still loses that energy continuously (Week 6), so its range is unchanged.
+# In rock it makes the run about 30x faster. Do not use it if you study the detector signal.
+/run/setCut 1 m
+/analysis/setFileName void_off
+/random/setSeeds 2026 1020
+/run/beamOn 1000000

@@ -7,9 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Geant4 2.0, Week 03: put a block of matter in the world, swap its material in one line, and take a muon crossing apart step by step.">
 <script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/course.css">
 </head>
 <body>
@@ -197,7 +195,7 @@ G4double edep = step-&gt;<mark>GetTotalEnergyDeposit()</mark>;                  
       </div>
       <h3 class="bi"><span lang="en">A second viewer: VRML and ParaView</span><span lang="zh-Hans">第二种可视化：VRML 与 ParaView</span></h3>
       <p lang="en">Qt/OpenGL is good for watching one event while you develop. The <code>VRML2FILE</code> driver writes the scene to a <code>.wrl</code> file (named like <code>g4_00.wrl</code>) that you can open later, on another machine, in ParaView's VRML 2.0 reader. ParaView reads the geometry as polygons; it is not an event display and drops Geant4's event metadata. Record one difference that is purely a viewer effect and one feature that reveals a real geometry problem.</p>
-      <p lang="zh-Hans">Qt/OpenGL 适合在开发时观察单个事件。<code>VRML2FILE</code> 驱动把场景写入 <code>.wrl</code> 文件（如 <code>g4_00.wrl</code>），之后可以在另一台机器上用 ParaView 的 VRML 2.0 读取器打开。ParaView 把几何读成多边形，它不是事件显示器，也不保留 Geant4 的事件元数据。请记下一处纯属显示效果的差异，和一处暴露真实几何问题的特征。</p>
+      <p lang="zh-Hans">Qt/OpenGL 适合在开发时观察单个事例。<code>VRML2FILE</code> 驱动把场景写入 <code>.wrl</code> 文件（如 <code>g4_00.wrl</code>），之后可以在另一台机器上用 ParaView 的 VRML 2.0 读取器打开。ParaView 把几何读成多边形，它不是事例显示器，也不保留 Geant4 的事例元数据。请记下一处纯属显示效果的差异，和一处暴露真实几何问题的特征。</p>
     </div>
   </section>
 
@@ -237,7 +235,7 @@ G4double edep = step-&gt;<mark>GetTotalEnergyDeposit()</mark>;                  
             <div role="row"><span role="cell"><span lang="en">toy sample mean</span><span lang="zh-Hans">玩具样本均值</span></span><span role="cell" id="w3-meas">—</span></div>
             <div role="row"><span role="cell">Geant4 11.4</span><span role="cell" id="w3-g4">—</span></div>
           </div>
-          <p class="cap"><span lang="en">Geant4 column: mean primary steps in the block over 1,000 events, from our runs of the week03 app (±0.03–0.07).</span><span lang="zh-Hans">Geant4 一栏：用 week03 程序运行 1,000 个事件得到的主粒子块内平均步数（±0.03–0.07）。</span></p>
+          <p class="cap"><span lang="en">Geant4 column: mean primary steps in the block over 1,000 events, from our runs of the week03 app (±0.03–0.07).</span><span lang="zh-Hans">Geant4 一栏：用 week03 程序运行 1,000 个事例得到的主粒子块内平均步数（±0.03–0.07）。</span></p>
         </div>
         <div>
           <canvas id="w3-hist" style="aspect-ratio:16/10" aria-label="Histogram of primary steps per crossing"></canvas>
@@ -262,13 +260,14 @@ G4double edep = step-&gt;<mark>GetTotalEnergyDeposit()</mark>;                  
     <p class="cmd">/control/execute run1000.mac<span lang="en">hands-on · Labs 3.1 and 3.2</span><span lang="zh-Hans">动手任务 · 实验 3.1 与 3.2</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Place a block, check it, print its steps, then scan six materials.</span><span lang="zh-Hans">放置方块、检查它、打印它的步，再扫描六种材料。</span></h2>
+      <!--shell:dl--><p class="dl"><a class="btn-s" href="downloads/week03-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download all files for this lab (zip)</span><span lang="zh-Hans">下载本实验的全部文件（zip）</span></a><a class="dl-all" href="downloads/geant4-course-code.zip" download><span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></a></p><!--/shell:dl-->
       <p lang="en">Outputs below are real Geant4 11.4.p01 runs of these files with the course test physics list (no datasets in our sandbox). Its muon processes are the same models as <code>FTFP_BERT</code>; its electron and photon models are simpler. With <code>FTFP_BERT</code> you may also see a few steps ended by <code>muMsc</code> or <code>CoulombScat</code>, and Edep can differ by about 1–2%.</p>
       <p lang="zh-Hans">下面的输出来自这些文件在 Geant4 11.4.p01 上的真实运行，使用课程测试物理列表（沙盒中没有数据集）。其缪子过程与 <code>FTFP_BERT</code> 用的是同一组模型，电子和光子模型较简化。用 <code>FTFP_BERT</code> 时你还可能看到少量由 <code>muMsc</code> 或 <code>CoulombScat</code> 结束的步，Edep 可能相差约 1–2%。</p>
       <ol class="steps">
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Create the project from Week 2</span><span lang="zh-Hans">在第 2 周基础上建立工程</span></h3><label class="done" for="w03-s1"><input type="checkbox" id="w03-s1" data-progress="w03"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
-          <p lang="en">Copy <code>week02/</code> to <code>week03/</code>, rename <code>week02.cc</code> to <code>week03.cc</code>, and replace or add these files. The gun now starts at z = −0.4 m, inside the 1 m world (a gun at −1 m would sit outside it, see Week 2).</p>
-          <p lang="zh-Hans">把 <code>week02/</code> 复制为 <code>week03/</code>，将 <code>week02.cc</code> 改名为 <code>week03.cc</code>，然后替换或新增下列文件。粒子枪现在从 z = −0.4 m 出发，位于 1 m 的世界内（放在 −1 m 的粒子枪会在世界之外，见第 2 周）。</p>
+          <p lang="en">Copy <code>week02/</code> to <code>week03/</code>, rename <code>week02.cc</code> to <code>week03.cc</code>, and replace or add these files. The world shrinks from Week 2's 3 m cube to 1 m, so the gun moves from z = −1 m to z = −0.4 m. Left at −1 m it would sit outside the new world (Week 2 explains what Geant4 then does).</p>
+          <p lang="zh-Hans">把 <code>week02/</code> 复制为 <code>week03/</code>，将 <code>week02.cc</code> 改名为 <code>week03.cc</code>，然后替换或新增下列文件。世界从第 2 周的 3 m 立方体缩小到 1 m，所以粒子枪从 z = −1 m 移到 z = −0.4 m。如果仍放在 −1 m，它会在新世界之外（第 2 周解释了 Geant4 此时会怎样）。</p>
           <div class="files">
             <details><summary><b>CMakeLists.txt</b><button class="copy" type="button" data-copy="f3-cmake">copy</button></summary><pre id="f3-cmake" data-src="code/week03/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
 project(Week03 LANGUAGES CXX)
@@ -410,8 +409,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 }</pre></details>
             <details><summary><b>run1.mac · run1000.mac · vis.mac · vrml.mac</b><button class="copy" type="button" data-copy="f3-mac">copy</button></summary><pre id="f3-mac" data-src="code/week03/macros.txt"># ======== run1.mac ========
 # One 1 GeV mu- through the block, every step printed
-/run/dumpCouples
 /run/beamOn 1
+# Production thresholds per material: the table is filled only after the first beamOn
+/run/dumpCouples
 
 # ======== run1000.mac ========
 # 1000 muons: enough to count steps by process (output ~10 MB; redirect to a file)
@@ -437,7 +437,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
             <details><summary><b>steps_summary.py</b><span class="tag analysis">ANALYSIS</span><button class="copy" type="button" data-copy="f3-py">copy</button></summary><pre id="f3-py" data-src="code/week03/steps_summary.py">"""Summarise the SteppingAction printout of week03: per event, count the primary
 muon's steps inside the Block (by process) and sum the energy deposited in the Block.
 
-Usage: ./week03 run100.mac &gt; concrete.log &amp;&amp; python3 steps_summary.py concrete.log
+Usage: ./week03 run1000.mac &gt; concrete.log &amp;&amp; python3 steps_summary.py concrete.log
 """
 import collections
 import math
@@ -476,6 +476,9 @@ def events(lines):
 def main(path):
     evs = list(events(open(path)))
     n = len(evs)
+    if n == 0:
+        sys.exit(f"no events found in {path}: did the run abort? Check the log for a G4Exception "
+                 "(for example missing datasets) and that SteppingAction prints its step lines.")
     steps = [sum(e["steps"].values()) for e in evs]
     edep = [e["edep_MeV"] for e in evs]
     procs = collections.Counter()
@@ -541,8 +544,8 @@ NOTE: Reached maximum fixed number -1- of overlaps reports for this volume !
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Lab 3.1: scan the material, one string at a time</span><span lang="zh-Hans">实验 3.1：逐个字符串扫描材料</span></h3><label class="done" for="w03-s4"><input type="checkbox" id="w03-s4" data-progress="w03"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
-          <p lang="en">This loop changes only the material string, rebuilds and runs 1,000 muons for each. It edits the line marked <code>// Lab 3.1</code>.</p>
-          <p lang="zh-Hans">这个循环只改材料字符串，每种材料重新编译并运行 1,000 个缪子。它修改标有 <code>// Lab 3.1</code> 的那一行。</p>
+          <p lang="en">This loop changes only the material string, rebuilds and runs 1,000 muons for each. It edits the line marked <code>// Lab 3.1</code>. It is a bash loop: on Windows run it inside WSL (see the <a href="setup.html">setup page</a>).</p>
+          <p lang="zh-Hans">这个循环只改材料字符串，每种材料重新编译并运行 1,000 个缪子。它修改标有 <code>// Lab 3.1</code> 的那一行。这是一个 bash 循环：Windows 用户请在 WSL 中运行（见<a href="setup.html">安装页</a>）。</p>
           <div class="code"><div class="code-head"><span class="l"><b>terminal (in build/)</b></span><button class="copy" type="button" data-copy="c3-scan">copy</button></div>
 <pre id="c3-scan">for m in G4_lH2 G4_PLASTIC_SC_VINYLTOLUENE G4_Al G4_CONCRETE G4_Cu G4_Pb; do
   sed -i "s/FindOrBuildMaterial(\"G4_[A-Za-z0-9_]*\");  \/\/ Lab 3.1/FindOrBuildMaterial(\"$m\");  \/\/ Lab 3.1/" ../src/DetectorConstruction.cc
@@ -562,7 +565,7 @@ done</pre></div>
               </tbody>
             </table>
           </div>
-          <p class="cap"><span lang="en">Our Geant4 11.4.p01 runs, 1,000 events each, mean ± error of the mean. The threshold column is the e⁻ energy Geant4 prints with <code>/run/dumpCouples</code> after a run.</span><span lang="zh-Hans">我们的 Geant4 11.4.p01 运行，每种 1,000 个事件，均值 ± 均值误差。阈值一栏是运行后 <code>/run/dumpCouples</code> 打印的 e⁻ 能量。</span></p>
+          <p class="cap"><span lang="en">Our Geant4 11.4.p01 runs, 1,000 events each, mean ± error of the mean. The threshold column is the e⁻ energy Geant4 prints with <code>/run/dumpCouples</code> after a run.</span><span lang="zh-Hans">我们的 Geant4 11.4.p01 运行，每种 1,000 个事例，均值 ± 均值误差。阈值一栏是运行后 <code>/run/dumpCouples</code> 打印的 e⁻ 能量。</span></p>
           <p lang="en">This answers the first Think-about-it. Lead takes 3.5× the energy of concrete: lead is 5× denser, though slightly less effective per g/cm². Copper and lead are almost equal per 10 cm, which Week 4 explains with Z/A and density.</p>
           <p lang="zh-Hans">这就回答了第一个“想一想”：铅中沉积的能量是混凝土的 3.5 倍——铅的密度是混凝土的 5 倍，只是按 g/cm² 计略低。每 10 cm 中铜和铅几乎相同，第 4 周会用 Z/A 和密度来解释。</p>
         </li>

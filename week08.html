@@ -7,9 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Geant4 2.0, Week 08: turn simulated events into a DAQ-like ROOT dataset that someone else can analyse without Geant4, on two threads.">
 <script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/course.css">
 </head>
 <body>
@@ -126,8 +124,8 @@ analysis-&gt;CreateNtupleDColumn("Edep0_MeV");</pre>
     <p class="cmd">/run/numberOfThreads 2<span lang="en">8.2 · someone else's data</span><span lang="zh-Hans">8.2 · 给别人用的数据</span></p>
     <div class="prose">
       <h2 id="h-mt" class="bi"><span lang="en">A simulation's real endpoint is someone else being able to use your data.</span><span lang="zh-Hans">模拟的真正终点，是别人能够使用你的数据。</span></h2>
-      <p lang="en">In a research group one person produces simulated data and another analyses it, sometimes the same person months later. A structured file is the only interface. This week also switches from the serial run manager of Weeks 2–7 to <code>G4RunManagerType::Default</code>, which makes the run multithreaded. Two things change. Every worker thread has its own RunAction and its own analysis objects: histograms are merged automatically, but ntuples need <code>SetNtupleMerging(true)</code>. And plain counters in RunAction only count that worker's events, so the course switches them to <code>G4Accumulable</code>, which the master sums.</p>
-      <p lang="zh-Hans">在研究组里，一个人生产模拟数据，另一个人分析——有时是同一个人在几个月后。结构化文件是唯一的接口。本周也从第 2–7 周的串行运行管理器换成 <code>G4RunManagerType::Default</code>，运行变为多线程。这带来两点变化：每个工作线程都有自己的 RunAction 和分析对象，直方图会自动合并，ntuple 则需要 <code>SetNtupleMerging(true)</code>；RunAction 里的普通计数器只统计本线程的事例，所以本课程改用 <code>G4Accumulable</code>，由主线程汇总。</p>
+      <p lang="en">In a research group one person produces simulated data and another analyses it, sometimes the same person months later. A structured file is the only interface. This week also switches from the serial run manager of Weeks 2–7 to <code>G4RunManagerType::Default</code>, which makes the run multithreaded. Two things change. Every worker thread has its own RunAction and its own analysis objects: histograms are merged automatically, but ntuples need <code>SetNtupleMerging(true)</code>. And plain counters in RunAction only count that worker's events, so the course switches them to <code>G4Accumulable</code>, which the master sums. In 11.4 <code>G4Accumulable</code> is an alias of <code>G4AccValue</code>; newer official examples write <code>G4AccValue</code>, and both compile.</p>
+      <p lang="zh-Hans">在研究组里，一个人生产模拟数据，另一个人分析——有时是同一个人在几个月后。结构化文件是唯一的接口。本周也从第 2–7 周的串行运行管理器换成 <code>G4RunManagerType::Default</code>，运行变为多线程。这带来两点变化：每个工作线程都有自己的 RunAction 和分析对象，直方图会自动合并，ntuple 则需要 <code>SetNtupleMerging(true)</code>；RunAction 里的普通计数器只统计本线程的事例，所以本课程改用 <code>G4Accumulable</code>，由主线程汇总。在 Geant4 11.4 中 <code>G4Accumulable</code> 是 <code>G4AccValue</code> 的别名，新版官方示例写作 <code>G4AccValue</code>，两种写法都能编译。</p>
       <div class="code">
         <div class="code-head"><span class="l"><b>Code microscope · RunAction::EndOfRunAction</b><span class="tag geant4">GEANT4</span></span></div>
 <pre>G4AccumulableManager::Instance()-&gt;<mark>Merge()</mark>;   <span class="c">// on the master: the sum over workers</span>
@@ -179,8 +177,8 @@ analysis-&gt;<mark>CloseFile()</mark>;                       <span class="c">// 
       </div>
       <div class="toybox">
         <p><b>TOY MODEL · <span lang="en">approximations</span><span lang="zh-Hans">近似</span></b></p>
-        <p lang="en">Event kinematics follow the week08 app (cos² crossing, 30 × 30 cm source, two 10 × 10 cm counters 20 cm apart). Energy deposit: Moyal approximation to Landau (MPV 1.75 MeV/cm); digitization as in Week 5. Events are dealt to threads at random. The file outcomes (per-thread files without merging; a file of normal size with zero readable trees without Write/CloseFile) reproduce what we observed with Geant4 11.4. The toy trigger efficiency is 1.4%, against 1.6 ± 0.1% in our Geant4 run; the toy has no multiple scattering or δ-rays.</p>
-        <p lang="zh-Hans">事例运动学与 week08 程序相同（cos² 穿越分布，30 × 30 cm 源平面，两块相距 20 cm 的 10 × 10 cm 计数器）。能量沉积用朗道分布的 Moyal 近似（最可几值 1.75 MeV/cm），数字化同第 5 周。事例随机分配给各线程。文件结果（不合并时每线程一个文件；缺少 Write/CloseFile 时文件大小正常但没有可读的树）重现了我们在 Geant4 11.4 中观察到的现象。玩具模型的触发效率为 1.4%，我们的 Geant4 运行为 1.6 ± 0.1%；玩具模型没有多次散射和 δ 电子。</p>
+        <p lang="en">Event kinematics follow the week08 app (cos² crossing, 30 × 30 cm source, two 10 × 10 cm counters 20 cm apart). Energy deposit: Moyal approximation to Landau (MPV 1.78 MeV and width 0.086 MeV per cm, the Week 5 values from our Geant4 run); digitization as in Week 5. Events are dealt to threads at random. The file outcomes (per-thread files without merging; a file of normal size with zero readable trees without Write/CloseFile) reproduce what we observed with Geant4 11.4. The toy trigger efficiency is 1.4%, against 1.6 ± 0.1% in our Geant4 run; the toy has no multiple scattering or δ-rays.</p>
+        <p lang="zh-Hans">事例运动学与 week08 程序相同（cos² 穿越分布，30 × 30 cm 源平面，两块相距 20 cm 的 10 × 10 cm 计数器）。能量沉积用朗道分布的 Moyal 近似（最可几值 1.78 MeV/cm、宽度 0.086 MeV/cm，取自第 5 周我们的 Geant4 运行），数字化同第 5 周。事例随机分配给各线程。文件结果（不合并时每线程一个文件；缺少 Write/CloseFile 时文件大小正常但没有可读的树）重现了我们在 Geant4 11.4 中观察到的现象。玩具模型的触发效率为 1.4%，我们的 Geant4 运行为 1.6 ± 0.1%；玩具模型没有多次散射和 δ 电子。</p>
       </div>
     </div>
   </section>
@@ -190,13 +188,14 @@ analysis-&gt;<mark>CloseFile()</mark>;                       <span class="c">// 
     <p class="cmd">/control/execute daq.mac<span lang="en">hands-on · Labs 8.1 and 8.2</span><span lang="zh-Hans">动手实验 · 实验 8.1 与 8.2</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Write one merged file, read it without Geant4, then push it through a second decoder.</span><span lang="zh-Hans">写出一个合并文件，不用 Geant4 读取它，再让它经过第二个解码器。</span></h2>
+      <!--shell:dl--><p class="dl"><a class="btn-s" href="downloads/week08-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download all files for this lab (zip)</span><span lang="zh-Hans">下载本实验的全部文件（zip）</span></a><a class="dl-all" href="downloads/geant4-course-code.zip" download><span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></a></p><!--/shell:dl-->
       <p lang="en">Expected outputs are from Geant4 11.4.p01 runs of these files (course test physics list, two threads). The trigger counts depend on the random sequence; compare in units of σ.</p>
       <p lang="zh-Hans">预期输出来自这些文件在 Geant4 11.4.p01 上的运行（课程测试物理列表，两个线程）。触发计数取决于随机序列，请以 σ 为单位比较。</p>
       <ol class="steps">
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Create the project from Week 5</span><span lang="zh-Hans">在第 5 周基础上建立工程</span></h3><label class="done" for="w08-s1"><input type="checkbox" id="w08-s1" data-progress="w08"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
-          <p lang="en">Keep Week 5's DetectorConstruction, MuonHit, MuonSD, PrimaryGeneratorAction and ToyScintillatorDigitizer (the generator's commands are now under <code>/week08/gun/</code>). Replace the rest with these.</p>
-          <p lang="zh-Hans">保留第 5 周的 DetectorConstruction、MuonHit、MuonSD、PrimaryGeneratorAction 和 ToyScintillatorDigitizer（产生器命令改到 <code>/week08/gun/</code> 下），其余文件换成下列内容。</p>
+          <p lang="en">Keep Week 5's DetectorConstruction, MuonHit, MuonSD and ToyScintillatorDigitizer unchanged. Replace everything else with the files below, <b>including the generator</b>: its messenger now lives under <code>/week08/gun/</code>, because <code>daq.mac</code> calls <code>/week08/gun/model cos2</code>. If you keep Week 5's generator, that line is an unknown command and Geant4 skips the rest of the batch macro without writing a file (the Week 2 <code>UIMAN</code> error).</p>
+          <p lang="zh-Hans">第 5 周的 DetectorConstruction、MuonHit、MuonSD 和 ToyScintillatorDigitizer 原样保留。其余文件全部换成下列内容，<b>包括产生器</b>：它的消息器现在位于 <code>/week08/gun/</code> 下，因为 <code>daq.mac</code> 调用了 <code>/week08/gun/model cos2</code>。如果保留第 5 周的产生器，这一行就是未知命令，Geant4 会跳过批处理宏的其余部分，不写出任何文件（即第 2 周的 <code>UIMAN</code> 错误）。</p>
           <div class="files">
             <details><summary><b>CMakeLists.txt</b><button class="copy" type="button" data-copy="f8-cm">copy</button></summary><pre id="f8-cm" data-src="code/week08/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
 project(Week08 LANGUAGES CXX)
@@ -481,6 +480,80 @@ void EventAction::EndOfEventAction(const G4Event* event)
   analysis-&gt;FillNtupleDColumn(1, 4, edep[1] / MeV);
   analysis-&gt;FillNtupleIColumn(1, 5, coinc ? 1 : 0);
   analysis-&gt;AddNtupleRow(1);
+}</pre></details>
+            <details><summary><b>include/PrimaryGeneratorAction.hh</b><button class="copy" type="button" data-copy="f8-pgh">copy</button></summary><pre id="f8-pgh" data-src="code/week08/include/PrimaryGeneratorAction.hh">#ifndef PrimaryGeneratorAction_h
+#define PrimaryGeneratorAction_h 1
+
+#include "G4String.hh"
+#include "G4VUserPrimaryGeneratorAction.hh"
+
+class G4ParticleGun;
+class G4Event;
+class G4GenericMessenger;
+
+// A documented toy cosmic source: mu- of fixed energy, entering through a horizontal
+// square plane above the telescope. Two angular models, chosen by /week08/gun/model:
+//   vertical : every muon along +z
+//   cos2     : sea-level intensity ~ cos^2(theta) per solid angle, crossing a plane,
+//              so the sampled density of cos(theta) is ~ cos^3 (Week 1, step 5)
+class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
+{
+  public:
+    PrimaryGeneratorAction();
+    ~PrimaryGeneratorAction() override;
+    void GeneratePrimaries(G4Event* event) override;
+
+  private:
+    G4ParticleGun* fParticleGun = nullptr;
+    G4GenericMessenger* fMessenger = nullptr;
+    G4String fModel = "cos2";
+    G4double fHalfSize;   // half side of the source plane
+};
+
+#endif</pre></details>
+            <details><summary><b>src/PrimaryGeneratorAction.cc</b><span class="tag geant4">GEANT4</span><button class="copy" type="button" data-copy="f8-pg">copy</button></summary><pre id="f8-pg" data-src="code/week08/src/PrimaryGeneratorAction.cc">#include "PrimaryGeneratorAction.hh"
+
+#include "G4Event.hh"
+#include "G4GenericMessenger.hh"
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
+#include "G4PhysicalConstants.hh"
+#include "G4SystemOfUnits.hh"
+#include "Randomize.hh"
+
+#include &lt;cmath&gt;
+
+PrimaryGeneratorAction::PrimaryGeneratorAction() : fHalfSize(15. * cm)
+{
+  fParticleGun = new G4ParticleGun(1);
+  fParticleGun-&gt;SetParticleDefinition(G4ParticleTable::GetParticleTable()-&gt;FindParticle("mu-"));
+  fParticleGun-&gt;SetParticleEnergy(4. * GeV);  // ~ mean sea-level muon energy (PDG); a toy choice
+
+  fMessenger = new G4GenericMessenger(this, "/week08/gun/", "Toy cosmic source");
+  fMessenger-&gt;DeclareProperty("model", fModel, "vertical | cos2").SetCandidates("vertical cos2");
+  fMessenger-&gt;DeclarePropertyWithUnit("halfSize", "cm", fHalfSize, "half side of the source plane");
+}
+
+PrimaryGeneratorAction::~PrimaryGeneratorAction()
+{
+  delete fMessenger;
+  delete fParticleGun;
+}
+
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
+{
+  // Sampled per EVENT, inside GeneratePrimaries (Week 2 lesson).
+  G4double cosTheta = 1.;
+  if (fModel == "cos2") cosTheta = std::pow(G4UniformRand(), 0.25);
+  const G4double sinTheta = std::sqrt(1. - cosTheta * cosTheta);
+  const G4double phi = twopi * G4UniformRand();
+
+  const G4double x = (2. * G4UniformRand() - 1.) * fHalfSize;
+  const G4double y = (2. * G4UniformRand() - 1.) * fHalfSize;
+  fParticleGun-&gt;SetParticlePosition(G4ThreeVector(x, y, -20. * cm));  // source plane above the top counter
+  fParticleGun-&gt;SetParticleMomentumDirection(
+    G4ThreeVector(sinTheta * std::cos(phi), sinTheta * std::sin(phi), cosTheta));
+  fParticleGun-&gt;GeneratePrimaryVertex(event);
 }</pre></details>
             <details><summary><b>daq.mac</b><button class="copy" type="button" data-copy="f8-mac">copy</button></summary><pre id="f8-mac" data-src="code/week08/daq.mac"># Lab 8.1: one merged ROOT file, two ntuples, 20 000 cos^2 muons on 2 threads
 /control/verbose 1

@@ -7,9 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Geant4 2.0, Week 05: turn a scintillator into a detector with a sensitive detector, an event-level threshold, a two-layer coincidence trigger and a toy digitizer.">
 <script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/course.css">
 </head>
 <body>
@@ -92,7 +90,7 @@
     <p class="cmd">/vis/open TSG<span lang="en">event display</span><span lang="zh-Hans">事例显示</span></p>
     <div>
       <h2 id="h-evd" class="bi"><span lang="en">From a passing muon to a trigger decision.</span><span lang="zh-Hans">从一个穿过的缪子到一次触发判定。</span></h2>
-      <figure class="evd-fig"><div data-scene="w05" data-poster="media/evd-w05.gif" data-label="3D animation: a muon crosses two scintillator counters, light travels to a SiPM, pulses appear and the coincidence decides the trigger"></div><figcaption class="evd-cap"><span lang="en"><b>TOY MODEL.</b> The Week 5 geometry: two 10 × 10 × 1 cm counters 20 cm apart, cos²θ muons from a 30 × 30 cm plane. Light paths are schematic (real photons reflect many times before reaching the SiPM); pulse shapes, amplitudes and the noise rate are illustrative. A counter fires when its pulse crosses the dashed threshold; the trigger needs both counters within a 15 ns window.</span><span lang="zh-Hans"><b>玩具模型。</b>第 5 周的几何：两块 10 × 10 × 1 cm 的计数器相距 20 cm，cos²θ 缪子从 30 × 30 cm 平面射入。光路只作示意（真实光子到达 SiPM 前会反射多次）；脉冲形状、幅度和噪声率均为示意值。脉冲越过虚线阈值时计数器响应；触发要求两个计数器在 15 ns 窗口内同时响应。</span></figcaption></figure>
+      <figure class="evd-fig"><div data-scene="w05" data-poster="media/evd-w05.gif" data-label="3D animation: a muon crosses two scintillator counters, light travels to a SiPM, pulses appear and the coincidence decides the trigger"></div><figcaption class="evd-cap"><span lang="en"><b>TOY MODEL.</b> The Week 5 geometry: two 10 × 10 × 1 cm counters 20 cm apart, cos²θ muons from a 30 × 30 cm plane. Light paths are schematic (real photons reflect many times before reaching the SiPM); pulse shapes, amplitudes and the noise rate are illustrative. A counter fires when its pulse crosses the dashed threshold; the trigger needs both counters within a 20 ns window, as in the lesson.</span><span lang="zh-Hans"><b>玩具模型。</b>第 5 周的几何：两块 10 × 10 × 1 cm 的计数器相距 20 cm，cos²θ 缪子从 30 × 30 cm 平面射入。光路只作示意（真实光子到达 SiPM 前会反射多次）；脉冲形状、幅度和噪声率均为示意值。脉冲越过虚线阈值时计数器响应；触发要求两个计数器在 20 ns 窗口内同时响应，与课文一致。</span></figcaption></figure>
     </div>
   </section>
 
@@ -266,11 +264,14 @@ hit-&gt;AddEvis(edep / (1. + kBirks * edep / length));   <span class="c">// Birk
     <p class="cmd">/control/execute trigger.mac<span lang="en">hands-on · Labs 5.1–5.3</span><span lang="zh-Hans">动手实验 · 实验 5.1–5.3</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Count, trigger, add noise, digitize.</span><span lang="zh-Hans">计数、触发、加噪声、数字化。</span></h2>
+      <!--shell:dl--><p class="dl"><a class="btn-s" href="downloads/week05-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download all files for this lab (zip)</span><span lang="zh-Hans">下载本实验的全部文件（zip）</span></a><a class="dl-all" href="downloads/geant4-course-code.zip" download><span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></a></p><!--/shell:dl-->
       <p lang="en">Outputs are real Geant4 11.4.p01 runs of these files with the course test physics list. Efficiencies here are set by geometry and threshold, so <code>FTFP_BERT</code> should give the same values within the quoted binomial errors.</p>
       <p lang="zh-Hans">下面的输出来自这些文件在 Geant4 11.4.p01 上的真实运行，使用课程测试物理列表。这里的效率由几何和阈值决定，所以 <code>FTFP_BERT</code> 应在所给的二项误差内得到相同的值。</p>
       <ol class="steps">
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Create the project</span><span lang="zh-Hans">建立工程</span></h3><label class="done" for="w05-s1"><input type="checkbox" id="w05-s1" data-progress="w05"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
+          <p lang="en">Start a new, empty <code>week05/</code> folder (or unpack the week's zip) and create exactly the files below. Do not build on a copy of <code>week04/</code>: its <code>src/SteppingAction.cc</code> calls <code>EventAction::AddEdep</code>, which this week's EventAction no longer has, and CMake's glob would compile it and fail.</p>
+          <p lang="zh-Hans">新建一个空的 <code>week05/</code> 文件夹（或解压本周的 zip），只创建下列文件。不要在 <code>week04/</code> 的副本上改：它的 <code>src/SteppingAction.cc</code> 调用了本周 EventAction 已经没有的 <code>EventAction::AddEdep</code>，CMake 的通配会把它一起编译，导致失败。</p>
           <div class="files">
             <details><summary><b>CMakeLists.txt</b><button class="copy" type="button" data-copy="f5-cm">copy</button></summary><pre id="f5-cm" data-src="code/week05/CMakeLists.txt">cmake_minimum_required(VERSION 3.16)
 project(Week05 LANGUAGES CXX)
@@ -557,6 +558,7 @@ class EventAction : public G4UserEventAction
 {
   public:
     explicit EventAction(RunAction* runAction);
+    ~EventAction() override;
     void EndOfEventAction(const G4Event* event) override;
 
   private:
@@ -597,9 +599,14 @@ EventAction::EventAction(RunAction* runAction)
   fMessenger = new G4GenericMessenger(this, "/week05/", "Week 5 trigger study");
   fMessenger-&gt;DeclareProperty("noise", fNoiseProbability,
                              "probability of a background pulse per counter per event");
-  // /week05/edepThreshold 1 MeV  -&gt; the Think-about-it question of section 6.1
+  // /week05/edepThreshold 1 MeV  -&gt; the Think-about-it question of section 5.1
   fMessenger-&gt;DeclarePropertyWithUnit("edepThreshold", "MeV", fEdepThreshold,
                                       "event-level Edep threshold per counter");
+}
+
+EventAction::~EventAction()
+{
+  delete fMessenger;
 }
 
 void EventAction::EndOfEventAction(const G4Event* event)
@@ -732,7 +739,9 @@ class G4GenericMessenger;
 // square plane above the telescope. Two angular models, chosen by /week05/gun/model:
 //   vertical : every muon along +z
 //   cos2     : sea-level intensity ~ cos^2(theta) per solid angle, crossing a plane,
-//              so the sampled density of cos(theta) is ~ cos^3 (Week 1, step 5)
+//              so the sampled density of cos(theta) is ~ cos^3: cos(theta) = u^(1/4).
+//              This is the Week 1 toy's "crossing a horizontal plane" model; Week 1
+//              step 5 samples cos^2 per solid angle, cos(theta) = u^(1/3).
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
   public:
@@ -899,8 +908,8 @@ Run complete: 20000 events.
   both fired (truth level)             318  eff = 0.0159 +/- 0.0009
   both ADC above threshold            2053  eff = 0.1027 +/- 0.0021
   trigger (both + |dt|<20 ns)          386  eff = 0.0193 +/- 0.0010</pre></div>
-          <p lang="en"><strong>A.</strong> Vertical muons over 30 × 30 cm hit a 10 × 10 cm counter with probability 100/900 = 0.111: the efficiency is the geometry. <strong>B.</strong> Inclined muons spread out, so the bottom counter, 20 cm further away, sees fewer than half as many. Requiring the ADC threshold (5 p.e.) loses a few percent more than the 0.1 MeV truth threshold. <strong>C.</strong> Without timing, background pulses inflate "both above threshold" six-fold. The 20 ns window removes all but about 70 of them.</p>
-          <p lang="zh-Hans"><strong>A.</strong> 在 30 × 30 cm 上均匀分布的竖直缪子击中 10 × 10 cm 计数器的概率为 100/900 = 0.111：效率就是几何。<strong>B.</strong> 倾斜缪子会散开，所以远 20 cm 的下层计数器看到的不到一半。ADC 阈值（5 p.e.）比 0.1 MeV 的真相阈值多损失几个百分点。<strong>C.</strong> 没有时间条件时，本底脉冲让“两路均超阈”膨胀到 6 倍；20 ns 窗口把它们去掉，只剩约 70 个。</p>
+          <p lang="en"><strong>A.</strong> Vertical muons over 30 × 30 cm hit a 10 × 10 cm counter with probability 100/900 = 0.111. The printout calls this column "eff", but here it is a geometric fraction of the generated muons, not a detector efficiency (Week 1's MC0003 warns against mixing the two). <strong>B.</strong> Inclined muons spread out, so the bottom counter, 20 cm further away, sees fewer than half as many. Requiring the ADC threshold (5 p.e.) loses a few percent more than the 0.1 MeV truth threshold. <strong>C.</strong> Without timing, background pulses inflate "both above threshold" six-fold. The 20 ns window removes all but about 70 of them.</p>
+          <p lang="zh-Hans"><strong>A.</strong> 在 30 × 30 cm 上均匀分布的竖直缪子击中 10 × 10 cm 计数器的概率为 100/900 = 0.111。输出把这一栏叫作 “eff”，但这里它是所产生缪子中的几何比例，不是探测器效率（第 1 周的 MC0003 提醒过不要混用两者）。<strong>B.</strong> 倾斜缪子会散开，所以远 20 cm 的下层计数器看到的不到一半。ADC 阈值（5 p.e.）比 0.1 MeV 的真相阈值多损失几个百分点。<strong>C.</strong> 没有时间条件时，本底脉冲让“两路均超阈”膨胀到 6 倍；20 ns 窗口把它们去掉，只剩约 70 个。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Compare with the Week 1 telescope</span><span lang="zh-Hans">与第 1 周的望远镜比较</span></h3><label class="done" for="w05-s3"><input type="checkbox" id="w05-s3" data-progress="w05"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -985,16 +994,19 @@ Threshold applied per STEP ("if (edep &lt; fThreshold) return false;").
 *** G4Exception : Course-W05-c
       issued by : SetSensitiveDetector("counter", muonSD)
 Volume name does not match ("Counter" vs "counter").
-  The SD is never called; every efficiency is 0, with no error.
-  Copy the name from Construct(); check that hits are non-zero.
+  In Geant4 11.4 this is fatal at initialisation (Run0053). The
+  silent version is an SD attached to a volume that exists but is
+  the wrong one: hits stay zero with no error. Copy the name from
+  Construct(); check that hits are non-zero.
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
 <div class="g4ex" role="note" lang="zh-Hans"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>
 *** G4Exception : Course-W05-c
       issued by : SetSensitiveDetector("counter", muonSD)
 体积名称不匹配（"Counter" 与 "counter"）。
-  SD 从不被调用；所有效率都为 0，且不报任何错。
-  从 Construct() 中复制名称；检查击中是否非零。
+  在 Geant4 11.4 中这会在初始化时致命报错（Run0053）。无声的版本
+  是把 SD 挂到一个存在但错误的体积上：击中一直为零且不报错。从
+  Construct() 中复制名称；检查击中是否非零。
 *** This is just a warning message. ***
 <span class="w">-------- WWWW -------- G4Exception-END --------- WWWW -------</span></div>
 <div class="g4ex" role="note" lang="en"><span class="w">-------- WWWW ------- G4Exception-START -------- WWWW -------</span>

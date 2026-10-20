@@ -24,9 +24,14 @@ EventAction::EventAction(RunAction* runAction)
   fMessenger = new G4GenericMessenger(this, "/week05/", "Week 5 trigger study");
   fMessenger->DeclareProperty("noise", fNoiseProbability,
                              "probability of a background pulse per counter per event");
-  // /week05/edepThreshold 1 MeV  -> the Think-about-it question of section 6.1
+  // /week05/edepThreshold 1 MeV  -> the Think-about-it question of section 5.1
   fMessenger->DeclarePropertyWithUnit("edepThreshold", "MeV", fEdepThreshold,
                                       "event-level Edep threshold per counter");
+}
+
+EventAction::~EventAction()
+{
+  delete fMessenger;
 }
 
 void EventAction::EndOfEventAction(const G4Event* event)

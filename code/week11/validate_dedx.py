@@ -48,6 +48,13 @@ def discrepancy_sigma(sim, sim_unc, ref, ref_stat, ref_sys=0.0):
     return abs(sim - ref) / np.sqrt(sim_unc**2 + ref_stat**2 + ref_sys**2)
 
 
+def chi2_sf(x, k):
+    """P(chi2 >= x) for k degrees of freedom."""
+    from scipy.stats import chi2
+    return float(chi2.sf(x, k))
+
+
+pulls_stat, pulls_ref = [], []
 for fn in sys.argv[1:]:
     T = float(re.search(r"edep_(\d+)MeV", fn).group(1))
     h = uproot.open(fn)["PrimarydEdx"]
@@ -66,6 +73,18 @@ for fn in sys.argv[1:]:
               f"this mean is truncated. Widen the range (/analysis/h1/set) and rerun.")
         continue
     ns = discrepancy_sigma(mean, err, ref, 0.0, REF_SYS * ref)
-    print(f"           ratio {mean / ref:.4f}   discrepancy {ns:.1f} sigma (stat + 1% reference)")
+    pull = (mean - ref) / err
+    pulls_stat.append(pull)
+    pulls_ref.append((mean - ref) / np.sqrt(err**2 + (REF_SYS * ref) ** 2))
+    print(f"           ratio {mean / ref:.4f}   discrepancy {ns:.1f} sigma (stat + 1% reference)   "
+          f"stat-only pull {pull:+.1f}")
+if len(pulls_stat) >= 2:
+    # Look at both. Statistics alone tests whether Geant4 and the table agree to the precision of
+    # the run; the 1% is an ASSUMED reference error. If it makes chi2/ndf much smaller than 1, the
+    # assumed error is larger than the scatter of the points and hides any common offset.
+    n = len(pulls_stat)
+    c2s, c2r = float(np.sum(np.square(pulls_stat))), float(np.sum(np.square(pulls_ref)))
+    print(f"stat only: chi2 = {c2s:.1f}/{n} (p = {chi2_sf(c2s, n):.2f})   "
+          f"with the assumed 1% reference: chi2 = {c2r:.2f}/{n} (p = {chi2_sf(c2r, n):.3f})")
 print("Ladder: physics benchmarked against a calculated table over 10 cm of plastic. Not yet detector "
       "benchmarked: no measured spectrum, threshold or trigger has been compared.")

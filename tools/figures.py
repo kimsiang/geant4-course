@@ -25,8 +25,8 @@ EVD = {
     "muography": (
         ("Watch a hill filter the sky.", "看一座山如何“过滤”天空。"),
         "3D animation: cosmic muons fall on a hill with a tunnel and a hidden void; most stop in the rock, a few reach a telescope in the tunnel",
-        ("<b>TOY MODEL.</b> A hill of standard rock (2.65 g/cm³) with a tunnel and a 14 m void. Muons aimed at the telescope have a toy spectrum dN/dE ∝ E<sup>−2.7</sup> above 1 GeV and a cos²θ angular distribution (real sea-level spectra are flatter below about 10 GeV); directions are kept close to the drawing plane. A muon reaches the tunnel only if its range, from the PDG standard-rock table, exceeds the rock along its path; otherwise it stops where the range runs out. The telescope is drawn larger than life. Lines of sight through the void cross less rock, so slightly more muons arrive from there: that excess is the muography signal.",
-         "<b>玩具模型。</b>一座标准岩石（2.65 g/cm³）山体，内有隧道和一个 14 m 的空洞。射向望远镜的缪子取玩具能谱 dN/dE ∝ E<sup>−2.7</sup>（1 GeV 以上）和 cos²θ 角分布（真实海平面能谱在 10 GeV 以下更平缓）；方向限制在绘图平面附近。只有当缪子的射程（取自 PDG 标准岩石表）大于路径上的岩石厚度时，它才能到达隧道；否则在射程耗尽处停下。望远镜画得比实际大。穿过空洞的视线所经岩石更少，从那里来的缪子会略多一些：这个超出就是缪子成像的信号。"),
+        ("<b>TOY MODEL.</b> A hill of standard rock (2.65 g/cm³) with a tunnel and a 14 m void. Muons aimed at the telescope have a toy spectrum dN/dE ∝ E<sup>−2.7</sup> above 1 GeV and a cos²θ angular distribution (real sea-level spectra are flatter below about 10 GeV and steepen towards E<sup>−3.7</sup> above about 100 GeV, so the toy overstates transmission through very thick rock); directions are kept close to the drawing plane. A muon reaches the tunnel only if its range, from the PDG standard-rock table, exceeds the rock along its path; otherwise it stops where the range runs out. The telescope is drawn larger than life. Lines of sight through the void cross less rock, so slightly more muons arrive from there: that excess is the muography signal.",
+         "<b>玩具模型。</b>一座标准岩石（2.65 g/cm³）山体，内有隧道和一个 14 m 的空洞。射向望远镜的缪子取玩具能谱 dN/dE ∝ E<sup>−2.7</sup>（1 GeV 以上）和 cos²θ 角分布（真实海平面能谱在 10 GeV 以下更平缓，在约 100 GeV 以上变陡至 E<sup>−3.7</sup>，因此玩具模型高估了很厚岩石的透射）；方向限制在绘图平面附近。只有当缪子的射程（取自 PDG 标准岩石表）大于路径上的岩石厚度时，它才能到达隧道；否则在射程耗尽处停下。望远镜画得比实际大。穿过空洞的视线所经岩石更少，从那里来的缪子会略多一些：这个超出就是缪子成像的信号。"),
     ),
     "shower": (
         ("Where your muons were born.", "你的缪子诞生在哪里。"),
@@ -55,8 +55,8 @@ EVD = {
     "w05": (
         ("From a passing muon to a trigger decision.", "从一个穿过的缪子到一次触发判定。"),
         "3D animation: a muon crosses two scintillator counters, light travels to a SiPM, pulses appear and the coincidence decides the trigger",
-        ("<b>TOY MODEL.</b> The Week 5 geometry: two 10 × 10 × 1 cm counters 20 cm apart, cos²θ muons from a 30 × 30 cm plane. Light paths are schematic (real photons reflect many times before reaching the SiPM); pulse shapes, amplitudes and the noise rate are illustrative. A counter fires when its pulse crosses the dashed threshold; the trigger needs both counters within a 15 ns window.",
-         "<b>玩具模型。</b>第 5 周的几何：两块 10 × 10 × 1 cm 的计数器相距 20 cm，cos²θ 缪子从 30 × 30 cm 平面射入。光路只作示意（真实光子到达 SiPM 前会反射多次）；脉冲形状、幅度和噪声率均为示意值。脉冲越过虚线阈值时计数器响应；触发要求两个计数器在 15 ns 窗口内同时响应。"),
+        ("<b>TOY MODEL.</b> The Week 5 geometry: two 10 × 10 × 1 cm counters 20 cm apart, cos²θ muons from a 30 × 30 cm plane. Light paths are schematic (real photons reflect many times before reaching the SiPM); pulse shapes, amplitudes and the noise rate are illustrative. A counter fires when its pulse crosses the dashed threshold; the trigger needs both counters within a 20 ns window, as in the lesson.",
+         "<b>玩具模型。</b>第 5 周的几何：两块 10 × 10 × 1 cm 的计数器相距 20 cm，cos²θ 缪子从 30 × 30 cm 平面射入。光路只作示意（真实光子到达 SiPM 前会反射多次）；脉冲形状、幅度和噪声率均为示意值。脉冲越过虚线阈值时计数器响应；触发要求两个计数器在 20 ns 窗口内同时响应，与课文一致。"),
     ),
     "w07": (
         ("Six points, one bend, one momentum.", "六个点、一次弯折、一个动量。"),

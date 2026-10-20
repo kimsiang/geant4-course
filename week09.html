@@ -7,9 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Geant4 2.0, Week 09: run a muon experiment from a text macro with musrSim, then read its t1 tree with uproot and awkward and run it as a production campaign.">
 <script>try{var l=JSON.parse(localStorage.getItem('g4c.lang'))}catch(e){}document.documentElement.setAttribute('data-lang',l||((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en'));</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/course.css">
 <style>#w9-macro{width:100%;min-height:180px;font:400 0.8rem/1.55 var(--mono);color:var(--fg);background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:10px 12px;resize:vertical}</style>
 </head>
@@ -157,8 +155,8 @@ t = t[sel &amp; <mark>(t &gt; 0)</mark>]                       <span class="c">#
 "../musrSim 201.mac job$i $i" uses $i as a seed offset. In
   musrDetectorMessenger.cc the offset enters ONLY under
   /musr/run/randomOption 1 (seeds = system time + 100 x offset).
-  201.mac ships with randomOption 2 (seed = event number), and the
-  default is 0 (no initialisation): every job is then IDENTICAL.
+  musrsim-sms's run/201.mac uses randomOption 2 (seed = event
+  number), and the default is 0 (no initialisation): every job is then IDENTICAL.
   Set randomOption 1 in the production macro and keep the printed
   "seed1: ... seed2: ..." line with each output file.
 *** This is just a warning message. ***
@@ -168,8 +166,8 @@ t = t[sel &amp; <mark>(t &gt; 0)</mark>]                       <span class="c">#
       issued by : 生产循环，对照 musrsim-sms 源码
 "../musrSim 201.mac job$i $i" 把 $i 当作种子偏移。在
   musrDetectorMessenger.cc 中，偏移只在 /musr/run/randomOption 1
-  下生效（种子 = 系统时间 + 100 × 偏移）。201.mac 自带的是
-  randomOption 2（种子 = 事例号），默认值为 0（不初始化）：
+  下生效（种子 = 系统时间 + 100 × 偏移）。musrsim-sms 的 run/201.mac
+  用的是 randomOption 2（种子 = 事例号），默认值为 0（不初始化）：
   此时每个作业都完全相同。请在生产宏中设置 randomOption 1，
   并把打印出的 "seed1: ... seed2: ..." 行与输出文件一起保存。
 *** This is just a warning message. ***
@@ -225,6 +223,7 @@ t = t[sel &amp; <mark>(t &gt; 0)</mark>]                       <span class="c">#
     <p class="cmd">../musrSim 201.mac job1 1<span lang="en">hands-on · Lab 9</span><span lang="zh-Hans">动手实验 · 实验 9</span></p>
     <div class="prose">
       <h2 id="h-task" class="bi"><span lang="en">Build musrSim, ask it what it can do, run a macro, analyse t1, then go to production.</span><span lang="zh-Hans">编译 musrSim，问它能做什么，运行一个宏，分析 t1，再进入批量生产。</span></h2>
+      <!--shell:dl--><p class="dl"><a class="btn-s" href="downloads/week09-code.zip" download><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-code"/></svg><span lang="en">Download all files for this lab (zip)</span><span lang="zh-Hans">下载本实验的全部文件（zip）</span></a><a class="dl-all" href="downloads/geant4-course-code.zip" download><span lang="en">all weeks</span><span lang="zh-Hans">全部周次</span></a></p><!--/shell:dl-->
       <p lang="en">We could not build musrSim in our sandbox (it needs Geant4 10.7 and ROOT). Commands, file names and printed messages below are taken from the musrsim-sms source and README, not from a run, and are marked as such. The Python analysis was run and checked on a synthetic t1 file with the same branch names, units and sentinels.</p>
       <p lang="zh-Hans">我们无法在沙盒中编译 musrSim（它需要 Geant4 10.7 和 ROOT）。下面的命令、文件名和打印信息均取自 musrsim-sms 源码与 README，而非实际运行，并已标明。Python 分析在一个分支名、单位和哨兵值都相同的合成 t1 文件上实际运行并核对过。</p>
       <ol class="steps">
@@ -238,8 +237,8 @@ root-config --version
 git clone https://github.com/kimsiang/musrsim-sms.git
 cd musrsim-sms &amp;&amp; mkdir build &amp;&amp; cd build
 cmake .. &amp;&amp; make -j4             # the executable is ./musrSim (CMakeLists: add_executable(musrSim …))</pre></div>
-          <p lang="en">The README's build lines omit <code>cmake ..</code>; the commands above include it. If the build fails against Geant4 11.x, check the version before reading the C++ errors.</p>
-          <p lang="zh-Hans">README 的编译步骤漏了 <code>cmake ..</code>，上面的命令已补上。如果针对 Geant4 11.x 编译失败，先检查版本，再去读 C++ 报错。</p>
+          <p lang="en">No CVMFS? The course <a href="setup.html#musrsim">setup page</a> gives other routes to a Geant4 10.7 + ROOT environment; CVMFS above is one option. The README's build lines omit <code>cmake ..</code>; the commands above include it. If the build fails against Geant4 11.x, check the version before reading the C++ errors.</p>
+          <p lang="zh-Hans">没有 CVMFS？课程<a href="setup.html#musrsim">安装页面</a>给出了获得 Geant4 10.7 + ROOT 环境的其他途径，上面的 CVMFS 只是其中一种。README 的编译步骤漏了 <code>cmake ..</code>，上面的命令已补上。如果针对 Geant4 11.x 编译失败，先检查版本，再去读 C++ 报错。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Ask the executable what it supports</span><span lang="zh-Hans">问可执行文件支持什么</span></h3><label class="done" for="w09-s2"><input type="checkbox" id="w09-s2" data-progress="w09"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -282,6 +281,8 @@ root -l data/musrSim_0.root -e 't1->Draw("det_edep","det_ID==1")'</pre></div>
 <pre>musrSim.cc: Set default output ROOT file: data/musrSim_0.root</pre></div>
           <p lang="en">The run number is <code>atoi()</code> of the macro name: "first_sim.mac" gives 0, "201.mac" gives 201, and "run/201.mac" also gives 0. Run from the macro's directory, and create <code>data/</code> first, or ROOT cannot create the output file. Physics to expect: the 29.8 MeV/c μ⁺ stops in the slab and deposits its 4.1 MeV kinetic energy; its decay positrons add a broader component.</p>
           <p lang="zh-Hans">运行号是宏文件名的 <code>atoi()</code>：“first_sim.mac” 得 0，“201.mac” 得 201，而 “run/201.mac” 也得 0。请在宏所在目录运行，并先建好 <code>data/</code>，否则 ROOT 无法创建输出文件。预期的物理：29.8 MeV/c 的 μ⁺ 停在板中，沉积其 4.1 MeV 动能；衰变正电子再贡献一个较宽的成分。</p>
+          <p lang="en"><code>/gun/decaytimelimits min max τ</code> forces the muon to decay inside [min, max] with mean life τ; a max of zero or less switches that off (<code>musrPrimaryGeneratorAction.cc</code>: <code>if (muonDecayTimeMax&gt;0.)</code>), so here it is a no-op and Geant4 decays the muon with its own lifetime. It is in the macro as a template, not as a time cut.</p>
+          <p lang="zh-Hans"><code>/gun/decaytimelimits min max τ</code> 会强制缪子在 [min, max] 内以平均寿命 τ 衰变；max 小于等于 0 时该功能关闭（<code>musrPrimaryGeneratorAction.cc</code>：<code>if (muonDecayTimeMax&gt;0.)</code>），所以这里它不起作用，缪子按 Geant4 自身的寿命衰变。它留在宏里只是一个模板，不是时间选择条件。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Analyse t1 in Python</span><span lang="zh-Hans">用 Python 分析 t1</span></h3><label class="done" for="w09-s4"><input type="checkbox" id="w09-s4" data-progress="w09"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
@@ -384,8 +385,17 @@ print("mean decay time, sentinels removed [us]:", round(float(tdec[good].mean())
 tt = tdec[good]
 counts, edges = np.histogram(tt, bins=120, range=(0, 12))
 centres = 0.5 * (edges[:-1] + edges[1:])
-popt, pcov = curve_fit(decay, centres, counts, p0=[counts.max(), 2.2, 0.0])
-print(f"fit: tau = {popt[1]:.4f} +/- {np.sqrt(pcov[1, 1]):.4f} us   (PDG mu+: 2.1970 us)")</pre></details>
+# Counts are Poisson: weight each bin by the variance the model predicts (Pearson chi2),
+# iterate once so the weights come from the fit, not from the noisy counts, and keep the
+# absolute errors. An unweighted fit lets the many near-empty tail bins pull as hard as
+# the full bins near t = 0, and its quoted error is not an uncertainty.
+popt, _ = curve_fit(decay, centres, counts, p0=[counts.max(), 2.2, 0.0])
+for _ in range(2):
+    sigma = np.sqrt(np.maximum(decay(centres, *popt), 1.0))
+    popt, pcov = curve_fit(decay, centres, counts, p0=popt, sigma=sigma, absolute_sigma=True)
+chi2 = float((((counts - decay(centres, *popt)) / sigma) ** 2).sum())
+print(f"fit: tau = {popt[1]:.4f} +/- {np.sqrt(pcov[1, 1]):.4f} us   (PDG mu+: 2.1970 us)"
+      f"   chi2/ndf = {chi2:.1f}/{len(counts) - 3}")</pre></details>
           </div>
           <div class="code"><div class="code-head"><span class="l"><b>terminal</b></span><button class="copy" type="button" data-copy="c9-py">copy</button></div>
 <pre id="c9-py">pip install uproot awkward numpy scipy
@@ -399,29 +409,61 @@ flatten-then-mask fails: IndexError
 sentinel values (-1000) in muDecayTime: 1023
 mean decay time, sentinels kept   [us]: -57.96
 mean decay time, sentinels removed [us]: 2.1843
-fit: tau = 2.1847 +/- 0.0270 us   (PDG mu+: 2.1970 us)</pre></div>
-          <p lang="en">The fit agrees with the input lifetime within 0.5σ. A fixed histogram range of 0–12 µs happens to hide the sentinels, but a mean does not: −58 µs is what one forgotten cut does. On real musrSim data, also check that <code>muDecayDetID == 201</code> really is your sample's volume ID.</p>
-          <p lang="zh-Hans">拟合结果与输入寿命在 0.5σ 内一致。0–12 µs 的固定直方图范围碰巧把哨兵值挡在了外面，但均值不会：−58 µs 就是漏掉一个选择条件的后果。在真实的 musrSim 数据上，还要确认 <code>muDecayDetID == 201</code> 确实是你样品的体积 ID。</p>
+fit: tau = 2.1771 +/- 0.0265 us   (PDG mu+: 2.1970 us)   chi2/ndf = 122.7/117</pre></div>
+          <p lang="en">The Poisson-weighted fit agrees with the input lifetime (2.1970 µs) within 0.8σ, and χ²/ndf ≈ 1 says the error is believable. An unweighted fit would give every near-empty tail bin the same pull as the full bins near t = 0, and its quoted error would not be an uncertainty. A fixed histogram range of 0–12 µs happens to hide the sentinels, but a mean does not: −58 µs is what one forgotten cut does. On real musrSim data, also check that <code>muDecayDetID == 201</code> really is your sample's volume ID.</p>
+          <p lang="zh-Hans">按泊松方差加权的拟合与输入寿命（2.1970 µs）在 0.8σ 内一致，χ²/ndf ≈ 1 说明误差可信。不加权的拟合会让尾部几乎为空的 bin 与 t = 0 附近满的 bin 拉力相同，给出的误差也算不上不确定度。0–12 µs 的固定直方图范围碰巧把哨兵值挡在了外面，但均值不会：−58 µs 就是漏掉一个选择条件的后果。在真实的 musrSim 数据上，还要确认 <code>muDecayDetID == 201</code> 确实是你样品的体积 ID。</p>
         </li>
         <li>
           <div class="step-head"><h3 class="bi"><span lang="en">Lab 9: two independent samples, then a campaign</span><span lang="zh-Hans">实验 9：两个独立样本，再到批量生产</span></h3><label class="done" for="w09-s5"><input type="checkbox" id="w09-s5" data-progress="w09"><span lang="en">done</span><span lang="zh-Hans">完成</span></label></div>
-          <p lang="en">Run two samples with different seed offsets, produce the same energy spectrum and efficiency from each and from the combination, and explain why the statistical uncertainty shrinks as 1/√N (Week 1). Switch off one branch you do not need. Then scale up with the corrected script, which forces <code>randomOption 1</code>, creates <code>data/</code> and keeps each job's seeds.</p>
-          <p lang="zh-Hans">用不同的种子偏移运行两个样本，分别以及合并后给出相同的能谱和效率，并解释统计不确定度为何按 1/√N 缩小（第 1 周）。关掉一个你不需要的分支。然后用修正后的脚本扩大规模：它强制使用 <code>randomOption 1</code>，建立 <code>data/</code>，并保存每个作业的种子。</p>
+          <p lang="en">Run two samples with different seed offsets, produce the same energy spectrum and efficiency from each and from the combination, and explain why the statistical uncertainty shrinks as 1/√N (Week 1). Switch off one branch you do not need. Then scale up with <code>production.sh</code> and the course's <code>201.mac</code> (below): it forces <code>randomOption 1</code>, creates <code>data/</code> and keeps each job's seeds. Our <code>201.mac</code> is <code>first_sim.mac</code> with a time-seeded generator; the file name gives run number 201. Do not use <code>run/201.mac</code> from musrsim-sms here: that is the 2010 GPD instrument macro, which needs <code>GPD_coil_primitive.table</code> and <code>vis.mac</code> and ends with <code>/run/beamOn 10</code>.</p>
+          <p lang="zh-Hans">用不同的种子偏移运行两个样本，分别以及合并后给出相同的能谱和效率，并解释统计不确定度为何按 1/√N 缩小（第 1 周）。关掉一个你不需要的分支。然后用 <code>production.sh</code> 和课程自带的 <code>201.mac</code>（见下）扩大规模：脚本强制使用 <code>randomOption 1</code>，建立 <code>data/</code>，并保存每个作业的种子。我们的 <code>201.mac</code> 就是用时间作随机种子的 <code>first_sim.mac</code>，文件名给出运行号 201。这里不要用 musrsim-sms 里的 <code>run/201.mac</code>：那是 2010 年 GPD 装置的宏，需要 <code>GPD_coil_primitive.table</code> 和 <code>vis.mac</code>，最后只有 <code>/run/beamOn 10</code>。</p>
           <div class="files">
+            <details><summary><b>201.mac</b><span class="tag musrsim">MUSRSIM</span><button class="copy" type="button" data-copy="f9-201">copy</button></summary><pre id="f9-201" data-src="code/week09/201.mac"># Lab 9 production macro. This is the course's own 201.mac: first_sim.mac with a
+# time-seeded random generator, so jobs started with different seed offsets differ.
+# The file name sets the run number (atoi("201.mac") = 201), so output files are
+# data/musrSim_201_&lt;jobname&gt;.root. Do not confuse it with run/201.mac in musrsim-sms,
+# the 2010 GPD instrument macro, which needs GPD_coil_primitive.table and vis.mac
+# and ends with /run/beamOn 10.
+/musr/run/randomOption 1
+# ---- GEOMETRY (half-lengths in mm) ----
+/musr/command construct box World 500 500 500 G4_AIR 0 0 0 no_logical_volume norot dead -1
+/musr/command construct box Slab 50 50 5 G4_PLASTIC_SC_VINYLTOLUENE 0 0 0 log_World norot musr/ScintSD 1
+# ---- OUTPUT ----
+/musr/command SetOutputFileName DEFAULT
+/musr/command storeOnlyEventsWithHits true
+# ---- BEAM ----
+/gun/primaryparticle mu+
+/gun/vertex 0 0 -100 mm
+/gun/vertexsigma 5 5 0 mm
+/gun/momentum 29.8 MeV
+/gun/muonPolarizVector 0 0 -1
+/gun/muonPolarizFraction 1
+# min, max, mean life: a max &lt;= 0 switches the window off (musrPrimaryGeneratorAction.cc)
+/gun/decaytimelimits -1 -1 2197.03 ns
+# ---- GO ----
+/run/beamOn 2000</pre></details>
             <details><summary><b>production.sh</b><span class="tag musrsim">MUSRSIM</span><button class="copy" type="button" data-copy="f9-prod">copy</button></summary><pre id="f9-prod" data-src="code/week09/production.sh">#!/bin/bash
 # Lab 9: split one macro into independent jobs, with seeds that actually differ.
 # The seed offset (3rd argument) only takes effect with /musr/run/randomOption 1
-# in the macro; 201.mac as shipped uses randomOption 2, which gives identical jobs.
-set -e
-cd "$(dirname "$0")"          # run where 201.mac lives: the run number is atoi("201.mac")
-mkdir -p data                 # musrSim writes data/musrSim_&lt;run&gt;_&lt;name&gt;.root and will not create data/
-sed 's|^/musr/run/randomOption .*|/musr/run/randomOption 1|' 201.mac &gt; 201_prod.mac
-grep -q '^/musr/run/randomOption 1' 201_prod.mac || echo '/musr/run/randomOption 1' | cat - 201_prod.mac &gt; tmp &amp;&amp; mv tmp 201_prod.mac
-for i in $(seq 1 50); do
-  ../musrSim 201_prod.mac job${i} ${i} &gt; data/job${i}.log 2&gt;&amp;1
-  grep -m1 "seed1:" data/job${i}.log     # keep the seeds: they are your provenance
+# (seed = computer time + 100 x offset). The course's 201.mac already sets it; the
+# check below adds it to any other macro you point the script at.
+set -euo pipefail
+MAC=${1:-201.mac}                 # the run number is atoi() of this file name
+NJOBS=${2:-50}
+cd "$(dirname "$0")"              # run where the macro lives
+mkdir -p data                     # musrSim writes data/musrSim_&lt;run&gt;_&lt;name&gt;.root and will not create data/
+PROD=${MAC%.mac}_prod.mac
+sed 's|^/musr/run/randomOption .*|/musr/run/randomOption 1|' "$MAC" &gt; "$PROD"
+if ! grep -q '^/musr/run/randomOption 1' "$PROD"; then
+  { echo '/musr/run/randomOption 1'; cat "$PROD"; } &gt; "$PROD.tmp"
+  mv "$PROD.tmp" "$PROD"
+fi
+RUN=$(basename "$MAC" | sed 's/[^0-9].*//'); RUN=${RUN:-0}   # atoi(), as musrSim does
+for i in $(seq 1 "$NJOBS"); do
+  ../musrSim "$PROD" job${i} ${i} &gt; data/job${i}.log 2&gt;&amp;1
+  grep -m1 "seed1:" data/job${i}.log || true   # keep the seeds: they are your provenance
 done
-hadd -f data/musrSim_201_merged.root data/musrSim_201_job*.root</pre></details>
+hadd -f data/musrSim_${RUN}_merged.root data/musrSim_${RUN}_job*.root</pre></details>
           </div>
           <p lang="en">Proof that two jobs are independent: their first ten <code>muDecayTime</code> values differ. If they are identical, the seeds were not set, whatever the command line said.</p>
           <p lang="zh-Hans">证明两个作业相互独立：它们的前十个 <code>muDecayTime</code> 值不同。如果完全相同，说明种子没有设置成功，无论命令行写了什么。</p>
@@ -506,7 +548,7 @@ Sentinel values (-1000) kept in a fit, a mean or an auto-ranged
   data/ 目录不存在，musrSim 不会自动创建它。
 *** Fatal Exception ***
 <span class="e">-------- EEEE -------- G4Exception-END --------- EEEE -------</span></div>
-      <p class="cap"><span lang="en">The FATAL message text is from musrRootOutput.cc. Course-W09-b (identical jobs) is in section 11 above.</span><span lang="zh-Hans">FATAL 信息原文取自 musrRootOutput.cc。Course-W09-b（作业完全相同）见上文第 11 节。</span></p>
+      <p class="cap"><span lang="en">The FATAL message text is from musrRootOutput.cc. Course-W09-b (identical jobs) is in section 9.2 above.</span><span lang="zh-Hans">FATAL 信息原文取自 musrRootOutput.cc。Course-W09-b（作业完全相同）见上文第 9.2 节。</span></p>
     </div>
   </section>
 

@@ -98,7 +98,8 @@
     var Zx = function (z) { return 20 + (z - Z0) * sx; }, Xy = function (v) { return h / 2 - v * sy; };
     x.fillStyle = 'rgba(115,147,255,0.12)'; x.fillRect(Zx(ZM0), 12, (ZM1 - ZM0) * sx, h - 36);
     x.fillStyle = DFG + '0.55)'; x.font = '10px ' + MONO; x.textAlign = 'center';
-    x.fillText('B = ' + st.P.B.toFixed(2) + ' T  (y, out of page)', Zx(0), 24);
+    var narrow = w < 760;   /* on phones the B label goes on its own line below the view label */
+    x.fillText('B = ' + st.P.B.toFixed(2) + ' T  ' + G.t('(along y, out of the page)', '（沿 y，指出纸面）'), Zx(0), narrow ? 40 : 24);
     ZP.forEach(function (z) { x.strokeStyle = DFG + '0.5)'; x.beginPath(); x.moveTo(Zx(z), 12); x.lineTo(Zx(z), h - 24); x.stroke(); });
     x.fillText(G.t('tracker 1', '径迹室 1'), Zx(-0.8), h - 10); x.fillText(G.t('tracker 2', '径迹室 2'), Zx(0.8), h - 10);
     st.show.forEach(function (t, i) {

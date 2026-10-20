@@ -1,0 +1,5 @@
+# called by slab_thickness.mac with {t} and {e} = kinetic energy in GeV
+/gun/energy {e} GeV
+/analysis/setFileName slab_{t}cm_{e}GeV
+/random/setSeeds 4{t} 7{e}
+/run/beamOn 20000
