@@ -111,7 +111,7 @@ def frame(k):
         g.text((L1 - 8, Y(v) - 7), str(v), font=mono_s, fill=MUTED, anchor="ra")
     g.text((R1, B1 + 24), "βγ", font=mono_s, fill=MUTED, anchor="ra")
     g.text((L1 + 10, T1 + 8), "-dE/dx [MeV/cm]   line: PDG Bethe   dots: Geant4 primary", font=mono_s, fill=MUTED)
-    g.text((28, 872), "Geant4 2.0 · Week 04 · Energy loss and Bethe–Bloch", font=mono_s, fill=MUTED)
+    g.text((28, 872), "From Track to Truth · Week 04 · Energy loss and Bethe–Bloch", font=mono_s, fill=MUTED)
     return im
 
 

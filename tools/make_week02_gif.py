@@ -126,7 +126,7 @@ def frame(n, pts):
         g.text((L0 - 8, Y(v) - 7), f"{v:.1f}", font=mono_s, fill=MUTED, anchor="ra")
     g.text((R0, B0 + 24), "events N", font=mono_s, fill=MUTED, anchor="ra")
     g.text((L0 + 10, T0 + 8), "fraction decayed k/N", font=mono_s, fill=MUTED)
-    g.text((28, 872), "Geant4 2.0 · Week 02 · Run, Event, Track, Step", font=mono_s, fill=MUTED)
+    g.text((28, 872), "From Track to Truth · Week 02 · Run, Event, Track, Step", font=mono_s, fill=MUTED)
     return im
 
 

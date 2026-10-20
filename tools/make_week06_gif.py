@@ -90,7 +90,7 @@ def frame(k):
         g.text((L1 - 6, Y1(v) - 7), str(v), font=mono_s, fill=MUTED, anchor="ra")
     g.text((R1, B0 + 24), "cut [mm]", font=mono_s, fill=MUTED, anchor="ra")
     g.text((L1 + 8, T0 + 8), "Edep [MeV]", font=mono_s, fill=MUTED)
-    g.text((28, 872), f"Geant4 2.0 · Week 06 · Physics lists and production cuts   CPU {cpu} ms/evt", font=mono_s, fill=MUTED)
+    g.text((28, 872), f"From Track to Truth · Week 06 · Physics lists and production cuts   CPU {cpu} ms/evt", font=mono_s, fill=MUTED)
     return im
 
 

@@ -39,6 +39,8 @@ STAGES = {1: ("See it", "观测"), 2: ("Measure it", "度量"), 3: ("Understand 
 
 # study time for pages whose hero does not state one (Week 12: proposal, pilot run, rehearsal)
 STUDY_MIN = {12: 240}
+BRAND, BRAND_ZH = "From Track to Truth", "从径迹到真相"
+BRAND_SUB, BRAND_SUB_ZH = "Geant4 muon simulation in 12 weeks", "12 周 Geant4 缪子模拟"
 
 # start-here pages (no week number): file -> (progress key, title en, title zh)
 SPECIAL = {
@@ -360,7 +362,7 @@ def process(name, out_dir):
            '<header class="topbar"><div class="tb-in">'
            '<button type="button" class="nav-toggle" aria-controls="nav" aria-expanded="false">' + icon("menu") +
            '<span class="sr">' + bi("Open the item list", "打开目录") + '</span></button>'
-           '<a class="brand" href="index.html">' + LOGO + '<b>Geant4 2.0</b></a>'
+           '<a class="brand" href="index.html">' + LOGO + '<b class="wm">' + bi(BRAND, BRAND_ZH) + '</b></a>'
            '<span class="tb-week">' + bi(week_en, week_zh) + '<span class="tb-title">' + bi(w_en, w_zh) + '</span></span>'
            f'<span class="tb-prog" data-prog="{key}" aria-hidden="true"><span class="pbar"><i></i></span><span class="pn"></span></span>'
            + langs + '</div></header><!--/shell:top-->')
@@ -395,12 +397,27 @@ def process(name, out_dir):
     else:
         text = text.replace('<div class="player">\n', '<div class="player">\n' + nav + "\n", 1)
 
+    # ---- Blender cover banner before the breadcrumb (media/brand/<key>.webp, 800 px variant for phones)
+    text = re.sub(r"<!--shell:cover-->.*?<!--/shell:cover-->\s*", "", text, flags=re.S)
+    cover = ""
+    if (ROOT / f"media/brand/{key}.webp").exists():
+        num = "00" if key == "setup" else ("μ" if key == "primer" else f"{wk:02d}")
+        cover = (f'<!--shell:cover--><figure class="wk-cover" aria-hidden="true"><img src="media/brand/{key}.webp" '
+                 f'srcset="media/brand/{key}-800.webp 800w, media/brand/{key}.webp 1600w" sizes="(max-width: 900px) 100vw, 1100px" '
+                 f'alt="" width="1600" height="640" decoding="async" fetchpriority="high"><span class="wk-cover-n">{num}</span></figure><!--/shell:cover-->')
+    text = re.sub(r"<title>(.*?)(?: · From Track to Truth)?</title>", lambda m: f"<title>{m.group(1)} · {BRAND}</title>", text, count=1)
+    # ---- social preview
+    text = re.sub(r"<!--shell:og-->.*?<!--/shell:og-->\n?", "", text, flags=re.S)
+    og = (f'<!--shell:og--><meta property="og:title" content="{html.escape(w_en)} · {BRAND}">'
+          f'<meta property="og:image" content="media/brand/{key}.webp"><meta name="theme-color" content="#060B16"><!--/shell:og-->\n')
+    text = text.replace('<link rel="stylesheet" href="assets/fonts/fonts.css">', og + '<link rel="stylesheet" href="assets/fonts/fonts.css">', 1)
+
     # ---- breadcrumb before the hero
-    crumbs = ('<!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb / 路径"><a href="index.html">' + bi("Geant4 2.0", "Geant4 2.0") +
+    crumbs = ('<!--shell:crumbs--><nav class="crumbs" aria-label="Breadcrumb / 路径"><a href="index.html">' + bi(BRAND, BRAND_ZH) +
               '</a><span aria-hidden="true">›</span><span>' + bi(crumb_en, crumb_zh) + '</span><span aria-hidden="true">›</span>'
               '<span aria-current="page">' + bi(w_en if is_primer else f"Week {wk}", w_zh if is_primer else f"第 {wk} 周") + '</span></nav><!--/shell:crumbs-->')
     text = re.sub(r"<!--shell:crumbs-->.*?<!--/shell:crumbs-->\s*", "", text, flags=re.S)
-    text = re.sub(r'(\s*)(<section class="hero")', lambda m: m.group(1) + crumbs + m.group(1) + m.group(2), text, count=1)
+    text = re.sub(r'(\s*)(<section class="hero")', lambda m: m.group(1) + cover + (m.group(1) if cover else "") + crumbs + m.group(1) + m.group(2), text, count=1)
 
     # ---- hero call to action (after the meta list, or after the lede)
     cta = ('<!--shell:cta--><div class="hero-cta">'

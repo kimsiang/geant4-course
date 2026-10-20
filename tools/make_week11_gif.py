@@ -76,7 +76,7 @@ def frame(step, morph):
     g.text((L0 + 8, B0 - 40), "Geant4 / PDG, mean -dE/dx, 10 cm plastic", font=mono_s, fill=MUTED)
     g.text((L0 + 8, B0 - 22), lab, font=mono_s, fill=NEG if morph < 0.5 else NEU)
     g.text((R0, B0 + 26), "muon kinetic energy [MeV]; band: 1% reference uncertainty", font=mono_s, fill=MUTED, anchor="ra")
-    g.text((28, 872), "Geant4 2.0 · Week 11 · Debug and validate", font=mono_s, fill=MUTED)
+    g.text((28, 872), "From Track to Truth · Week 11 · Debug and validate", font=mono_s, fill=MUTED)
     return im
 
 

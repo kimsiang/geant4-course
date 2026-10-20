@@ -1,4 +1,4 @@
-# Geant4 2.0 · Course pages
+# From Track to Truth · Geant4 muon simulation in 12 weeks
 
 **A standalone, bilingual online course: twelve weekly labs that take students from a 50-line Python Monte Carlo to a virtual experiment they can defend.**
 
@@ -6,7 +6,7 @@ By the Muon Physics Group, Tsung-Dao Lee Institute, Shanghai Jiao Tong Universit
 
 🌐 **Site:** https://kimsiang.github.io/geant4-course/
 
-**中文简介** · 这是一门独立完整的 Geant4 2.0 双语在线课程，共 12 周，从一个 Python 蒙特卡罗小程序开始，一直到学生能够答辩的虚拟实验。每周一页，可在英文、中文或中英对照之间切换。每页包含学习目标、讲义、三维事例动画、交互模型、可运行的 Geant4 代码及预期输出、自测题、常见错误，以及一张可分享的动图；左侧目录标出每一项的类型和预计时间，学习进度保存在浏览器中。页面上的物理数字都来自真实的 Geant4 11.4 运行。
+**中文简介** · 这是一门独立完整的《从径迹到真相》Geant4 双语在线课程，共 12 周，从一个 Python 蒙特卡罗小程序开始，一直到学生能够答辩的虚拟实验。每周一页，可在英文、中文或中英对照之间切换。每页包含学习目标、讲义、三维事例动画、交互模型、可运行的 Geant4 代码及预期输出、自测题、常见错误，以及一张可分享的动图；左侧目录标出每一项的类型和预计时间，学习进度保存在浏览器中。页面上的物理数字都来自真实的 Geant4 11.4 运行。
 
 ---
 
@@ -311,10 +311,14 @@ All links are relative, so the site also works from any sub-path or another stat
 
 ## Design
 
-The pages match the course landing page (`landing.html`). Each page still reads like a Geant4 run: every item shows the macro command it stands for (`/run/initialize` for the goals, `/run/beamOn` for the interactive model, `G4Exception` for common errors).
+**Brand.** *From Track to Truth* (《从径迹到真相》): the course follows a muon from the first track a student draws to a result they can defend in front of a referee. The visual identity is deep-space navy `#060B16` with a cyan → electric-blue → violet gradient (`#22D3EE → #3B6BFF → #8B7BFF`), glass panels and 3D covers rendered in Blender.
+
+**3D covers.** Every page opens with a Blender (Cycles) render of its idea: the course hero (muons through cut-away rock strata with a hidden void, recorded by a two-plane glass telescope), a shower over a wireframe Earth for the primer, the pion → muon kink for Week 2, a magnet bending a track for Week 7, spin precession for Week 10, a debugging tree for Week 11, a hill with a hidden void for the capstone, and so on. The scenes are code in `tools/blender/` (`kit.py` shared materials and camera, `hero.py`, `covers.py`); outputs are WebP in `media/brand/` (`<key>.webp` 1600 px, `<key>-800.webp` for phones, `<key>-th.webp` syllabus thumbnails). To re-render: `pip install bpy` (Blender 4.x/5.x as a Python module), then from `tools/blender/` run `python hero.py OUT.png 2400 1100 64` and `python covers.py OUTDIR 1600 640 40 primer setup w01 … w12`, convert with `python towebp.py OUTDIR ../../media/brand`, and run `tools/shell.py` (it inserts a cover only when its WebP exists).
+
+The pages keep the course's Geant4-run structure. Each page still reads like a Geant4 run: every item shows the macro command it stands for (`/run/initialize` for the goals, `/run/beamOn` for the interactive model, `G4Exception` for common errors).
 
 - **Type:** IBM Plex Sans Condensed (headings), IBM Plex Sans (body), IBM Plex Mono (code), Noto Sans SC (Chinese).
-- **Colour:** Geant4 visualisation convention (red = negative, green = neutral, blue = positive) on ROOT-canvas paper `#F6F7F5`. Event displays stay dark in both themes.
+- **Colour:** Geant4 visualisation convention (red = negative, green = neutral, blue = positive) on a cool paper `#F3F5F9` (light) or deep navy `#070C18` (dark). Event displays, covers and the home hero stay dark in both themes.
 - **Motifs:** ROOT-style histograms with stat boxes, `G4Exception` banners, hairline tables, and dark glowing event displays.
 - **Components:** design tokens (spacing, radius, elevation, colour) at the top of the v2 layer in `assets/course.css`; one inline SVG icon set (in `tools/shell.py`); buttons, chips, cards, progress bars and rings.
 - **Theme:** light/dark follows the reader's system setting.

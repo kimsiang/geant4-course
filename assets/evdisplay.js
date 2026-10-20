@@ -1,4 +1,4 @@
-/* Geant4 2.0 — shared 3D event display.
+/* From Track to Truth — shared 3D event display.
    three.js r128 + UnrealBloom + OrbitControls, loaded from pinned CDN URLs only when a display
    scrolls near the viewport. A scene (assets/evd-scenes.js) builds a static detector and returns
    one event at a time: tracks revealed along a timeline with a glowing head, detector elements

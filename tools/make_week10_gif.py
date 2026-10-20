@@ -121,7 +121,7 @@ def frame(n, tdisp, fitp=None):
     g.rectangle([L0 + 2, T0 + 4, L0 + 290, T0 + 22], fill=PANEL)
     g.text((L0 + 8, T0 + 8), f"A(t), muons: {n:,}", font=mono_s, fill=MUTED)
     g.text((R0, B0 + 22), "A = (N_D - N_U)/(N_D + N_U) vs decay time [us] · Geant4 11.4 + G4SpinDecayPhysics", font=mono_s, fill=MUTED, anchor="ra")
-    g.text((28, 872), "Geant4 2.0 · Week 10 · Make the muon spin visible", font=mono_s, fill=MUTED)
+    g.text((28, 872), "From Track to Truth · Week 10 · Make the muon spin visible", font=mono_s, fill=MUTED)
     return im
 
 

@@ -93,7 +93,7 @@ def frame(nl, nev):
         g.text((x, B0 + 6), str(v), font=mono_s, fill=MUTED, anchor="ma")
     g.text((R0, B0 + 24), "muDecayTime [us], muDecayDetID == 201", font=mono_s, fill=MUTED, anchor="ra")
     g.text((L0 + 8, T0 + 8), "SYNTHETIC t1 file (make_synthetic_t1.py)", font=mono_s, fill=MUTED)
-    g.text((28, 872), "Geant4 2.0 · Week 09 · musrSim and the t1 tree", font=mono_s, fill=MUTED)
+    g.text((28, 872), "From Track to Truth · Week 09 · musrSim and the t1 tree", font=mono_s, fill=MUTED)
     return im
 
 

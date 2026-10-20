@@ -1,4 +1,4 @@
-/* Geant4 2.0 course pages — shared script.
+/* From Track to Truth course pages — shared script.
    Language toggle, course manifest + navigation, ROOT-style canvas plots, quiz engine,
    copy buttons and per-viewer progress (localStorage, convenience only). */
 (function () {
@@ -548,9 +548,10 @@
         pill(st) + icon('chev') + '</summary><div class="syl-body"><span class="pbar" aria-hidden="true"><i style="width:' + pct + '%"></i></span><ol>' + lis + '</ol>' +
         '<a class="btn-s" href="' + p.file + '">' + G.bi(k === 'primer' ? { en: 'Open the primer', zh: '打开入门背景' } : k === 'setup' ? { en: 'Open the setup page', zh: '打开配置页面' } : { en: 'Open week ' + p.week, zh: '打开第 ' + p.week + ' 周' }) + icon('arrow-r') + '</a></div></details>';
     }
+    function th(k, label) { return '<span class="syl-n syl-th" style="background-image:url(media/brand/' + k + '-th.webp)"><b>' + label + '</b></span>'; }
     var html = '<div class="syl-stage"><p class="syl-sh">' + icon('flag') + G.bi({ en: 'Start here', zh: '从这里开始' }) + '</p>' +
-      row('primer', '<span class="syl-n">0</span>', { en: 'Background primer', zh: '入门背景' }, { en: 'for every student', zh: '适合所有同学' }) +
-      (SY.setup ? row('setup', '<span class="syl-n">0</span>', { en: 'Week 0 · Set up your computer', zh: '第 0 周 · 配置你的电脑' }, { en: 'before Week 2', zh: '第 2 周之前' }) : '') + '</div>';
+      row('primer', th('primer', 'μ'), { en: 'Background primer', zh: '入门背景' }, { en: 'for every student', zh: '适合所有同学' }) +
+      (SY.setup ? row('setup', th('setup', '00'), { en: 'Week 0 · Set up your computer', zh: '第 0 周 · 配置你的电脑' }, { en: 'before Week 2', zh: '第 2 周之前' }) : '') + '</div>';
     var last = 0;
     G.weeks.forEach(function (w) {
       if (w.stage !== last) {
@@ -560,7 +561,7 @@
         last = w.stage;
       }
       var k = 'w' + G.pad(w.n);
-      html += row(k, '<span class="syl-n">' + G.pad(w.n) + '</span>', w, { en: 'Week ' + w.n, zh: '第 ' + w.n + ' 周' });
+      html += row(k, th(k, G.pad(w.n)), w, { en: 'Week ' + w.n, zh: '第 ' + w.n + ' 周' });
     });
     html += '</div>';
     var el = d.getElementById('weeks'); if (el) el.innerHTML = html;

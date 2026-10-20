@@ -70,7 +70,7 @@ def frame(k):
         g.text((bx + 8, by + 22 + 15 * i), lab, font=mono_s, fill=FG)
         g.text((R0 - 16, by + 22 + 15 * i), val, font=mono_s, fill=FG, anchor="ra")
     g.text((R0, B0 + 24), "ch0_adc [ADC counts]", font=mono_s, fill=MUTED, anchor="ra")
-    g.text((28, 872), "Geant4 2.0 · Week 08 · From simulation to experimental data", font=mono_s, fill=MUTED)
+    g.text((28, 872), "From Track to Truth · Week 08 · From simulation to experimental data", font=mono_s, fill=MUTED)
     return im
 
 

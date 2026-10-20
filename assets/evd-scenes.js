@@ -1,4 +1,4 @@
-/* Geant4 2.0 — scenes for the 3D event displays (engine: assets/evdisplay.js).
+/* From Track to Truth — scenes for the 3D event displays (engine: assets/evdisplay.js).
    Colours follow the Geant4 visualisation convention: red = negative, blue = positive,
    green = neutral; detector hits in yellow. Every scene is tagged DATA (real Geant4 11.4 output
    from this course, assets/evd-data.js) or TOY (simple model; approximations in the page caption). */

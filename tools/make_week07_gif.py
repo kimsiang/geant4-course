@@ -108,7 +108,7 @@ def frame(gev, tracks, npts):
     g.text((R0, B0 + 24), "p [GeV/c]", font=mono_s, fill=MUTED, anchor="ra")
     g.text((L0 + 10, T0 + 8), "sigma_p / p (50 um planes)", font=mono_s, fill=MUTED)
     g.text((R0 - 8, T0 + 8), "- - measurement + scattering", font=mono_s, fill=NEU, anchor="ra")
-    g.text((28, 872), "Geant4 2.0 · Week 07 · Momentum from a magnetic field", font=mono_s, fill=MUTED)
+    g.text((28, 872), "From Track to Truth · Week 07 · Momentum from a magnetic field", font=mono_s, fill=MUTED)
     return im
 
 

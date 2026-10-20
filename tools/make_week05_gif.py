@@ -75,7 +75,7 @@ def frame(n_ev):
         g.text((L0 - 8, y - 7), str(c), font=mono_s, fill=MUTED, anchor="ra")
     g.text((R0, B0 + 26), "Δt = t(top) − t(bottom) [ns]", font=mono_s, fill=MUTED, anchor="ra")
     g.text((L0 + 10, T0 + 8), "events with both ADC above threshold", font=mono_s, fill=MUTED)
-    g.text((28, 872), "Geant4 2.0 · Week 05 · From energy deposit to a hit", font=mono_s, fill=MUTED)
+    g.text((28, 872), "From Track to Truth · Week 05 · From energy deposit to a hit", font=mono_s, fill=MUTED)
     return im
 
 

@@ -53,7 +53,7 @@ def frame(n, k, final):
     if final:
         g.text((36, 800), "Don't learn Geant4. Learn to turn a physics question", font=mono_s, fill=FG)
         g.text((36, 818), "into a virtual experiment you can trust.", font=mono_s, fill=FG)
-    g.text((28, 872), "Geant4 2.0 · Week 12 · Proposal and defence", font=mono_s, fill=MUTED)
+    g.text((28, 872), "From Track to Truth · Week 12 · Proposal and defence", font=mono_s, fill=MUTED)
     return im
 
 
