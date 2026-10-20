@@ -272,6 +272,26 @@ The week list lives in the manifest at the top of `assets/course.js` (`G.weeks`)
 - Code tags: `GEANT4` (toolkit API and UI commands), `MUSRSIM` (application-specific), `ANALYSIS` (ROOT/Python).
 - Keep pages self-contained static files: no build step and no tracking.
 
+## Optional AI assistant (bring your own key)
+
+Every hands-on lab has a **"Stuck? Ask the lab assistant"** button; Week 11 has a **debugging tutor** that walks the debugging tree and never reveals the fault-lab answers; Week 12 adds a **mock referee** that questions a student's proposal and scores it on the Definition 12.2 rubric (practice only); every item of the setup page has a **setup helper**. The assistant is off until a student enters their own API key. Code: `assets/assistant.js`; styles at the end of `assets/course.css`.
+
+**Providers:** Claude (Anthropic, direct browser access) and OpenAI-compatible services usable from mainland China: DeepSeek, Kimi (Moonshot), Qwen (DashScope), GLM (Zhipu), SiliconFlow, plus OpenAI and OpenRouter. The model name is editable. Whether a given OpenAI-compatible provider accepts calls straight from a browser (CORS) is up to that provider; if it does not, the panel says so.
+
+**Where the key goes, and where it never goes**
+
+- It stays in the student's browser: `sessionStorage` by default (forgotten when the tab closes), `localStorage` only if they tick *Remember on this device*. *Forget my key* deletes both.
+- It is sent in exactly one place: the HTTPS request to the provider the student chose, from an allow-list of hosts. The course has no server, no analytics and no third-party scripts (fonts and three.js are self-hosted).
+- It is never written into the page, a URL, a log, an error message or a download (provider error text is scrubbed of the key).
+- A **Content-Security-Policy** is added to every page by `tools/shell.py` (`connect-src 'self'` + the provider hosts, `form-action 'none'`, no external scripts, images or fonts). Even a bug in the page cannot send the key to any other host. Replies are rendered as escaped text with a small Markdown subset and never as HTML, links or images.
+- What the provider receives with a question: the text, code and expected output of the section the student asked from (in their language mode), their message and the conversation so far. In Week 11 the fault-lab script is withheld.
+
+**One caveat for GitHub Pages:** every project site under `https://<you>.github.io` shares one origin, so any page you publish there can read that origin's browser storage. If you host other pages there that also store keys or that you do not fully control, serve the course from its own custom domain (Settings → Pages → Custom domain), or advise students not to tick *Remember*.
+
+**To add a provider:** add it to `PROVIDERS` and `ALLOWED_HOSTS` in `assets/assistant.js` and to `AI_HOSTS` in `tools/shell.py`, then run `python3 tools/shell.py`.
+
+**Tested here:** key storage (session vs device), that the key is sent only to the provider host, that the CSP blocks other hosts, that replies cannot render HTML or images, and the Week 11 context exclusion, all with mocked provider responses. Not tested: live calls to each provider (no network access here).
+
 ## Deploying to GitHub Pages
 
 1. **Settings → Pages → Build and deployment:** *Deploy from a branch*, branch `main`, folder `/ (root)`.

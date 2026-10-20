@@ -224,6 +224,33 @@ SEC = re.compile(r'<section class="run[^"]*"([^>]*)>(.*?)</section>', re.S)
 CMD = re.compile(r'<p class="cmd">(.*?)<span lang="en">(.*?)</span><span lang="zh-Hans">(.*?)</span></p>', re.S)
 
 
+# Content-Security-Policy for the hosted course (GitHub Pages or any static host). It limits where
+# a page may connect: this site plus the AI providers that assets/assistant.js may call with the
+# student's own key (keep AI_HOSTS in sync with ALLOWED_HOSTS there). It is inserted by a tiny
+# inline script so it is skipped inside the claude.ai preview, whose host adds its own scripts.
+AI_HOSTS = ["api.anthropic.com", "api.deepseek.com", "api.moonshot.cn", "dashscope.aliyuncs.com",
+            "open.bigmodel.cn", "api.siliconflow.cn", "api.openai.com", "openrouter.ai"]
+CSP = ("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; "
+       "img-src 'self' data: blob:; font-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; "
+       "form-action 'none'; connect-src 'self' " + " ".join("https://" + h for h in AI_HOSTS))
+
+
+def csp_block():
+    return ("<!--shell:csp--><script>(function(){if(/(^|\\.)(claude\\.ai|claudeusercontent\\.com)$/.test(location.hostname))return;"
+            "var m=document.createElement('meta');m.httpEquiv='Content-Security-Policy';m.content=\"" + CSP + "\";"
+            "document.head.appendChild(m);})();</script><!--/shell:csp-->")
+
+
+def add_csp(text):
+    text = re.sub(r"<!--shell:csp-->.*?<!--/shell:csp-->\n?", "", text, flags=re.S)
+    return text.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n' + csp_block(), 1)
+
+
+def add_assistant(text):
+    text = re.sub(r'<script src="assets/assistant\.js"></script>\n?', "", text)
+    return text.replace('<script src="assets/course.js"></script>\n', '<script src="assets/course.js"></script>\n<script src="assets/assistant.js"></script>\n', 1)
+
+
 def process(name, out_dir):
     path = ROOT / name
     text = path.read_text(encoding="utf-8")
@@ -407,6 +434,7 @@ def process(name, out_dir):
 
     # keep blank lines between sections stable when other tools re-insert blocks
     text = re.sub(r"(</section>|-->)\n{3,}", r"\1\n\n", text)
+    text = add_assistant(add_csp(text))
     (out_dir / name).write_text(text, encoding="utf-8")
     return dict(key=key, week=wk, file=name, en=w_en, zh=w_zh, total=sum_min,
                 items=[dict(id=it["id"], type=it["kind"], en=it["en"], zh=it["zh"], min=it["min"]) for it in items])
@@ -427,7 +455,8 @@ def main():
     for home in [out / "index.html"] if (out / "index.html").exists() else []:
         t = home.read_text(encoding="utf-8")
         if "<!--shell:sprite-->" in t:
-            home.write_text(re.sub(r"<!--shell:sprite-->.*?<!--/shell:sprite-->", lambda _: sprite(), t, flags=re.S), encoding="utf-8")
+            t = re.sub(r"<!--shell:sprite-->.*?<!--/shell:sprite-->", lambda _: sprite(), t, flags=re.S)
+        home.write_text(add_csp(t), encoding="utf-8")
     if len(pages) >= 13:
         (out / "assets").mkdir(exist_ok=True)
         (out / "assets/syllabus.js").write_text(
